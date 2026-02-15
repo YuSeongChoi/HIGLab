@@ -5,7 +5,7 @@
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2017+-blue.svg)](https://developer.apple.com/ios/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Progress](https://img.shields.io/badge/Progress-6%2F50-brightgreen.svg)](https://m1zz.github.io/HIGLab/)
+[![Progress](https://img.shields.io/badge/Progress-7%2F50-brightgreen.svg)](https://m1zz.github.io/HIGLab/)
 
 Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 기술별로 3가지를 제공:
 
@@ -19,11 +19,11 @@ Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 
 
 ## 📊 진행 상황
 
-**6/50 완료 (12%)**
+**7/50 완료 (14%)**
 
 | Phase | 완료 | 기술 |
 |-------|------|------|
-| 1 App Frameworks | 3/7 | WidgetKit ✅, ActivityKit ✅, Foundation Models ✅ |
+| 1 App Frameworks | 4/7 | WidgetKit ✅, ActivityKit ✅, App Intents ✅, Foundation Models ✅ |
 | 2 App Services | 1/13 | StoreKit 2 ✅ |
 | 3 Graphics & Media | 1/13 | ARKit ✅ |
 | 4 System & Network | 1/10 | Core Bluetooth ✅ |
@@ -40,7 +40,7 @@ Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 
 |---|-----------|------|--------|------|------|
 | 1 | **WidgetKit** | 홈화면/잠금화면 위젯 | [날씨 위젯](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [튜토리얼](tutorials/widgets/) | ✅ |
 | 2 | **ActivityKit** | Live Activities, Dynamic Island | [배달 추적](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [튜토리얼](tutorials/activitykit/) | ✅ |
-| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | - | - | 🔜 |
+| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | [Siri 앱](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [튜토리얼](tutorials/appintents/) | ✅ |
 | 4 | **SwiftUI** | 선언적 UI 프레임워크 | - | - | 📋 |
 | 5 | **SwiftData** | 현대적 데이터 저장 | - | - | 📋 |
 | 6 | **Observation** | @Observable 상태관리 | - | - | 📋 |
@@ -123,6 +123,7 @@ HIGLab/
 │   ├── index.html          # 메인 페이지
 │   ├── widgets/            # WidgetKit 블로그
 │   ├── activitykit/        # ActivityKit 블로그
+│   ├── appintents/         # App Intents 블로그
 │   ├── storekit/           # StoreKit 블로그
 │   ├── arkit/              # ARKit 블로그
 │   ├── bluetooth/          # Bluetooth 블로그
@@ -130,6 +131,7 @@ HIGLab/
 ├── tutorials/              # 📚 DocC 튜토리얼
 │   ├── widgets/           # WidgetKit (10챕터)
 │   ├── activitykit/       # ActivityKit (8챕터)
+│   ├── appintents/        # App Intents (5챕터)
 │   ├── storekit/          # StoreKit (5챕터)
 │   ├── arkit/             # ARKit (4챕터)
 │   ├── bluetooth/         # Bluetooth (4챕터)
