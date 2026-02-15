@@ -37,7 +37,7 @@ CarPlay, Game Center, HealthKit, ML, Notifications, Maps, Photos 등 20개 기�
 ## 📁 프로젝트 구조
 
 ```
-hig-lab/
+HIGLab/
 ├── site/                    ← 블로그 포스트 (HTML)
 │   └── widgets/
 ├── tutorials/               ← DocC 패키지 (기술별)
@@ -50,8 +50,8 @@ hig-lab/
 
 ## 🚀 온라인 보기
 
-- **메인**: https://YOUR_USERNAME.github.io/hig-lab/
-- **Widgets DocC**: https://YOUR_USERNAME.github.io/hig-lab/widgets/tutorials/table-of-contents
+- **메인**: https://m1zz.github.io/HIGLab/
+- **Widgets DocC**: https://m1zz.github.io/HIGLab/widgets/tutorials/table-of-contents
 
 ## 🛠️ 로컬에서 DocC 빌드
 
