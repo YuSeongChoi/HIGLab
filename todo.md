@@ -20,3 +20,11 @@
 - [x] index.html 수정: 블로그 링크를 `blog/widgets/`로 변경
 - [x] DocC 튜토리얼 링크를 명시적으로 분리
 - [x] HTML 중첩 <a> 태그 오류 수정: 카드를 <div>로 변경
+- [x] DocC 리소스 파일 누락 문제 해결: 7개의 Swift 코드 예제 파일 추가
+  - 01-glanceable.swift (Glanceable 원칙)
+  - 01-relevant.swift (Relevant 원칙)
+  - 01-personalized.swift (Personalized 원칙)
+  - 01-size-small.swift (Small 위젯)
+  - 01-size-medium.swift (Medium 위젯)
+  - 01-size-large.swift (Large 위젯)
+  - 01-size-lockscreen.swift (Lock Screen 위젯)
