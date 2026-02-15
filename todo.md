@@ -15,6 +15,9 @@
 2. **링크 구조 문제**
    - 블로그와 DocC 링크가 명확하게 분리되지 않음
 
+## 진행 중
+- [ ] GitHub Actions 빌드 실패 수정 (iOS SDK 없음 → macOS로 변경)
+
 ## 해결 완료
 - [x] 워크플로우 수정: 블로그 포스트를 `deploy/blog/`로 복사
 - [x] index.html 수정: 블로그 링크를 `blog/widgets/`로 변경
