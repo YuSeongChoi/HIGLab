@@ -1,0 +1,146 @@
+@Tutorial(time: 10) {
+    @Intro(title: "HIG 위젯 가이드라인 이해하기") {
+        Apple이 정의하는 "좋은 위젯"이란 무엇인지, 
+        HIG의 핵심 원칙 3가지를 학습합니다.
+    }
+    
+    @Section(title: "위젯의 본질") {
+        @ContentAndMedia {
+            Apple은 위젯을 "미니 앱"이 아니라 
+            **앱의 핵심 정보를 홈 화면에 투영하는 것**이라고 정의합니다.
+            
+            사용자는 하루 평균 90번 이상 홈 화면을 보지만, 
+            머무는 시간은 몇 초에 불과합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Glanceable (한눈에 파악)**
+                
+                위젯의 가장 중요한 원칙입니다. 
+                사용자가 버튼을 누르거나 복잡한 UI를 탐색할 필요 없이, 
+                한 번 쳐다보는 것만으로 핵심 정보를 얻을 수 있어야 합니다.
+                
+                날씨 위젯이라면: 기온, 날씨 아이콘, 도시명이면 충분합니다.
+                
+                @Code(name: "GlanceableExample.swift", file: "01-glanceable.swift")
+            }
+            
+            @Step {
+                **Relevant (시의적절)**
+                
+                시간, 장소, 사용자의 상황에 맞는 정보를 보여주세요.
+                아침에는 오늘 예보를, 저녁에는 내일 예보를 우선 표시하는 식입니다.
+                
+                Timeline을 활용해 시간대별로 다른 콘텐츠를 제공할 수 있습니다.
+                
+                @Code(name: "RelevantExample.swift", file: "01-relevant.swift")
+            }
+            
+            @Step {
+                **Personalized (개인화)**
+                
+                App Intent Configuration을 통해 사용자가 위젯을 커스터마이징하게 하세요.
+                도시 선택, 표시 단위(°C/°F), 배경 스타일 등을 제공할 수 있습니다.
+                
+                @Code(name: "PersonalizedExample.swift", file: "01-personalized.swift")
+            }
+        }
+    }
+    
+    @Section(title: "크기별 디자인 전략") {
+        @ContentAndMedia {
+            HIG는 각 위젯 크기마다 **다른 레이아웃과 정보량**을 권장합니다.
+            단순히 같은 뷰를 확대/축소하면 안 됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Small (169×169pt)**: 정보 4개 이내, 단일 딥링크.
+                "현재 기온 + 도시명 + 날씨 아이콘 + 최고/최저" 정도.
+                
+                @Code(name: "SizeGuide.swift", file: "01-size-small.swift")
+            }
+            
+            @Step {
+                **Medium (360×169pt)**: 복수 딥링크 가능.
+                "현재 날씨 + 시간별 예보 5개" 또는 상세 정보 추가.
+                
+                @Code(name: "SizeGuide.swift", file: "01-size-medium.swift")
+            }
+            
+            @Step {
+                **Large (360×376pt)**: 풍부한 정보.
+                "현재 + 시간별 + 주간 예보" 전체 표시 가능.
+                
+                @Code(name: "SizeGuide.swift", file: "01-size-large.swift")
+            }
+            
+            @Step {
+                **Lock Screen (accessory)**: 극도로 간결.
+                "아이콘 + 기온" 수준. 색상은 시스템이 제어.
+                
+                @Code(name: "SizeGuide.swift", file: "01-size-lockscreen.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Apple HIG에 따르면, 위젯의 가장 중요한 디자인 원칙은?
+            
+            @Choice(isCorrect: true) {
+                Glanceable — 한눈에 파악할 수 있어야 한다
+                
+                @Justification(reaction: "정답!") {
+                    위젯은 미니 앱이 아닙니다. 몇 초 안에 핵심 정보를 전달해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가능한 많은 정보를 표시해야 한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    위젯은 정보량보다 가독성이 중요합니다. 크기에 맞는 적절한 정보만 보여주세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱과 동일한 인터랙션을 제공해야 한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    위젯은 미니 앱이 아닙니다. 핵심 정보 투영이 목적입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Small 위젯에 권장되는 최대 정보 개수는?
+            
+            @Choice(isCorrect: true) {
+                4개 이내
+                
+                @Justification(reaction: "정확합니다!") {
+                    Small 위젯은 홈 화면 아이콘 4개 크기에 불과하므로, 
+                    정보를 4개 이내로 제한하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제한 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    Small 위젯은 공간이 매우 제한적입니다. 4개 이내가 권장됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                8개 이내
+                
+                @Justification(reaction: "아쉽네요") {
+                    8개는 너무 많습니다. Small 위젯은 4개 이내가 적절합니다.
+                }
+            }
+        }
+    }
+}

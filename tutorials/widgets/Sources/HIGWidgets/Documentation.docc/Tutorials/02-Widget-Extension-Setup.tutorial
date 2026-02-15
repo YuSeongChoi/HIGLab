@@ -1,0 +1,78 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Widget Extension 세팅") {
+        Xcode 프로젝트에 Widget Extension을 추가하고,
+        WidgetKit의 핵심 아키텍처를 이해합니다.
+    }
+    
+    @Section(title: "프로젝트 준비") {
+        @ContentAndMedia {
+            새 iOS 프로젝트를 만들고 Widget Extension 타겟을 추가합니다.
+            "Include Configuration App Intent"를 체크하여 
+            설정 가능한 위젯으로 시작합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 새 프로젝트를 생성합니다.
+                템플릿은 **App**을 선택하고, Interface는 **SwiftUI**를 선택합니다.
+                프로젝트 이름은 `WeatherWidgetApp`으로 합니다.
+                
+                @Code(name: "WeatherWidgetApp.swift", file: "02-app-entry.swift")
+            }
+            
+            @Step {
+                File → New → Target에서 **Widget Extension**을 선택합니다.
+                
+                이름을 `WeatherWidgetExtension`으로 지정하고, 
+                **Include Configuration App Intent**를 체크합니다.
+                
+                @Code(name: "WeatherWidget.swift", file: "02-widget-skeleton.swift")
+            }
+            
+            @Step {
+                생성된 기본 코드를 정리합니다.
+                날씨 데이터 모델을 만들어 위젯에서 사용할 구조를 정의합니다.
+                
+                @Code(name: "WeatherData.swift", file: "02-weather-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TimelineProvider 이해하기") {
+        @ContentAndMedia {
+            WidgetKit의 핵심은 **TimelineProvider**입니다.
+            시스템은 미리 타임라인을 받아 적절한 시점에 뷰를 렌더링합니다.
+            
+            3가지 필수 메서드를 구현해야 합니다:
+            - `placeholder`: 위젯 갤러리 미리보기
+            - `getSnapshot`: 위젯 추가 시 스냅샷
+            - `getTimeline`: 실제 타임라인 생성
+        }
+        
+        @Steps {
+            @Step {
+                `WeatherEntry`를 정의합니다.
+                `TimelineEntry` 프로토콜을 채택하며,
+                반드시 `date` 프로퍼티가 필요합니다.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-entry.swift")
+            }
+            
+            @Step {
+                `placeholder`와 `getSnapshot`을 구현합니다.
+                둘 다 미리보기 데이터를 반환합니다.
+                
+                HIG 팁: 로딩 스피너 대신 실제 형태의 미리보기 데이터를 사용하세요.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-placeholder.swift")
+            }
+            
+            @Step {
+                `getTimeline`을 구현합니다.
+                날씨 데이터를 가져오고, 15분 간격으로 갱신하도록 설정합니다.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-timeline.swift")
+            }
+        }
+    }
+}
