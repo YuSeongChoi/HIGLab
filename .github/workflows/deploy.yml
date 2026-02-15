@@ -1,0 +1,94 @@
+name: Deploy HIG Lab
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      # ========================================
+      # 📦 배포 폴더 초기화
+      # ========================================
+      - name: Prepare output
+        run: mkdir -p deploy
+
+      # ========================================
+      # 📝 블로그 사이트 복사
+      # ========================================
+      - name: Copy blog site
+        run: cp -r site/* deploy/
+
+      # ========================================
+      # 📚 DocC: Widgets
+      # ========================================
+      - name: Build DocC - Widgets
+        run: |
+          cd tutorials/widgets
+          swift package resolve
+
+          xcodebuild docbuild \
+            -scheme HIGWidgets \
+            -derivedDataPath /tmp/docbuild-widgets \
+            -destination 'generic/platform=iOS'
+
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-widgets/Build/Products/Debug-iphoneos/HIGWidgets.doccarchive \
+            --output-path ../../deploy/widgets \
+            --hosting-base-path HIGLab/widgets
+
+      # ========================================
+      # 📚 DocC: Live Activities (주석 해제하여 추가)
+      # ========================================
+      # - name: Build DocC - Live Activities
+      #   run: |
+      #     cd tutorials/live-activities
+      #     swift package resolve
+      #     xcodebuild docbuild \
+      #       -scheme HIGLiveActivities \
+      #       -derivedDataPath /tmp/docbuild-la \
+      #       -destination 'generic/platform=iOS'
+      #     $(xcrun --find docc) process-archive \
+      #       transform-for-static-hosting \
+      #       /tmp/docbuild-la/Build/Products/Debug-iphoneos/HIGLiveActivities.doccarchive \
+      #       --output-path ../../deploy/live-activities \
+      #       --hosting-base-path HIGLab/live-activities
+
+      # ========================================
+      # 🚀 배포
+      # ========================================
+      - name: Upload to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'deploy'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
