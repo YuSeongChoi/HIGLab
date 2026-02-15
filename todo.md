@@ -1,33 +1,63 @@
-# HIGLab 블로그 문제 진단
+# HIGLab 진행 상황
 
-## 문제 분석
-- [x] DocC 빌드 확인
-- [x] GitHub Pages 링크 구조 확인
-- [x] index.html의 링크 경로 검증
-- [x] 로컬 프리뷰 테스트
+## ✅ 완료
 
-## 발견된 이슈
-1. **파일 충돌 문제** (주요 원인)
-   - `site/widgets/` 폴더에 블로그 포스트 HTML 존재
-   - GitHub Actions에서 `site/*` 복사 후 DocC를 `deploy/widgets/`로 출력
-   - 결과: DocC가 블로그 파일을 덮어씀
+### Phase 1: Widgets
+- [x] DocC 튜토리얼 10개 챕터 완성
+- [x] 블로그/DocC 링크 분리 (`blog/` vs `widgets/`)
+- [x] HTML 중첩 `<a>` 태그 오류 수정
+- [x] DocC 리소스 파일 7개 추가 (Swift 코드 예제)
+- [x] README.md 확장 (50개 기술 로드맵)
 
-2. **링크 구조 문제**
-   - 블로그와 DocC 링크가 명확하게 분리되지 않음
+## 🔜 진행 중
 
-## 진행 중
-- [ ] GitHub Actions 빌드 실패 수정 (iOS SDK 없음 → macOS로 변경)
+### GitHub Actions
+- [ ] 빌드 실패 수정 (iOS SDK 없음 → macOS로 변경)
 
-## 해결 완료
-- [x] 워크플로우 수정: 블로그 포스트를 `deploy/blog/`로 복사
-- [x] index.html 수정: 블로그 링크를 `blog/widgets/`로 변경
-- [x] DocC 튜토리얼 링크를 명시적으로 분리
-- [x] HTML 중첩 <a> 태그 오류 수정: 카드를 <div>로 변경
-- [x] DocC 리소스 파일 누락 문제 해결: 7개의 Swift 코드 예제 파일 추가
-  - 01-glanceable.swift (Glanceable 원칙)
-  - 01-relevant.swift (Relevant 원칙)
-  - 01-personalized.swift (Personalized 원칙)
-  - 01-size-small.swift (Small 위젯)
-  - 01-size-medium.swift (Medium 위젯)
-  - 01-size-large.swift (Large 위젯)
-  - 01-size-lockscreen.swift (Lock Screen 위젯)
+### Phase 1: 다음 기술
+- [ ] ActivityKit (Live Activities) 튜토리얼 시작
+- [ ] App Intents 튜토리얼 시작
+
+## 📋 예정
+
+### Phase 2: App Services (우선순위 높음)
+1. **StoreKit 2** - 구독/인앱결제 (수익화 핵심)
+2. **CloudKit** - 무료 백엔드 (많이 찾는 주제)
+3. **TipKit** - 쉬운 난이도, 빠른 완성 가능
+4. **WeatherKit** - 기존 위젯과 연계 가능
+
+### Phase 3: Graphics & Media
+1. **ARKit + RealityKit** - visionOS 준비
+2. **Core Image** - 인스타 필터 느낌
+3. **AVFoundation** - 카메라 앱
+
+### Phase 5: iOS 26 신규 (WWDC25 후)
+1. **Foundation Models** - 온디바이스 LLM (가장 핫함)
+2. **Image Playground** - AI 이미지 생성
+3. **Visual Intelligence** - 카메라 AI
+
+---
+
+## 🔧 기술 부채
+
+- [ ] 블로그 포스트 HTML 템플릿 통일
+- [ ] 샘플 프로젝트 구조 표준화
+- [ ] CI/CD 파이프라인 안정화
+
+---
+
+## 📝 아이디어
+
+### 콘텐츠 형식
+- 짧은 "5분 만에 배우는 OOO" 시리즈
+- 실전 앱 클론 코딩 (인스타 필터, 음악 플레이어 등)
+- "이 앱 어떻게 만들었을까?" 리버스 엔지니어링
+
+### 커뮤니티
+- Discord 서버 개설?
+- 코드 리뷰 세션
+- 월간 챌린지
+
+---
+
+*최종 업데이트: 2026-02-16*
