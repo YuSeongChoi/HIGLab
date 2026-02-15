@@ -19,3 +19,4 @@
 - [x] 워크플로우 수정: 블로그 포스트를 `deploy/blog/`로 복사
 - [x] index.html 수정: 블로그 링크를 `blog/widgets/`로 변경
 - [x] DocC 튜토리얼 링크를 명시적으로 분리
+- [x] HTML 중첩 <a> 태그 오류 수정: 카드를 <div>로 변경
