@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🤖 온디바이스 AI 챗봇 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--code-bg:#1e1e2e;--purple:#af52de}*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+article{max-width:800px;margin:0 auto;padding:48px 24px}
+h1{font-size:36px;font-weight:900;margin-bottom:16px}h2{font-size:24px;font-weight:800;margin:40px 0 16px}p{margin-bottom:16px}
+.badge{display:inline-block;background:var(--purple);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.func{color:#89dceb}.str{color:#a6e3a1}.comment{color:#6c7086}
+</style></head>
+<body>
+<article>
+<span class="badge">🆕 iOS 26</span>
+<h1>🤖 온디바이스 AI 챗봇 만들기</h1>
+<p>Foundation Models를 활용해 프라이버시를 보호하는 AI 앱을 만듭니다. 모든 처리가 기기 내에서 이루어집니다.</p>
+
+<h2>✨ Foundation Models 특징</h2>
+<p>• 프라이버시 보호 (데이터가 기기를 떠나지 않음)<br>
+• 오프라인 지원 (네트워크 불필요)<br>
+• Swift 네이티브 async/await API</p>
+
+<h2>💬 기본 사용법</h2>
+<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">FoundationModels</span>
+
+<span class="kw">let</span> model = <span class="type">LanguageModel</span>.default
+<span class="kw">let</span> result = <span class="kw">try await</span> model.<span class="func">generate</span>(prompt: <span class="str">"안녕하세요"</span>)
+print(result.text)</pre></div>
+
+<h2>🔄 스트리밍 응답</h2>
+<div class="code-block"><pre class="code-body"><span class="kw">for try await</span> token <span class="kw">in</span> model.<span class="func">streamGenerate</span>(prompt: prompt) {
+    response += token.text  <span class="comment">// 실시간으로 텍스트 추가</span>
+}</pre></div>
+
+<h2>🔧 Tool Calling</h2>
+<div class="code-block"><pre class="code-body">@<span class="type">Tool</span>
+<span class="kw">struct</span> <span class="type">WeatherTool</span> {
+    <span class="kw">static let</span> description = <span class="str">"현재 날씨를 조회합니다"</span>
+    
+    @<span class="type">Parameter</span>(description: <span class="str">"도시 이름"</span>)
+    <span class="kw">var</span> city: <span class="type">String</span>
+    
+    <span class="kw">func</span> <span class="func">execute</span>() <span class="kw">async</span> -> <span class="type">String</span> {
+        <span class="kw">return</span> <span class="str">"\(city) 날씨: 맑음, 23°C"</span>
+    }
+}</pre></div>
+</article>
+</body></html>

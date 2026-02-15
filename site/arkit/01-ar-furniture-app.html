@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🥽 AR 가구 배치 앱 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+article{max-width:800px;margin:0 auto;padding:48px 24px}
+h1{font-size:36px;font-weight:900;margin-bottom:16px}h2{font-size:24px;font-weight:800;margin:40px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.func{color:#89dceb}.str{color:#a6e3a1}.comment{color:#6c7086}
+</style></head>
+<body>
+<article>
+<h1>🥽 AR 가구 배치 앱 만들기</h1>
+<p>ARKit과 RealityKit으로 가구를 미리 배치해보는 AR 앱을 만듭니다.</p>
+
+<h2>📱 ARView 설정</h2>
+<div class="code-block"><pre class="code-body"><span class="kw">let</span> arView = <span class="type">ARView</span>(frame: .zero)
+<span class="kw">let</span> config = <span class="type">ARWorldTrackingConfiguration</span>()
+config.planeDetection = [.horizontal, .vertical]
+arView.session.run(config)</pre></div>
+
+<h2>🪑 3D 모델 배치</h2>
+<div class="code-block"><pre class="code-body"><span class="kw">let</span> entity = <span class="kw">try await</span> <span class="type">ModelEntity</span>.load(named: <span class="str">"chair.usdz"</span>)
+<span class="kw">let</span> anchor = <span class="type">AnchorEntity</span>(world: position)
+anchor.addChild(entity)
+arView.scene.addAnchor(anchor)</pre></div>
+</article>
+</body></html>
