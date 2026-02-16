@@ -38,20 +38,20 @@ Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 1 | **WidgetKit** | 홈화면/잠금화면 위젯 | [날씨 위젯](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [튜토리얼](tutorials/widgets/) | ✅ |
-| 2 | **ActivityKit** | Live Activities, Dynamic Island | [배달 추적](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [튜토리얼](tutorials/activitykit/) | ✅ |
-| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | [Siri 앱](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [튜토리얼](tutorials/appintents/) | ✅ |
+| 1 | **WidgetKit** | 홈화면/잠금화면 위젯 | [날씨 위젯](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [튜토리얼](https://m1zz.github.io/HIGLab/widgets/documentation/higwidgets/) | ✅ |
+| 2 | **ActivityKit** | Live Activities, Dynamic Island | [배달 추적](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [튜토리얼](https://m1zz.github.io/HIGLab/activitykit/documentation/higactivitykit/) | ✅ |
+| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | [Siri 앱](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/appintents/documentation/higappintents/) | ✅ |
 | 4 | **SwiftUI** | 선언적 UI 프레임워크 | - | - | 📋 |
 | 5 | **SwiftData** | 현대적 데이터 저장 | - | - | 📋 |
 | 6 | **Observation** | @Observable 상태관리 | - | - | 📋 |
-| 7 | 🆕 **Foundation Models** | 온디바이스 LLM (iOS 26) | [AI 챗봇](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [튜토리얼](tutorials/foundationmodels/) | ✅ |
+| 7 | 🆕 **Foundation Models** | 온디바이스 LLM (iOS 26) | [AI 챗봇](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [튜토리얼](https://m1zz.github.io/HIGLab/foundationmodels/documentation/higfoundationmodels/) | ✅ |
 
 ### 💳 Phase 2: App Services (서비스 통합)
 > 앱의 기능을 시스템과 클라우드로 확장
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 8 | **StoreKit 2** | 인앱결제, 구독 | [구독 앱](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [튜토리얼](tutorials/storekit/) | ✅ |
+| 8 | **StoreKit 2** | 인앱결제, 구독 | [구독 앱](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/storekit/documentation/higstorekit/) | ✅ |
 | 9 | **PassKit** | Apple Pay, Wallet | - | - | 📋 |
 | 10 | **CloudKit** | iCloud 데이터 동기화 | - | - | 📋 |
 | 11 | **Authentication Services** | Sign in with Apple | - | - | 📋 |
@@ -70,7 +70,7 @@ Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 21 | **ARKit** | 증강현실 | [AR 가구 배치](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [튜토리얼](tutorials/arkit/) | ✅ |
+| 21 | **ARKit** | 증강현실 | [AR 가구 배치](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/arkit/documentation/higarkit/) | ✅ |
 | 22 | **RealityKit** | 3D 렌더링 | - | - | 📋 |
 | 23 | **SpriteKit** | 2D 게임 엔진 | - | - | 📋 |
 | 24 | **Core Image** | 이미지 필터 | - | - | 📋 |
@@ -89,7 +89,7 @@ Apple의 **367개 프레임워크**를 실전 중심으로 학습합니다. 각 
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 34 | **Core Bluetooth** | BLE 기기 연결 | [BLE 스캐너](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [튜토리얼](tutorials/bluetooth/) | ✅ |
+| 34 | **Core Bluetooth** | BLE 기기 연결 | [BLE 스캐너](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [튜토리얼](https://m1zz.github.io/HIGLab/bluetooth/documentation/higbluetooth/) | ✅ |
 | 35 | **Core NFC** | NFC 태그 읽기/쓰기 | - | - | 📋 |
 | 36 | **MultipeerConnectivity** | P2P 통신 | - | - | 📋 |
 | 37 | **Network** | TCP/UDP/QUIC | - | - | 📋 |
