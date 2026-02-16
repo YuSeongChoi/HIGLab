@@ -1,31 +1,305 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📱 SwiftUI 마스터 — HIG Lab</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
-.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
 .top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
 .top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
 article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
-h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
-h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
-.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
-pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
-</style></head>
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
 <h1>📱 SwiftUI 마스터</h1>
-<p class="subtitle">선언적 UI 프레임워크 완벽 가이드</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 SwiftUI 마스터의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<p>선언적 UI 프레임워크로 앱을 만듭니다. 코드가 곧 UI이고, UI가 곧 코드입니다.</p>
+
+<h2>✨ SwiftUI란?</h2>
+<p>SwiftUI는 선언적 구문으로 UI를 작성하는 Apple의 최신 프레임워크입니다. UIKit 대신 사용하며, iOS 13+부터 지원됩니다.</p>
+
+<h2>🎯 기본 View 구조</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ContentView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">16</span>) {
+            <span class="type">Text</span>(<span class="str">"Hello, SwiftUI!"</span>)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+
+            <span class="type">Image</span>(systemName: <span class="str">"star.fill"</span>)
+                .font(.system(size: <span class="num">48</span>))
+                .foregroundStyle(.yellow)
+
+            <span class="type">Button</span>(<span class="str">"탭하기"</span>) {
+                <span class="func">print</span>(<span class="str">"Button tapped!"</span>)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>📊 State & Binding</h2>
+<p>SwiftUI는 @State로 상태를 관리하고, $ 바인딩으로 데이터를 연결합니다.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">StateExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">CounterView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> count = <span class="num">0</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="type">Text</span>(<span class="str">"카운트: \(count)"</span>)
+                .font(.title)
+
+            <span class="type">HStack</span>(spacing: <span class="num">16</span>) {
+                <span class="type">Button</span>(<span class="str">"-"</span>) { count -= <span class="num">1</span> }
+                    .buttonStyle(.bordered)
+
+                <span class="type">Button</span>(<span class="str">"+"</span>) { count += <span class="num">1</span> }
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>📝 TextField & Binding</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">FormExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">LoginView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> username = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> password = <span class="str">""</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">16</span>) {
+            <span class="type">TextField</span>(<span class="str">"아이디"</span>, text: $username)
+                .textFieldStyle(.roundedBorder)
+                .textInputAutocapitalization(.never)
+
+            <span class="type">SecureField</span>(<span class="str">"비밀번호"</span>, text: $password)
+                .textFieldStyle(.roundedBorder)
+
+            <span class="type">Button</span>(<span class="str">"로그인"</span>) {
+                <span class="func">login</span>(username: username, password: password)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(username.isEmpty || password.isEmpty)
+        }
+        .padding()
+    }
+
+    <span class="kw">func</span> <span class="func">login</span>(username: <span class="type">String</span>, password: <span class="type">String</span>) {
+        <span class="comment">// 로그인 처리</span>
+    }
+}</pre></div>
+
+<h2>📋 List & ForEach</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ListView.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">Todo</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span> = <span class="type">UUID</span>()
+    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">String</span>
+    <span class="kw">var</span> <span class="prop">isCompleted</span>: <span class="type">Bool</span> = <span class="kw">false</span>
+}
+
+<span class="kw">struct</span> <span class="type">TodoListView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> todos = [
+        <span class="type">Todo</span>(title: <span class="str">"SwiftUI 공부"</span>),
+        <span class="type">Todo</span>(title: <span class="str">"앱 만들기"</span>),
+        <span class="type">Todo</span>(title: <span class="str">"출시하기"</span>)
+    ]
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">List</span> {
+            <span class="type">ForEach</span>($todos) { $todo <span class="kw">in</span>
+                <span class="type">HStack</span> {
+                    <span class="type">Image</span>(systemName: todo.isCompleted ? <span class="str">"checkmark.circle.fill"</span> : <span class="str">"circle"</span>)
+                        .foregroundStyle(todo.isCompleted ? .green : .gray)
+
+                    <span class="type">Text</span>(todo.title)
+                        .strikethrough(todo.isCompleted)
+                }
+                .contentShape(<span class="type">Rectangle</span>())
+                .onTapGesture {
+                    todo.isCompleted.toggle()
+                }
+            }
+            .onDelete(perform: <span class="func">deleteTodos</span>)
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">deleteTodos</span>(at offsets: <span class="type">IndexSet</span>) {
+        todos.remove(atOffsets: offsets)
+    }
+}</pre></div>
+
+<h2>🧭 Navigation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">NavigationExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span>(<span class="num">1</span>..&lt;<span class="num">11</span>, id: \.self) { number <span class="kw">in</span>
+                <span class="type">NavigationLink</span>(<span class="str">"아이템 \(number)"</span>) {
+                    <span class="type">DetailView</span>(number: number)
+                }
+            }
+            .navigationTitle(<span class="str">"목록"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">DetailView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">number</span>: <span class="type">Int</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"아이템 #\(number)"</span>)
+                .font(.largeTitle)
+        }
+        .navigationTitle(<span class="str">"상세"</span>)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}</pre></div>
+
+<h2>🎨 Modifier & Custom Style</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CustomModifier.swift</span></div>
+<pre class="code-body"><span class="comment">// Custom Modifier</span>
+<span class="kw">struct</span> <span class="type">CardModifier</span>: <span class="type">ViewModifier</span> {
+    <span class="kw">func</span> <span class="func">body</span>(content: <span class="type">Content</span>) -> <span class="kw">some</span> <span class="type">View</span> {
+        content
+            .padding()
+            .background(<span class="type">Color</span>.white)
+            .cornerRadius(<span class="num">12</span>)
+            .shadow(color: .black.opacity(<span class="num">0.1</span>), radius: <span class="num">8</span>, x: <span class="num">0</span>, y: <span class="num">4</span>)
+    }
+}
+
+<span class="kw">extension</span> <span class="type">View</span> {
+    <span class="kw">func</span> <span class="func">cardStyle</span>() -> <span class="kw">some</span> <span class="type">View</span> {
+        <span class="func">modifier</span>(<span class="type">CardModifier</span>())
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"카드 1"</span>)
+                .<span class="func">cardStyle</span>()
+
+            <span class="type">Text</span>(<span class="str">"카드 2"</span>)
+                .<span class="func">cardStyle</span>()
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>⏱️ Animation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">AnimationExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">AnimationView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> isExpanded = <span class="kw">false</span>
+    @<span class="type">State</span> <span class="kw">private var</span> rotation = <span class="num">0.0</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">32</span>) {
+            <span class="comment">// 크기 애니메이션</span>
+            <span class="type">RoundedRectangle</span>(cornerRadius: <span class="num">12</span>)
+                .fill(<span class="type">Color</span>.blue)
+                .frame(
+                    width: isExpanded ? <span class="num">200</span> : <span class="num">100</span>,
+                    height: isExpanded ? <span class="num">200</span> : <span class="num">100</span>
+                )
+                .animation(.spring(response: <span class="num">0.6</span>), value: isExpanded)
+
+            <span class="comment">// 회전 애니메이션</span>
+            <span class="type">Image</span>(systemName: <span class="str">"star.fill"</span>)
+                .font(.system(size: <span class="num">48</span>))
+                .foregroundStyle(.yellow)
+                .rotationEffect(.degrees(rotation))
+                .animation(.linear(duration: <span class="num">1</span>).repeatForever(autoreverses: <span class="kw">false</span>), value: rotation)
+
+            <span class="type">Button</span>(<span class="str">"토글"</span>) {
+                isExpanded.toggle()
+                rotation += <span class="num">360</span>
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}</pre></div>
+
+<h2>🔄 ObservableObject & @Published</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ViewModel.swift</span></div>
+<pre class="code-body"><span class="kw">class</span> <span class="type">TodoViewModel</span>: <span class="type">ObservableObject</span> {
+    @<span class="type">Published</span> <span class="kw">var</span> todos: [<span class="type">Todo</span>] = []
+    @<span class="type">Published</span> <span class="kw">var</span> isLoading = <span class="kw">false</span>
+
+    <span class="kw">func</span> <span class="func">addTodo</span>(title: <span class="type">String</span>) {
+        <span class="kw">let</span> newTodo = <span class="type">Todo</span>(title: title)
+        todos.append(newTodo)
+    }
+
+    <span class="kw">func</span> <span class="func">loadTodos</span>() <span class="kw">async</span> {
+        isLoading = <span class="kw">true</span>
+        <span class="comment">// API 호출</span>
+        <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="num">1</span>))
+        isLoading = <span class="kw">false</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    @<span class="type">StateObject</span> <span class="kw">private var</span> viewModel = <span class="type">TodoViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">List</span>(viewModel.todos) { todo <span class="kw">in</span>
+            <span class="type">Text</span>(todo.title)
+        }
+        .overlay {
+            <span class="kw">if</span> viewModel.isLoading {
+                <span class="type">ProgressView</span>()
+            }
+        }
+        .task {
+            <span class="kw">await</span> viewModel.<span class="func">loadTodos</span>()
+        }
+    }
+}</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG 체크리스트</strong><br>
+✅ SF Symbols를 활용한 아이콘<br>
+✅ .padding()으로 충분한 여백<br>
+✅ .buttonStyle()로 버튼 스타일 지정<br>
+✅ .disabled()로 상태 표현<br>
+✅ 다크모드 자동 지원</p>
+
+<h2>📦 학습 자료</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub 프로젝트</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/layouts" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG 원문</div>
+</a>
+<a href="https://developer.apple.com/tutorials/swiftui" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple 공식 튜토리얼</div>
+</a>
+</div>
+
 </article>
-</body></html>
+</body>
+</html>
