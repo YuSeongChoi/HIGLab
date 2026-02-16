@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 41/50 | - | 9개 | 82% ✅ |
+| 📝 블로그 | 43/50 | - | 7개 | 86% ✅ |
 | 📚 DocC | 6/50 | - | 44개 | 12% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 41개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit, MusicKit, PhotosUI, CoreHaptics, ShazamKit, ImagePlayground, CoreBluetooth, CoreNFC, MultipeerConnectivity, Network, LocalAuthentication, CryptoKit, CallKit, EventKit) · ⬜ 미완성 9개
+> **블로그 상태**: ✅ 완성 43개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit, MusicKit, PhotosUI, CoreHaptics, ShazamKit, ImagePlayground, CoreBluetooth, CoreNFC, MultipeerConnectivity, Network, LocalAuthentication, CryptoKit, CallKit, EventKit, Contacts, WiFiAware) · ⬜ 미완성 7개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -95,8 +95,8 @@ WidgetKit
 | 39 | **CryptoKit** | [✅](https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html) | ⬜ | ⬜ |
 | 40 | **CallKit** | [✅](https://m1zz.github.io/HIGLab/callkit/01-tutorial.html) | ⬜ | ⬜ |
 | 41 | **EventKit** | [✅](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html) | ⬜ | ⬜ |
-| 42 | **Contacts** | [⬜](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | ⬜ | ⬜ |
-| 43 | 🆕 **Wi-Fi Aware** | [⬜](https://m1zz.github.io/HIGLab/wifiaware/01-tutorial.html) | ⬜ | ⬜ |
+| 42 | **Contacts** | [✅](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | ⬜ | ⬜ |
+| 43 | 🆕 **Wi-Fi Aware** | [✅](https://m1zz.github.io/HIGLab/wifiaware/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🆕 Phase 5: iOS 26 신규 기술
 
