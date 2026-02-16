@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>✨ 상황별 콘텐츠 — HIG Lab</title>
+<title>🎯 RelevanceKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
@@ -13,19 +13,462 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spac
 h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
 pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
 </style></head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
-<h1>✨ 상황별 콘텐츠</h1>
-<p class="subtitle">RelevanceKit (iOS 26)</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 상황별 콘텐츠의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<h1>🎯 RelevanceKit</h1>
+<p class="subtitle">컨텍스트 인식 기반 앱 제안 및 우선순위 관리</p>
+
+<div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
+
+<h2>✨ RelevanceKit이란?</h2>
+<p>RelevanceKit은 iOS 18에서 도입된 프레임워크로, 앱이 사용자의 현재 컨텍스트(위치, 시간, 활동 등)를 기반으로 시스템에 관련성을 전달할 수 있게 합니다. 이를 통해 Spotlight 검색, Live Activity 우선순위, Siri 제안 등에서 앱이 적절한 시점에 노출됩니다.</p>
+
+<div class="info-box">
+<strong>💡 핵심 기능:</strong> 컨텍스트 관련성 신호 · Live Activity 우선순위 · Spotlight 통합 · 사용자 의도 예측 · 백그라운드 업데이트 · 프라이버시 보호
+</div>
+
+<h2>🎯 1. 기본 설정</h2>
+<p>RelevanceKit을 사용하여 앱의 관련성 컨텍스트를 정의합니다.</p>
+
+<div class="code-block">
+<div class="code-header">RelevanceManager.swift — 기본 설정</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RelevanceKit</span>
+<span class="kw">import</span> <span class="type">Foundation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">RelevanceManager</span> {
+    <span class="kw">var</span> currentRelevance: <span class="type">Double</span> = <span class="str">0.5</span>
+    <span class="kw">private</span> <span class="kw">let</span> relevanceContext = <span class="type">RKRelevanceContext</span>()
+
+    <span class="comment">// 관련성 업데이트</span>
+    <span class="kw">func</span> updateRelevance(score: <span class="type">Double</span>, reason: <span class="type">String</span>) <span class="kw">async</span> {
+        currentRelevance = score
+
+        <span class="comment">// 시스템에 관련성 신호 전달</span>
+        <span class="kw">await</span> relevanceContext.updateRelevance(
+            score: score,
+            metadata: [
+                <span class="str">"reason"</span>: reason,
+                <span class="str">"timestamp"</span>: <span class="type">Date</span>().timeIntervalSince1970
+            ]
+        )
+    }
+
+    <span class="comment">// 컨텍스트 기반 관련성 계산</span>
+    <span class="kw">func</span> calculateContextualRelevance(
+        location: <span class="type">String</span>?,
+        timeOfDay: <span class="type">String</span>,
+        userActivity: <span class="type">String</span>
+    ) -> <span class="type">Double</span> {
+        <span class="kw">var</span> score = <span class="str">0.0</span>
+
+        <span class="comment">// 위치 기반 점수</span>
+        <span class="kw">if</span> location == <span class="str">"gym"</span> {
+            score += <span class="str">0.3</span>
+        }
+
+        <span class="comment">// 시간 기반 점수</span>
+        <span class="kw">if</span> timeOfDay == <span class="str">"morning"</span> {
+            score += <span class="str">0.2</span>
+        }
+
+        <span class="comment">// 활동 기반 점수</span>
+        <span class="kw">if</span> userActivity == <span class="str">"workout"</span> {
+            score += <span class="str">0.5</span>
+        }
+
+        <span class="kw">return</span> min(score, <span class="str">1.0</span>)
+    }
+}</pre>
+</div>
+
+<h2>🔔 2. Live Activity 우선순위</h2>
+<p>Live Activity의 우선순위를 동적으로 조절합니다.</p>
+
+<div class="code-block">
+<div class="code-header">LiveActivityRelevance.swift — Live Activity 우선순위</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">ActivityKit</span>
+<span class="kw">import</span> <span class="type">RelevanceKit</span>
+
+<span class="kw">struct</span> <span class="type">DeliveryAttributes</span>: <span class="type">ActivityAttributes</span> {
+    <span class="kw">public</span> <span class="kw">struct</span> <span class="type">ContentState</span>: <span class="type">Codable</span>, <span class="type">Hashable</span> {
+        <span class="kw">var</span> status: <span class="type">String</span>
+        <span class="kw">var</span> estimatedTime: <span class="type">Date</span>
+        <span class="kw">var</span> relevanceScore: <span class="type">Double</span> <span class="comment">// 🆕 관련성 점수</span>
+    }
+
+    <span class="kw">var</span> orderId: <span class="type">String</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">LiveActivityRelevanceManager</span> {
+    <span class="kw">private</span> <span class="kw">var</span> activity: <span class="type">Activity</span><<span class="type">DeliveryAttributes</span>>?
+
+    <span class="comment">// Live Activity 시작 (관련성 포함)</span>
+    <span class="kw">func</span> startActivity(orderId: <span class="type">String</span>) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">let</span> attributes = <span class="type">DeliveryAttributes</span>(orderId: orderId)
+        <span class="kw">let</span> initialState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: <span class="str">"준비 중"</span>,
+            estimatedTime: <span class="type">Date</span>().addingTimeInterval(<span class="str">1800</span>),
+            relevanceScore: <span class="str">0.5</span>
+        )
+
+        activity = <span class="kw">try</span> <span class="type">Activity</span>.request(
+            attributes: attributes,
+            content: .<span class="kw">init</span>(state: initialState, staleDate: <span class="kw">nil</span>),
+            pushType: <span class="kw">nil</span>
+        )
+    }
+
+    <span class="comment">// 배달 임박 시 우선순위 증가</span>
+    <span class="kw">func</span> updateForIncomingDelivery() <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> activity <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> updatedState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: <span class="str">"배달 중 - 5분 남음"</span>,
+            estimatedTime: <span class="type">Date</span>().addingTimeInterval(<span class="str">300</span>),
+            relevanceScore: <span class="str">0.95</span> <span class="comment">// 🆕 높은 우선순위</span>
+        )
+
+        <span class="kw">await</span> activity.update(using: updatedState)
+    }
+
+    <span class="comment">// 배달 완료 시 우선순위 감소</span>
+    <span class="kw">func</span> updateForCompletion() <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> activity <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> finalState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: <span class="str">"배달 완료"</span>,
+            estimatedTime: <span class="type">Date</span>(),
+            relevanceScore: <span class="str">0.1</span> <span class="comment">// 🆕 낮은 우선순위</span>
+        )
+
+        <span class="kw">await</span> activity.update(using: finalState)
+
+        <span class="comment">// 5초 후 종료</span>
+        <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="str">5</span>))
+        <span class="kw">await</span> activity.end(<span class="kw">nil</span>, dismissalPolicy: .immediate)
+    }
+}</pre>
+</div>
+
+<h2>🔍 3. Spotlight 통합</h2>
+<p>Spotlight 검색 결과에서 컨텍스트 기반 순위를 조정합니다.</p>
+
+<div class="code-block">
+<div class="code-header">SpotlightRelevance.swift — Spotlight 통합</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreSpotlight</span>
+<span class="kw">import</span> <span class="type">RelevanceKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">SpotlightRelevanceManager</span> {
+    <span class="comment">// 컨텍스트 기반 검색 항목 색인</span>
+    <span class="kw">func</span> indexWithRelevance(
+        title: <span class="type">String</span>,
+        description: <span class="type">String</span>,
+        contextScore: <span class="type">Double</span>
+    ) <span class="kw">async</span> {
+        <span class="kw">let</span> attributeSet = <span class="type">CSSearchableItemAttributeSet</span>(
+            contentType: .<span class="kw">init</span>(rawValue: <span class="str">"public.content"</span>)
+        )
+
+        attributeSet.title = title
+        attributeSet.contentDescription = description
+
+        <span class="comment">// 🆕 관련성 점수 설정</span>
+        attributeSet.rankingHint = contextScore
+
+        <span class="comment">// 컨텍스트 메타데이터</span>
+        attributeSet.keywords = [
+            <span class="str">"relevant"</span>,
+            <span class="str">"priority-\(Int(contextScore * 10))"</span>
+        ]
+
+        <span class="kw">let</span> item = <span class="type">CSSearchableItem</span>(
+            uniqueIdentifier: <span class="type">UUID</span>().uuidString,
+            domainIdentifier: <span class="str">"com.app.relevance"</span>,
+            attributeSet: attributeSet
+        )
+
+        <span class="kw">try</span>? <span class="kw">await</span> <span class="type">CSSearchableIndex</span>.default().indexSearchableItems([item])
+    }
+
+    <span class="comment">// 운동 시간에 피트니스 콘텐츠 우선순위 증가</span>
+    <span class="kw">func</span> indexWorkoutContent() <span class="kw">async</span> {
+        <span class="kw">let</span> currentHour = <span class="type">Calendar</span>.current.component(.hour, from: <span class="type">Date</span>())
+        <span class="kw">let</span> isWorkoutTime = (<span class="str">6</span>...<span class="str">9</span>).contains(currentHour) || (<span class="str">17</span>...<span class="str">20</span>).contains(currentHour)
+
+        <span class="kw">await</span> indexWithRelevance(
+            title: <span class="str">"오늘의 운동 루틴"</span>,
+            description: <span class="str">"맞춤형 운동 계획"</span>,
+            contextScore: isWorkoutTime ? <span class="str">0.9</span> : <span class="str">0.3</span>
+        )
+    }
+
+    <span class="comment">// 위치 기반 관련성</span>
+    <span class="kw">func</span> indexLocationBasedContent(nearGym: <span class="type">Bool</span>) <span class="kw">async</span> {
+        <span class="kw">await</span> indexWithRelevance(
+            title: <span class="str">"체육관 회원권"</span>,
+            description: <span class="str">"회원권 정보 확인"</span>,
+            contextScore: nearGym ? <span class="str">0.95</span> : <span class="str">0.2</span>
+        )
+    }
+}</pre>
+</div>
+
+<h2>🧠 4. 사용자 의도 예측</h2>
+<p>사용자 패턴을 학습하여 앱 제안 시점을 최적화합니다.</p>
+
+<div class="code-block">
+<div class="code-header">IntentPrediction.swift — 의도 예측</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RelevanceKit</span>
+<span class="kw">import</span> <span class="type">CoreLocation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">IntentPredictionManager</span> {
+    <span class="kw">private</span> <span class="kw">var</span> userPatterns: [<span class="type">String</span>: [<span class="type">Date</span>]] = [:]
+    <span class="kw">private</span> <span class="kw">let</span> relevanceContext = <span class="type">RKRelevanceContext</span>()
+
+    <span class="comment">// 사용자 행동 패턴 기록</span>
+    <span class="kw">func</span> recordActivity(<span class="kw">_</span> activity: <span class="type">String</span>) {
+        <span class="kw">if</span> userPatterns[activity] == <span class="kw">nil</span> {
+            userPatterns[activity] = []
+        }
+        userPatterns[activity]?.append(<span class="type">Date</span>())
+    }
+
+    <span class="comment">// 패턴 기반 관련성 예측</span>
+    <span class="kw">func</span> predictRelevance(for activity: <span class="type">String</span>) -> <span class="type">Double</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> history = userPatterns[activity] <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="str">0.1</span>
+        }
+
+        <span class="kw">let</span> now = <span class="type">Date</span>()
+        <span class="kw">let</span> calendar = <span class="type">Calendar</span>.current
+        <span class="kw">let</span> currentHour = calendar.component(.hour, from: now)
+
+        <span class="comment">// 같은 시간대 활동 빈도 계산</span>
+        <span class="kw">let</span> sameHourActivities = history.filter {
+            calendar.component(.hour, from: $0) == currentHour
+        }
+
+        <span class="kw">let</span> frequency = <span class="type">Double</span>(sameHourActivities.count) / <span class="type">Double</span>(history.count)
+        <span class="kw">return</span> min(frequency * <span class="str">2.0</span>, <span class="str">1.0</span>)
+    }
+
+    <span class="comment">// 시스템에 예측 전달</span>
+    <span class="kw">func</span> updatePredictedRelevance(for activity: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">let</span> score = predictRelevance(for: activity)
+
+        <span class="kw">await</span> relevanceContext.updateRelevance(
+            score: score,
+            metadata: [
+                <span class="str">"activity"</span>: activity,
+                <span class="str">"prediction_confidence"</span>: score,
+                <span class="str">"timestamp"</span>: <span class="type">Date</span>().timeIntervalSince1970
+            ]
+        )
+    }
+}
+
+<span class="comment">// 실사용 예제</span>
+<span class="kw">struct</span> <span class="type">WorkoutPredictionView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> predictor = <span class="type">IntentPredictionManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> relevanceScore = <span class="str">0.0</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"운동 관련성: \(Int(relevanceScore * 100))%"</span>)
+                .font(.title)
+
+            <span class="type">Button</span>(<span class="str">"운동 시작"</span>) {
+                predictor.recordActivity(<span class="str">"workout"</span>)
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> predictor.updatePredictedRelevance(for: <span class="str">"workout"</span>)
+                }
+            }
+        }
+        .task {
+            relevanceScore = predictor.predictRelevance(for: <span class="str">"workout"</span>)
+        }
+    }
+}</pre>
+</div>
+
+<h2>📍 5. 위치 기반 관련성</h2>
+<p>위치 컨텍스트를 활용한 관련성 관리입니다.</p>
+
+<div class="code-block">
+<div class="code-header">LocationRelevance.swift — 위치 기반 관련성</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RelevanceKit</span>
+<span class="kw">import</span> <span class="type">CoreLocation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">LocationRelevanceManager</span>: <span class="type">NSObject</span>, <span class="type">CLLocationManagerDelegate</span> {
+    <span class="kw">private</span> <span class="kw">let</span> locationManager = <span class="type">CLLocationManager</span>()
+    <span class="kw">private</span> <span class="kw">let</span> relevanceContext = <span class="type">RKRelevanceContext</span>()
+    <span class="kw">var</span> currentRelevance = <span class="str">0.0</span>
+
+    <span class="comment">// 관심 위치 정의</span>
+    <span class="kw">private</span> <span class="kw">let</span> gymLocation = <span class="type">CLLocationCoordinate2D</span>(
+        latitude: <span class="str">37.5665</span>,
+        longitude: <span class="str">126.9780</span>
+    )
+
+    <span class="kw">override</span> <span class="kw">init</span>() {
+        <span class="kw">super</span>.<span class="kw">init</span>()
+        locationManager.delegate = <span class="kw">self</span>
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    }
+
+    <span class="comment">// 위치 모니터링 시작</span>
+    <span class="kw">func</span> startMonitoring() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+
+    <span class="comment">// 위치 업데이트 처리</span>
+    <span class="kw">func</span> locationManager(
+        <span class="kw">_</span> manager: <span class="type">CLLocationManager</span>,
+        didUpdateLocations locations: [<span class="type">CLLocation</span>]
+    ) {
+        <span class="kw">guard</span> <span class="kw">let</span> location = locations.last <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 체육관과의 거리 계산</span>
+        <span class="kw">let</span> gymCLLocation = <span class="type">CLLocation</span>(
+            latitude: gymLocation.latitude,
+            longitude: gymLocation.longitude
+        )
+        <span class="kw">let</span> distance = location.distance(from: gymCLLocation)
+
+        <span class="comment">// 거리 기반 관련성 계산</span>
+        <span class="kw">let</span> relevance: <span class="type">Double</span>
+        <span class="kw">if</span> distance < <span class="str">100</span> {
+            relevance = <span class="str">1.0</span> <span class="comment">// 매우 가까움</span>
+        } <span class="kw">else</span> <span class="kw">if</span> distance < <span class="str">500</span> {
+            relevance = <span class="str">0.7</span> <span class="comment">// 가까움</span>
+        } <span class="kw">else</span> <span class="kw">if</span> distance < <span class="str">1000</span> {
+            relevance = <span class="str">0.4</span> <span class="comment">// 중간</span>
+        } <span class="kw">else</span> {
+            relevance = <span class="str">0.1</span> <span class="comment">// 멀음</span>
+        }
+
+        currentRelevance = relevance
+
+        <span class="comment">// 시스템에 전달</span>
+        <span class="type">Task</span> {
+            <span class="kw">await</span> relevanceContext.updateRelevance(
+                score: relevance,
+                metadata: [
+                    <span class="str">"distance"</span>: distance,
+                    <span class="str">"location"</span>: <span class="str">"gym"</span>
+                ]
+            )
+        }
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI 통합</h2>
+
+<div class="code-block">
+<div class="code-header">RelevanceApp.swift — 종합 예제</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">RelevanceKit</span>
+
+<span class="kw">struct</span> <span class="type">RelevanceApp</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> relevanceManager = <span class="type">RelevanceManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> liveActivityManager = <span class="type">LiveActivityRelevanceManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> locationManager = <span class="type">LocationRelevanceManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span> {
+                <span class="type">Section</span>(<span class="str">"현재 관련성"</span>) {
+                    <span class="type">HStack</span> {
+                        <span class="type">Text</span>(<span class="str">"시스템 관련성"</span>)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(<span class="str">"\(Int(relevanceManager.currentRelevance * 100))%"</span>)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    <span class="type">HStack</span> {
+                        <span class="type">Text</span>(<span class="str">"위치 기반"</span>)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(<span class="str">"\(Int(locationManager.currentRelevance * 100))%"</span>)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                <span class="type">Section</span>(<span class="str">"액션"</span>) {
+                    <span class="type">Button</span>(<span class="str">"운동 시작"</span>) {
+                        <span class="type">Task</span> {
+                            <span class="kw">await</span> relevanceManager.updateRelevance(
+                                score: <span class="str">0.9</span>,
+                                reason: <span class="str">"workout_started"</span>
+                            )
+                        }
+                    }
+
+                    <span class="type">Button</span>(<span class="str">"배달 시작"</span>) {
+                        <span class="type">Task</span> {
+                            <span class="kw">try</span>? <span class="kw">await</span> liveActivityManager.startActivity(
+                                orderId: <span class="str">"ORDER123"</span>
+                            )
+                        }
+                    }
+
+                    <span class="type">Button</span>(<span class="str">"위치 추적 시작"</span>) {
+                        locationManager.startMonitoring()
+                    }
+                }
+            }
+            .navigationTitle(<span class="str">"RelevanceKit"</span>)
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG 가이드라인</h2>
+
+<ul>
+<li><strong>프라이버시:</strong> 위치 등 민감한 데이터 사용 시 명확한 이유 설명</li>
+<li><strong>배터리:</strong> 백그라운드 업데이트 최소화, 효율적인 관련성 계산</li>
+<li><strong>정확성:</strong> 관련성 점수는 실제 사용자 컨텍스트와 일치해야 함</li>
+<li><strong>투명성:</strong> 왜 앱이 제안되는지 사용자가 이해할 수 있어야 함</li>
+<li><strong>권한:</strong> Info.plist에 위치 권한 설명 추가</li>
+</ul>
+
+<h2>🎯 실무 활용</h2>
+
+<ul>
+<li><strong>피트니스 앱:</strong> 체육관 근처에서 운동 루틴 제안</li>
+<li><strong>배달 앱:</strong> 배달 임박 시 Live Activity 우선 표시</li>
+<li><strong>교통 앱:</strong> 출퇴근 시간에 경로 제안 우선순위 증가</li>
+<li><strong>음악 앱:</strong> 운동 시간에 워크아웃 플레이리스트 제안</li>
+<li><strong>쇼핑 앱:</strong> 매장 근처에서 쿠폰 및 할인 정보 강조</li>
+</ul>
+
+<h2>📚 더 알아보기</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/relevancekit">RelevanceKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: RelevanceKit</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/live-activities">HIG: Live Activities</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 성능 팁:</strong> 관련성 점수는 자주 업데이트하지 마세요. 의미 있는 컨텍스트 변화가 있을 때만 업데이트하여 배터리와 성능을 최적화하세요.
+</div>
+
 </article>
 </body></html>
