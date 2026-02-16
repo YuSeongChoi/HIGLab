@@ -69,46 +69,46 @@ WidgetKit
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 21 | **ARKit** | [✅](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
-| 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
-| 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
-| 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
-| 25 | **PencilKit** | [✅](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
-| 26 | **PDFKit** | [✅](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
-| 27 | **AVFoundation** | [✅](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
-| 28 | **AVKit** | [✅](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
-| 29 | **MusicKit** | [✅](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
-| 30 | **PhotosUI** | [✅](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
-| 31 | **Core Haptics** | [✅](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
-| 32 | **ShazamKit** | [✅](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | ⬜ | ⬜ |
-| 33 | 🆕 **Image Playground** | [✅](https://m1zz.github.io/HIGLab/imageplayground/01-tutorial.html) | ⬜ | ⬜ |
+| 21 | **ARKit** | [⬜](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
+| 22 | **RealityKit** | [⬜](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
+| 23 | **SpriteKit** | [⬜](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
+| 24 | **Core Image** | [⬜](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
+| 25 | **PencilKit** | [⬜](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
+| 26 | **PDFKit** | [⬜](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
+| 27 | **AVFoundation** | [⬜](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
+| 28 | **AVKit** | [⬜](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
+| 29 | **MusicKit** | [⬜](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
+| 30 | **PhotosUI** | [⬜](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
+| 31 | **Core Haptics** | [⬜](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
+| 32 | **ShazamKit** | [⬜](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | ⬜ | ⬜ |
+| 33 | 🆕 **Image Playground** | [⬜](https://m1zz.github.io/HIGLab/imageplayground/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🔧 Phase 4: System (시스템/네트워크)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 34 | **Core Bluetooth** | [✅](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
-| 35 | **Core NFC** | [✅](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | ⬜ | ⬜ |
-| 36 | **MultipeerConnectivity** | [✅](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | ⬜ | ⬜ |
-| 37 | **Network** | [✅](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | ⬜ | ⬜ |
-| 38 | **LocalAuthentication** | [✅](https://m1zz.github.io/HIGLab/localauth/01-tutorial.html) | ⬜ | ⬜ |
-| 39 | **CryptoKit** | [✅](https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html) | ⬜ | ⬜ |
-| 40 | **CallKit** | [✅](https://m1zz.github.io/HIGLab/callkit/01-tutorial.html) | ⬜ | ⬜ |
-| 41 | **EventKit** | [✅](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html) | ⬜ | ⬜ |
-| 42 | **Contacts** | [✅](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | ⬜ | ⬜ |
-| 43 | 🆕 **Wi-Fi Aware** | [✅](https://m1zz.github.io/HIGLab/wifiaware/01-tutorial.html) | ⬜ | ⬜ |
+| 34 | **Core Bluetooth** | [⬜](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
+| 35 | **Core NFC** | [⬜](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | ⬜ | ⬜ |
+| 36 | **MultipeerConnectivity** | [⬜](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | ⬜ | ⬜ |
+| 37 | **Network** | [⬜](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | ⬜ | ⬜ |
+| 38 | **LocalAuthentication** | [⬜](https://m1zz.github.io/HIGLab/localauth/01-tutorial.html) | ⬜ | ⬜ |
+| 39 | **CryptoKit** | [⬜](https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html) | ⬜ | ⬜ |
+| 40 | **CallKit** | [⬜](https://m1zz.github.io/HIGLab/callkit/01-tutorial.html) | ⬜ | ⬜ |
+| 41 | **EventKit** | [⬜](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html) | ⬜ | ⬜ |
+| 42 | **Contacts** | [⬜](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | ⬜ | ⬜ |
+| 43 | 🆕 **Wi-Fi Aware** | [⬜](https://m1zz.github.io/HIGLab/wifiaware/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🆕 Phase 5: iOS 26 신규 기술
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 44 | **Visual Intelligence** | [✅](https://m1zz.github.io/HIGLab/visualintelligence/01-tutorial.html) | ⬜ | ⬜ |
-| 45 | **AlarmKit** | [✅](https://m1zz.github.io/HIGLab/alarmkit/01-tutorial.html) | ⬜ | ⬜ |
-| 46 | **EnergyKit** | [✅](https://m1zz.github.io/HIGLab/energykit/01-tutorial.html) | ⬜ | ⬜ |
-| 47 | **PermissionKit** | [✅](https://m1zz.github.io/HIGLab/permissionkit/01-tutorial.html) | ⬜ | ⬜ |
-| 48 | **RelevanceKit** | [✅](https://m1zz.github.io/HIGLab/relevancekit/01-tutorial.html) | ⬜ | ⬜ |
-| 49 | **ExtensibleImage** | [✅](https://m1zz.github.io/HIGLab/extensibleimage/01-tutorial.html) | ⬜ | ⬜ |
-| 50 | **AccessorySetupKit 2** | [✅](https://m1zz.github.io/HIGLab/accessorysetupkit/01-tutorial.html) | ⬜ | ⬜ |
+| 44 | **Visual Intelligence** | [⬜](https://m1zz.github.io/HIGLab/visualintelligence/01-tutorial.html) | ⬜ | ⬜ |
+| 45 | **AlarmKit** | [⬜](https://m1zz.github.io/HIGLab/alarmkit/01-tutorial.html) | ⬜ | ⬜ |
+| 46 | **EnergyKit** | [⬜](https://m1zz.github.io/HIGLab/energykit/01-tutorial.html) | ⬜ | ⬜ |
+| 47 | **PermissionKit** | [⬜](https://m1zz.github.io/HIGLab/permissionkit/01-tutorial.html) | ⬜ | ⬜ |
+| 48 | **RelevanceKit** | [⬜](https://m1zz.github.io/HIGLab/relevancekit/01-tutorial.html) | ⬜ | ⬜ |
+| 49 | **ExtensibleImage** | [⬜](https://m1zz.github.io/HIGLab/extensibleimage/01-tutorial.html) | ⬜ | ⬜ |
+| 50 | **AccessorySetupKit 2** | [⬜](https://m1zz.github.io/HIGLab/accessorysetupkit/01-tutorial.html) | ⬜ | ⬜ |
 
 ---
 
