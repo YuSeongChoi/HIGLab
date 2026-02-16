@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 8/50 | - | 42개 | 16% ✅ |
+| 📝 블로그 | 12/50 | - | 38개 | 24% ✅ |
 | 📚 DocC | 7/50 | - | 43개 | 14% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 8개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels) · ⬜ 미완성 42개
+> **블로그 상태**: ✅ 완성 12개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit) · ⬜ 미완성 38개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -52,10 +52,10 @@ WidgetKit
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
 | 8 | **StoreKit 2** | [✅](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ⬜ |
-| 9 | **PassKit** | [⬜](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | ⬜ | ⬜ |
-| 10 | **CloudKit** | [⬜](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
-| 11 | **Authentication Services** | [⬜](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | ⬜ | ⬜ |
-| 12 | **HealthKit** | [⬜](https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html) | ⬜ | ⬜ |
+| 9 | **PassKit** | [✅](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | ⬜ | ⬜ |
+| 10 | **CloudKit** | [✅](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
+| 11 | **Authentication Services** | [✅](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | ⬜ | ⬜ |
+| 12 | **HealthKit** | [✅](https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html) | ⬜ | ⬜ |
 | 13 | **WeatherKit** | [⬜](https://m1zz.github.io/HIGLab/weatherkit/01-tutorial.html) | ⬜ | ⬜ |
 | 14 | **MapKit** | [⬜](https://m1zz.github.io/HIGLab/mapkit/01-tutorial.html) | ⬜ | ⬜ |
 | 15 | **Core Location** | [⬜](https://m1zz.github.io/HIGLab/corelocation/01-tutorial.html) | ⬜ | ⬜ |
