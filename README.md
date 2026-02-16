@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 20/50 | - | 30개 | 40% ✅ |
+| 📝 블로그 | 24/50 | - | 26개 | 48% ✅ |
 | 📚 DocC | 7/50 | - | 43개 | 14% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 20개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay) · ⬜ 미완성 30개
+> **블로그 상태**: ✅ 완성 24개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage) · ⬜ 미완성 26개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -69,10 +69,10 @@ WidgetKit
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 21 | **ARKit** | [⬜](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
-| 22 | **RealityKit** | [⬜](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
-| 23 | **SpriteKit** | [⬜](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
-| 24 | **Core Image** | [⬜](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
+| 21 | **ARKit** | [✅](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
+| 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
+| 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
+| 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
 | 25 | **PencilKit** | [⬜](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
 | 26 | **PDFKit** | [⬜](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
 | 27 | **AVFoundation** | [⬜](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |

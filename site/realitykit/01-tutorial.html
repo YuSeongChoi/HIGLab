@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎲 3D 렌더링 — HIG Lab</title>
+<title>🎲 RealityKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
@@ -13,19 +13,448 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spac
 h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
 pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
 </style></head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
-<h1>🎲 3D 렌더링</h1>
-<p class="subtitle">RealityKit으로 3D 경험 만들기</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 3D 렌더링의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<h1>🎲 RealityKit</h1>
+<p class="subtitle">사실적인 3D 렌더링과 AR 경험</p>
+
+<div><span class="badge ios">iOS 13+</span><span class="badge new">visionOS 최적화</span></div>
+
+<h2>✨ RealityKit이란?</h2>
+<p>RealityKit은 Apple의 고성능 3D 렌더링 엔진으로, ARKit과 통합되어 사실적인 AR 경험을 제공합니다. 물리 엔진, 애니메이션, 공간 오디오, 사실적인 렌더링 등을 지원하며, SwiftUI와 완벽하게 통합됩니다.</p>
+
+<div class="info-box">
+<strong>💡 핵심 기능:</strong> PBR 렌더링 · 물리 시뮬레이션 · 애니메이션 · 공간 오디오 · Entity Component System · USD 지원 · Reality Composer · visionOS 지원
+</div>
+
+<h2>🎯 1. 기본 씬 설정</h2>
+<p>RealityKit으로 3D 씬을 생성합니다.</p>
+
+<div class="code-block">
+<div class="code-header">RealityKitView.swift — 기본 설정</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">struct</span> <span class="type">RealityKitView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">RealityView</span> { content <span class="kw">in</span>
+            <span class="comment">// 3D 박스 생성</span>
+            <span class="kw">let</span> mesh = <span class="type">MeshResource</span>.generateBox(size: <span class="str">0.3</span>)
+
+            <span class="comment">// PBR 머티리얼 (Physically Based Rendering)</span>
+            <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+            material.baseColor = .<span class="kw">init</span>(tint: .blue)
+            material.roughness = .<span class="kw">init</span>(floatLiteral: <span class="str">0.3</span>)
+            material.metallic = .<span class="kw">init</span>(floatLiteral: <span class="str">0.8</span>)
+
+            <span class="comment">// 엔티티 생성</span>
+            <span class="kw">let</span> entity = <span class="type">ModelEntity</span>(mesh: mesh, materials: [material])
+
+            <span class="comment">// 위치 설정</span>
+            entity.position = [<span class="str">0</span>, <span class="str">0</span>, -<span class="str">0.5</span>]
+
+            <span class="comment">// 씬에 추가</span>
+            content.add(entity)
+        }
+    }
+}</pre>
+</div>
+
+<h2>🎨 2. 머티리얼과 텍스처</h2>
+<p>다양한 머티리얼로 사실적인 표면을 만듭니다.</p>
+
+<div class="code-block">
+<div class="code-header">Materials.swift — 머티리얼 설정</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">class</span> <span class="type">MaterialsManager</span> {
+    <span class="comment">// 1. 물리 기반 머티리얼 (PBR)</span>
+    <span class="kw">func</span> createMetalMaterial() -> <span class="type">PhysicallyBasedMaterial</span> {
+        <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+
+        <span class="comment">// 기본 색상</span>
+        material.baseColor = .<span class="kw">init</span>(tint: .gray)
+
+        <span class="comment">// 금속성 (0.0 = 비금속, 1.0 = 완전 금속)</span>
+        material.metallic = .<span class="kw">init</span>(floatLiteral: <span class="str">1.0</span>)
+
+        <span class="comment">// 거칠기 (0.0 = 매끄러움, 1.0 = 거침)</span>
+        material.roughness = .<span class="kw">init</span>(floatLiteral: <span class="str">0.2</span>)
+
+        <span class="kw">return</span> material
+    }
+
+    <span class="comment">// 2. 단순 머티리얼</span>
+    <span class="kw">func</span> createSimpleMaterial() -> <span class="type">SimpleMaterial</span> {
+        <span class="kw">var</span> material = <span class="type">SimpleMaterial</span>()
+        material.color = .<span class="kw">init</span>(tint: .red, texture: <span class="kw">nil</span>)
+        <span class="kw">return</span> material
+    }
+
+    <span class="comment">// 3. 텍스처 적용</span>
+    <span class="kw">func</span> createTexturedMaterial() <span class="kw">async</span> <span class="kw">throws</span> -> <span class="type">PhysicallyBasedMaterial</span> {
+        <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+
+        <span class="comment">// 이미지에서 텍스처 로드</span>
+        <span class="kw">if</span> <span class="kw">let</span> texture = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">TextureResource</span>(named: <span class="str">"wood.jpg"</span>) {
+            material.baseColor = .<span class="kw">init</span>(texture: .<span class="kw">init</span>(texture))
+        }
+
+        <span class="kw">return</span> material
+    }
+
+    <span class="comment">// 4. 발광 머티리얼</span>
+    <span class="kw">func</span> createEmissiveMaterial() -> <span class="type">PhysicallyBasedMaterial</span> {
+        <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+
+        <span class="comment">// 발광 색상 및 강도</span>
+        material.emissiveColor = .<span class="kw">init</span>(color: .yellow)
+        material.emissiveIntensity = <span class="str">2.0</span>
+
+        <span class="kw">return</span> material
+    }
+
+    <span class="comment">// 5. 투명 머티리얼</span>
+    <span class="kw">func</span> createTransparentMaterial() -> <span class="type">PhysicallyBasedMaterial</span> {
+        <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+        material.baseColor = .<span class="kw">init</span>(tint: .blue.withAlphaComponent(<span class="str">0.5</span>))
+        material.blending = .transparent
+        <span class="kw">return</span> material
+    }
+}</pre>
+</div>
+
+<h2>🎬 3. 애니메이션</h2>
+<p>엔티티에 움직임을 추가합니다.</p>
+
+<div class="code-block">
+<div class="code-header">Animations.swift — 애니메이션</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">extension</span> <span class="type">Entity</span> {
+    <span class="comment">// 1. 회전 애니메이션</span>
+    <span class="kw">func</span> addRotationAnimation() {
+        <span class="comment">// 360도 회전</span>
+        <span class="kw">let</span> rotation = <span class="type">Transform</span>(
+            pitch: <span class="str">0</span>,
+            yaw: .<span class="type">Float</span>.pi * <span class="str">2</span>,
+            roll: <span class="str">0</span>
+        )
+
+        <span class="comment">// 애니메이션 생성</span>
+        <span class="kw">let</span> rotationAnimation = <span class="type">FromToByAnimation</span>(
+            to: rotation,
+            duration: <span class="str">3.0</span>,
+            timing: .linear,
+            isAdditive: <span class="kw">true</span>
+        )
+
+        <span class="comment">// 무한 반복</span>
+        <span class="kw">let</span> animation = <span class="kw">try</span>? <span class="type">AnimationResource</span>.generate(with: rotationAnimation)
+        <span class="kw">if</span> <span class="kw">let</span> animation {
+            playAnimation(animation.repeat())
+        }
+    }
+
+    <span class="comment">// 2. 이동 애니메이션</span>
+    <span class="kw">func</span> moveAnimation(to position: <span class="type">SIMD3</span><<span class="type">Float</span>>, duration: <span class="type">TimeInterval</span>) {
+        <span class="kw">var</span> transform = <span class="kw">self</span>.transform
+        transform.translation = position
+
+        move(
+            to: transform,
+            relativeTo: parent,
+            duration: duration,
+            timingFunction: .easeInOut
+        )
+    }
+
+    <span class="comment">// 3. 스케일 애니메이션</span>
+    <span class="kw">func</span> pulseAnimation() {
+        <span class="kw">let</span> originalScale = scale
+        <span class="kw">let</span> targetScale = originalScale * <span class="str">1.2</span>
+
+        <span class="kw">let</span> scaleUp = <span class="type">FromToByAnimation</span>(
+            to: <span class="type">Transform</span>(scale: targetScale),
+            duration: <span class="str">0.5</span>,
+            timing: .easeInOut
+        )
+
+        <span class="kw">let</span> scaleDown = <span class="type">FromToByAnimation</span>(
+            to: <span class="type">Transform</span>(scale: originalScale),
+            duration: <span class="str">0.5</span>,
+            timing: .easeInOut
+        )
+
+        <span class="comment">// 시퀀스 애니메이션</span>
+        <span class="kw">if</span> <span class="kw">let</span> animation = <span class="kw">try</span>? <span class="type">AnimationResource</span>.sequence([
+            .<span class="kw">generate</span>(with: scaleUp),
+            .<span class="kw">generate</span>(with: scaleDown)
+        ].compactMap { $0 }) {
+            playAnimation(animation.repeat())
+        }
+    }
+
+    <span class="comment">// 4. 바운스 애니메이션</span>
+    <span class="kw">func</span> bounceAnimation() {
+        <span class="kw">let</span> originalY = position.y
+        <span class="kw">let</span> jumpHeight: <span class="type">Float</span> = <span class="str">0.3</span>
+
+        <span class="kw">var</span> upTransform = transform
+        upTransform.translation.y += jumpHeight
+
+        <span class="comment">// 위로</span>
+        move(to: upTransform, relativeTo: parent, duration: <span class="str">0.5</span>, timingFunction: .easeOut)
+
+        <span class="comment">// 잠시 후 아래로</span>
+        <span class="type">DispatchQueue</span>.main.asyncAfter(deadline: .now() + <span class="str">0.5</span>) { [<span class="kw">weak self</span>] <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> <span class="kw">self</span> <span class="kw">else</span> { <span class="kw">return</span> }
+            <span class="kw">var</span> downTransform = <span class="kw">self</span>.transform
+            downTransform.translation.y = originalY
+            <span class="kw">self</span>.move(to: downTransform, relativeTo: parent, duration: <span class="str">0.5</span>, timingFunction: .easeIn)
+        }
+    }
+}</pre>
+</div>
+
+<h2>⚙️ 4. 물리 엔진</h2>
+<p>현실적인 물리 시뮬레이션을 추가합니다.</p>
+
+<div class="code-block">
+<div class="code-header">Physics.swift — 물리 시뮬레이션</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">class</span> <span class="type">PhysicsManager</span> {
+    <span class="comment">// 1. 동적 물리 (중력 적용)</span>
+    <span class="kw">func</span> addDynamicPhysics(to entity: <span class="type">Entity</span>) {
+        <span class="comment">// 충돌 형태 생성</span>
+        entity.generateCollisionShapes(recursive: <span class="kw">true</span>)
+
+        <span class="comment">// 동적 물리 바디 (중력 적용)</span>
+        entity.components[<span class="type">PhysicsBodyComponent</span>.<span class="kw">self</span>] = <span class="type">PhysicsBodyComponent</span>(
+            massProperties: .<span class="kw">default</span>,
+            mode: .dynamic
+        )
+    }
+
+    <span class="comment">// 2. 정적 물리 (고정된 객체)</span>
+    <span class="kw">func</span> addStaticPhysics(to entity: <span class="type">Entity</span>) {
+        entity.generateCollisionShapes(recursive: <span class="kw">true</span>)
+
+        <span class="comment">// 정적 물리 바디 (움직이지 않음)</span>
+        entity.components[<span class="type">PhysicsBodyComponent</span>.<span class="kw">self</span>] = <span class="type">PhysicsBodyComponent</span>(
+            mode: .static
+        )
+    }
+
+    <span class="comment">// 3. 커스텀 질량과 마찰력</span>
+    <span class="kw">func</span> createCustomPhysicsBody() -> <span class="type">PhysicsBodyComponent</span> {
+        <span class="comment">// 질량 속성</span>
+        <span class="kw">let</span> mass: <span class="type">Float</span> = <span class="str">2.0</span>
+        <span class="kw">let</span> massProperties = <span class="type">PhysicsMassProperties</span>(mass: mass)
+
+        <span class="comment">// 물리 머티리얼 (마찰, 탄성)</span>
+        <span class="kw">let</span> physicsMaterial = <span class="type">PhysicsMaterialResource</span>.generate(
+            friction: .<span class="kw">init</span>(staticFriction: <span class="str">0.5</span>, dynamicFriction: <span class="str">0.3</span>),
+            restitution: <span class="str">0.8</span> <span class="comment">// 탄성 (0 = 흡수, 1 = 완전 반발)</span>
+        )
+
+        <span class="kw">return</span> <span class="type">PhysicsBodyComponent</span>(
+            massProperties: massProperties,
+            material: physicsMaterial,
+            mode: .dynamic
+        )
+    }
+
+    <span class="comment">// 4. 힘 적용</span>
+    <span class="kw">func</span> applyForce(to entity: <span class="type">Entity</span>, force: <span class="type">SIMD3</span><<span class="type">Float</span>>) {
+        <span class="kw">guard</span> <span class="kw">var</span> physicsBody = entity.components[<span class="type">PhysicsBodyComponent</span>.<span class="kw">self</span>] <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 힘 적용</span>
+        physicsBody.applyImpulse(force, relativeTo: <span class="kw">nil</span>)
+        entity.components[<span class="type">PhysicsBodyComponent</span>.<span class="kw">self</span>] = physicsBody
+    }
+
+    <span class="comment">// 5. 충돌 감지</span>
+    <span class="kw">func</span> setupCollisionDetection(for entity: <span class="type">Entity</span>) {
+        <span class="comment">// 충돌 그룹 설정</span>
+        entity.components[<span class="type">CollisionComponent</span>.<span class="kw">self</span>] = <span class="type">CollisionComponent</span>(
+            shapes: [.<span class="kw">generateBox</span>(size: [<span class="str">0.1</span>, <span class="str">0.1</span>, <span class="str">0.1</span>])],
+            mode: .trigger,
+            filter: .<span class="kw">init</span>(group: .all, mask: .all)
+        )
+    }
+}</pre>
+</div>
+
+<h2>🔊 5. 공간 오디오</h2>
+<p>3D 공간에서 사실적인 오디오를 재생합니다.</p>
+
+<div class="code-block">
+<div class="code-header">SpatialAudio.swift — 공간 오디오</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">class</span> <span class="type">SpatialAudioManager</span> {
+    <span class="comment">// 공간 오디오 추가</span>
+    <span class="kw">func</span> addSpatialAudio(to entity: <span class="type">Entity</span>, audioFile: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="comment">// 오디오 리소스 로드</span>
+        <span class="kw">guard</span> <span class="kw">let</span> audioResource = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">AudioFileResource</span>(named: audioFile) <span class="kw">else</span> {
+            print(<span class="str">"오디오 로드 실패"</span>)
+            <span class="kw">return</span>
+        }
+
+        <span class="comment">// 공간 오디오 컨트롤러</span>
+        <span class="kw">let</span> audioController = entity.prepareAudio(audioResource)
+
+        <span class="comment">// 재생 옵션</span>
+        audioController.gain = <span class="str">1.0</span>
+        audioController.fade(to: .max, duration: <span class="str">1.0</span>)
+
+        <span class="comment">// 재생</span>
+        audioController.play()
+    }
+
+    <span class="comment">// 반복 재생</span>
+    <span class="kw">func</span> playLoopingAudio(entity: <span class="type">Entity</span>, audioFile: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> resource = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">AudioFileResource</span>(named: audioFile) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> controller = entity.playAudio(resource)
+        controller.isLooping = <span class="kw">true</span>
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI 통합 예제</h2>
+
+<div class="code-block">
+<div class="code-header">RealityKitDemoView.swift — 종합 데모</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">RealityKit</span>
+
+<span class="kw">struct</span> <span class="type">RealityKitDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedShape: <span class="type">Shape</span> = .box
+
+    <span class="kw">enum</span> <span class="type">Shape</span>: <span class="type">String</span>, <span class="type">CaseIterable</span> {
+        <span class="kw">case</span> box = <span class="str">"박스"</span>
+        <span class="kw">case</span> sphere = <span class="str">"구"</span>
+        <span class="kw">case</span> cylinder = <span class="str">"원기둥"</span>
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 3D 뷰</span>
+            <span class="type">RealityView</span> { content <span class="kw">in</span>
+                <span class="comment">// 초기 씬 설정</span>
+                setupScene(content)
+            } update: { content <span class="kw">in</span>
+                <span class="comment">// 선택된 도형으로 업데이트</span>
+                updateShape(content, shape: selectedShape)
+            }
+
+            <span class="comment">// 컨트롤</span>
+            <span class="type">Picker</span>(<span class="str">"도형 선택"</span>, selection: $selectedShape) {
+                <span class="type">ForEach</span>(<span class="type">Shape</span>.allCases, id: \.<span class="kw">self</span>) { shape <span class="kw">in</span>
+                    <span class="type">Text</span>(shape.rawValue).tag(shape)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding()
+        }
+    }
+
+    <span class="kw">func</span> setupScene(<span class="kw">_</span> content: <span class="type">RealityViewContent</span>) {
+        <span class="comment">// 조명 추가</span>
+        <span class="kw">let</span> light = <span class="type">PointLight</span>()
+        light.position = [<span class="str">0</span>, <span class="str">0.5</span>, <span class="str">0</span>]
+        light.light.intensity = <span class="str">1000</span>
+        content.add(light)
+
+        <span class="comment">// 초기 도형</span>
+        <span class="kw">let</span> entity = createShape(.box)
+        content.add(entity)
+    }
+
+    <span class="kw">func</span> updateShape(<span class="kw">_</span> content: <span class="type">RealityViewContent</span>, shape: <span class="type">Shape</span>) {
+        <span class="comment">// 기존 엔티티 제거</span>
+        content.entities.forEach { entity <span class="kw">in</span>
+            <span class="kw">if</span> entity <span class="kw">is</span> <span class="type">ModelEntity</span> {
+                content.remove(entity)
+            }
+        }
+
+        <span class="comment">// 새 도형 추가</span>
+        <span class="kw">let</span> entity = createShape(shape)
+        content.add(entity)
+    }
+
+    <span class="kw">func</span> createShape(<span class="kw">_</span> shape: <span class="type">Shape</span>) -> <span class="type">ModelEntity</span> {
+        <span class="kw">let</span> mesh: <span class="type">MeshResource</span>
+
+        <span class="kw">switch</span> shape {
+        <span class="kw">case</span> .box:
+            mesh = .<span class="kw">generateBox</span>(size: <span class="str">0.2</span>)
+        <span class="kw">case</span> .sphere:
+            mesh = .<span class="kw">generateSphere</span>(radius: <span class="str">0.1</span>)
+        <span class="kw">case</span> .cylinder:
+            mesh = .<span class="kw">generateCylinder</span>(height: <span class="str">0.2</span>, radius: <span class="str">0.1</span>)
+        }
+
+        <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
+        material.baseColor = .<span class="kw">init</span>(tint: .blue)
+        material.metallic = <span class="str">0.8</span>
+        material.roughness = <span class="str">0.2</span>
+
+        <span class="kw">let</span> entity = <span class="type">ModelEntity</span>(mesh: mesh, materials: [material])
+        entity.position = [<span class="str">0</span>, <span class="str">0</span>, -<span class="str">0.5</span>]
+
+        <span class="comment">// 회전 애니메이션</span>
+        entity.addRotationAnimation()
+
+        <span class="kw">return</span> entity
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG 가이드라인</h2>
+
+<ul>
+<li><strong>성능:</strong> 복잡한 모델은 LOD(Level of Detail) 최적화</li>
+<li><strong>조명:</strong> 현실적인 조명으로 깊이감 제공</li>
+<li><strong>스케일:</strong> 실제 크기에 맞는 스케일 사용</li>
+<li><strong>물리:</strong> 과도한 물리 시뮬레이션은 성능 저하</li>
+<li><strong>텍스처:</strong> 압축된 텍스처 사용으로 메모리 절약</li>
+</ul>
+
+<h2>🎯 실전 활용</h2>
+
+<ul>
+<li><strong>제품 시각화:</strong> 3D 제품 뷰어</li>
+<li><strong>AR 게임:</strong> 물리 기반 게임 메커닉</li>
+<li><strong>건축 시각화:</strong> 건물 내부 탐색</li>
+<li><strong>교육:</strong> 3D 모델로 학습</li>
+<li><strong>visionOS 앱:</strong> 공간 컴퓨팅 경험</li>
+</ul>
+
+<h2>📚 더 알아보기</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/realitykit">RealityKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/10080/">WWDC: Build spatial experiences with RealityKit</a></li>
+<li><a href="https://developer.apple.com/augmented-reality/reality-composer/">Reality Composer</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Reality Composer:</strong> 코드 없이 AR 씬을 디자인할 수 있는 Apple의 툴입니다. Reality Composer로 만든 .rcproject 파일을 RealityKit에서 바로 로드할 수 있습니다.
+</div>
+
 </article>
 </body></html>

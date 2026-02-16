@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎨 이미지 필터 — HIG Lab</title>
+<title>🎨 Core Image — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
@@ -13,19 +13,510 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spac
 h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
 pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
 </style></head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
-<h1>🎨 이미지 필터</h1>
-<p class="subtitle">Core Image 필터 적용</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 이미지 필터의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<h1>🎨 Core Image</h1>
+<p class="subtitle">강력한 이미지 필터와 처리</p>
+
+<div><span class="badge ios">iOS 5+</span><span class="badge new">Metal 가속</span></div>
+
+<h2>✨ Core Image란?</h2>
+<p>Core Image는 Apple의 고성능 이미지 처리 프레임워크로, GPU 가속 필터를 통해 실시간 이미지/비디오 처리를 제공합니다. 200개 이상의 빌트인 필터와 커스텀 필터 생성을 지원합니다.</p>
+
+<div class="info-box">
+<strong>💡 핵심 기능:</strong> 200+ 빌트인 필터 · GPU 가속 · 실시간 처리 · 필터 체이닝 · 얼굴 감지 · 커스텀 필터 · Core ML 통합 · Metal 최적화
+</div>
+
+<h2>🎯 1. 기본 필터 적용</h2>
+<p>이미지에 필터를 적용하는 기본 방법입니다.</p>
+
+<div class="code-block">
+<div class="code-header">ImageFilterManager.swift — 기본 필터</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">ImageFilterManager</span> {
+    <span class="kw">private</span> <span class="kw">let</span> context = <span class="type">CIContext</span>()
+
+    <span class="comment">// 1. 세피아 필터</span>
+    <span class="kw">func</span> applySepia(to image: <span class="type">UIImage</span>, intensity: <span class="type">Double</span> = <span class="str">0.8</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// 필터 생성</span>
+        <span class="kw">guard</span> <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CISepiaTone"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// 입력 이미지 설정</span>
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+
+        <span class="comment">// 필터 파라미터 설정</span>
+        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+
+        <span class="comment">// 결과 이미지 가져오기</span>
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// CIImage → CGImage → UIImage</span>
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: outputImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 2. 블러 필터</span>
+    <span class="kw">func</span> applyBlur(to image: <span class="type">UIImage</span>, radius: <span class="type">Double</span> = <span class="str">10.0</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIGaussianBlur"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(radius, forKey: kCIInputRadiusKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 3. 밝기/대비 조정</span>
+    <span class="kw">func</span> adjustBrightnessContrast(
+        image: <span class="type">UIImage</span>,
+        brightness: <span class="type">Double</span> = <span class="str">0.0</span>,
+        contrast: <span class="type">Double</span> = <span class="str">1.0</span>
+    ) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIColorControls"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(brightness, forKey: kCIInputBrightnessKey)
+        filter.setValue(contrast, forKey: kCIInputContrastKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 4. 비네팅 효과</span>
+    <span class="kw">func</span> applyVignette(to image: <span class="type">UIImage</span>, intensity: <span class="type">Double</span> = <span class="str">1.0</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIVignetteEffect"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(<span class="str">2.0</span>, forKey: <span class="str">"inputRadius"</span>)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+}</pre>
+</div>
+
+<h2>🎨 2. 인기 필터 모음</h2>
+<p>자주 사용되는 필터들을 모았습니다.</p>
+
+<div class="code-block">
+<div class="code-header">PopularFilters.swift — 인기 필터</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
+
+<span class="kw">extension</span> <span class="type">ImageFilterManager</span> {
+    <span class="comment">// 1. 흑백 필터</span>
+    <span class="kw">func</span> applyMonochrome(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIPhotoEffectNoir"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 2. 비비드 필터 (채도 증가)</span>
+    <span class="kw">func</span> applyVivid(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIColorControls"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(<span class="str">1.5</span>, forKey: kCIInputSaturationKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 3. 픽셀화</span>
+    <span class="kw">func</span> applyPixelate(to image: <span class="type">UIImage</span>, scale: <span class="type">Double</span> = <span class="str">8.0</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIPixellate"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(scale, forKey: kCIInputScaleKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 4. 엣지 감지</span>
+    <span class="kw">func</span> applyEdgeDetection(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIEdges"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(<span class="str">1.0</span>, forKey: kCIInputIntensityKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 5. 만화 효과</span>
+    <span class="kw">func</span> applyComicEffect(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image),
+              <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIComicEffect"</span>) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+
+        <span class="kw">guard</span> <span class="kw">let</span> outputImage = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+}</pre>
+</div>
+
+<h2>🔗 3. 필터 체이닝</h2>
+<p>여러 필터를 연결하여 복잡한 효과를 만듭니다.</p>
+
+<div class="code-block">
+<div class="code-header">FilterChaining.swift — 필터 체이닝</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
+
+<span class="kw">extension</span> <span class="type">ImageFilterManager</span> {
+    <span class="comment">// 여러 필터를 순차적으로 적용</span>
+    <span class="kw">func</span> applyFilterChain(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">var</span> ciImage = <span class="type">CIImage</span>(image: image) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// 1. 밝기 증가</span>
+        <span class="kw">if</span> <span class="kw">let</span> brightnessFilter = <span class="type">CIFilter</span>(name: <span class="str">"CIColorControls"</span>) {
+            brightnessFilter.setValue(ciImage, forKey: kCIInputImageKey)
+            brightnessFilter.setValue(<span class="str">0.2</span>, forKey: kCIInputBrightnessKey)
+            <span class="kw">if</span> <span class="kw">let</span> output = brightnessFilter.outputImage {
+                ciImage = output
+            }
+        }
+
+        <span class="comment">// 2. 채도 증가</span>
+        <span class="kw">if</span> <span class="kw">let</span> saturationFilter = <span class="type">CIFilter</span>(name: <span class="str">"CIColorControls"</span>) {
+            saturationFilter.setValue(ciImage, forKey: kCIInputImageKey)
+            saturationFilter.setValue(<span class="str">1.3</span>, forKey: kCIInputSaturationKey)
+            <span class="kw">if</span> <span class="kw">let</span> output = saturationFilter.outputImage {
+                ciImage = output
+            }
+        }
+
+        <span class="comment">// 3. 비네팅 추가</span>
+        <span class="kw">if</span> <span class="kw">let</span> vignetteFilter = <span class="type">CIFilter</span>(name: <span class="str">"CIVignetteEffect"</span>) {
+            vignetteFilter.setValue(ciImage, forKey: kCIInputImageKey)
+            vignetteFilter.setValue(<span class="str">1.5</span>, forKey: kCIInputIntensityKey)
+            <span class="kw">if</span> <span class="kw">let</span> output = vignetteFilter.outputImage {
+                ciImage = output
+            }
+        }
+
+        <span class="comment">// 최종 이미지 반환</span>
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = context.createCGImage(ciImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 인스타그램 스타일 필터</span>
+    <span class="kw">func</span> applyInstagramStyle(to image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">var</span> ciImage = <span class="type">CIImage</span>(image: image) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// 밝기 조정</span>
+        <span class="kw">if</span> <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CIColorControls"</span>) {
+            filter.setValue(ciImage, forKey: kCIInputImageKey)
+            filter.setValue(<span class="str">0.1</span>, forKey: kCIInputBrightnessKey)
+            filter.setValue(<span class="str">1.1</span>, forKey: kCIInputContrastKey)
+            filter.setValue(<span class="str">1.2</span>, forKey: kCIInputSaturationKey)
+            <span class="kw">if</span> <span class="kw">let</span> output = filter.outputImage {
+                ciImage = output
+            }
+        }
+
+        <span class="comment">// 온도 조정 (따뜻한 톤)</span>
+        <span class="kw">if</span> <span class="kw">let</span> filter = <span class="type">CIFilter</span>(name: <span class="str">"CITemperatureAndTint"</span>) {
+            filter.setValue(ciImage, forKey: kCIInputImageKey)
+            filter.setValue(<span class="type">CIVector</span>(x: <span class="str">6500</span>, y: <span class="str">0</span>), forKey: <span class="str">"inputNeutral"</span>)
+            filter.setValue(<span class="type">CIVector</span>(x: <span class="str">6800</span>, y: <span class="str">100</span>), forKey: <span class="str">"inputTargetNeutral"</span>)
+            <span class="kw">if</span> <span class="kw">let</span> output = filter.outputImage {
+                ciImage = output
+            }
+        }
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = context.createCGImage(ciImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+}</pre>
+</div>
+
+<h2>😊 4. 얼굴 감지</h2>
+<p>Core Image로 이미지 속 얼굴을 감지합니다.</p>
+
+<div class="code-block">
+<div class="code-header">FaceDetection.swift — 얼굴 감지</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
+
+<span class="kw">extension</span> <span class="type">ImageFilterManager</span> {
+    <span class="comment">// 얼굴 감지</span>
+    <span class="kw">func</span> detectFaces(in image: <span class="type">UIImage</span>) -> [<span class="type">CIFeature</span>] {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image) <span class="kw">else</span> { <span class="kw">return</span> [] }
+
+        <span class="comment">// 얼굴 감지기 생성</span>
+        <span class="kw">let</span> detector = <span class="type">CIDetector</span>(
+            ofType: <span class="type">CIDetectorTypeFace</span>,
+            context: context,
+            options: [
+                <span class="type">CIDetectorAccuracy</span>: <span class="type">CIDetectorAccuracyHigh</span>,
+                <span class="type">CIDetectorSmile</span>: <span class="kw">true</span>,
+                <span class="type">CIDetectorEyeBlink</span>: <span class="kw">true</span>
+            ]
+        )
+
+        <span class="comment">// 얼굴 감지</span>
+        <span class="kw">let</span> features = detector?.features(in: ciImage) ?? []
+
+        <span class="comment">// 얼굴 정보 출력</span>
+        <span class="kw">for</span> feature <span class="kw">in</span> features {
+            <span class="kw">if</span> <span class="kw">let</span> faceFeature = feature <span class="kw">as</span>? <span class="type">CIFaceFeature</span> {
+                print(<span class="str">"얼굴 위치: \(faceFeature.bounds)"</span>)
+
+                <span class="kw">if</span> faceFeature.hasSmile {
+                    print(<span class="str">"웃고 있음"</span>)
+                }
+
+                <span class="kw">if</span> faceFeature.leftEyeClosed {
+                    print(<span class="str">"왼쪽 눈 감음"</span>)
+                }
+
+                <span class="kw">if</span> faceFeature.rightEyeClosed {
+                    print(<span class="str">"오른쪽 눈 감음"</span>)
+                }
+            }
+        }
+
+        <span class="kw">return</span> features
+    }
+
+    <span class="comment">// 얼굴에 블러 처리</span>
+    <span class="kw">func</span> blurFaces(in image: <span class="type">UIImage</span>) -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(image: image) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="kw">let</span> faces = detectFaces(in: image)
+        <span class="kw">var</span> outputImage = ciImage
+
+        <span class="kw">for</span> feature <span class="kw">in</span> faces {
+            <span class="kw">guard</span> <span class="kw">let</span> faceFeature = feature <span class="kw">as</span>? <span class="type">CIFaceFeature</span> <span class="kw">else</span> { <span class="kw">continue</span> }
+
+            <span class="comment">// 얼굴 영역 추출</span>
+            <span class="kw">let</span> faceBounds = faceFeature.bounds
+            <span class="kw">let</span> faceImage = ciImage.cropped(to: faceBounds)
+
+            <span class="comment">// 블러 적용</span>
+            <span class="kw">if</span> <span class="kw">let</span> blurFilter = <span class="type">CIFilter</span>(name: <span class="str">"CIGaussianBlur"</span>) {
+                blurFilter.setValue(faceImage, forKey: kCIInputImageKey)
+                blurFilter.setValue(<span class="str">20.0</span>, forKey: kCIInputRadiusKey)
+
+                <span class="kw">if</span> <span class="kw">let</span> blurredFace = blurFilter.outputImage {
+                    <span class="comment">// 블러된 얼굴을 원본에 합성</span>
+                    outputImage = blurredFace.composited(over: outputImage)
+                }
+            }
+        }
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = context.createCGImage(outputImage, from: ciImage.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="kw">return</span> <span class="type">UIImage</span>(cgImage: cgImage)
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI 통합</h2>
+
+<div class="code-block">
+<div class="code-header">FilterDemoView.swift — SwiftUI 통합</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">FilterDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> filteredImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedFilter: <span class="type">FilterType</span> = .original
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> isProcessing = <span class="kw">false</span>
+
+    <span class="kw">let</span> filterManager = <span class="type">ImageFilterManager</span>()
+
+    <span class="kw">enum</span> <span class="type">FilterType</span>: <span class="type">String</span>, <span class="type">CaseIterable</span> {
+        <span class="kw">case</span> original = <span class="str">"원본"</span>
+        <span class="kw">case</span> sepia = <span class="str">"세피아"</span>
+        <span class="kw">case</span> monochrome = <span class="str">"흑백"</span>
+        <span class="kw">case</span> blur = <span class="str">"블러"</span>
+        <span class="kw">case</span> vivid = <span class="str">"비비드"</span>
+        <span class="kw">case</span> vignette = <span class="str">"비네팅"</span>
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 이미지 표시</span>
+            <span class="kw">if</span> <span class="kw">let</span> displayImage = filteredImage ?? selectedImage {
+                <span class="type">Image</span>(uiImage: displayImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: <span class="str">400</span>)
+            } <span class="kw">else</span> {
+                <span class="type">ContentUnavailableView</span>(
+                    <span class="str">"이미지를 선택하세요"</span>,
+                    systemImage: <span class="str">"photo"</span>
+                )
+            }
+
+            <span class="comment">// 필터 선택</span>
+            <span class="type">ScrollView</span>(.horizontal) {
+                <span class="type">HStack</span>(spacing: <span class="str">15</span>) {
+                    <span class="type">ForEach</span>(<span class="type">FilterType</span>.allCases, id: \.<span class="kw">self</span>) { filter <span class="kw">in</span>
+                        <span class="type">Button</span> {
+                            selectedFilter = filter
+                            applyFilter(filter)
+                        } label: {
+                            <span class="type">Text</span>(filter.rawValue)
+                                .padding(<span class="str">8</span>)
+                                .background(
+                                    selectedFilter == filter ? <span class="type">Color</span>.blue : <span class="type">Color</span>.gray.opacity(<span class="str">0.2</span>)
+                                )
+                                .foregroundStyle(selectedFilter == filter ? .white : .primary)
+                                .cornerRadius(<span class="str">8</span>)
+                        }
+                    }
+                }
+                .padding()
+            }
+
+            <span class="comment">// 사진 선택</span>
+            <span class="type">PhotosPicker</span>(selection: .<span class="kw">constant</span>(<span class="kw">nil</span>),
+                         matching: .images) {
+                <span class="type">Label</span>(<span class="str">"사진 선택"</span>, systemImage: <span class="str">"photo.on.rectangle"</span>)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+
+            <span class="kw">if</span> isProcessing {
+                <span class="type">ProgressView</span>(<span class="str">"필터 적용 중..."</span>)
+            }
+        }
+    }
+
+    <span class="kw">func</span> applyFilter(<span class="kw">_</span> filter: <span class="type">FilterType</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> image = selectedImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        isProcessing = <span class="kw">true</span>
+
+        <span class="type">Task</span> {
+            <span class="kw">let</span> result: <span class="type">UIImage</span>?
+
+            <span class="kw">switch</span> filter {
+            <span class="kw">case</span> .original:
+                result = image
+            <span class="kw">case</span> .sepia:
+                result = filterManager.applySepia(to: image)
+            <span class="kw">case</span> .monochrome:
+                result = filterManager.applyMonochrome(to: image)
+            <span class="kw">case</span> .blur:
+                result = filterManager.applyBlur(to: image)
+            <span class="kw">case</span> .vivid:
+                result = filterManager.applyVivid(to: image)
+            <span class="kw">case</span> .vignette:
+                result = filterManager.applyVignette(to: image)
+            }
+
+            <span class="kw">await</span> <span class="type">MainActor</span>.run {
+                filteredImage = result
+                isProcessing = <span class="kw">false</span>
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG 가이드라인</h2>
+
+<ul>
+<li><strong>성능:</strong> 백그라운드 스레드에서 필터 처리</li>
+<li><strong>컨텍스트:</strong> CIContext를 재사용하여 성능 향상</li>
+<li><strong>프리뷰:</strong> 낮은 해상도로 실시간 프리뷰 제공</li>
+<li><strong>메모리:</strong> 큰 이미지는 다운샘플링</li>
+<li><strong>Metal:</strong> Metal 기반 CIContext 사용 권장</li>
+</ul>
+
+<h2>🎯 실전 활용</h2>
+
+<ul>
+<li><strong>사진 편집 앱:</strong> 필터, 보정, 효과</li>
+<li><strong>카메라 앱:</strong> 실시간 필터 미리보기</li>
+<li><strong>소셜 미디어:</strong> 인스타그램 스타일 필터</li>
+<li><strong>얼굴 인식:</strong> 자동 얼굴 블러/모자이크</li>
+<li><strong>AR 필터:</strong> 실시간 비디오 필터</li>
+</ul>
+
+<h2>📚 더 알아보기</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/coreimage">Core Image 공식 문서</a></li>
+<li><a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Reference/CoreImageFilterReference/">Core Image Filter Reference</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/">WWDC: Core Image 세션</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 성능 팁:</strong> Metal 기반 CIContext를 사용하면 GPU 가속으로 필터 처리 속도가 크게 향상됩니다. <code>CIContext(mtlDevice: MTLCreateSystemDefaultDevice()!)</code>로 생성하세요.
+</div>
+
 </article>
 </body></html>
