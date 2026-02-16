@@ -1,0 +1,97 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CloudKit 소개 & 컨테이너") {
+        CloudKit의 기본 개념과 아키텍처를 학습합니다.
+        컨테이너, 데이터베이스, 레코드의 관계를 이해합니다.
+    }
+    
+    @Section(title: "CloudKit 이해하기") {
+        @ContentAndMedia {
+            CloudKit은 Apple이 제공하는 iCloud 기반 백엔드 서비스입니다.
+            서버 구축 없이 데이터 저장, 동기화, 공유 기능을 구현할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                CloudKit을 import합니다. iOS 8+부터 사용 가능하며, SwiftUI와 함께 사용합니다.
+                @Code(name: "CloudKitIntro.swift", file: "01-01-import.swift")
+            }
+            @Step {
+                CloudKit의 핵심 구조를 이해합니다.
+                Container > Database > Zone > Record의 계층 구조입니다.
+                @Code(name: "CloudKitIntro.swift", file: "01-02-structure.swift")
+            }
+            @Step {
+                세 가지 데이터베이스 타입을 알아봅니다.
+                Private(개인), Public(공개), Shared(공유)가 있습니다.
+                @Code(name: "CloudKitIntro.swift", file: "01-03-databases.swift")
+            }
+        }
+    }
+    
+    @Section(title: "메모 앱 프로젝트 시작") {
+        @ContentAndMedia {
+            공유 메모 앱의 기본 구조를 설계합니다.
+        }
+        @Steps {
+            @Step {
+                메모 데이터 모델을 정의합니다.
+                CloudKit 레코드와 매핑될 구조체를 만듭니다.
+                @Code(name: "Note.swift", file: "01-04-notemodel.swift")
+            }
+            @Step {
+                CloudKit 매니저의 기본 골격을 만듭니다.
+                @Code(name: "CloudKitManager.swift", file: "01-05-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CloudKit의 데이터베이스 타입이 아닌 것은?
+            @Choice(isCorrect: false) {
+                Private Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Private Database는 사용자 개인 데이터를 저장하는 기본 데이터베이스입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Public Database는 모든 사용자가 접근 가능한 공개 데이터베이스입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Protected Database
+                @Justification(reaction: "정답입니다!") {
+                    CloudKit에는 Protected Database가 없습니다. Private, Public, Shared 세 가지입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Shared Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Shared Database는 CKShare를 통해 공유받은 데이터가 저장되는 곳입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CloudKit의 데이터 계층 구조로 올바른 것은?
+            @Choice(isCorrect: true) {
+                Container > Database > Zone > Record
+                @Justification(reaction: "정답입니다!") {
+                    CloudKit은 Container(앱) > Database(Private/Public/Shared) > Zone > Record 계층입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Database > Container > Record > Zone
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Container가 최상위이며, Zone은 Record보다 상위입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Zone > Database > Container > Record
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Container가 최상위이며, 순서가 올바르지 않습니다.
+                }
+            }
+        }
+    }
+}

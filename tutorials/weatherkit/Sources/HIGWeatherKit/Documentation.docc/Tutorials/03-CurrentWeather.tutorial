@@ -1,0 +1,163 @@
+@Tutorial(time: 20) {
+    @Intro(title: "현재 날씨 (CurrentWeather)") {
+        CurrentWeather 데이터를 가져와 현재 기상 상태를 
+        앱에 표시하는 방법을 학습합니다.
+        
+        @Image(source: "currentweather.png", alt: "현재 날씨 UI")
+    }
+    
+    @Section(title: "CurrentWeather 데이터 구조") {
+        @ContentAndMedia {
+            CurrentWeather는 요청 시점의 날씨 상태를 담고 있습니다.
+            온도, 체감온도, 습도, 풍속 등 다양한 정보를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CurrentWeather를 요청하고 기본 속성에 접근합니다.
+                
+                @Code(name: "CurrentWeather.swift", file: "03-01-basic.swift")
+            }
+            
+            @Step {
+                CurrentWeather의 주요 속성들을 살펴봅니다.
+                
+                - `temperature`: 현재 온도
+                - `apparentTemperature`: 체감 온도
+                - `humidity`: 상대 습도 (0.0-1.0)
+                - `condition`: 날씨 상태 (맑음, 흐림 등)
+                
+                @Code(name: "CurrentWeather.swift", file: "03-02-properties.swift")
+            }
+            
+            @Step {
+                바람 관련 데이터에 접근합니다.
+                
+                - `wind.speed`: 풍속
+                - `wind.direction`: 풍향 (방위각)
+                - `wind.gust`: 돌풍 속도 (옵셔널)
+                
+                @Code(name: "CurrentWeather.swift", file: "03-03-wind.swift")
+            }
+        }
+    }
+    
+    @Section(title: "WeatherCondition 활용") {
+        @ContentAndMedia {
+            WeatherCondition enum은 50개 이상의 날씨 상태를 정의합니다.
+            각 상태에 맞는 아이콘과 설명을 표시할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                WeatherCondition을 switch문으로 처리합니다.
+                
+                @Code(name: "WeatherCondition.swift", file: "03-04-condition.swift")
+            }
+            
+            @Step {
+                symbolName 속성으로 SF Symbols 아이콘을 가져옵니다.
+                WeatherKit은 모든 조건에 적합한 SF Symbol을 제공합니다.
+                
+                @Code(name: "WeatherCondition.swift", file: "03-05-symbol.swift")
+            }
+            
+            @Step {
+                description과 accessibilityDescription을 활용합니다.
+                로컬라이징된 문자열을 제공합니다.
+                
+                @Code(name: "WeatherCondition.swift", file: "03-06-description.swift")
+            }
+        }
+    }
+    
+    @Section(title: "현재 날씨 UI 구현") {
+        @ContentAndMedia {
+            SwiftUI를 사용해 현재 날씨 카드 UI를 구현합니다.
+            온도, 상태, 부가 정보를 깔끔하게 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                현재 날씨를 표시하는 View를 만듭니다.
+                
+                @Code(name: "CurrentWeatherView.swift", file: "03-07-view.swift")
+            }
+            
+            @Step {
+                온도 단위를 사용자 설정에 맞게 표시합니다.
+                Measurement API를 활용해 섭씨/화씨 변환을 처리합니다.
+                
+                @Code(name: "CurrentWeatherView.swift", file: "03-08-temperature.swift")
+            }
+            
+            @Step {
+                추가 날씨 정보를 그리드 형태로 표시합니다.
+                습도, 풍속, 자외선 지수 등을 포함합니다.
+                
+                @Code(name: "CurrentWeatherView.swift", file: "03-09-details.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CurrentWeather의 humidity 속성 값 범위는?
+            
+            @Choice(isCorrect: true) {
+                0.0 ~ 1.0
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    humidity는 0.0(0%)부터 1.0(100%)까지의 
+                    Double 값으로 표현됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                0 ~ 100
+                
+                @Justification(reaction: "아닙니다.") {
+                    humidity는 비율로 표현되며, 
+                    퍼센트로 표시하려면 100을 곱해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                0.0 ~ 10.0
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    습도는 0.0부터 1.0까지의 비율 값입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            WeatherCondition의 SF Symbol을 가져오는 속성은?
+            
+            @Choice(isCorrect: false) {
+                iconName
+                
+                @Justification(reaction: "이런 속성은 없습니다.") {
+                    올바른 속성 이름을 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                symbolName
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    symbolName 속성으로 해당 날씨 상태에 맞는 
+                    SF Symbols 이름을 가져올 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                sfSymbol
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    WeatherCondition은 symbolName 속성을 사용합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,271 @@
+@Tutorial(time: 18) {
+    @Intro(title: "이미지/미디어 첨부") {
+        알림에 시각적 요소를 추가합니다.
+        
+        이미지, GIF, 오디오, 비디오를 첨부하여
+        알림을 더 눈에 띄고 정보를 효과적으로 전달합니다.
+    }
+    
+    @Section(title: "UNNotificationAttachment 기초") {
+        @ContentAndMedia {
+            UNNotificationAttachment로 미디어를 알림에 첨부합니다.
+            
+            **지원 형식:**
+            - 이미지: JPEG, PNG, GIF
+            - 오디오: AIFF, WAV, MP3, M4A
+            - 비디오: MPEG, MP4, AVI
+        }
+        
+        @Steps {
+            @Step {
+                **첨부 파일 생성**
+                
+                파일 URL로 UNNotificationAttachment를 생성합니다.
+                파일은 앱 샌드박스 내에 있어야 합니다.
+                
+                @Code(name: "CreateAttachment.swift", file: "06-create-attachment.swift")
+            }
+            
+            @Step {
+                **알림에 첨부**
+                
+                content.attachments 배열에 추가합니다.
+                여러 개를 첨부할 수 있지만, 첫 번째가 썸네일로 표시됩니다.
+                
+                @Code(name: "AddAttachment.swift", file: "06-add-attachment.swift")
+            }
+            
+            @Step {
+                **파일 크기 제한**
+                
+                첨부 파일에는 크기 제한이 있습니다.
+                이미지 10MB, 오디오 5MB, 비디오 50MB가 최대입니다.
+                
+                @Code(name: "SizeLimits.swift", file: "06-size-limits.swift")
+            }
+        }
+    }
+    
+    @Section(title: "번들 이미지 첨부") {
+        @ContentAndMedia {
+            앱 번들에 포함된 이미지를 알림에 첨부합니다.
+            
+            번들 리소스는 읽기 전용이므로
+            임시 디렉토리에 복사 후 첨부해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **번들에서 이미지 로드**
+                
+                Bundle.main.url(forResource:withExtension:)으로 URL을 가져옵니다.
+                
+                @Code(name: "LoadBundleImage.swift", file: "06-load-bundle-image.swift")
+            }
+            
+            @Step {
+                **임시 디렉토리로 복사**
+                
+                번들 파일을 임시 위치에 복사한 후 첨부합니다.
+                알림이 전달된 후에는 시스템이 파일을 관리합니다.
+                
+                @Code(name: "CopyToTemp.swift", file: "06-copy-to-temp.swift")
+            }
+            
+            @Step {
+                **카테고리별 아이콘 첨부**
+                
+                리마인더 카테고리에 따라 다른 아이콘을 첨부합니다.
+                "업무"는 📋, "건강"은 💊, "쇼핑"은 🛒 등
+                
+                @Code(name: "CategoryIcon.swift", file: "06-category-icon.swift")
+            }
+        }
+    }
+    
+    @Section(title: "네트워크 이미지 다운로드") {
+        @ContentAndMedia {
+            원격 URL의 이미지를 다운로드하여 첨부합니다.
+            
+            로컬 알림에서는 미리 다운로드해두어야 하고,
+            푸시 알림에서는 Notification Service Extension이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **이미지 다운로드 헬퍼**
+                
+                URLSession으로 이미지를 다운로드하고 로컬에 저장합니다.
+                
+                @Code(name: "DownloadImage.swift", file: "06-download-image.swift")
+            }
+            
+            @Step {
+                **다운로드 후 알림 예약**
+                
+                이미지를 먼저 다운로드하고 완료 후 알림을 예약합니다.
+                async/await로 순차적으로 처리합니다.
+                
+                @Code(name: "ScheduleWithImage.swift", file: "06-schedule-with-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "GIF 애니메이션") {
+        @ContentAndMedia {
+            알림에 GIF를 첨부하면 알림 확장 시 애니메이션이 재생됩니다.
+            
+            축하 메시지, 재미있는 리마인더 등에 활용할 수 있습니다.
+            파일 크기를 적절히 관리하세요.
+        }
+        
+        @Steps {
+            @Step {
+                **GIF 첨부**
+                
+                GIF 파일도 동일한 방식으로 첨부합니다.
+                type hint를 명시적으로 지정하면 좋습니다.
+                
+                @Code(name: "GifAttachment.swift", file: "06-gif-attachment.swift")
+            }
+            
+            @Step {
+                **첨부 옵션 설정**
+                
+                UNNotificationAttachmentOptions로 썸네일 프레임 등을 지정합니다.
+                
+                @Code(name: "AttachmentOptions.swift", file: "06-attachment-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비디오와 오디오") {
+        @ContentAndMedia {
+            짧은 비디오나 오디오 클립을 첨부할 수 있습니다.
+            
+            알림을 3D Touch하거나 길게 누르면 미디어가 재생됩니다.
+            파일 크기 제한에 주의하세요.
+        }
+        
+        @Steps {
+            @Step {
+                **비디오 첨부**
+                
+                MP4 비디오를 알림에 첨부합니다.
+                짧은 클립(10초 이내)을 권장합니다.
+                
+                @Code(name: "VideoAttachment.swift", file: "06-video-attachment.swift")
+            }
+            
+            @Step {
+                **썸네일 시간 지정**
+                
+                비디오의 특정 프레임을 썸네일로 사용합니다.
+                UNNotificationAttachmentOptionsThumbnailTimeKey로 지정합니다.
+                
+                @Code(name: "VideoThumbnail.swift", file: "06-video-thumbnail.swift")
+            }
+            
+            @Step {
+                **미디어 첨부 유틸리티**
+                
+                NotificationManager에 미디어 첨부 헬퍼를 추가합니다.
+                
+                @Code(name: "MediaHelper.swift", file: "06-media-helper.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            UNNotificationAttachment에서 이미지 첨부 파일의 최대 크기는?
+            
+            @Choice(isCorrect: false) {
+                5MB
+                
+                @Justification(reaction: "더 큽니다") {
+                    5MB는 오디오 첨부의 제한입니다.
+                    이미지는 10MB까지 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                10MB
+                
+                @Justification(reaction: "정답!") {
+                    이미지 첨부는 최대 10MB입니다.
+                    오디오는 5MB, 비디오는 50MB가 최대입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                50MB
+                
+                @Justification(reaction: "아쉽네요") {
+                    50MB는 비디오 첨부의 제한입니다.
+                    이미지는 10MB까지입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            앱 번들의 이미지를 알림에 첨부하려면 왜 임시 디렉토리에 복사해야 할까요?
+            
+            @Choice(isCorrect: true) {
+                번들은 읽기 전용이고, 시스템이 첨부 파일을 관리해야 하므로
+                
+                @Justification(reaction: "정확합니다!") {
+                    알림 시스템은 첨부 파일을 자체적으로 복사하고 관리합니다.
+                    읽기 전용 번들에서는 이 작업이 불가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                번들 URL은 UNNotificationAttachment에서 지원하지 않으므로
+                
+                @Justification(reaction: "아쉽네요") {
+                    기술적으로는 URL을 사용할 수 있지만,
+                    시스템의 파일 관리 때문에 복사가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                번들 이미지는 크기가 너무 크므로
+                
+                @Justification(reaction: "아쉽네요") {
+                    크기와는 관련 없습니다.
+                    파일 시스템 권한과 관리 문제입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            여러 개의 첨부 파일을 알림에 추가하면 어떻게 표시될까요?
+            
+            @Choice(isCorrect: true) {
+                첫 번째 파일이 썸네일로, 확장 시 모두 표시
+                
+                @Justification(reaction: "정답!") {
+                    알림 배너에는 첫 번째 첨부 파일이 썸네일로 표시되고,
+                    알림을 확장하면 모든 첨부 파일을 볼 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 파일이 썸네일 그리드로 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    배너에서는 첫 번째 파일만 썸네일로 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                마지막 파일만 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    첫 번째 파일이 대표 썸네일로 사용됩니다.
+                }
+            }
+        }
+    }
+}

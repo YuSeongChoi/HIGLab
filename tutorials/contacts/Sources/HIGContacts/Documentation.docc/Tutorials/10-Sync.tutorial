@@ -1,0 +1,159 @@
+@Tutorial(time: 15) {
+    @Intro(title: "연락처 동기화") {
+        연락처 변경사항을 추적하고 
+        앱과 동기화하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "변경사항 감지") {
+        @ContentAndMedia {
+            연락처 데이터베이스의 변경사항을 
+            감지하고 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CNContactStoreDidChange 알림을 구독합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-01-notification.swift")
+            }
+            
+            @Step {
+                변경사항 히스토리를 가져옵니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-02-history.swift")
+            }
+            
+            @Step {
+                History Token을 저장하고 관리합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-03-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "변경 유형 처리") {
+        @ContentAndMedia {
+            추가, 수정, 삭제된 연락처를 
+            각각 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                변경 이벤트 타입을 구분합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-04-event-type.swift")
+            }
+            
+            @Step {
+                추가된 연락처를 처리합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-05-added.swift")
+            }
+            
+            @Step {
+                수정된 연락처를 처리합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-06-updated.swift")
+            }
+            
+            @Step {
+                삭제된 연락처를 처리합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-07-deleted.swift")
+            }
+        }
+    }
+    
+    @Section(title: "백그라운드 동기화") {
+        @ContentAndMedia {
+            백그라운드에서 연락처 동기화를 
+            수행하는 방법을 배웁니다.
+        }
+        
+        @Steps {
+            @Step {
+                백그라운드 작업을 설정합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-08-background.swift")
+            }
+            
+            @Step {
+                충돌 해결 전략을 구현합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-09-conflict.swift")
+            }
+            
+            @Step {
+                배치 업데이트를 수행합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-10-batch.swift")
+            }
+            
+            @Step {
+                전체 동기화 관리자를 완성합니다.
+                
+                @Code(name: "SyncManager.swift", file: "10-11-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            연락처 변경사항을 추적하기 위해 사용하는 것은?
+            
+            @Choice(isCorrect: true) {
+                History Token
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    History Token으로 마지막 동기화 이후의 
+                    변경사항만 가져올 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                타임스탬프
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Contacts 프레임워크는 타임스탬프 기반 
+                    추적을 제공하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                버전 번호
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    버전 번호가 아닌 History Token을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            연락처 데이터베이스 변경 알림은?
+            
+            @Choice(isCorrect: true) {
+                `CNContactStoreDidChange`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이 알림으로 연락처 변경을 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CNContactsChanged`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 알림 이름은 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `ContactsDatabaseUpdated`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 알림 이름은 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

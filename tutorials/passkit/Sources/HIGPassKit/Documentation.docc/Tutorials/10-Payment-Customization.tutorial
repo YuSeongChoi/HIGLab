@@ -1,0 +1,223 @@
+@Tutorial(time: 20) {
+    @Intro(title: "결제 시트 커스터마이징") {
+        결제 시트에 배송 옵션, 쿠폰 코드, 
+        추가 연락처 등을 구성합니다.
+        
+        @Image(source: "payment-customization.png", alt: "결제 시트 커스터마이징")
+    }
+    
+    @Section(title: "배송 주소 요청") {
+        @ContentAndMedia {
+            PKPaymentRequest에서 배송 정보를 요청할 수 있습니다.
+            사용자는 결제 시트에서 주소를 선택하거나 입력합니다.
+            
+            **요청 가능한 정보:**
+            - requiredShippingContactFields: 배송 연락처
+            - requiredBillingContactFields: 청구 연락처
+        }
+        
+        @Steps {
+            @Step {
+                배송 주소와 이메일을 요청합니다.
+                필요한 필드만 선택적으로 요청할 수 있습니다.
+                
+                @Code(name: "ShippingRequest.swift", file: "10-01-shipping-request.swift")
+            }
+            
+            @Step {
+                청구 주소를 요청합니다.
+                해외 결제나 검증이 필요한 경우 사용합니다.
+                
+                @Code(name: "BillingRequest.swift", file: "10-02-billing-request.swift")
+            }
+            
+            @Step {
+                연락처 정보를 선택적으로 요청합니다.
+                이름, 이메일, 전화번호, 주소 등을 조합합니다.
+                
+                @Code(name: "ContactFields.swift", file: "10-03-contact-fields.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배송 방법 제공") {
+        @ContentAndMedia {
+            여러 배송 옵션을 제공하고 사용자가 선택하게 합니다.
+            각 옵션의 가격과 예상 배송일을 표시할 수 있습니다.
+            
+            선택에 따라 총 결제 금액이 자동으로 업데이트됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKShippingMethod로 배송 옵션을 정의합니다.
+                label, amount, identifier, detail을 설정합니다.
+                
+                @Code(name: "ShippingMethods.swift", file: "10-04-shipping-methods.swift")
+            }
+            
+            @Step {
+                shippingMethods에 옵션 배열을 설정합니다.
+                첫 번째 항목이 기본 선택됩니다.
+                
+                @Code(name: "SetShippingMethods.swift", file: "10-05-set-methods.swift")
+            }
+            
+            @Step {
+                사용자가 배송 방법을 변경하면 didSelectShippingMethod가 호출됩니다.
+                결제 금액을 업데이트하고 새 summary items를 반환합니다.
+                
+                @Code(name: "ShippingMethodChange.swift", file: "10-06-method-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배송 주소 변경 처리") {
+        @ContentAndMedia {
+            배송 주소에 따라 배송비나 가능 여부가 달라질 수 있습니다.
+            주소 변경 시 실시간으로 유효성을 검사합니다.
+        }
+        
+        @Steps {
+            @Step {
+                didSelectShippingContact에서 주소 변경을 처리합니다.
+                지역에 따른 배송비 계산이나 배송 불가 지역 처리를 합니다.
+                
+                @Code(name: "ShippingContactChange.swift", file: "10-07-contact-change.swift")
+            }
+            
+            @Step {
+                배송 불가 지역인 경우 에러를 반환합니다.
+                사용자에게 다른 주소를 선택하도록 안내합니다.
+                
+                @Code(name: "ShippingError.swift", file: "10-08-shipping-error.swift")
+            }
+            
+            @Step {
+                지역별 배송 방법을 동적으로 업데이트합니다.
+                일부 지역은 특정 배송 옵션만 가능할 수 있습니다.
+                
+                @Code(name: "DynamicMethods.swift", file: "10-09-dynamic-methods.swift")
+            }
+        }
+    }
+    
+    @Section(title: "쿠폰 코드 지원") {
+        @ContentAndMedia {
+            iOS 15부터 결제 시트에서 쿠폰 코드 입력을 지원합니다.
+            사용자가 코드를 입력하면 실시간으로 할인을 적용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                supportsCouponCode를 true로 설정합니다.
+                결제 시트에 쿠폰 코드 입력 필드가 나타납니다.
+                
+                @Code(name: "CouponSupport.swift", file: "10-10-coupon-support.swift")
+            }
+            
+            @Step {
+                didChangeCouponCode에서 코드 유효성을 검사합니다.
+                서버에 코드를 확인하고 할인 금액을 계산합니다.
+                
+                @Code(name: "CouponValidation.swift", file: "10-11-coupon-validation.swift")
+            }
+            
+            @Step {
+                유효한 쿠폰이면 할인이 적용된 금액으로 업데이트합니다.
+                무효한 코드면 에러를 반환합니다.
+                
+                @Code(name: "ApplyCoupon.swift", file: "10-12-apply-coupon.swift")
+            }
+        }
+    }
+    
+    @Section(title: "반복 결제 및 구독") {
+        @ContentAndMedia {
+            정기 결제나 구독 서비스의 경우 
+            PKRecurringPaymentRequest를 사용합니다.
+            
+            **표시 정보:**
+            - 결제 주기 (월/년)
+            - 시작일과 종료일
+            - 관리 URL
+        }
+        
+        @Steps {
+            @Step {
+                PKRecurringPaymentSummaryItem으로 정기 결제를 표시합니다.
+                결제 주기와 설명을 포함합니다.
+                
+                @Code(name: "RecurringPayment.swift", file: "10-13-recurring-payment.swift")
+            }
+            
+            @Step {
+                recurringPaymentRequest에 상세 정보를 설정합니다.
+                구독 관리 URL과 약관을 포함할 수 있습니다.
+                
+                @Code(name: "RecurringRequest.swift", file: "10-14-recurring-request.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            사용자가 배송 방법을 변경할 때 호출되는 delegate 메서드는?
+            
+            @Choice(isCorrect: true) {
+                didSelectShippingMethod
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    배송 방법 변경 시 이 메서드가 호출되며,
+                    업데이트된 결제 금액을 반환해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                didUpdateShippingAddress
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    이 메서드는 없습니다. 
+                    주소 변경은 didSelectShippingContact입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                shippingMethodDidChange
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    정확한 메서드 이름이 아닙니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            결제 시트에서 쿠폰 코드 입력을 활성화하는 속성은?
+            
+            @Choice(isCorrect: false) {
+                enableCouponInput
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    이 속성은 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                couponCodeEnabled
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    비슷하지만 정확한 속성명이 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                supportsCouponCode
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    PKPaymentRequest의 supportsCouponCode를 
+                    true로 설정하면 쿠폰 입력 필드가 나타납니다.
+                }
+            }
+        }
+    }
+}

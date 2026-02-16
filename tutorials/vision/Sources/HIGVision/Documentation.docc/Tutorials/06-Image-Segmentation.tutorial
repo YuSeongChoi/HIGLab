@@ -1,0 +1,248 @@
+@Tutorial(time: 20) {
+    @Intro(title: "이미지 세그멘테이션") {
+        VNGeneratePersonSegmentationRequest로 사람과 배경을 분리합니다.
+        Portrait Mode 효과나 배경 제거 기능을 구현합니다.
+    }
+    
+    @Section(title: "Person Segmentation 기초") {
+        @ContentAndMedia {
+            **VNGeneratePersonSegmentationRequest**는 이미지에서 
+            사람 영역을 픽셀 단위로 분리하는 마스크를 생성합니다.
+            
+            3가지 품질 레벨을 지원합니다:
+            - **accurate**: 고품질, 느림
+            - **balanced**: 균형 잡힌 성능
+            - **fast**: 실시간용, 낮은 해상도
+        }
+        
+        @Steps {
+            @Step {
+                **기본 세그멘테이션 구현**
+                
+                VNGeneratePersonSegmentationRequest를 생성하고 
+                사람 영역 마스크를 얻습니다.
+                
+                @Code(name: "PersonSegmenter.swift", file: "06-basic-segmentation.swift")
+            }
+            
+            @Step {
+                **품질 레벨 설정**
+                
+                qualityLevel 프로퍼티로 품질과 속도를 조절합니다.
+                
+                @Code(name: "PersonSegmenter.swift", file: "06-quality-level.swift")
+            }
+            
+            @Step {
+                **마스크 이미지 추출**
+                
+                VNPixelBufferObservation에서 마스크 이미지를 추출합니다.
+                
+                @Code(name: "PersonSegmenter.swift", file: "06-extract-mask.swift")
+            }
+        }
+    }
+    
+    @Section(title: "마스크 활용") {
+        @ContentAndMedia {
+            생성된 마스크를 활용해 다양한 이미지 효과를 적용합니다.
+            배경 제거, 배경 흐림, 배경 교체 등을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **배경 제거**
+                
+                마스크를 사용해 사람만 남기고 배경을 투명하게 만듭니다.
+                
+                @Code(name: "SegmentationEffects.swift", file: "06-remove-background.swift")
+            }
+            
+            @Step {
+                **배경 흐림 (Portrait Mode)**
+                
+                배경에만 블러를 적용해 Portrait Mode 효과를 구현합니다.
+                
+                @Code(name: "SegmentationEffects.swift", file: "06-blur-background.swift")
+            }
+            
+            @Step {
+                **배경 교체**
+                
+                원본 배경을 다른 이미지로 교체합니다.
+                
+                @Code(name: "SegmentationEffects.swift", file: "06-replace-background.swift")
+            }
+            
+            @Step {
+                **마스크 경계 부드럽게**
+                
+                마스크 경계를 부드럽게 처리해 자연스러운 결과를 얻습니다.
+                
+                @Code(name: "SegmentationEffects.swift", file: "06-smooth-edges.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI 구현") {
+        @ContentAndMedia {
+            세그멘테이션 결과를 활용한 인터랙티브 UI를 구현합니다.
+            사용자가 다양한 효과를 선택할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **효과 옵션 정의**
+                
+                적용할 수 있는 배경 효과 옵션을 정의합니다.
+                
+                @Code(name: "BackgroundEffect.swift", file: "06-effect-options.swift")
+            }
+            
+            @Step {
+                **세그멘테이션 뷰**
+                
+                이미지를 표시하고 효과를 적용하는 뷰를 구현합니다.
+                
+                @Code(name: "SegmentationView.swift", file: "06-segmentation-view.swift")
+            }
+            
+            @Step {
+                **효과 선택 컨트롤**
+                
+                사용자가 배경 효과를 선택하는 컨트롤을 추가합니다.
+                
+                @Code(name: "SegmentationView.swift", file: "06-effect-picker.swift")
+            }
+            
+            @Step {
+                **결과 저장**
+                
+                적용된 효과를 포함한 이미지를 저장합니다.
+                
+                @Code(name: "SegmentationView.swift", file: "06-save-result.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 세그멘테이션") {
+        @ContentAndMedia {
+            iOS 17의 새로운 세그멘테이션 기능과 
+            다중 사람 처리를 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **다중 사람 세그멘테이션**
+                
+                이미지에 여러 사람이 있는 경우의 처리 방법입니다.
+                
+                @Code(name: "PersonSegmenter.swift", file: "06-multiple-people.swift")
+            }
+            
+            @Step {
+                **Subject Lifting (iOS 17+)**
+                
+                VNGenerateForegroundInstanceMaskRequest로 
+                전경 객체를 분리합니다.
+                
+                @Code(name: "SubjectLifter.swift", file: "06-subject-lifting.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            VNGeneratePersonSegmentationRequest가 반환하는 결과 타입은?
+            
+            @Choice(isCorrect: true) {
+                VNPixelBufferObservation
+                
+                @Justification(reaction: "정답!") {
+                    세그멘테이션 결과는 픽셀 버퍼 형태의 마스크 이미지로 반환됩니다.
+                    pixelBuffer 프로퍼티에서 마스크를 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNImageObservation
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 타입은 없습니다.
+                    세그멘테이션은 VNPixelBufferObservation을 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNRectangleObservation
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNRectangleObservation은 사각형 감지 결과입니다.
+                    세그멘테이션은 픽셀 단위 마스크를 반환합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            실시간 비디오 처리에 권장되는 세그멘테이션 품질 레벨은?
+            
+            @Choice(isCorrect: true) {
+                .fast
+                
+                @Justification(reaction: "정확합니다!") {
+                    .fast는 해상도가 낮지만 처리 속도가 빨라
+                    실시간 비디오 처리에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .accurate
+                
+                @Justification(reaction: "아쉽네요") {
+                    .accurate는 고품질이지만 느려서
+                    실시간 처리에는 적합하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .balanced
+                
+                @Justification(reaction: "아쉽네요") {
+                    .balanced도 실시간에는 느릴 수 있습니다.
+                    실시간 처리에는 .fast가 권장됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Portrait Mode 배경 흐림 효과를 구현하려면?
+            
+            @Choice(isCorrect: true) {
+                마스크를 사용해 배경 영역에만 블러를 적용한다
+                
+                @Justification(reaction: "정답!") {
+                    세그멘테이션 마스크로 사람과 배경을 분리하고,
+                    배경 영역에만 가우시안 블러를 적용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                전체 이미지에 블러를 적용한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    전체 블러는 사람도 흐려집니다.
+                    마스크로 배경만 선택해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Vision에서 자동으로 처리된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 마스크만 생성합니다.
+                    블러 효과는 CIFilter 등으로 직접 구현해야 합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,201 @@
+@Tutorial(time: 20) {
+    @Intro(title: "연결 상태 모니터링") {
+        NWPathMonitor로 네트워크 상태 변화를 
+        실시간으로 감지합니다.
+        
+        @Image(source: "path-monitor.png", alt: "네트워크 경로 모니터링")
+    }
+    
+    @Section(title: "NWPathMonitor 소개") {
+        @ContentAndMedia {
+            NWPathMonitor는 디바이스의 네트워크 상태를 
+            실시간으로 모니터링합니다.
+            
+            - **연결 상태**: Wi-Fi, 셀룰러, 오프라인
+            - **인터페이스**: 활성화된 네트워크 인터페이스
+            - **제약 조건**: 로밍, 비용 등 네트워크 특성
+            
+            @Image(source: "network-states.png", alt: "네트워크 상태")
+        }
+        
+        @Steps {
+            @Step {
+                NWPathMonitor를 생성합니다.
+                모든 인터페이스를 모니터링합니다.
+                
+                @Code(name: "PathMonitorCreate.swift", file: "07-01-monitor-create.swift")
+            }
+            
+            @Step {
+                특정 인터페이스만 모니터링할 수도 있습니다.
+                Wi-Fi만 또는 셀룰러만 감시합니다.
+                
+                @Code(name: "InterfaceSpecific.swift", file: "07-02-interface-specific.swift")
+            }
+        }
+    }
+    
+    @Section(title: "경로 상태 처리") {
+        @ContentAndMedia {
+            `pathUpdateHandler`로 네트워크 경로 변화를 감지합니다.
+            
+            NWPath는 현재 네트워크의 상세 정보를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                경로 업데이트 핸들러를 등록합니다.
+                상태 변화 시마다 호출됩니다.
+                
+                @Code(name: "PathHandler.swift", file: "07-03-path-handler.swift")
+            }
+            
+            @Step {
+                NWPath.Status를 처리합니다.
+                
+                - `.satisfied`: 네트워크 사용 가능
+                - `.unsatisfied`: 네트워크 없음
+                - `.requiresConnection`: VPN 등 연결 필요
+                
+                @Code(name: "PathStatus.swift", file: "07-04-path-status.swift")
+            }
+            
+            @Step {
+                활성 인터페이스를 확인합니다.
+                Wi-Fi인지 셀룰러인지 알 수 있습니다.
+                
+                @Code(name: "ActiveInterface.swift", file: "07-05-active-interface.swift")
+            }
+        }
+    }
+    
+    @Section(title: "네트워크 특성 확인") {
+        @ContentAndMedia {
+            NWPath는 네트워크의 제약 조건과 
+            특성에 대한 정보도 제공합니다.
+            
+            - 비용 (constrained): 셀룰러 데이터 등
+            - 로밍 상태
+            - 저데이터 모드
+        }
+        
+        @Steps {
+            @Step {
+                비용이 발생하는 네트워크인지 확인합니다.
+                대용량 다운로드 시 사용자에게 경고할 수 있습니다.
+                
+                @Code(name: "ExpensiveCheck.swift", file: "07-06-expensive-check.swift")
+            }
+            
+            @Step {
+                저데이터 모드를 확인합니다.
+                iOS 설정에서 활성화된 경우입니다.
+                
+                @Code(name: "LowDataMode.swift", file: "07-07-low-data-mode.swift")
+            }
+            
+            @Step {
+                네트워크 특성에 따라 동작을 조절합니다.
+                비용이 발생하면 고화질 다운로드를 연기합니다.
+                
+                @Code(name: "AdaptiveNetworking.swift", file: "07-08-adaptive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "NetworkManager 구현") {
+        @ContentAndMedia {
+            앱 전체에서 사용할 NetworkManager를 
+            싱글톤으로 구현합니다.
+            
+            네트워크 상태를 Combine으로 발행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                NetworkManager 클래스를 정의합니다.
+                ObservableObject로 SwiftUI와 연동합니다.
+                
+                @Code(name: "NetworkManager.swift", file: "07-09-network-manager.swift")
+            }
+            
+            @Step {
+                상태 변화를 Published 프로퍼티로 발행합니다.
+                View에서 자동으로 UI가 업데이트됩니다.
+                
+                @Code(name: "NetworkPublished.swift", file: "07-10-network-published.swift")
+            }
+            
+            @Step {
+                SwiftUI View에서 네트워크 상태를 표시합니다.
+                오프라인 시 배너를 보여줍니다.
+                
+                @Code(name: "NetworkStatusView.swift", file: "07-11-network-status-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            NWPath.Status.unsatisfied의 의미는?
+            
+            @Choice(isCorrect: true) {
+                네트워크를 사용할 수 없는 상태
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    unsatisfied는 Wi-Fi도 셀룰러도 없는 
+                    오프라인 상태를 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크 속도가 느린 상태
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    속도 정보는 Status에 포함되지 않습니다.
+                    unsatisfied는 연결 자체가 없는 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VPN 연결이 필요한 상태
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    VPN 등 추가 연결이 필요한 경우는 
+                    requiresConnection입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            path.isExpensive가 true일 때 적절한 대응은?
+            
+            @Choice(isCorrect: false) {
+                앱을 강제 종료한다.
+                
+                @Justification(reaction: "너무 극단적입니다.") {
+                    네트워크 비용은 사용자에게 알리고 
+                    선택하게 하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                대용량 다운로드 전 사용자에게 확인을 받는다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    데이터 비용이 발생할 수 있으므로 
+                    사용자에게 선택권을 주는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 네트워크 요청을 차단한다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    비용 네트워크라도 필수 기능은 동작해야 합니다.
+                    대용량 데이터만 제한하세요.
+                }
+            }
+        }
+    }
+}

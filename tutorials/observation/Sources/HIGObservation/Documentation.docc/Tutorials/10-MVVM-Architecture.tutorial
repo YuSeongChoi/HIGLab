@@ -1,0 +1,229 @@
+@Tutorial(time: 18) {
+    @Intro(title: "MVVM 아키텍처 완성") {
+        @Observable을 활용한 현대적인 MVVM 아키텍처를 구축합니다.
+        CartFlow 앱을 완성하며 실전에서 바로 적용 가능한 패턴을 익힙니다.
+    }
+    
+    @Section(title: "MVVM과 Observation") {
+        @ContentAndMedia {
+            MVVM(Model-View-ViewModel) 패턴이 @Observable과 
+            어떻게 자연스럽게 조화되는지 알아봅니다.
+            각 레이어의 역할과 책임을 명확히 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                MVVM의 세 가지 구성요소를 정의합니다.
+                Model, View, ViewModel 각각의 역할을 이해합니다.
+                
+                @Code(name: "MVVMOverview.swift", file: "10-mvvm-overview.swift")
+            }
+            
+            @Step {
+                ViewModel을 @Observable로 구현합니다.
+                비즈니스 로직을 캡슐화하고 뷰에 바인딩 가능한 상태를 제공합니다.
+                
+                @Code(name: "ViewModelBasic.swift", file: "10-viewmodel-basic.swift")
+            }
+            
+            @Step {
+                View는 ViewModel만 알면 됩니다.
+                뷰는 상태를 표시하고 액션을 ViewModel에 전달합니다.
+                
+                @Code(name: "ViewBasic.swift", file: "10-view-basic.swift")
+            }
+        }
+    }
+    
+    @Section(title: "의존성 주입 패턴") {
+        @ContentAndMedia {
+            테스트 가능하고 유연한 코드를 위해
+            의존성 주입 패턴을 적용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                프로토콜 기반 서비스 설계입니다.
+                실제 구현과 테스트용 Mock을 교체할 수 있습니다.
+                
+                @Code(name: "ServiceProtocol.swift", file: "10-service-protocol.swift")
+            }
+            
+            @Step {
+                ViewModel에 서비스를 주입합니다.
+                생성자 주입으로 의존성을 명시적으로 만듭니다.
+                
+                @Code(name: "DependencyInjection.swift", file: "10-dependency-injection.swift")
+            }
+            
+            @Step {
+                @Environment를 통한 글로벌 서비스 접근.
+                앱 전체에서 공유되는 의존성을 관리합니다.
+                
+                @Code(name: "EnvironmentDI.swift", file: "10-environment-di.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 완성된 아키텍처") {
+        @ContentAndMedia {
+            지금까지 배운 모든 것을 적용하여
+            CartFlow 앱의 아키텍처를 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Model 레이어: 도메인 모델과 서비스 정의
+                
+                @Code(name: "CartFlowModels.swift", file: "10-cartflow-models.swift")
+            }
+            
+            @Step {
+                ViewModel 레이어: CartViewModel 구현
+                장바구니의 모든 비즈니스 로직을 담당합니다.
+                
+                @Code(name: "CartViewModel.swift", file: "10-cart-viewmodel.swift")
+            }
+            
+            @Step {
+                View 레이어: 완성된 CartView
+                ViewModel과 바인딩하여 반응형 UI를 구현합니다.
+                
+                @Code(name: "CartViewFinal.swift", file: "10-cart-view-final.swift")
+            }
+            
+            @Step {
+                앱 진입점: 의존성 설정과 화면 구성
+                모든 레이어를 조립하여 앱을 완성합니다.
+                
+                @Code(name: "CartFlowAppFinal.swift", file: "10-app-final.swift")
+            }
+        }
+    }
+    
+    @Section(title: "테스트 전략") {
+        @ContentAndMedia {
+            @Observable 기반 ViewModel을 테스트하는 방법을 배웁니다.
+            유닛 테스트와 UI 테스트 전략을 다룹니다.
+        }
+        
+        @Steps {
+            @Step {
+                ViewModel 유닛 테스트 기본 구조입니다.
+                Mock 서비스를 주입하여 격리된 테스트를 수행합니다.
+                
+                @Code(name: "ViewModelTests.swift", file: "10-viewmodel-tests.swift")
+            }
+            
+            @Step {
+                비동기 상태 변화 테스트입니다.
+                로딩, 성공, 실패 시나리오를 검증합니다.
+                
+                @Code(name: "AsyncTests.swift", file: "10-async-tests.swift")
+            }
+            
+            @Step {
+                통합 테스트: 실제 사용 시나리오 검증
+                여러 컴포넌트가 함께 동작하는지 확인합니다.
+                
+                @Code(name: "IntegrationTests.swift", file: "10-integration-tests.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MVVM에서 ViewModel의 주요 역할은?
+            
+            @Choice(isCorrect: true) {
+                비즈니스 로직 캡슐화와 뷰에 바인딩 가능한 상태 제공
+                
+                @Justification(reaction: "정답!") {
+                    ViewModel은 View와 Model 사이의 중재자로,
+                    로직을 처리하고 View가 표시할 상태를 관리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                데이터베이스 접근과 네트워크 요청 직접 처리
+                
+                @Justification(reaction: "아쉽네요") {
+                    데이터 접근은 보통 별도의 Service/Repository 레이어가 담당하고,
+                    ViewModel은 이를 조율하는 역할을 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UI 렌더링 로직 담당
+                
+                @Justification(reaction: "아쉽네요") {
+                    UI 렌더링은 View의 책임입니다.
+                    ViewModel은 무엇을 표시할지(상태)를 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            @Observable ViewModel을 테스트하기 좋게 만드는 핵심 요소는?
+            
+            @Choice(isCorrect: true) {
+                프로토콜 기반 의존성 주입
+                
+                @Justification(reaction: "완벽합니다!") {
+                    프로토콜을 사용하면 실제 서비스 대신 Mock을 주입하여
+                    격리된 테스트 환경을 만들 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 프로퍼티를 public으로 선언
+                
+                @Justification(reaction: "아쉽네요") {
+                    접근 제어는 테스트 용이성보다는 캡슐화를 위한 것입니다.
+                    의존성 주입이 테스트의 핵심입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                싱글톤 패턴 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    싱글톤은 오히려 테스트를 어렵게 만듭니다.
+                    명시적인 의존성 주입이 테스트에 유리합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CartFlow 튜토리얼을 완료했습니다! Observation의 가장 큰 장점은?
+            
+            @Choice(isCorrect: true) {
+                세밀한 관찰로 필요한 뷰만 자동 업데이트
+                
+                @Justification(reaction: "축하합니다! 🎉") {
+                    Observation의 핵심 가치는 바로 이것입니다.
+                    더 간결한 코드로 더 효율적인 앱을 만들 수 있습니다.
+                    이제 실전에서 활용해보세요!
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                코드 줄 수 감소
+                
+                @Justification(reaction: "부분 정답!") {
+                    코드가 간결해지는 것도 장점이지만,
+                    핵심은 세밀한 관찰을 통한 성능 최적화입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                새로운 문법 학습 기회
+                
+                @Justification(reaction: "유머 감각이 있으시네요 😄") {
+                    새로운 것을 배우는 건 좋지만,
+                    Observation의 진짜 가치는 성능과 간결함에 있습니다!
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,253 @@
+@Tutorial(time: 18) {
+    @Intro(title: "앨범 접근 (PHAsset)") {
+        Photos 프레임워크로 사진 라이브러리에 직접 접근합니다.
+        PHAsset, PHFetchResult, PHAssetCollection을 활용합니다.
+    }
+    
+    @Section(title: "Photos 프레임워크 vs PhotosUI") {
+        @ContentAndMedia {
+            PhotosUI와 Photos 프레임워크는 다른 목적을 가집니다.
+            
+            - **PhotosUI**: 사용자가 선택한 사진에만 접근 (권한 불필요)
+            - **Photos**: 전체 라이브러리에 접근 (권한 필요)
+            
+            더 깊은 통합이 필요하면 Photos 프레임워크를 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **권한 요청**
+                
+                사진 라이브러리 접근에는 명시적 권한이 필요합니다.
+                Info.plist에 NSPhotoLibraryUsageDescription을 추가합니다.
+                
+                @Code(name: "PhotosPermission.swift", file: "09-photos-permission.swift")
+            }
+            
+            @Step {
+                **PHAuthorizationStatus 처리**
+                
+                권한 상태에 따라 UI를 다르게 표시합니다.
+                .authorized, .limited, .denied 등을 처리합니다.
+                
+                @Code(name: "AuthorizationStatus.swift", file: "09-authorization-status.swift")
+            }
+            
+            @Step {
+                **Limited Photos Library**
+                
+                iOS 14부터 사용자는 일부 사진만 공유할 수 있습니다.
+                .limited 상태에서는 선택된 사진만 접근 가능합니다.
+                
+                @Code(name: "LimitedLibrary.swift", file: "09-limited-library.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PHAsset과 PHFetchResult") {
+        @ContentAndMedia {
+            PHAsset은 사진 라이브러리의 개별 항목을 나타냅니다.
+            PHFetchResult로 쿼리 결과를 받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **PHAsset 가져오기**
+                
+                PHAsset.fetchAssets(with:options:)로 사진을 가져옵니다.
+                PHFetchOptions로 정렬, 필터를 설정합니다.
+                
+                @Code(name: "FetchAssets.swift", file: "09-fetch-assets.swift")
+            }
+            
+            @Step {
+                **PHAsset 속성**
+                
+                PHAsset에서 다양한 메타데이터에 접근합니다:
+                - 생성 날짜
+                - 위치 정보
+                - 미디어 타입
+                - 즐겨찾기 상태
+                
+                @Code(name: "AssetProperties.swift", file: "09-asset-properties.swift")
+            }
+            
+            @Step {
+                **이미지 요청**
+                
+                PHImageManager로 PHAsset에서 이미지를 로딩합니다.
+                다양한 크기와 품질 옵션을 지정할 수 있습니다.
+                
+                @Code(name: "RequestImage.swift", file: "09-request-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앨범과 컬렉션") {
+        @ContentAndMedia {
+            PHAssetCollection으로 앨범에 접근합니다.
+            시스템 앨범, 사용자 앨범, 스마트 앨범 등이 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앨범 목록 가져오기**
+                
+                PHAssetCollection.fetchAssetCollections로 앨범을 가져옵니다.
+                type으로 앨범 종류를 지정합니다.
+                
+                @Code(name: "FetchAlbums.swift", file: "09-fetch-albums.swift")
+            }
+            
+            @Step {
+                **스마트 앨범**
+                
+                시스템이 자동으로 관리하는 스마트 앨범에 접근합니다:
+                - 최근 항목, 즐겨찾기, 스크린샷
+                - 셀프카메라, 파노라마, 라이브 포토
+                
+                @Code(name: "SmartAlbums.swift", file: "09-smart-albums.swift")
+            }
+            
+            @Step {
+                **앨범 내 사진 가져오기**
+                
+                특정 앨범에 속한 PHAsset을 가져옵니다.
+                PHAsset.fetchAssets(in:options:)를 사용합니다.
+                
+                @Code(name: "FetchAssetsInAlbum.swift", file: "09-fetch-assets-in-album.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사진 라이브러리 변경 감지") {
+        @ContentAndMedia {
+            PHPhotoLibraryChangeObserver로 라이브러리 변경을 감지합니다.
+            실시간으로 UI를 업데이트할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **변경 관찰자 등록**
+                
+                PHPhotoLibrary.shared().register로 옵저버를 등록합니다.
+                photoLibraryDidChange 메서드가 호출됩니다.
+                
+                @Code(name: "RegisterObserver.swift", file: "09-register-observer.swift")
+            }
+            
+            @Step {
+                **변경 사항 처리**
+                
+                PHChange에서 변경된 항목을 확인합니다.
+                insertedIndexes, removedIndexes 등으로 차이를 파악합니다.
+                
+                @Code(name: "HandleChanges.swift", file: "09-handle-changes.swift")
+            }
+            
+            @Step {
+                **FetchResult 업데이트**
+                
+                changeDetails(for:)로 기존 FetchResult를 업데이트합니다.
+                전체를 다시 가져오지 않아도 됩니다.
+                
+                @Code(name: "UpdateFetchResult.swift", file: "09-update-fetch-result.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Photos 프레임워크로 전체 라이브러리에 접근하려면?
+            
+            @Choice(isCorrect: true) {
+                PHPhotoLibrary.requestAuthorization으로 권한 요청
+                
+                @Justification(reaction: "정답!") {
+                    Photos 프레임워크는 전체 라이브러리 접근에 
+                    명시적 권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PhotosPicker처럼 권한 없이 접근 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    PhotosPicker와 달리 Photos 프레임워크는 
+                    권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Info.plist 설정만으로 충분
+                
+                @Justification(reaction: "아쉽네요") {
+                    Info.plist 설정과 함께 런타임에 
+                    권한 요청이 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PHAsset에서 실제 이미지를 로딩하는 클래스는?
+            
+            @Choice(isCorrect: true) {
+                PHImageManager
+                
+                @Justification(reaction: "맞습니다!") {
+                    PHImageManager.default()를 사용해 
+                    PHAsset에서 이미지를 요청합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHAssetLoader
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 클래스는 없습니다.
+                    PHImageManager를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHAsset.image 프로퍼티
+                
+                @Justification(reaction: "아쉽네요") {
+                    PHAsset에는 image 프로퍼티가 없습니다.
+                    PHImageManager로 비동기 로딩해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사진 라이브러리 변경을 실시간 감지하려면?
+            
+            @Choice(isCorrect: true) {
+                PHPhotoLibraryChangeObserver 프로토콜 구현 및 등록
+                
+                @Justification(reaction: "정확합니다!") {
+                    PHPhotoLibraryChangeObserver를 구현하고 
+                    PHPhotoLibrary.shared().register로 등록합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NotificationCenter로 알림 구독
+                
+                @Justification(reaction: "아쉽네요") {
+                    Photos 프레임워크는 자체 옵저버 패턴을 사용합니다.
+                    PHPhotoLibraryChangeObserver를 구현하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                타이머로 주기적 폴링
+                
+                @Justification(reaction: "아쉽네요") {
+                    비효율적입니다. PHPhotoLibraryChangeObserver를 
+                    사용하면 변경 시에만 알림을 받습니다.
+                }
+            }
+        }
+    }
+}

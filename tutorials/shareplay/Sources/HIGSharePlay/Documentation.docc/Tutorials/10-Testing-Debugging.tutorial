@@ -1,0 +1,215 @@
+@Tutorial(time: 15) {
+    @Intro(title: "테스트 & 디버깅") {
+        SharePlay 기능을 효과적으로 테스트하고 
+        발생하는 문제를 디버깅하는 방법을 익힙니다.
+    }
+    
+    @Section(title: "개발 환경 설정") {
+        @ContentAndMedia {
+            SharePlay는 여러 기기가 필요하지만,
+            시뮬레이터에서도 기본적인 테스트가 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                시뮬레이터 SharePlay 지원을 확인합니다.
+                
+                Xcode 14+에서는 시뮬레이터에서도
+                제한적인 SharePlay 테스트가 가능합니다.
+                
+                @Code(name: "SimulatorSupport.swift", file: "10-simulator.swift")
+            }
+            
+            @Step {
+                실제 기기 테스트 환경을 구성합니다.
+                
+                최소 2대의 기기와 각각 다른 Apple ID,
+                FaceTime 활성화가 필요합니다.
+                
+                @Code(name: "DeviceSetup.swift", file: "10-device-setup.swift")
+            }
+            
+            @Step {
+                개발자 모드 SharePlay 옵션을 활용합니다.
+                
+                Settings → Developer → SharePlay Development에서
+                디버깅 옵션을 활성화할 수 있습니다.
+                
+                @Code(name: "DeveloperOptions.swift", file: "10-developer-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Mock 객체 활용") {
+        @ContentAndMedia {
+            실제 SharePlay 세션 없이 테스트하기 위한
+            Mock 객체를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                프로토콜 기반 설계로 테스트 용이성을 높입니다.
+                
+                GroupSession에 대한 프로토콜을 정의해
+                Mock 구현을 주입할 수 있게 합니다.
+                
+                @Code(name: "SessionProtocol.swift", file: "10-session-protocol.swift")
+            }
+            
+            @Step {
+                Mock GroupSession을 구현합니다.
+                
+                실제 네트워크 없이 동작하는
+                테스트용 세션 객체입니다.
+                
+                @Code(name: "MockSession.swift", file: "10-mock-session.swift")
+            }
+            
+            @Step {
+                Mock Participant를 구현합니다.
+                
+                다양한 참가자 시나리오를 
+                테스트할 수 있게 합니다.
+                
+                @Code(name: "MockParticipant.swift", file: "10-mock-participant.swift")
+            }
+        }
+    }
+    
+    @Section(title: "디버깅 기법") {
+        @ContentAndMedia {
+            SharePlay 관련 문제를 진단하고 해결하는
+            디버깅 기법을 학습합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Console 로그를 활용합니다.
+                
+                GroupActivities 관련 시스템 로그를
+                필터링해서 확인합니다.
+                
+                @Code(name: "ConsoleLogging.swift", file: "10-console-logging.swift")
+            }
+            
+            @Step {
+                세션 상태 변화를 추적합니다.
+                
+                상태 변화를 로깅해서 
+                예상치 못한 동작을 파악합니다.
+                
+                @Code(name: "StateTracking.swift", file: "10-state-tracking.swift")
+            }
+            
+            @Step {
+                일반적인 문제와 해결책을 확인합니다.
+                
+                - 세션이 시작되지 않음: FaceTime 확인
+                - 동기화 실패: 네트워크 상태 확인
+                - 참가자 표시 안 됨: activeParticipants 구독 확인
+                
+                @Code(name: "CommonIssues.swift", file: "10-common-issues.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Unit Test 작성") {
+        @ContentAndMedia {
+            SharePlay 로직에 대한 Unit Test를 
+            작성하는 방법을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                테스트 가능한 아키텍처를 설계합니다.
+                
+                의존성 주입을 활용해 Mock 객체를
+                쉽게 주입할 수 있게 합니다.
+                
+                @Code(name: "TestableArchitecture.swift", file: "10-testable-arch.swift")
+            }
+            
+            @Step {
+                ViewModel Unit Test를 작성합니다.
+                
+                Mock 세션을 주입해 다양한 시나리오를
+                검증합니다.
+                
+                @Code(name: "ViewModelTests.swift", file: "10-viewmodel-tests.swift")
+            }
+            
+            @Step {
+                Messenger 동작을 테스트합니다.
+                
+                메시지 송수신 로직을 
+                Mock으로 검증합니다.
+                
+                @Code(name: "MessengerTests.swift", file: "10-messenger-tests.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SharePlay 기능의 완전한 테스트를 위해 필요한 것은?
+            
+            @Choice(isCorrect: true) {
+                최소 2대의 실제 기기와 서로 다른 Apple ID
+                
+                @Justification(reaction: "정답! 🎉") {
+                    SharePlay는 여러 사용자 간 기능이므로
+                    실제 기기와 다른 Apple ID가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                시뮬레이터 하나면 충분
+                
+                @Justification(reaction: "아쉽네요") {
+                    시뮬레이터에서는 제한적인 테스트만 가능합니다.
+                    완전한 테스트는 실제 기기가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                특별한 하드웨어 필요
+                
+                @Justification(reaction: "아쉽네요") {
+                    특별한 하드웨어는 필요 없습니다.
+                    일반 iOS 기기면 충분합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SharePlay 개발 시 Mock 객체를 사용하는 이유는?
+            
+            @Choice(isCorrect: true) {
+                실제 세션 없이 로직을 테스트하기 위해
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Mock 객체를 사용하면 FaceTime 연결 없이도
+                    비즈니스 로직을 테스트할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 향상을 위해
+                
+                @Justification(reaction: "아쉽네요") {
+                    Mock은 테스트 용이성을 위한 것이지
+                    성능과는 관련이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple 정책상 필수
+                
+                @Justification(reaction: "아쉽네요") {
+                    Mock 사용은 정책이 아닌 
+                    개발 편의를 위한 것입니다.
+                }
+            }
+        }
+    }
+}

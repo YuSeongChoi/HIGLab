@@ -1,0 +1,167 @@
+@Tutorial(time: 10) {
+    @Intro(title: "popoverTip으로 말풍선 팁") {
+        popoverTip 모디파이어를 사용하여
+        특정 UI 요소를 가리키는 말풍선 팁을 표시합니다.
+    }
+    
+    @Section(title: "popoverTip 기본 사용법") {
+        @ContentAndMedia {
+            `popoverTip`은 버튼, 아이콘 등 **특정 요소를 가리키는**
+            말풍선 형태의 팁입니다. 
+            
+            해당 요소의 기능을 직접적으로 설명할 때 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 popoverTip 적용**
+                
+                뷰에 `.popoverTip()` 모디파이어를 추가합니다.
+                팁은 해당 뷰 근처에 말풍선으로 표시됩니다.
+                
+                @Code(name: "FavoriteButton.swift", file: "04-basic-popover.swift")
+            }
+            
+            @Step {
+                **화살표 방향 제어**
+                
+                `arrowEdge` 파라미터로 화살표 방향을 지정합니다.
+                `.top`, `.bottom`, `.leading`, `.trailing` 중 선택합니다.
+                
+                @Code(name: "ArrowDirection.swift", file: "04-arrow-edge.swift")
+            }
+            
+            @Step {
+                **툴바 버튼에 팁 적용**
+                
+                네비게이션 바 버튼에도 popoverTip을 적용할 수 있습니다.
+                
+                @Code(name: "ToolbarTip.swift", file: "04-toolbar-popover.swift")
+            }
+        }
+    }
+    
+    @Section(title: "popoverTip 고급 활용") {
+        @ContentAndMedia {
+            popoverTip의 다양한 옵션을 활용하여
+            UX를 더욱 세밀하게 제어합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **액션 버튼과 함께 사용**
+                
+                popoverTip에도 Tip의 actions가 표시됩니다.
+                사용자가 바로 기능을 실행할 수 있게 해줍니다.
+                
+                @Code(name: "PopoverWithAction.swift", file: "04-popover-action.swift")
+            }
+            
+            @Step {
+                **동적 팁 상태 제어**
+                
+                Tip의 `invalidate(reason:)` 메서드로
+                팁을 프로그래밍 방식으로 숨깁니다.
+                
+                @Code(name: "DynamicPopover.swift", file: "04-dynamic-popover.swift")
+            }
+            
+            @Step {
+                **다중 뷰에 순차적 팁**
+                
+                여러 요소에 각각 다른 팁을 적용합니다.
+                TipKit은 자동으로 한 번에 하나만 표시합니다.
+                
+                @Code(name: "SequentialTips.swift", file: "04-sequential-popovers.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TipView vs popoverTip") {
+        @ContentAndMedia {
+            두 가지 팁 표시 방식의 차이점과 
+            적합한 사용 시나리오를 정리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **TipView 사용 시나리오**
+                
+                - 리스트/스크롤 내 콘텐츠로 삽입
+                - 고정된 위치에 안내 메시지 표시
+                - 레이아웃의 일부로 팁 배치
+                
+                @Code(name: "WhenTipView.swift", file: "04-when-tipview.swift")
+            }
+            
+            @Step {
+                **popoverTip 사용 시나리오**
+                
+                - 특정 버튼/아이콘 기능 설명
+                - 툴바, 탭바 아이템 안내
+                - 숨겨진 제스처 힌트 제공
+                
+                @Code(name: "WhenPopover.swift", file: "04-when-popover.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            popoverTip의 화살표 방향을 아래로 지정하는 코드는?
+            
+            @Choice(isCorrect: true) {
+                .popoverTip(myTip, arrowEdge: .bottom)
+                
+                @Justification(reaction: "정답!") {
+                    arrowEdge: .bottom으로 화살표가 아래를 가리키게 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .popoverTip(myTip, direction: .down)
+                
+                @Justification(reaction: "아쉽네요") {
+                    direction이 아닌 arrowEdge 파라미터를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .popoverTip(myTip).arrowDown()
+                
+                @Justification(reaction: "아쉽네요") {
+                    arrowEdge 파라미터를 popoverTip 내에서 지정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            popoverTip이 적합한 상황은?
+            
+            @Choice(isCorrect: true) {
+                네비게이션 바의 공유 버튼 기능을 설명할 때
+                
+                @Justification(reaction: "정확합니다!") {
+                    특정 UI 요소를 가리키며 기능을 설명하는 것이 
+                    popoverTip의 주요 용도입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 공지사항을 리스트 상단에 표시할 때
+                
+                @Justification(reaction: "아쉽네요") {
+                    리스트 내 고정 콘텐츠는 TipView가 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                로딩 중 대기 메시지를 표시할 때
+                
+                @Justification(reaction: "아쉽네요") {
+                    로딩 메시지는 팁의 용도가 아닙니다.
+                }
+            }
+        }
+    }
+}

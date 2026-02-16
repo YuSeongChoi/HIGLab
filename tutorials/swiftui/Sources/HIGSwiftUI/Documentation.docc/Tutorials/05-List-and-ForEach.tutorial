@@ -1,0 +1,253 @@
+@Tutorial(time: 20) {
+    @Intro(title: "List와 ForEach로 컬렉션 표시") {
+        동적 데이터를 효율적으로 표시하는 방법을 배웁니다.
+        List와 ForEach의 차이를 이해하고,
+        레시피 목록 화면을 완성합니다.
+    }
+    
+    @Section(title: "ForEach — 동적 뷰 생성") {
+        @ContentAndMedia {
+            **ForEach**는 컬렉션의 각 요소를 뷰로 변환합니다.
+            
+            배열, Range 등 Identifiable한 컬렉션을 순회하며
+            각 요소에 대해 뷰를 생성합니다.
+            
+            주의: ForEach는 레이아웃을 제공하지 않습니다.
+            Stack이나 List 안에서 사용해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ForEach 기본 문법**
+                
+                Identifiable 프로토콜을 따르는 타입을 순회합니다.
+                또는 `id:` 파라미터로 식별자를 지정합니다.
+                
+                @Code(name: "ForEachBasic.swift", file: "05-foreach-basic.swift")
+            }
+            
+            @Step {
+                **Range와 함께 사용**
+                
+                정해진 횟수만큼 반복할 때는 Range를 사용합니다.
+                `0..<5`처럼 범위를 지정합니다.
+                
+                @Code(name: "ForEachRange.swift", file: "05-foreach-range.swift")
+            }
+            
+            @Step {
+                **id 파라미터 이해하기**
+                
+                SwiftUI는 id로 각 요소를 추적합니다.
+                요소가 추가/삭제될 때 어떤 것이 변경되었는지 알 수 있습니다.
+                
+                id가 중복되면 예상치 못한 버그가 발생할 수 있습니다!
+                
+                @Code(name: "ForEachId.swift", file: "05-foreach-id.swift")
+            }
+        }
+    }
+    
+    @Section(title: "List — 스크롤 가능한 목록") {
+        @ContentAndMedia {
+            **List**는 스크롤 가능한 목록 뷰입니다.
+            
+            UIKit의 UITableView와 비슷하지만
+            훨씬 간단한 코드로 구현할 수 있습니다.
+            
+            자동으로 셀 스타일, 구분선, 스크롤을 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **List 기본 사용법**
+                
+                가장 간단한 형태는 ForEach를 List로 감싸는 것입니다.
+                또는 List 자체에 데이터를 전달할 수도 있습니다.
+                
+                @Code(name: "ListBasic.swift", file: "05-list-basic.swift")
+            }
+            
+            @Step {
+                **List 스타일 적용**
+                
+                `.listStyle()` 모디파이어로 외형을 변경합니다.
+                
+                - `.plain`: 구분선만
+                - `.insetGrouped`: 둥근 그룹 (기본)
+                - `.sidebar`: 사이드바용
+                
+                @Code(name: "ListStyle.swift", file: "05-list-style.swift")
+            }
+            
+            @Step {
+                **Section으로 그룹화**
+                
+                Section을 사용해 목록을 그룹으로 나눕니다.
+                header와 footer를 추가할 수 있습니다.
+                
+                @Code(name: "ListSection.swift", file: "05-list-section.swift")
+            }
+            
+            @Step {
+                **스와이프 액션 추가**
+                
+                `.swipeActions()`로 밀어서 삭제, 즐겨찾기 등을 구현합니다.
+                
+                edge: .leading은 왼쪽, .trailing은 오른쪽 스와이프입니다.
+                
+                @Code(name: "ListSwipe.swift", file: "05-list-swipe.swift")
+            }
+        }
+    }
+    
+    @Section(title: "검색과 필터링") {
+        @ContentAndMedia {
+            **검색 기능**은 사용자 경험의 핵심입니다.
+            
+            SwiftUI는 `.searchable()` 모디파이어로
+            시스템 표준 검색 바를 쉽게 추가할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **.searchable 추가**
+                
+                NavigationStack 안에서 .searchable을 사용합니다.
+                @State로 검색어를 관리합니다.
+                
+                @Code(name: "SearchableList.swift", file: "05-searchable.swift")
+            }
+            
+            @Step {
+                **검색 결과 필터링**
+                
+                computed property로 필터링된 결과를 계산합니다.
+                검색어가 바뀔 때마다 자동으로 업데이트됩니다.
+                
+                @Code(name: "FilteredList.swift", file: "05-filtered.swift")
+            }
+            
+            @Step {
+                **검색 제안 표시**
+                
+                `.searchSuggestions()`로 자동완성 제안을 추가합니다.
+                인기 검색어나 최근 검색어를 보여줄 수 있습니다.
+                
+                @Code(name: "SearchSuggestions.swift", file: "05-suggestions.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 레시피 목록 화면") {
+        @ContentAndMedia {
+            ChefBook의 메인 화면인 레시피 목록을 완성합니다!
+            
+            - 카테고리별 섹션
+            - 검색 기능
+            - 스와이프로 즐겨찾기/삭제
+        }
+        
+        @Steps {
+            @Step {
+                **레시피 목록 기본 구조**
+                
+                Recipe 배열을 List로 표시합니다.
+                각 행에 RecipeCard를 사용합니다.
+                
+                @Code(name: "RecipeListView.swift", file: "05-recipe-list-basic.swift")
+            }
+            
+            @Step {
+                **카테고리별 섹션 적용**
+                
+                RecipeCategory를 기준으로 그룹화합니다.
+                Dictionary(grouping:by:)를 활용합니다.
+                
+                @Code(name: "RecipeListView.swift", file: "05-recipe-list-section.swift")
+            }
+            
+            @Step {
+                **검색 기능 추가**
+                
+                레시피 이름으로 검색할 수 있는 기능을 추가합니다.
+                대소문자 구분 없이 검색합니다.
+                
+                @Code(name: "RecipeListView.swift", file: "05-recipe-list-search.swift")
+            }
+            
+            @Step {
+                **스와이프 액션 구현**
+                
+                왼쪽 스와이프: 즐겨찾기 토글
+                오른쪽 스와이프: 삭제
+                
+                @Code(name: "RecipeListView.swift", file: "05-recipe-list-swipe.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ForEach와 List의 가장 큰 차이점은?
+            
+            @Choice(isCorrect: true) {
+                List는 스크롤과 셀 스타일을 제공하고, ForEach는 순수하게 뷰만 생성
+                
+                @Justification(reaction: "정답입니다! 🎯") {
+                    ForEach는 컬렉션을 뷰로 변환만 합니다.
+                    List는 그 위에 스크롤, 스타일, 액션 등을 추가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ForEach는 정적 데이터용, List는 동적 데이터용
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 동적 데이터에 사용합니다.
+                    차이는 "레이아웃/스타일 제공 여부"입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 차이만 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    기능적으로 명확한 차이가 있습니다.
+                    List는 완전한 목록 UI를 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ForEach에서 id가 중요한 이유는?
+            
+            @Choice(isCorrect: true) {
+                SwiftUI가 요소 변화를 추적하여 효율적으로 업데이트하기 위해
+                
+                @Justification(reaction: "완벽합니다! ⭐") {
+                    고유한 id로 각 요소를 식별해야
+                    추가/삭제/이동 시 정확한 애니메이션과 업데이트가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                접근성(Accessibility)을 위해
+                
+                @Justification(reaction: "아쉽네요") {
+                    접근성도 중요하지만, id의 주된 목적은
+                    뷰 식별과 효율적 업데이트입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                스타일링을 위해
+                
+                @Justification(reaction: "아쉽네요") {
+                    id는 스타일링과 관계없습니다.
+                    뷰 식별과 추적에 사용됩니다.
+                }
+            }
+        }
+    }
+}

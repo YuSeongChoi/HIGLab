@@ -1,0 +1,209 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CoreML + Vision 통합") {
+        Vision의 고수준 API와 CoreML을 결합하여
+        객체 감지, 세그멘테이션 등 복잡한 비전 태스크를 구현합니다.
+    }
+    
+    @Section(title: "Vision 고수준 API") {
+        @ContentAndMedia {
+            Vision은 이미지 분류 외에도
+            얼굴 감지, 바코드 인식, 텍스트 인식 등
+            다양한 기능을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Vision 요청 타입들**
+                
+                - VNDetectFaceRectanglesRequest: 얼굴 감지
+                - VNRecognizeTextRequest: OCR (텍스트 인식)
+                - VNDetectBarcodesRequest: 바코드/QR 인식
+                - VNCoreMLRequest: 커스텀 CoreML 모델
+                
+                @Code(name: "VisionRequestTypes.swift", file: "09-vision-requests.swift")
+            }
+            
+            @Step {
+                **요청 체이닝**
+                
+                여러 Vision 요청을 동시에 실행하여
+                복합적인 분석을 수행합니다.
+                
+                @Code(name: "RequestChaining.swift", file: "09-request-chaining.swift")
+            }
+        }
+    }
+    
+    @Section(title: "객체 감지 (Object Detection)") {
+        @ContentAndMedia {
+            이미지에서 여러 객체를 찾아
+            위치(Bounding Box)와 레이블을 반환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **객체 감지 모델 준비**
+                
+                YOLO, SSD 등의 객체 감지 모델을
+                CoreML 형식으로 변환하여 사용합니다.
+                
+                @Code(name: "ObjectDetectionModel.swift", file: "09-object-model.swift")
+            }
+            
+            @Step {
+                **VNRecognizedObjectObservation 파싱**
+                
+                감지된 객체의 boundingBox, labels, confidence를
+                추출합니다. 좌표계 변환에 주의합니다.
+                
+                @Code(name: "ObjectObservation.swift", file: "09-object-observation.swift")
+            }
+            
+            @Step {
+                **바운딩 박스 그리기**
+                
+                감지된 객체 주위에 박스를 그려
+                시각적으로 표시합니다.
+                
+                @Code(name: "BoundingBoxView.swift", file: "09-bounding-box.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 세그멘테이션") {
+        @ContentAndMedia {
+            픽셀 단위로 이미지를 분류하여
+            배경 제거, 인물 분리 등을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **세그멘테이션 모델**
+                
+                DeepLab, U-Net 등의 세그멘테이션 모델은
+                각 픽셀에 대한 클래스를 예측합니다.
+                
+                @Code(name: "SegmentationModel.swift", file: "09-seg-model.swift")
+            }
+            
+            @Step {
+                **VNGeneratePersonSegmentationRequest**
+                
+                iOS 15+에서 Apple이 제공하는
+                내장 인물 세그멘테이션 기능입니다.
+                
+                @Code(name: "PersonSegmentation.swift", file: "09-person-seg.swift")
+            }
+            
+            @Step {
+                **마스크 적용하기**
+                
+                세그멘테이션 마스크를 원본 이미지에 적용하여
+                배경을 투명하게 만들거나 효과를 추가합니다.
+                
+                @Code(name: "ApplyMask.swift", file: "09-apply-mask.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 카메라 분석") {
+        @ContentAndMedia {
+            AVCaptureSession과 Vision을 연동하여
+            실시간 카메라 피드를 분석합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **카메라 세션 설정**
+                
+                AVCaptureSession을 설정하고
+                비디오 출력을 받을 준비를 합니다.
+                
+                @Code(name: "CameraSession.swift", file: "09-camera-session.swift")
+            }
+            
+            @Step {
+                **VNSequenceRequestHandler 사용**
+                
+                연속된 프레임을 분석할 때는
+                VNSequenceRequestHandler를 사용합니다.
+                객체 추적에 유리합니다.
+                
+                @Code(name: "SequenceHandler.swift", file: "09-sequence-handler.swift")
+            }
+            
+            @Step {
+                **카메라 프리뷰 + 오버레이**
+                
+                SwiftUI에서 카메라 프리뷰와 
+                분석 결과 오버레이를 함께 표시합니다.
+                
+                @Code(name: "CameraOverlay.swift", file: "09-camera-overlay.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            연속된 비디오 프레임을 분석할 때 권장되는 핸들러는?
+            
+            @Choice(isCorrect: true) {
+                VNSequenceRequestHandler — 프레임 간 상태 유지
+                
+                @Justification(reaction: "정답!") {
+                    VNSequenceRequestHandler는 연속 프레임 간의 
+                    상태를 유지하여 객체 추적 등에 유리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNImageRequestHandler — 단일 이미지용
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNImageRequestHandler는 단일 이미지 분석에 적합합니다.
+                    비디오 프레임에는 VNSequenceRequestHandler가 권장됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MLModel 직접 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision을 통해 사용하면 전처리와 
+                    프레임 관리가 자동화됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iOS 15+에서 Apple이 기본 제공하는 세그멘테이션 기능은?
+            
+            @Choice(isCorrect: true) {
+                VNGeneratePersonSegmentationRequest
+                
+                @Justification(reaction: "정확합니다!") {
+                    Apple이 사전 훈련된 모델로 
+                    인물 세그멘테이션을 기본 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNCoreMLRequest만 사용 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    iOS 15부터 VNGeneratePersonSegmentationRequest로
+                    내장 인물 세그멘테이션이 제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                세그멘테이션은 지원하지 않음
+                
+                @Justification(reaction: "아쉽네요") {
+                    iOS 15+에서 인물 세그멘테이션이 기본 제공됩니다.
+                    배경 흐림 등에 활용됩니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,200 @@
+@Tutorial(time: 25) {
+    @Intro(title: "동적 햅틱 (CHHapticDynamicParameter)") {
+        CHHapticDynamicParameter를 사용하여 
+        재생 중인 햅틱을 실시간으로 변조하는 방법을 배웁니다.
+        
+        @Image(source: "dynamic-haptics.png", alt: "동적 햅틱 파라미터")
+    }
+    
+    @Section(title: "동적 파라미터 이해하기") {
+        @ContentAndMedia {
+            CHHapticDynamicParameter는 이미 재생 중인 햅틱의 
+            특성을 실시간으로 변경할 수 있게 해줍니다.
+            
+            - 게임에서 속도에 따른 진동 강도 변화
+            - 슬라이더 값에 따른 햅틱 피드백
+            - 사용자 제스처에 반응하는 인터랙티브 햅틱
+        }
+        
+        @Steps {
+            @Step {
+                동적으로 변경 가능한 파라미터 종류를 알아봅니다.
+                
+                - `hapticIntensityControl`: 전체 강도 조절
+                - `hapticSharpnessControl`: 전체 날카로움 조절
+                - `hapticAttackTimeControl`: 시작 시간 조절
+                - `hapticDecayTimeControl`: 감쇠 시간 조절
+                
+                @Code(name: "DynamicParameters.swift", file: "04-01-parameter-types.swift")
+            }
+            
+            @Step {
+                AdvancedPatternPlayer를 생성합니다.
+                동적 파라미터를 적용하려면 
+                advancedPlayer를 사용해야 합니다.
+                
+                @Code(name: "DynamicPlayer.swift", file: "04-02-advanced-player.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 강도 조절") {
+        @ContentAndMedia {
+            게임이나 인터랙티브 앱에서 
+            사용자 입력에 따라 햅틱 강도를 동적으로 조절합니다.
+            
+            예를 들어, 레이싱 게임에서 속도가 빨라질수록 
+            진동이 강해지는 효과를 구현할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Continuous 패턴을 준비합니다.
+                이 패턴은 재생 중에 강도가 변경됩니다.
+                
+                @Code(name: "IntensityControl.swift", file: "04-03-continuous-pattern.swift")
+            }
+            
+            @Step {
+                슬라이더 값에 따라 강도를 조절하는 예제입니다.
+                sendParameters() 메서드로 실시간 변경을 적용합니다.
+                
+                @Code(name: "IntensityControl.swift", file: "04-04-slider-intensity.swift")
+            }
+            
+            @Step {
+                속도 기반 강도 조절을 구현합니다.
+                게임의 물리 엔진과 연동하기 좋은 패턴입니다.
+                
+                @Code(name: "SpeedHaptics.swift", file: "04-05-speed-based.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파라미터 커브") {
+        @ContentAndMedia {
+            CHHapticParameterCurve를 사용하면 
+            시간에 따른 파라미터 변화를 미리 정의할 수 있습니다.
+            
+            런타임에서 매번 sendParameters를 호출하는 것보다 
+            효율적이고 부드러운 전환이 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                선형적으로 증가하는 강도 커브를 만듭니다.
+                점점 강해지는 "빌드업" 효과에 적합합니다.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-06-linear-curve.swift")
+            }
+            
+            @Step {
+                여러 제어점으로 복잡한 커브를 정의합니다.
+                파도처럼 오르내리는 진동 패턴을 만들 수 있습니다.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-07-multi-point-curve.swift")
+            }
+            
+            @Step {
+                패턴에 파라미터 커브를 적용합니다.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-08-apply-curve.swift")
+            }
+        }
+    }
+    
+    @Section(title: "제스처 연동 햅틱") {
+        @ContentAndMedia {
+            팬 제스처, 핀치 제스처 등 
+            사용자 제스처와 햅틱을 연동하면 
+            매우 직관적인 인터페이스를 만들 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                드래그 제스처에 연동된 햅틱을 구현합니다.
+                드래그 거리에 따라 강도가 변합니다.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-09-drag-haptic.swift")
+            }
+            
+            @Step {
+                핀치 제스처로 줌할 때의 햅틱 피드백입니다.
+                확대/축소 비율에 따라 느낌이 달라집니다.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-10-pinch-haptic.swift")
+            }
+            
+            @Step {
+                장시간 누르기(Long Press)의 진행 상황을 
+                햅틱으로 표현합니다.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-11-long-press-haptic.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CHHapticDynamicParameter를 사용하려면 어떤 Player가 필요한가요?
+            
+            @Choice(isCorrect: false) {
+                CHHapticPatternPlayer
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    기본 PatternPlayer는 동적 파라미터를 지원하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CHHapticAdvancedPatternPlayer
+                
+                @Justification(reaction: "정확합니다! 🎮") {
+                    makeAdvancedPlayer()로 생성한 
+                    AdvancedPatternPlayer만 sendParameters()를 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                어떤 Player든 상관없다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    동적 파라미터 기능은 
+                    AdvancedPatternPlayer에서만 사용 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CHHapticParameterCurve의 장점은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                더 강한 햅틱을 만들 수 있다
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    ParameterCurve는 강도가 아닌 
+                    시간에 따른 변화를 정의합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                시간에 따른 파라미터 변화를 미리 정의하여 
+                효율적이고 부드러운 전환이 가능하다
+                
+                @Justification(reaction: "맞습니다! 📈") {
+                    런타임에서 반복적으로 sendParameters를 
+                    호출하는 것보다 효율적입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                오디오와 햅틱을 동기화할 수 있다
+                
+                @Justification(reaction: "다른 기능입니다.") {
+                    오디오 동기화는 별도의 주제입니다.
+                    ParameterCurve는 햅틱 파라미터 변화에 집중합니다.
+                }
+            }
+        }
+    }
+}

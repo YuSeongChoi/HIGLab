@@ -1,0 +1,277 @@
+@Tutorial(time: 20) {
+    @Intro(title: "재생 제어 (ApplicationMusicPlayer)") {
+        ApplicationMusicPlayer를 사용하여 음악을 재생하고
+        재생/일시정지, 이전/다음 곡 등 재생을 제어합니다.
+    }
+    
+    @Section(title: "ApplicationMusicPlayer 소개") {
+        @ContentAndMedia {
+            ApplicationMusicPlayer는 앱 내에서 Apple Music을 재생하는
+            메인 플레이어입니다. 시스템 음악 앱과 독립적으로 동작합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ApplicationMusicPlayer.shared**
+                
+                싱글톤 인스턴스로 앱 전체에서 하나의 플레이어를 공유합니다.
+                재생 상태, 현재 곡 정보 등을 관리합니다.
+                
+                @Code(name: "PlayerBasics.swift", file: "05-player-basics.swift")
+            }
+            
+            @Step {
+                **vs SystemMusicPlayer**
+                
+                - `ApplicationMusicPlayer`: 앱 내 재생 (권장)
+                - `SystemMusicPlayer`: 시스템 음악 앱 제어
+                
+                대부분의 경우 ApplicationMusicPlayer를 사용합니다.
+                
+                @Code(name: "PlayerComparison.swift", file: "05-player-comparison.swift")
+            }
+            
+            @Step {
+                **재생 요구 사항**
+                
+                Apple Music 콘텐츠 재생에는 다음이 필요합니다:
+                
+                1. MusicKit 권한
+                2. Apple Music 구독
+                3. 실제 디바이스 (시뮬레이터 불가)
+                
+                @Code(name: "PlaybackRequirements.swift", file: "05-playback-requirements.swift")
+            }
+        }
+    }
+    
+    @Section(title: "음악 재생하기") {
+        @ContentAndMedia {
+            노래, 앨범, 플레이리스트를 재생하는 방법을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **단일 곡 재생**
+                
+                `player.queue = [song]`으로 큐에 노래를 설정하고
+                `player.play()`로 재생을 시작합니다.
+                
+                @Code(name: "PlaySong.swift", file: "05-play-song.swift")
+            }
+            
+            @Step {
+                **앨범 재생**
+                
+                앨범 전체를 재생하려면 앨범을 큐에 설정합니다.
+                Album 타입을 직접 전달하면 됩니다.
+                
+                @Code(name: "PlayAlbum.swift", file: "05-play-album.swift")
+            }
+            
+            @Step {
+                **플레이리스트 재생**
+                
+                플레이리스트도 마찬가지로 큐에 설정합니다.
+                사용자의 라이브러리 플레이리스트도 재생 가능합니다.
+                
+                @Code(name: "PlayPlaylist.swift", file: "05-play-playlist.swift")
+            }
+            
+            @Step {
+                **특정 위치에서 재생**
+                
+                `startingAt` 파라미터로 앨범/플레이리스트 중간부터 재생합니다.
+                특정 트랙을 탭했을 때 유용합니다.
+                
+                @Code(name: "PlayAtIndex.swift", file: "05-play-at-index.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재생 제어") {
+        @ContentAndMedia {
+            재생/일시정지, 이전/다음 곡, 탐색 등
+            재생 제어 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **play() / pause()**
+                
+                기본적인 재생과 일시정지입니다.
+                `player.state.playbackStatus`로 현재 상태를 확인합니다.
+                
+                @Code(name: "PlayPause.swift", file: "05-play-pause.swift")
+            }
+            
+            @Step {
+                **skipToNextEntry() / skipToPreviousEntry()**
+                
+                큐에서 다음/이전 곡으로 이동합니다.
+                큐의 끝/시작에 도달하면 에러가 발생할 수 있습니다.
+                
+                @Code(name: "SkipTrack.swift", file: "05-skip-track.swift")
+            }
+            
+            @Step {
+                **seek(to:)**
+                
+                곡 내에서 특정 시간으로 이동합니다.
+                TimeInterval(초)로 위치를 지정합니다.
+                
+                @Code(name: "SeekTo.swift", file: "05-seek-to.swift")
+            }
+            
+            @Step {
+                **restartCurrentEntry()**
+                
+                현재 곡을 처음부터 다시 재생합니다.
+                이전 곡 버튼을 두 번 탭하는 동작에 활용합니다.
+                
+                @Code(name: "RestartEntry.swift", file: "05-restart-entry.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재생 상태 관찰") {
+        @ContentAndMedia {
+            현재 재생 상태, 재생 시간, 현재 곡 정보를
+            실시간으로 관찰하고 UI에 반영합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicPlayer.State**
+                
+                `player.state`에서 다양한 재생 정보를 얻습니다.
+                - `playbackStatus`: 재생/일시정지/정지
+                - `playbackRate`: 재생 속도
+                - `shuffleMode`: 셔플 모드
+                
+                @Code(name: "PlayerState.swift", file: "05-player-state.swift")
+            }
+            
+            @Step {
+                **현재 곡 정보**
+                
+                `player.queue.currentEntry`로 현재 재생 중인 곡을 확인합니다.
+                Entry에서 Song, Album 등 원본 정보에 접근합니다.
+                
+                @Code(name: "CurrentEntry.swift", file: "05-current-entry.swift")
+            }
+            
+            @Step {
+                **재생 시간 추적**
+                
+                `player.playbackTime`으로 현재 재생 위치를 얻습니다.
+                Timer와 함께 사용해 progress bar를 업데이트합니다.
+                
+                @Code(name: "PlaybackTime.swift", file: "05-playback-time.swift")
+            }
+            
+            @Step {
+                **상태 변경 구독**
+                
+                `player.state.objectWillChange`를 구독해
+                상태 변경을 실시간으로 감지합니다.
+                
+                @Code(name: "StateObservation.swift", file: "05-state-observation.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ApplicationMusicPlayer를 얻는 방법은?
+            
+            @Choice(isCorrect: true) {
+                ApplicationMusicPlayer.shared
+                
+                @Justification(reaction: "정답입니다!") {
+                    ApplicationMusicPlayer는 싱글톤 패턴을 사용합니다.
+                    앱 전체에서 하나의 플레이어를 공유합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ApplicationMusicPlayer()
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    직접 인스턴스를 생성하지 않습니다.
+                    shared 싱글톤을 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicPlayer.default
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    MusicPlayer.default가 아닌
+                    ApplicationMusicPlayer.shared를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            시뮬레이터에서 ApplicationMusicPlayer로 할 수 있는 것은?
+            
+            @Choice(isCorrect: false) {
+                음악 스트리밍 재생
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    시뮬레이터에서는 실제 스트리밍 재생이 불가능합니다.
+                    실제 디바이스가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                플레이어 API 테스트 (재생 포함)
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    재생 관련 기능은 시뮬레이터에서 작동하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                코드 컴파일 확인만 가능
+                
+                @Justification(reaction: "정답입니다!") {
+                    시뮬레이터에서는 코드가 컴파일되는지만 확인할 수 있고,
+                    실제 재생 테스트는 디바이스에서 해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            앨범 중간의 특정 트랙부터 재생하려면?
+            
+            @Choice(isCorrect: true) {
+                startingAt 파라미터로 시작 위치 지정
+                
+                @Justification(reaction: "정답입니다!") {
+                    player.queue = [album]으로 앨범을 설정하고
+                    startingAt으로 시작할 트랙을 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앨범 재생 후 skipToNextEntry 여러 번 호출
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    가능하지만 비효율적입니다.
+                    startingAt을 사용하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                해당 트랙만 별도로 재생
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    앨범 전체를 큐에 두고 특정 위치에서 시작하면
+                    다음 곡으로 자연스럽게 넘어갑니다.
+                }
+            }
+        }
+    }
+}

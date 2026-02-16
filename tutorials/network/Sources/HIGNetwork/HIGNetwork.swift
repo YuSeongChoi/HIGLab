@@ -1,1 +1,2 @@
-public struct HIGNetwork { public init() {} }
+/// HIG Lab Network Tutorial
+public struct HIGNetwork {}

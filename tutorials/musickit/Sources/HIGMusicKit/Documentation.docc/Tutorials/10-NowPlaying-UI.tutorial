@@ -1,0 +1,280 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Now Playing UI") {
+        현재 재생 중인 음악을 표시하는 Now Playing 화면을 구현합니다.
+        미니 플레이어, 전체 화면 플레이어, 제어 컨트롤을 포함합니다.
+    }
+    
+    @Section(title: "미니 플레이어") {
+        @ContentAndMedia {
+            화면 하단에 고정되는 미니 플레이어 바를 만듭니다.
+            현재 곡 정보와 기본 컨트롤을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MiniPlayerView 구조**
+                
+                앨범 아트, 곡 제목, 재생/일시정지 버튼을 포함합니다.
+                탭하면 전체 화면 플레이어로 전환됩니다.
+                
+                @Code(name: "MiniPlayerView.swift", file: "10-mini-player-view.swift")
+            }
+            
+            @Step {
+                **진행 바**
+                
+                현재 재생 진행률을 나타내는 얇은 바를 추가합니다.
+                색상으로 진행 상태를 표시합니다.
+                
+                @Code(name: "ProgressBar.swift", file: "10-progress-bar.swift")
+            }
+            
+            @Step {
+                **미니 플레이어 표시 조건**
+                
+                재생 중이거나 일시정지 상태일 때만 표시합니다.
+                큐가 비어있으면 숨깁니다.
+                
+                @Code(name: "MiniPlayerVisibility.swift", file: "10-mini-player-visibility.swift")
+            }
+            
+            @Step {
+                **메인 화면에 통합**
+                
+                TabView 위에 미니 플레이어를 오버레이합니다.
+                safeAreaInset을 활용해 콘텐츠가 가려지지 않게 합니다.
+                
+                @Code(name: "MainViewIntegration.swift", file: "10-main-view-integration.swift")
+            }
+        }
+    }
+    
+    @Section(title: "전체 화면 플레이어") {
+        @ContentAndMedia {
+            미니 플레이어를 탭하면 나타나는 전체 화면 플레이어입니다.
+            큰 아트워크와 상세 컨트롤을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **NowPlayingView 레이아웃**
+                
+                큰 앨범 아트워크, 곡 정보, 진행 슬라이더,
+                재생 컨트롤을 수직으로 배치합니다.
+                
+                @Code(name: "NowPlayingView.swift", file: "10-now-playing-view.swift")
+            }
+            
+            @Step {
+                **큰 아트워크**
+                
+                화면 너비에 맞는 큰 앨범 아트를 표시합니다.
+                둥근 모서리와 그림자로 깊이감을 줍니다.
+                
+                @Code(name: "LargeArtwork.swift", file: "10-large-artwork.swift")
+            }
+            
+            @Step {
+                **시간 슬라이더**
+                
+                드래그로 재생 위치를 조절하는 슬라이더입니다.
+                현재 시간과 총 시간을 양쪽에 표시합니다.
+                
+                @Code(name: "TimeSlider.swift", file: "10-time-slider.swift")
+            }
+            
+            @Step {
+                **재생 컨트롤 버튼들**
+                
+                이전, 재생/일시정지, 다음 버튼을 배치합니다.
+                SF Symbols를 활용해 일관된 디자인을 적용합니다.
+                
+                @Code(name: "PlaybackControls.swift", file: "10-playback-controls.swift")
+            }
+        }
+    }
+    
+    @Section(title: "추가 컨트롤") {
+        @ContentAndMedia {
+            볼륨, AirPlay, 셔플/반복 등 추가 컨트롤을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **볼륨 슬라이더**
+                
+                MPVolumeView를 SwiftUI로 래핑해 사용합니다.
+                시스템 볼륨과 동기화됩니다.
+                
+                @Code(name: "VolumeSlider.swift", file: "10-volume-slider.swift")
+            }
+            
+            @Step {
+                **AirPlay 버튼**
+                
+                AVRoutePickerView로 AirPlay 기기 선택을 제공합니다.
+                HomePod, AirPods 등으로 출력을 변경합니다.
+                
+                @Code(name: "AirPlayButton.swift", file: "10-airplay-button.swift")
+            }
+            
+            @Step {
+                **셔플 & 반복 버튼**
+                
+                현재 모드를 시각적으로 표시하고
+                탭하면 모드를 순환합니다.
+                
+                @Code(name: "ShuffleRepeatButtons.swift", file: "10-shuffle-repeat-buttons.swift")
+            }
+            
+            @Step {
+                **더보기 메뉴**
+                
+                라이브러리에 추가, 공유, 가사 보기 등
+                추가 액션을 메뉴로 제공합니다.
+                
+                @Code(name: "MoreMenu.swift", file: "10-more-menu.swift")
+            }
+        }
+    }
+    
+    @Section(title: "전환 애니메이션") {
+        @ContentAndMedia {
+            미니 플레이어와 전체 화면 사이의
+            부드러운 전환 애니메이션을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **시트 프레젠테이션**
+                
+                `.sheet` modifier로 전체 화면 플레이어를 표시합니다.
+                `presentationDetents`로 높이를 조절합니다.
+                
+                @Code(name: "SheetPresentation.swift", file: "10-sheet-presentation.swift")
+            }
+            
+            @Step {
+                **드래그 제스처**
+                
+                전체 화면에서 아래로 드래그하면 닫히는
+                인터랙티브 디스미스를 구현합니다.
+                
+                @Code(name: "DragDismiss.swift", file: "10-drag-dismiss.swift")
+            }
+            
+            @Step {
+                **matchedGeometryEffect**
+                
+                미니 플레이어의 아트워크가 전체 화면으로
+                자연스럽게 확대되는 효과를 적용합니다.
+                
+                @Code(name: "MatchedGeometry.swift", file: "10-matched-geometry.swift")
+            }
+            
+            @Step {
+                **최종 완성**
+                
+                모든 구성요소를 조합해 완성된
+                Now Playing 경험을 만듭니다.
+                
+                @Code(name: "FinalNowPlaying.swift", file: "10-final-now-playing.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            미니 플레이어를 TabView 위에 표시할 때 권장되는 방법은?
+            
+            @Choice(isCorrect: true) {
+                safeAreaInset으로 콘텐츠 공간 확보 후 오버레이
+                
+                @Justification(reaction: "정답입니다!") {
+                    safeAreaInset을 사용하면 TabView 콘텐츠가
+                    미니 플레이어에 가려지지 않게 공간을 확보합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ZStack으로 단순 오버레이
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    단순 오버레이는 콘텐츠가 미니 플레이어 아래로
+                    가려질 수 있습니다. safeAreaInset이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                TabView 안에 미니 플레이어 포함
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    미니 플레이어는 모든 탭에서 표시되어야 하므로
+                    TabView 밖에 배치해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftUI에서 시스템 볼륨 슬라이더를 표시하려면?
+            
+            @Choice(isCorrect: false) {
+                SwiftUI Slider 사용
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    일반 Slider는 시스템 볼륨과 연동되지 않습니다.
+                    UIKit의 MPVolumeView를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                MPVolumeView를 UIViewRepresentable로 래핑
+                
+                @Justification(reaction: "정답입니다!") {
+                    MPVolumeView가 시스템 볼륨을 제어합니다.
+                    UIViewRepresentable로 SwiftUI에서 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVAudioSession.outputVolume 바인딩
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    outputVolume은 읽기 전용입니다.
+                    볼륨 조절은 MPVolumeView를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            미니 플레이어에서 전체 화면으로 아트워크가 확대되는 효과를 구현하려면?
+            
+            @Choice(isCorrect: true) {
+                matchedGeometryEffect
+                
+                @Justification(reaction: "정답입니다!") {
+                    matchedGeometryEffect로 두 뷰 사이의
+                    부드러운 전환 애니메이션을 만들 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                withAnimation만 사용
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    withAnimation은 기본 애니메이션을 제공하지만,
+                    두 뷰 사이의 매칭 효과는 matchedGeometryEffect가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                transition modifier
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    transition은 뷰의 등장/퇴장 애니메이션입니다.
+                    두 뷰 사이의 연속적 전환은 matchedGeometryEffect를 사용합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,178 @@
+@Tutorial(time: 15) {
+    @Intro(title: "시스템 UI 통합") {
+        Picture in Picture(PiP), Now Playing, 시스템 미디어 컨트롤과 
+        SharePlay를 통합하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "Picture in Picture 지원") {
+        @ContentAndMedia {
+            SharePlay 영상을 PiP로 표시하면 사용자가 
+            다른 앱을 사용하면서도 영상을 볼 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                PiP를 위한 AVPlayerViewController 설정입니다.
+                
+                `allowsPictureInPicturePlayback`을 true로 설정하면
+                PiP 버튼이 표시됩니다.
+                
+                @Code(name: "PiPSetup.swift", file: "09-pip-setup.swift")
+            }
+            
+            @Step {
+                SharePlay 중 PiP 동작을 확인합니다.
+                
+                PiP 모드에서도 재생 동기화가 유지되며,
+                제어가 모든 참가자에게 반영됩니다.
+                
+                @Code(name: "PiPSharePlay.swift", file: "09-pip-shareplay.swift")
+            }
+            
+            @Step {
+                PiP Delegate를 구현합니다.
+                
+                PiP 시작/종료 시점을 감지해
+                UI를 적절히 업데이트합니다.
+                
+                @Code(name: "PiPDelegate.swift", file: "09-pip-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Now Playing 통합") {
+        @ContentAndMedia {
+            Control Center의 Now Playing 위젯과 
+            잠금 화면에 현재 SharePlay 콘텐츠를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                MPNowPlayingInfoCenter를 설정합니다.
+                
+                제목, 아티스트, 아트워크 등의 
+                미디어 정보를 제공합니다.
+                
+                @Code(name: "NowPlayingInfo.swift", file: "09-now-playing-info.swift")
+            }
+            
+            @Step {
+                SharePlay 아이콘을 표시합니다.
+                
+                Now Playing에 SharePlay 세션임을 
+                나타내는 표시를 추가합니다.
+                
+                @Code(name: "SharePlayIndicator.swift", file: "09-shareplay-indicator.swift")
+            }
+            
+            @Step {
+                Remote Command를 처리합니다.
+                
+                잠금 화면이나 Control Center에서의 
+                재생 제어를 SharePlay에 연동합니다.
+                
+                @Code(name: "RemoteCommand.swift", file: "09-remote-command.swift")
+            }
+        }
+    }
+    
+    @Section(title: "FaceTime 오버레이") {
+        @ContentAndMedia {
+            FaceTime 통화 중 SharePlay 앱의 오버레이를 표시해
+            원활한 사용자 경험을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                FaceTime 오버레이 모드를 이해합니다.
+                
+                전체 화면 또는 PiP로 영상을 보면서
+                FaceTime 통화를 유지할 수 있습니다.
+                
+                @Code(name: "FaceTimeOverlay.swift", file: "09-facetime-overlay.swift")
+            }
+            
+            @Step {
+                SharePlay 상태 표시를 구현합니다.
+                
+                화면 상단에 현재 SharePlay 세션과 
+                참가자 정보를 간략히 표시합니다.
+                
+                @Code(name: "StatusOverlay.swift", file: "09-status-overlay.swift")
+            }
+            
+            @Step {
+                FaceTime 복귀 동작을 처리합니다.
+                
+                사용자가 FaceTime으로 돌아갈 때
+                앱 상태를 적절히 유지합니다.
+                
+                @Code(name: "FaceTimeReturn.swift", file: "09-facetime-return.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SharePlay 중 PiP 모드에서 재생 동기화는?
+            
+            @Choice(isCorrect: true) {
+                계속 유지됨
+                
+                @Justification(reaction: "정답! 🎉") {
+                    PiP 모드에서도 SharePlay 동기화는 
+                    정상적으로 유지됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                일시적으로 중단됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    PiP는 단순히 표시 모드만 바뀌는 것이고,
+                    동기화는 계속 유지됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                해당 사용자만 독립적으로 재생
+                
+                @Justification(reaction: "아쉽네요") {
+                    PiP 여부와 관계없이 모든 참가자가 
+                    동기화된 상태를 유지합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MPNowPlayingInfoCenter는 어디에 정보를 표시하나요?
+            
+            @Choice(isCorrect: true) {
+                Control Center와 잠금 화면
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Now Playing 정보는 Control Center와 
+                    잠금 화면의 미디어 컨트롤에 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 내부에만 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    MPNowPlayingInfoCenter는 시스템 UI에
+                    미디어 정보를 제공하는 API입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Notification으로 전송
+                
+                @Justification(reaction: "아쉽네요") {
+                    푸시 알림이 아닌 시스템 미디어 UI에
+                    정보를 제공하는 API입니다.
+                }
+            }
+        }
+    }
+}

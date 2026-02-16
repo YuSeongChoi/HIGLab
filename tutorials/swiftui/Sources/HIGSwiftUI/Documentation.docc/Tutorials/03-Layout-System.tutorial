@@ -1,0 +1,275 @@
+@Tutorial(time: 25) {
+    @Intro(title: "레이아웃 시스템 마스터하기") {
+        VStack, HStack, ZStack의 차이를 이해하고,
+        Grid로 정교한 레이아웃을 만듭니다.
+        ChefBook의 레시피 카드 UI를 완성합니다.
+    }
+    
+    @Section(title: "Stack의 세계") {
+        @ContentAndMedia {
+            SwiftUI의 레이아웃은 **Stack**으로 시작합니다.
+            
+            - **VStack**: 세로로 쌓기 (Vertical)
+            - **HStack**: 가로로 쌓기 (Horizontal)
+            - **ZStack**: 겹쳐서 쌓기 (Z-axis)
+            
+            이 세 가지만 알면 대부분의 레이아웃을 만들 수 있습니다!
+        }
+        
+        @Steps {
+            @Step {
+                **VStack — 세로 레이아웃**
+                
+                VStack은 자식 뷰들을 위에서 아래로 배치합니다.
+                
+                `alignment` 파라미터로 가로 정렬을 조절합니다.
+                (.leading, .center, .trailing)
+                
+                `spacing` 파라미터로 간격을 조절합니다.
+                
+                @Code(name: "VStackExample.swift", file: "03-vstack.swift")
+            }
+            
+            @Step {
+                **HStack — 가로 레이아웃**
+                
+                HStack은 자식 뷰들을 왼쪽에서 오른쪽으로 배치합니다.
+                
+                `alignment` 파라미터로 세로 정렬을 조절합니다.
+                (.top, .center, .bottom, .firstTextBaseline)
+                
+                @Code(name: "HStackExample.swift", file: "03-hstack.swift")
+            }
+            
+            @Step {
+                **ZStack — 겹치는 레이아웃**
+                
+                ZStack은 자식 뷰들을 앞뒤로 겹칩니다.
+                먼저 선언한 뷰가 뒤에, 나중이 앞에 표시됩니다.
+                
+                배경 이미지 위에 텍스트를 올리는 용도로 자주 사용합니다.
+                
+                @Code(name: "ZStackExample.swift", file: "03-zstack.swift")
+            }
+            
+            @Step {
+                **Stack 조합하기**
+                
+                실제 UI는 Stack을 중첩해서 만듭니다.
+                
+                ChefBook의 레시피 정보 행을 만들어봅시다:
+                아이콘 | 제목 + 값 (세로) | Spacer | 추가정보
+                
+                @Code(name: "NestedStacks.swift", file: "03-nested-stacks.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Spacer와 정렬") {
+        @ContentAndMedia {
+            **Spacer**는 남은 공간을 차지하는 유연한 뷰입니다.
+            Spacer를 활용하면 뷰들을 원하는 위치로 밀어낼 수 있습니다.
+            
+            정렬(Alignment)과 함께 사용하면 
+            어떤 레이아웃이든 만들 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Spacer 기본 사용법**
+                
+                Spacer()는 최대한 늘어나려고 합니다.
+                여러 개의 Spacer는 공간을 균등하게 나눕니다.
+                
+                @Code(name: "SpacerBasic.swift", file: "03-spacer-basic.swift")
+            }
+            
+            @Step {
+                **minLength로 최소 간격 설정**
+                
+                `Spacer(minLength: 20)`처럼
+                최소 길이를 지정할 수 있습니다.
+                
+                공간이 부족해도 최소한 이만큼은 확보합니다.
+                
+                @Code(name: "SpacerMinLength.swift", file: "03-spacer-minlength.swift")
+            }
+            
+            @Step {
+                **frame으로 크기 제어**
+                
+                `.frame()`으로 뷰의 크기를 직접 지정합니다.
+                
+                - `width`, `height`: 고정 크기
+                - `minWidth`, `maxWidth`: 최소/최대
+                - `alignment`: 프레임 내 정렬
+                
+                @Code(name: "FrameExample.swift", file: "03-frame.swift")
+            }
+            
+            @Step {
+                **padding으로 여백 추가**
+                
+                `.padding()`은 뷰 주변에 여백을 추가합니다.
+                
+                - `.padding()`: 모든 방향 기본값
+                - `.padding(.horizontal, 20)`: 좌우 20
+                - `.padding(.top, 10)`: 위쪽만 10
+                
+                @Code(name: "PaddingExample.swift", file: "03-padding.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Grid로 정교한 배치") {
+        @ContentAndMedia {
+            **Grid**는 행과 열로 구성된 2차원 레이아웃입니다.
+            
+            Stack보다 복잡하지만, 
+            표 형태의 정렬이 필요할 때 강력합니다.
+            
+            iOS 16+에서 사용 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Grid 기본 구조**
+                
+                Grid 안에 GridRow로 행을 만듭니다.
+                각 행에 같은 수의 뷰를 넣으면 열이 정렬됩니다.
+                
+                @Code(name: "GridBasic.swift", file: "03-grid-basic.swift")
+            }
+            
+            @Step {
+                **gridCellColumns로 셀 병합**
+                
+                `.gridCellColumns(2)`로 여러 열을 합칠 수 있습니다.
+                엑셀의 셀 병합처럼 작동합니다.
+                
+                @Code(name: "GridSpan.swift", file: "03-grid-span.swift")
+            }
+            
+            @Step {
+                **LazyVGrid와 LazyHGrid**
+                
+                많은 아이템을 그리드로 표시할 때는
+                **LazyVGrid** 또는 **LazyHGrid**를 사용합니다.
+                
+                "Lazy"라서 화면에 보이는 것만 렌더링합니다.
+                
+                @Code(name: "LazyGridExample.swift", file: "03-lazy-grid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 레시피 카드 만들기") {
+        @ContentAndMedia {
+            배운 내용을 총동원해서 
+            ChefBook의 핵심 UI인 **레시피 카드**를 만듭니다!
+            
+            이 카드는 목록에서 각 레시피를 보여주는 컴포넌트입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **카드 구조 설계**
+                
+                레시피 카드에 들어갈 요소:
+                - 상단: 음식 이미지 (ZStack으로 즐겨찾기 뱃지)
+                - 하단: 이름, 설명, 시간/난이도
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-structure.swift")
+            }
+            
+            @Step {
+                **이미지 영역 구현**
+                
+                ZStack으로 이미지 위에 즐겨찾기 아이콘을 겹칩니다.
+                .clipShape()로 둥근 모서리를 만듭니다.
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-image.swift")
+            }
+            
+            @Step {
+                **정보 영역 구현**
+                
+                VStack + HStack 조합으로 텍스트 영역을 구성합니다.
+                Spacer로 요소들을 양쪽으로 밀어냅니다.
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-info.swift")
+            }
+            
+            @Step {
+                **최종 스타일링**
+                
+                .background(), .clipShape(), .shadow()로
+                카드 느낌을 완성합니다.
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ZStack에서 뷰가 겹치는 순서는?
+            
+            @Choice(isCorrect: true) {
+                먼저 선언한 뷰가 뒤에, 나중이 앞에
+                
+                @Justification(reaction: "정답! 🎯") {
+                    ZStack은 코드 순서대로 뒤에서 앞으로 쌓습니다.
+                    마지막에 선언한 뷰가 가장 앞에 보입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                나중에 선언한 뷰가 뒤로 간다
+                
+                @Justification(reaction: "아쉽네요") {
+                    반대입니다. 나중에 선언한 뷰가 앞으로 옵니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                순서와 상관없이 무작위
+                
+                @Justification(reaction: "아쉽네요") {
+                    코드 순서에 따라 결정됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Spacer의 역할은?
+            
+            @Choice(isCorrect: true) {
+                남은 공간을 차지하여 다른 뷰를 밀어낸다
+                
+                @Justification(reaction: "완벽해요! ✨") {
+                    Spacer는 "유연한 빈 공간"입니다.
+                    이를 활용해 뷰를 원하는 위치로 정렬합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                뷰 사이에 고정된 간격을 만든다
+                
+                @Justification(reaction: "아쉽네요") {
+                    고정 간격은 spacing 파라미터나 padding을 사용합니다.
+                    Spacer는 남은 공간을 "전부" 차지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                투명한 사각형을 그린다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Spacer는 렌더링되는 뷰가 아니라
+                    레이아웃을 위한 "공간"입니다.
+                }
+            }
+        }
+    }
+}

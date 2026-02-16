@@ -1,0 +1,283 @@
+@Tutorial(time: 25) {
+    @Intro(title: "애니메이션 & 트랜지션") {
+        SwiftUI의 강력한 애니메이션 시스템을 마스터합니다.
+        하트 애니메이션, 요리 완료 축하 효과,
+        화면 전환 트랜지션을 구현합니다.
+    }
+    
+    @Section(title: "SwiftUI 애니메이션 기초") {
+        @ContentAndMedia {
+            SwiftUI에서 애니메이션은 놀라울 정도로 간단합니다.
+            
+            **withAnimation** 블록 안에서 상태를 변경하면
+            그 변화가 자동으로 애니메이션됩니다!
+            
+            선언적 UI의 장점이 빛나는 순간입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **withAnimation 기본 사용법**
+                
+                withAnimation { } 블록 안에서 @State를 변경하면
+                UI 변화가 자동으로 애니메이션됩니다.
+                
+                @Code(name: "AnimationBasic.swift", file: "09-animation-basic.swift")
+            }
+            
+            @Step {
+                **애니메이션 타입 선택**
+                
+                다양한 애니메이션 커브를 선택할 수 있습니다:
+                
+                - `.easeInOut`: 시작과 끝이 부드러움 (기본)
+                - `.spring()`: 탄성 있는 움직임
+                - `.linear`: 일정한 속도
+                - `.easeIn`/`.easeOut`: 시작/끝만 부드러움
+                
+                @Code(name: "AnimationTypes.swift", file: "09-animation-types.swift")
+            }
+            
+            @Step {
+                **spring 애니메이션 파라미터**
+                
+                .spring()은 물리 기반 애니메이션입니다.
+                response(지속시간), dampingFraction(감쇠) 등을 조절합니다.
+                
+                - dampingFraction: 1.0 = 튕김 없음, 0.5 = 많이 튕김
+                
+                @Code(name: "SpringAnimation.swift", file: "09-spring.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Modifier 애니메이션") {
+        @ContentAndMedia {
+            `.animation()` modifier를 사용하면
+            특정 값이 변할 때 자동으로 애니메이션됩니다.
+            
+            withAnimation보다 더 세밀한 제어가 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **.animation modifier 사용**
+                
+                .animation(_:value:)로 특정 값의 변화를 감시합니다.
+                그 값이 바뀔 때만 애니메이션이 적용됩니다.
+                
+                @Code(name: "AnimationModifier.swift", file: "09-modifier-animation.swift")
+            }
+            
+            @Step {
+                **여러 애니메이션 조합**
+                
+                각 프로퍼티에 다른 애니메이션을 적용할 수 있습니다.
+                예: 위치는 spring, 투명도는 easeInOut
+                
+                @Code(name: "MultipleAnimations.swift", file: "09-multiple.swift")
+            }
+            
+            @Step {
+                **애니메이션 제어 플래그**
+                
+                특정 상황에서만 애니메이션을 적용하고 싶다면
+                nil을 전달하여 비활성화합니다.
+                
+                @Code(name: "AnimationControl.swift", file: "09-animation-control.swift")
+            }
+        }
+    }
+    
+    @Section(title: "트랜지션 (Transition)") {
+        @ContentAndMedia {
+            **Transition**은 뷰가 나타나거나 사라질 때의 
+            애니메이션을 정의합니다.
+            
+            if문으로 뷰가 추가/제거될 때 적용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 트랜지션**
+                
+                .transition()으로 뷰의 등장/퇴장 효과를 지정합니다.
+                
+                - .opacity: 페이드 인/아웃
+                - .slide: 옆에서 슬라이드
+                - .scale: 크기 변화
+                - .move(edge:): 특정 방향에서 등장
+                
+                @Code(name: "TransitionBasic.swift", file: "09-transition-basic.swift")
+            }
+            
+            @Step {
+                **비대칭 트랜지션**
+                
+                나타날 때와 사라질 때 다른 효과를 적용합니다.
+                .asymmetric(insertion:removal:)을 사용합니다.
+                
+                @Code(name: "TransitionAsymmetric.swift", file: "09-transition-asymmetric.swift")
+            }
+            
+            @Step {
+                **트랜지션 조합**
+                
+                .combined(with:)로 여러 트랜지션을 합칩니다.
+                예: 슬라이드하면서 페이드인
+                
+                @Code(name: "TransitionCombined.swift", file: "09-transition-combined.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 애니메이션 기법") {
+        @ContentAndMedia {
+            더 복잡하고 정교한 애니메이션을 만드는 방법입니다.
+            matchedGeometryEffect, TimelineView 등을 배웁니다.
+        }
+        
+        @Steps {
+            @Step {
+                **matchedGeometryEffect**
+                
+                서로 다른 뷰 계층의 요소를 매칭하여
+                자연스러운 전환 애니메이션을 만듭니다.
+                
+                Hero 애니메이션과 비슷한 효과입니다.
+                
+                @Code(name: "MatchedGeometry.swift", file: "09-matched-geometry.swift")
+            }
+            
+            @Step {
+                **반복 애니메이션**
+                
+                .repeatForever()로 무한 반복 애니메이션을 만듭니다.
+                로딩 스피너, 깜빡이는 효과 등에 사용합니다.
+                
+                @Code(name: "RepeatAnimation.swift", file: "09-repeat.swift")
+            }
+            
+            @Step {
+                **phase 애니메이션 (iOS 17+)**
+                
+                PhaseAnimator로 여러 단계를 순차적으로 애니메이션합니다.
+                복잡한 시퀀스를 쉽게 만들 수 있습니다.
+                
+                @Code(name: "PhaseAnimation.swift", file: "09-phase.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 생동감 있는 UI") {
+        @ContentAndMedia {
+            ChefBook에 재미있는 애니메이션을 추가합니다!
+            
+            - 하트 버튼 탭 애니메이션
+            - 재료 체크 시 효과
+            - 요리 완료 축하 효과
+        }
+        
+        @Steps {
+            @Step {
+                **하트 버튼 애니메이션**
+                
+                즐겨찾기 버튼을 탭하면 하트가 커졌다 작아지는
+                "펌프" 효과를 추가합니다.
+                
+                @Code(name: "HeartAnimation.swift", file: "09-chefbook-heart.swift")
+            }
+            
+            @Step {
+                **재료 체크 애니메이션**
+                
+                재료를 체크하면 부드럽게 취소선이 그어지고
+                색상이 변하는 효과를 추가합니다.
+                
+                @Code(name: "CheckAnimation.swift", file: "09-chefbook-check.swift")
+            }
+            
+            @Step {
+                **요리 단계 전환 트랜지션**
+                
+                요리 단계를 넘길 때 슬라이드 트랜지션을 적용합니다.
+                다음 단계는 오른쪽에서, 이전 단계는 왼쪽에서 등장합니다.
+                
+                @Code(name: "StepTransition.swift", file: "09-chefbook-step.swift")
+            }
+            
+            @Step {
+                **요리 완료 축하 효과**
+                
+                모든 단계를 완료하면 confetti 효과와 함께
+                축하 메시지가 표시됩니다.
+                
+                @Code(name: "CelebrationEffect.swift", file: "09-chefbook-celebration.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            withAnimation과 .animation modifier의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                withAnimation은 즉시 적용, .animation은 값 변화 감시
+                
+                @Justification(reaction: "정답! 🎯") {
+                    withAnimation은 블록 안의 변화를 즉시 애니메이션합니다.
+                    .animation(value:)는 특정 값이 변할 때만 동작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 차이만 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    적용 방식이 다릅니다.
+                    상황에 따라 적절한 것을 선택합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                withAnimation은 구버전, .animation이 새 버전
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 현재 사용됩니다.
+                    용도가 다를 뿐입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            .spring() 애니메이션의 dampingFraction이 0.5일 때?
+            
+            @Choice(isCorrect: true) {
+                탄성이 있어서 튕기는 효과가 나타남
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    dampingFraction이 낮을수록 더 많이 튕깁니다.
+                    1.0이면 튕김 없이 부드럽게 정지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                애니메이션 속도가 절반이 됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    속도는 response 파라미터로 조절합니다.
+                    dampingFraction은 튕김 정도를 제어합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                투명도가 50%가 됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    dampingFraction은 투명도와 관계없습니다.
+                    물리적 감쇠 정도를 나타냅니다.
+                }
+            }
+        }
+    }
+}

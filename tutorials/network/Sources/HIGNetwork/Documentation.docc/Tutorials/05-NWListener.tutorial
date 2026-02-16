@@ -1,0 +1,205 @@
+@Tutorial(time: 25) {
+    @Intro(title: "NWListener (서버)") {
+        NWListener로 서버 역할을 수행하며 
+        들어오는 연결을 처리합니다.
+        
+        @Image(source: "nwlistener.png", alt: "NWListener 아키텍처")
+    }
+    
+    @Section(title: "NWListener의 역할") {
+        @ContentAndMedia {
+            NWListener는 특정 포트에서 들어오는 연결을 
+            수신하는 서버 소켓입니다.
+            
+            - **포트 바인딩**: 특정 포트에서 대기
+            - **연결 수락**: 새 클라이언트 연결 처리
+            - **Bonjour 광고**: 로컬 네트워크에 서비스 공개
+            
+            @Image(source: "server-client.png", alt: "서버-클라이언트 구조")
+        }
+        
+        @Steps {
+            @Step {
+                NWListener를 생성합니다.
+                포트를 지정하거나 시스템이 자동으로 할당하게 할 수 있습니다.
+                
+                @Code(name: "ListenerCreate.swift", file: "05-01-listener-create.swift")
+            }
+            
+            @Step {
+                상태 핸들러를 등록합니다.
+                리스너가 준비되면 실제 할당된 포트를 확인할 수 있습니다.
+                
+                @Code(name: "ListenerState.swift", file: "05-02-listener-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "새 연결 처리하기") {
+        @ContentAndMedia {
+            `newConnectionHandler`로 새로 들어오는 
+            클라이언트 연결을 처리합니다.
+            
+            각 연결은 독립적인 NWConnection으로 관리됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                새 연결 핸들러를 설정합니다.
+                연결마다 별도의 처리 로직을 적용합니다.
+                
+                @Code(name: "NewConnection.swift", file: "05-03-new-connection.swift")
+            }
+            
+            @Step {
+                연결을 배열로 관리합니다.
+                여러 클라이언트를 동시에 처리할 수 있습니다.
+                
+                @Code(name: "ConnectionManagement.swift", file: "05-04-connection-management.swift")
+            }
+            
+            @Step {
+                각 연결에 대해 데이터 수신을 시작합니다.
+                클라이언트가 보낸 메시지를 처리합니다.
+                
+                @Code(name: "ConnectionReceive.swift", file: "05-05-connection-receive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Bonjour 서비스 광고") {
+        @ContentAndMedia {
+            Bonjour를 사용하면 IP 주소를 몰라도 
+            로컬 네트워크에서 서비스를 찾을 수 있습니다.
+            
+            NWListener에 서비스 정보를 설정하면 
+            자동으로 광고됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                Bonjour 서비스 타입을 정의합니다.
+                `_servicename._tcp` 또는 `_servicename._udp` 형식입니다.
+                
+                @Code(name: "BonjourService.swift", file: "05-06-bonjour-service.swift")
+            }
+            
+            @Step {
+                NWListener에 서비스를 등록합니다.
+                같은 네트워크의 다른 기기에서 발견할 수 있습니다.
+                
+                @Code(name: "ServiceAdvertise.swift", file: "05-07-service-advertise.swift")
+            }
+            
+            @Step {
+                TXT 레코드로 추가 정보를 제공합니다.
+                사용자 이름이나 기기 정보를 포함할 수 있습니다.
+                
+                @Code(name: "TXTRecord.swift", file: "05-08-txt-record.swift")
+            }
+        }
+    }
+    
+    @Section(title: "P2P 채팅 서버 구현") {
+        @ContentAndMedia {
+            지금까지 배운 내용으로 P2P 채팅 앱의 
+            서버 부분을 구현합니다.
+            
+            여러 클라이언트에게 메시지를 브로드캐스트합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ChatServer 클래스의 기본 구조를 만듭니다.
+                NWListener와 연결 목록을 관리합니다.
+                
+                @Code(name: "ChatServer.swift", file: "05-09-chat-server.swift")
+            }
+            
+            @Step {
+                메시지를 모든 클라이언트에게 브로드캐스트합니다.
+                발신자를 제외하고 전송합니다.
+                
+                @Code(name: "Broadcast.swift", file: "05-10-broadcast.swift")
+            }
+            
+            @Step {
+                클라이언트 연결 해제를 처리합니다.
+                연결 목록에서 제거하고 리소스를 정리합니다.
+                
+                @Code(name: "ClientDisconnect.swift", file: "05-11-client-disconnect.swift")
+            }
+            
+            @Step {
+                서버 종료 시 모든 연결을 정리합니다.
+                리스너와 모든 클라이언트 연결을 닫습니다.
+                
+                @Code(name: "ServerShutdown.swift", file: "05-12-server-shutdown.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            NWListener.Service의 역할은?
+            
+            @Choice(isCorrect: false) {
+                특정 IP 주소에 연결한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Service는 Bonjour 광고를 위한 것입니다.
+                    IP 주소 연결은 NWConnection이 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Bonjour로 로컬 네트워크에 서비스를 광고한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Service를 설정하면 같은 네트워크의 
+                    다른 기기에서 이 서비스를 발견할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                TLS 인증서를 검증한다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    TLS 설정은 NWParameters에서 합니다.
+                    Service는 서비스 발견을 위한 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            NWListener의 port에 0을 지정하면?
+            
+            @Choice(isCorrect: true) {
+                시스템이 사용 가능한 포트를 자동 할당한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    포트 0은 시스템에게 할당을 맡기는 것입니다.
+                    실제 포트는 .ready 상태에서 확인할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러가 발생한다.
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    포트 0은 유효한 설정입니다.
+                    시스템이 자동으로 포트를 할당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 포트에서 연결을 수신한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    하나의 포트만 할당됩니다.
+                    어떤 포트인지는 시스템이 결정합니다.
+                }
+            }
+        }
+    }
+}

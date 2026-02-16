@@ -1,0 +1,168 @@
+@Tutorial(time: 15) {
+    @Intro(title: "커스텀 데이터 동기화") {
+        미디어 재생 외에 앱 고유의 상태를 참가자 간에 
+        실시간으로 동기화하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "커스텀 동기화가 필요한 경우") {
+        @ContentAndMedia {
+            AVPlayer 동기화만으로는 부족한 경우가 많습니다.
+            리액션, 채팅, 앱 상태 등 추가 데이터를 동기화해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                미디어 외 동기화가 필요한 사례를 확인합니다.
+                
+                - 이모지 리액션 (좋아요, 웃음 등)
+                - 실시간 코멘트
+                - 화이트보드 드로잉
+                - 게임 상태
+                
+                @Code(name: "SyncUseCases.swift", file: "05-use-cases.swift")
+            }
+            
+            @Step {
+                동기화할 데이터 모델을 정의합니다.
+                
+                Codable을 채택해야 네트워크 전송이 가능합니다.
+                작고 효율적인 구조를 설계합니다.
+                
+                @Code(name: "SyncDataModel.swift", file: "05-data-model.swift")
+            }
+        }
+    }
+    
+    @Section(title: "GroupSessionJournal 활용") {
+        @ContentAndMedia {
+            `GroupSessionJournal`은 세션 내 공유 상태를 관리합니다.
+            모든 참가자가 같은 상태를 유지하도록 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                GroupSessionJournal의 개념을 이해합니다.
+                
+                Journal은 세션의 "공유 메모장" 같은 역할입니다.
+                누구나 쓸 수 있고, 모두가 읽을 수 있습니다.
+                
+                @Code(name: "JournalConcept.swift", file: "05-journal-concept.swift")
+            }
+            
+            @Step {
+                Journal에 데이터를 추가합니다.
+                
+                `add()` 메서드로 새 항목을 추가하면
+                모든 참가자에게 전파됩니다.
+                
+                @Code(name: "AddToJournal.swift", file: "05-add-journal.swift")
+            }
+            
+            @Step {
+                Journal 변경사항을 관찰합니다.
+                
+                `attachments` AsyncSequence로
+                새로운 항목을 실시간으로 수신합니다.
+                
+                @Code(name: "ObserveJournal.swift", file: "05-observe-journal.swift")
+            }
+        }
+    }
+    
+    @Section(title: "리액션 동기화 구현") {
+        @ContentAndMedia {
+            실제로 영화 시청 중 이모지 리액션을 
+            동기화하는 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                리액션 데이터 모델을 정의합니다.
+                
+                어떤 참가자가 어떤 이모지를 보냈는지
+                기록하는 구조체입니다.
+                
+                @Code(name: "ReactionModel.swift", file: "05-reaction-model.swift")
+            }
+            
+            @Step {
+                리액션 매니저를 구현합니다.
+                
+                리액션 전송과 수신을 담당하는
+                ObservableObject입니다.
+                
+                @Code(name: "ReactionManager.swift", file: "05-reaction-manager.swift")
+            }
+            
+            @Step {
+                리액션 UI를 구현합니다.
+                
+                이모지 버튼과 수신된 리액션을 
+                화면에 애니메이션으로 표시합니다.
+                
+                @Code(name: "ReactionView.swift", file: "05-reaction-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            GroupSessionJournal의 역할은?
+            
+            @Choice(isCorrect: true) {
+                세션 내 공유 상태를 관리하고 모든 참가자에게 동기화
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Journal은 세션의 공유 상태 저장소입니다.
+                    추가된 항목이 모든 참가자에게 전파됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                로컬 로그를 저장
+                
+                @Justification(reaction: "아쉽네요") {
+                    Journal은 로컬 저장소가 아니라
+                    참가자 간 공유 상태를 관리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크 연결 상태를 기록
+                
+                @Justification(reaction: "아쉽네요") {
+                    Journal은 네트워크 모니터링 용도가 아닙니다.
+                    앱 데이터 동기화를 위한 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            커스텀 동기화 데이터가 반드시 채택해야 하는 프로토콜은?
+            
+            @Choice(isCorrect: true) {
+                Codable
+                
+                @Justification(reaction: "정답! 🎉") {
+                    네트워크를 통해 전송되므로 Codable이 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Equatable
+                
+                @Justification(reaction: "유용하지만 필수는 아닙니다") {
+                    Equatable은 비교에 유용하지만 동기화 자체에는 필수가 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Identifiable
+                
+                @Justification(reaction: "SwiftUI에는 유용하지만 필수는 아닙니다") {
+                    Identifiable은 SwiftUI 목록에 유용하지만 동기화에 필수는 아닙니다.
+                }
+            }
+        }
+    }
+}

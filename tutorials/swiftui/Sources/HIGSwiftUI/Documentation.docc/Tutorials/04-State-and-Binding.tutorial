@@ -1,0 +1,258 @@
+@Tutorial(time: 25) {
+    @Intro(title: "@State와 @Binding으로 상태 관리") {
+        SwiftUI의 핵심인 데이터 흐름을 이해합니다.
+        @State와 @Binding의 차이를 알고,
+        즐겨찾기 기능과 재료 체크 기능을 구현합니다.
+    }
+    
+    @Section(title: "@State — 뷰의 로컬 상태") {
+        @ContentAndMedia {
+            **@State**는 뷰 내부에서 관리하는 로컬 상태입니다.
+            
+            @State 값이 변경되면 SwiftUI가 자동으로
+            해당 뷰를 다시 렌더링합니다.
+            
+            "이 값이 바뀌면 화면을 다시 그려줘"라고 선언하는 것입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **@State 기본 사용법**
+                
+                카운터 예제로 @State를 이해해봅시다.
+                버튼을 누르면 숫자가 증가하는 간단한 뷰입니다.
+                
+                @State 변수를 수정하면 자동으로 UI가 업데이트됩니다.
+                
+                @Code(name: "CounterExample.swift", file: "04-state-basic.swift")
+            }
+            
+            @Step {
+                **@State는 private**
+                
+                @State는 해당 뷰에서만 관리해야 하므로
+                항상 `private`으로 선언하는 것이 좋습니다.
+                
+                외부에서 초기값을 설정하고 싶다면 init()을 활용합니다.
+                
+                @Code(name: "StatePrivate.swift", file: "04-state-private.swift")
+            }
+            
+            @Step {
+                **복잡한 상태 관리**
+                
+                @State는 단순 값뿐 아니라 
+                구조체, 배열도 관리할 수 있습니다.
+                
+                레시피의 재료 목록을 관리해봅시다.
+                
+                @Code(name: "StateComplex.swift", file: "04-state-complex.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Binding — 상태 공유하기") {
+        @ContentAndMedia {
+            **@Binding**은 다른 뷰가 소유한 상태에 대한 "참조"입니다.
+            
+            부모 뷰의 @State를 자식 뷰에서 읽고 수정할 수 있게 합니다.
+            "양방향 연결"이라고 생각하면 됩니다.
+            
+            $기호로 Binding을 전달합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **@Binding 기본 개념**
+                
+                Toggle 컴포넌트가 좋은 예입니다.
+                Toggle은 외부의 Bool 값을 직접 수정합니다.
+                
+                @State를 전달할 때는 $를 붙입니다.
+                
+                @Code(name: "BindingBasic.swift", file: "04-binding-basic.swift")
+            }
+            
+            @Step {
+                **커스텀 컴포넌트에 @Binding 사용**
+                
+                즐겨찾기 버튼을 별도 컴포넌트로 만들어봅시다.
+                부모의 isFavorite 상태를 @Binding으로 받습니다.
+                
+                @Code(name: "FavoriteButton.swift", file: "04-favorite-button.swift")
+            }
+            
+            @Step {
+                **@Binding과 Preview**
+                
+                @Binding을 가진 뷰의 미리보기는 
+                `.constant()`를 사용합니다.
+                
+                실제 바인딩 없이 고정값으로 테스트할 수 있습니다.
+                
+                @Code(name: "BindingPreview.swift", file: "04-binding-preview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Single Source of Truth") {
+        @ContentAndMedia {
+            SwiftUI의 핵심 원칙 중 하나는
+            **단일 진실 소스(Single Source of Truth)**입니다.
+            
+            데이터는 한 곳에서만 관리하고,
+            필요한 곳에는 참조(@Binding)로 전달합니다.
+            
+            이렇게 하면 데이터 불일치 문제를 방지할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **데이터 흐름 패턴**
+                
+                부모 → 자식: 데이터를 전달 (읽기 전용은 값, 수정 필요시 @Binding)
+                자식 → 부모: @Binding으로 변경 사항을 전파
+                
+                @Code(name: "DataFlow.swift", file: "04-data-flow.swift")
+            }
+            
+            @Step {
+                **잘못된 패턴 피하기**
+                
+                같은 데이터를 여러 @State로 복제하면 안 됩니다.
+                데이터 불일치의 원인이 됩니다.
+                
+                항상 "누가 이 데이터를 소유하는가?"를 생각하세요.
+                
+                @Code(name: "WrongPattern.swift", file: "04-wrong-pattern.swift")
+            }
+            
+            @Step {
+                **올바른 구조 설계**
+                
+                데이터 소유권을 명확히 하면
+                코드가 예측 가능해지고 버그가 줄어듭니다.
+                
+                @Code(name: "RightPattern.swift", file: "04-right-pattern.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 인터랙티브 기능 구현") {
+        @ContentAndMedia {
+            이제 ChefBook에 인터랙티브 기능을 추가합니다!
+            
+            1. 레시피 즐겨찾기 토글
+            2. 재료 체크 기능
+            3. 서빙 인원 조절
+        }
+        
+        @Steps {
+            @Step {
+                **즐겨찾기 기능 구현**
+                
+                레시피 카드에 하트 버튼을 추가합니다.
+                탭하면 즐겨찾기 상태가 토글됩니다.
+                
+                @Code(name: "FavoriteFeature.swift", file: "04-chefbook-favorite.swift")
+            }
+            
+            @Step {
+                **재료 체크리스트**
+                
+                요리하면서 재료를 체크할 수 있는 기능입니다.
+                각 재료 행에 체크박스를 추가합니다.
+                
+                @Binding으로 체크 상태를 전달합니다.
+                
+                @Code(name: "IngredientChecklist.swift", file: "04-chefbook-checklist.swift")
+            }
+            
+            @Step {
+                **서빙 인원 조절**
+                
+                Stepper로 인원 수를 조절하면
+                재료 양이 자동으로 계산되는 기능입니다.
+                
+                @State로 인원 수를 관리하고
+                연산 프로퍼티로 재료 양을 계산합니다.
+                
+                @Code(name: "ServingStepper.swift", file: "04-chefbook-serving.swift")
+            }
+            
+            @Step {
+                **전체 연결**
+                
+                만든 기능들을 RecipeDetailView에서 조합합니다.
+                각 컴포넌트가 @Binding으로 연결되어
+                상태가 자연스럽게 동기화됩니다.
+                
+                @Code(name: "RecipeDetailView.swift", file: "04-chefbook-detail.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @State와 @Binding의 가장 큰 차이점은?
+            
+            @Choice(isCorrect: true) {
+                @State는 데이터를 "소유"하고, @Binding은 "참조"한다
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    @State는 실제 값을 저장하는 소유자입니다.
+                    @Binding은 그 값에 대한 양방향 참조입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State는 읽기 전용, @Binding은 쓰기 전용
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 읽기/쓰기가 가능합니다.
+                    차이는 "소유" vs "참조"입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State는 구조체용, @Binding은 클래스용
+                
+                @Justification(reaction: "아쉽네요") {
+                    타입과는 관계없습니다.
+                    둘 다 값 타입, 참조 타입 모두 사용 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            부모 뷰의 @State를 자식에게 @Binding으로 전달할 때?
+            
+            @Choice(isCorrect: true) {
+                $기호를 붙여서 전달한다 ($myState)
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    $는 프로젝션(projection)으로,
+                    @State에서 Binding을 추출합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                그냥 변수 이름만 전달한다 (myState)
+                
+                @Justification(reaction: "아쉽네요") {
+                    그러면 값의 "복사본"이 전달됩니다.
+                    Binding을 위해서는 $가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                &기호를 붙여서 전달한다 (&myState)
+                
+                @Justification(reaction: "아쉽네요") {
+                    &는 inout 파라미터에 사용합니다.
+                    SwiftUI Binding은 $를 사용합니다.
+                }
+            }
+        }
+    }
+}

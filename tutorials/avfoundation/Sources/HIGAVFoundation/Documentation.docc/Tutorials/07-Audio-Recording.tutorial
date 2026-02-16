@@ -1,0 +1,203 @@
+@Tutorial(time: 20) {
+    @Intro(title: "오디오 녹음 (AVAudioRecorder)") {
+        AVAudioRecorder로 고품질 오디오를 녹음합니다.
+        녹음 레벨 모니터링과 파일 관리를 구현합니다.
+    }
+    
+    @Section(title: "AVAudioRecorder 설정") {
+        @ContentAndMedia {
+            AVAudioRecorder는 오디오 녹음을 위한 고수준 API입니다.
+            다양한 오디오 포맷과 품질 설정을 지원합니다.
+            
+            **지원 포맷:**
+            - AAC (.m4a)
+            - Apple Lossless (.m4a)
+            - Linear PCM (.wav)
+            - MP3 (재생만 지원)
+        }
+        
+        @Steps {
+            @Step {
+                AudioRecorder 클래스를 생성합니다.
+                ObservableObject를 채택하여 SwiftUI와 바인딩합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-audio-recorder-class.swift")
+            }
+            
+            @Step {
+                녹음 설정을 구성합니다.
+                샘플레이트, 채널 수, 비트레이트를 설정합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-recording-settings.swift")
+            }
+            
+            @Step {
+                녹음 파일 URL을 생성합니다.
+                Documents 디렉토리에 타임스탬프로 파일명을 만듭니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-file-url.swift")
+            }
+            
+            @Step {
+                AVAudioRecorder 인스턴스를 생성합니다.
+                설정과 URL로 레코더를 초기화합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-create-recorder.swift")
+            }
+        }
+    }
+    
+    @Section(title: "녹음 제어") {
+        @ContentAndMedia {
+            녹음 시작, 일시정지, 중지 기능을 구현합니다.
+            녹음 상태를 추적하여 UI에 반영합니다.
+        }
+        
+        @Steps {
+            @Step {
+                녹음 시작 메서드를 구현합니다.
+                record() 호출 전 prepareToRecord()로 버퍼를 준비합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-start-recording.swift")
+            }
+            
+            @Step {
+                녹음 일시정지와 재개를 구현합니다.
+                pause()와 record()로 제어합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-pause-resume.swift")
+            }
+            
+            @Step {
+                녹음 중지를 구현합니다.
+                stop() 호출 후 파일이 저장됩니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-stop-recording.swift")
+            }
+        }
+    }
+    
+    @Section(title: "레벨 모니터링") {
+        @ContentAndMedia {
+            실시간 오디오 레벨을 모니터링합니다.
+            레벨 미터 UI로 시각적 피드백을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                미터링을 활성화합니다.
+                isMeteringEnabled를 true로 설정합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-enable-metering.swift")
+            }
+            
+            @Step {
+                Timer로 레벨을 주기적으로 읽습니다.
+                updateMeters()를 호출한 후 peakPower를 읽습니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-read-levels.swift")
+            }
+            
+            @Step {
+                데시벨을 0~1 범위로 정규화합니다.
+                UI에서 사용하기 쉬운 값으로 변환합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-normalize-level.swift")
+            }
+            
+            @Step {
+                레벨 미터 UI를 구현합니다.
+                SwiftUI로 막대 그래프를 그립니다.
+                
+                @Code(name: "AudioLevelView.swift", file: "07-level-meter-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "녹음 파일 관리") {
+        @ContentAndMedia {
+            녹음된 파일 목록을 관리하고 재생합니다.
+        }
+        
+        @Steps {
+            @Step {
+                녹음 파일 목록을 가져옵니다.
+                Documents 디렉토리에서 오디오 파일을 검색합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-list-recordings.swift")
+            }
+            
+            @Step {
+                녹음 파일 삭제 기능을 추가합니다.
+                FileManager로 파일을 삭제합니다.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-delete-recording.swift")
+            }
+            
+            @Step {
+                녹음 목록 UI를 구현합니다.
+                List로 파일 목록을 표시하고 스와이프로 삭제합니다.
+                
+                @Code(name: "RecordingsListView.swift", file: "07-recordings-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVAudioRecorder에서 녹음 레벨을 읽기 전 호출해야 하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `updateMeters()`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    updateMeters()를 호출해야 최신 레벨 값을 읽을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `prepareToRecord()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    prepareToRecord()는 녹음 시작 전 버퍼를 준비하는 메서드입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `refreshMeters()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            AAC 포맷으로 녹음하기 위한 kAudioFormatKey 값은?
+            
+            @Choice(isCorrect: false) {
+                `kAudioFormatAppleLossless`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 무손실 압축 포맷입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `kAudioFormatMPEG4AAC`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AAC 포맷은 kAudioFormatMPEG4AAC로 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `kAudioFormatLinearPCM`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    LinearPCM은 비압축 오디오 포맷입니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,200 @@
+@Tutorial(time: 15) {
+    @Intro(title: "PDFKit 소개") {
+        PDFKit 프레임워크의 핵심 개념과 
+        PDF 리더 앱을 구축하기 위한 기본 아키텍처를 이해합니다.
+        
+        @Image(source: "pdfkit-intro.png", alt: "PDFKit 개요")
+    }
+    
+    @Section(title: "PDFKit이란?") {
+        @ContentAndMedia {
+            PDFKit은 Apple이 제공하는 PDF 처리 프레임워크로,
+            macOS와 iOS에서 PDF 문서를 표시하고 조작할 수 있습니다.
+            
+            - **크로스 플랫폼**: iOS, macOS, Mac Catalyst 지원
+            - **완전한 기능**: 렌더링, 검색, 주석, 편집 모두 지원
+            - **UIKit/SwiftUI 통합**: 쉬운 UI 통합
+            
+            @Image(source: "pdfkit-architecture.png", alt: "PDFKit 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                PDFKit을 프로젝트에 import합니다.
+                별도의 CocoaPods나 SPM 의존성 없이 바로 사용할 수 있습니다.
+                
+                @Code(name: "ImportPDFKit.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                PDFKit의 주요 클래스 계층을 살펴봅니다.
+                
+                - `PDFView`: PDF를 화면에 표시하는 뷰
+                - `PDFDocument`: PDF 파일을 메모리에 로드한 객체
+                - `PDFPage`: 문서의 개별 페이지
+                - `PDFAnnotation`: 페이지에 추가된 주석
+                
+                @Code(name: "PDFKitClasses.swift", file: "01-02-classes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PDFDocument 기초") {
+        @ContentAndMedia {
+            PDFDocument는 PDF 파일의 메모리 표현입니다.
+            문서 메타데이터, 페이지 목록, 암호화 상태 등의 정보를 담고 있습니다.
+            
+            PDFDocument는 파일 URL, Data, 또는 CGPDFDocument로부터 생성할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Bundle에서 PDF 문서를 로드하는 가장 기본적인 방법입니다.
+                
+                @Code(name: "LoadDocument.swift", file: "01-03-load-document.swift")
+            }
+            
+            @Step {
+                문서의 기본 속성에 접근합니다.
+                페이지 수, 암호화 여부, 메타데이터 등을 확인할 수 있습니다.
+                
+                @Code(name: "DocumentProperties.swift", file: "01-04-properties.swift")
+            }
+            
+            @Step {
+                암호화된 PDF의 경우 잠금 해제가 필요합니다.
+                `unlock(withPassword:)` 메서드로 처리합니다.
+                
+                @Code(name: "UnlockDocument.swift", file: "01-05-unlock.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PDFPage 이해하기") {
+        @ContentAndMedia {
+            PDFPage는 문서의 개별 페이지를 나타냅니다.
+            각 페이지는 고유한 크기, 회전, 주석 목록을 가집니다.
+            
+            페이지에서 텍스트를 추출하거나 이미지로 렌더링할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                인덱스로 특정 페이지에 접근합니다.
+                인덱스는 0부터 시작합니다.
+                
+                @Code(name: "AccessPage.swift", file: "01-06-access-page.swift")
+            }
+            
+            @Step {
+                페이지의 크기와 회전 정보를 확인합니다.
+                PDF 페이지는 여러 "박스" 타입을 가집니다: mediaBox, cropBox, bleedBox 등.
+                
+                @Code(name: "PageBounds.swift", file: "01-07-page-bounds.swift")
+            }
+            
+            @Step {
+                페이지의 텍스트 내용을 추출합니다.
+                `string` 속성으로 전체 텍스트를, `attributedString`으로 서식 있는 텍스트를 얻습니다.
+                
+                @Code(name: "ExtractText.swift", file: "01-08-extract-text.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PDFKit의 주요 클래스 중 PDF를 화면에 표시하는 역할을 하는 것은?
+            
+            @Choice(isCorrect: false) {
+                PDFDocument
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    PDFDocument는 PDF 파일의 메모리 표현입니다.
+                    화면 표시는 다른 클래스가 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFView
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    PDFView는 PDF를 화면에 렌더링하고 
+                    사용자 상호작용을 처리하는 뷰입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPage
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    PDFPage는 문서의 개별 페이지를 나타내며,
+                    직접 화면에 표시되지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            암호화된 PDF 문서를 열기 위해 사용하는 메서드는?
+            
+            @Choice(isCorrect: false) {
+                decrypt(password:)
+                
+                @Justification(reaction: "그런 메서드는 없습니다.") {
+                    PDFDocument에서 암호 해제에 사용하는 
+                    정확한 메서드명을 확인하세요.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                unlock(withPassword:)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    unlock(withPassword:)는 암호화된 PDF의 
+                    잠금을 해제하고 true/false를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                open(password:)
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    PDF 로드와 암호 해제는 별개의 작업입니다.
+                    이미 로드된 문서에 unlock을 호출합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PDFPage에서 페이지의 크기를 얻기 위해 참조하는 박스 타입 중 
+            인쇄 영역을 기준으로 하는 것은?
+            
+            @Choice(isCorrect: false) {
+                mediaBox
+                
+                @Justification(reaction: "가깝지만 정확하지 않습니다.") {
+                    mediaBox는 페이지의 전체 물리적 크기입니다.
+                    인쇄 시 잘리는 영역은 다른 박스 타입입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                cropBox
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    cropBox는 화면이나 인쇄 시 표시될 영역을 정의합니다.
+                    대부분의 경우 이 박스를 기준으로 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                artBox
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    artBox는 의미 있는 콘텐츠 영역을 나타내며,
+                    인쇄 기준 박스와는 다릅니다.
+                }
+            }
+        }
+    }
+}

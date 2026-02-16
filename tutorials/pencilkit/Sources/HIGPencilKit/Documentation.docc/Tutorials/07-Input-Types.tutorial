@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "손가락 vs Apple Pencil") {
+        손가락과 Apple Pencil 입력을 구분하고 
+        각각 다르게 처리하는 방법을 배웁니다.
+        
+        @Image(source: "input-types.png", alt: "입력 타입 구분")
+    }
+    
+    @Section(title: "드로잉 정책 설정") {
+        @ContentAndMedia {
+            PKCanvasView는 drawingPolicy 프로퍼티로
+            어떤 입력을 드로잉에 사용할지 제어합니다.
+            
+            - **.anyInput**: 손가락과 Pencil 모두 드로잉 가능
+            - **.pencilOnly**: Apple Pencil만 드로잉 가능
+            - **.default**: 시스템 설정 따름
+            
+            손가락을 스크롤/팬에만 사용하고 
+            Pencil로만 그리게 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                drawingPolicy를 .pencilOnly로 설정하면
+                손가락은 스크롤에만 사용됩니다.
+                
+                @Code(name: "PencilOnlyPolicy.swift", file: "07-01-pencil-only.swift")
+            }
+            
+            @Step {
+                .anyInput으로 설정하면 
+                손가락으로도 드로잉이 가능합니다.
+                
+                @Code(name: "AnyInputPolicy.swift", file: "07-02-any-input.swift")
+            }
+            
+            @Step {
+                사용자가 설정에서 정책을 변경할 수 있게
+                토글 UI를 구현합니다.
+                
+                @Code(name: "PolicyToggle.swift", file: "07-03-toggle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Apple Pencil 기능 활용") {
+        @ContentAndMedia {
+            Apple Pencil은 다양한 센서 데이터를 제공합니다.
+            
+            | 센서 | 설명 |
+            |-----|------|
+            | Force | 필압 (0.0 ~ max) |
+            | Altitude | 기울기 각도 |
+            | Azimuth | 방위각 |
+            | Roll | 회전 (Pencil Pro) |
+            
+            PencilKit은 이 데이터를 자동으로 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKStrokePoint에서 필압과 기울기 정보를
+                확인할 수 있습니다.
+                
+                @Code(name: "PencilData.swift", file: "07-04-pencil-data.swift")
+            }
+            
+            @Step {
+                Apple Pencil Pro의 스퀴즈 제스처를 감지합니다.
+                UIPencilInteraction을 사용합니다.
+                
+                @Code(name: "PencilInteraction.swift", file: "07-05-interaction.swift")
+            }
+            
+            @Step {
+                더블 탭 액션을 커스터마이징합니다.
+                도구 전환이나 실행취소에 활용합니다.
+                
+                @Code(name: "DoubleTap.swift", file: "07-06-double-tap.swift")
+            }
+        }
+    }
+    
+    @Section(title: "손가락 제스처와 드로잉 분리") {
+        @ContentAndMedia {
+            손가락을 특정 제스처에만 사용하고
+            드로잉은 Pencil로만 하도록 분리합니다.
+            
+            - **손가락**: 팬, 줌, 탭 제스처
+            - **Pencil**: 드로잉, 지우기
+        }
+        
+        @Steps {
+            @Step {
+                손가락 제스처를 추가하여
+                다양한 기능을 트리거합니다.
+                
+                @Code(name: "FingerGestures.swift", file: "07-07-finger-gestures.swift")
+            }
+            
+            @Step {
+                두 손가락 탭으로 실행취소,
+                세 손가락 탭으로 다시실행을 구현합니다.
+                
+                @Code(name: "UndoGestures.swift", file: "07-08-undo-gestures.swift")
+            }
+            
+            @Step {
+                손가락 드래그로 캔버스를 팬하면서
+                Pencil로는 동시에 그릴 수 있게 합니다.
+                
+                @Code(name: "SimultaneousInput.swift", file: "07-09-simultaneous.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKCanvasView.drawingPolicy의 기본값은?
+            
+            @Choice(isCorrect: false) {
+                .pencilOnly
+                
+                @Justification(reaction: "아닙니다.") {
+                    기본값은 시스템 설정을 따르는 .default입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .default
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    .default는 시스템의 Apple Pencil 설정을 따릅니다.
+                    설정 > Apple Pencil에서 변경 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .anyInput
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    .anyInput은 명시적으로 설정해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Apple Pencil Pro에서 새로 추가된 센서 데이터는?
+            
+            @Choice(isCorrect: false) {
+                Force (필압)
+                
+                @Justification(reaction: "이전부터 있었습니다.") {
+                    Force는 1세대 Apple Pencil부터 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Roll (회전)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Pencil Pro는 축 회전(roll) 감지가 추가되어
+                    펜 회전에 따른 브러시 변화가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Azimuth (방위각)
+                
+                @Justification(reaction: "이전부터 있었습니다.") {
+                    Azimuth는 초기 Pencil부터 지원됩니다.
+                }
+            }
+        }
+    }
+}

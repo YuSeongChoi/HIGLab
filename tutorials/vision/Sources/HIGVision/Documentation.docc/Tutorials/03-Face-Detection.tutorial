@@ -1,0 +1,244 @@
+@Tutorial(time: 15) {
+    @Intro(title: "얼굴 감지") {
+        VNDetectFaceRectanglesRequest로 이미지에서 얼굴을 감지합니다.
+        감지된 얼굴 영역을 화면에 표시하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "VNDetectFaceRectanglesRequest") {
+        @ContentAndMedia {
+            **VNDetectFaceRectanglesRequest**는 이미지에서 
+            얼굴 영역을 감지하는 가장 기본적인 Request입니다.
+            
+            얼굴의 위치(바운딩 박스)만 반환하며,
+            랜드마크나 특징점은 별도 Request가 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 얼굴 감지 구현**
+                
+                VNDetectFaceRectanglesRequest를 생성하고 
+                이미지에서 얼굴을 감지합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-basic-face-request.swift")
+            }
+            
+            @Step {
+                **감지 결과 처리**
+                
+                VNFaceObservation에서 얼굴 위치 정보를 추출합니다.
+                boundingBox는 정규화된 좌표입니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-face-observation.swift")
+            }
+            
+            @Step {
+                **다중 얼굴 감지**
+                
+                이미지에 여러 얼굴이 있을 경우 
+                모든 얼굴을 감지하고 처리합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-multiple-faces.swift")
+            }
+        }
+    }
+    
+    @Section(title: "얼굴 랜드마크 감지") {
+        @ContentAndMedia {
+            **VNDetectFaceLandmarksRequest**를 사용하면
+            눈, 코, 입 등의 상세한 얼굴 특징점을 감지할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **랜드마크 Request 생성**
+                
+                VNDetectFaceLandmarksRequest를 생성합니다.
+                이 Request는 자동으로 얼굴 감지도 수행합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-landmarks-request.swift")
+            }
+            
+            @Step {
+                **랜드마크 데이터 추출**
+                
+                VNFaceLandmarks2D에서 각 랜드마크 영역을 추출합니다.
+                눈, 눈썹, 코, 입, 얼굴 윤곽 등을 얻을 수 있습니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-extract-landmarks.swift")
+            }
+            
+            @Step {
+                **랜드마크 포인트 변환**
+                
+                랜드마크의 정규화된 포인트를 
+                화면 좌표로 변환합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-landmark-points.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI 구현") {
+        @ContentAndMedia {
+            감지된 얼굴과 랜드마크를 SwiftUI 뷰에 표시합니다.
+            사각형 오버레이와 포인트 마커를 그립니다.
+        }
+        
+        @Steps {
+            @Step {
+                **얼굴 감지 결과 모델**
+                
+                감지된 얼굴 정보를 담는 데이터 모델을 정의합니다.
+                
+                @Code(name: "DetectedFace.swift", file: "03-face-model.swift")
+            }
+            
+            @Step {
+                **얼굴 감지 뷰**
+                
+                이미지와 감지된 얼굴 오버레이를 표시하는 뷰를 구현합니다.
+                
+                @Code(name: "FaceDetectionView.swift", file: "03-detection-view.swift")
+            }
+            
+            @Step {
+                **얼굴 바운딩 박스 그리기**
+                
+                Canvas를 사용해 얼굴 영역에 사각형을 그립니다.
+                
+                @Code(name: "FaceOverlayView.swift", file: "03-face-overlay.swift")
+            }
+            
+            @Step {
+                **랜드마크 포인트 표시**
+                
+                눈, 코, 입 등의 랜드마크를 점으로 표시합니다.
+                
+                @Code(name: "FaceOverlayView.swift", file: "03-landmark-overlay.swift")
+            }
+        }
+    }
+    
+    @Section(title: "얼굴 품질 & 캡처 품질") {
+        @ContentAndMedia {
+            Vision은 얼굴 감지 품질을 평가하는 기능도 제공합니다.
+            사진 촬영 시 최적의 얼굴 프레임을 선택하는 데 활용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **VNDetectFaceCaptureQualityRequest**
+                
+                얼굴 캡처 품질을 평가하는 Request입니다.
+                0.0~1.0 범위의 품질 점수를 반환합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-capture-quality.swift")
+            }
+            
+            @Step {
+                **품질 점수 활용**
+                
+                여러 프레임 중 품질이 가장 좋은 얼굴을 선택합니다.
+                
+                @Code(name: "FaceDetector.swift", file: "03-best-quality.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            VNDetectFaceRectanglesRequest가 반환하는 정보는?
+            
+            @Choice(isCorrect: true) {
+                얼굴의 바운딩 박스 (위치와 크기)
+                
+                @Justification(reaction: "정답!") {
+                    VNDetectFaceRectanglesRequest는 얼굴 영역의 
+                    바운딩 박스만 반환합니다.
+                    상세 랜드마크는 VNDetectFaceLandmarksRequest가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                얼굴의 눈, 코, 입 위치
+                
+                @Justification(reaction: "아쉽네요") {
+                    랜드마크 정보는 VNDetectFaceLandmarksRequest를 사용해야 합니다.
+                    FaceRectanglesRequest는 영역만 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                얼굴 인식 (누구인지)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 얼굴 "감지"만 수행하고, 
+                    특정 인물 "인식"은 하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            얼굴 랜드마크(눈, 코, 입 등)를 감지하려면 어떤 Request를 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                VNDetectFaceLandmarksRequest
+                
+                @Justification(reaction: "정확합니다!") {
+                    VNDetectFaceLandmarksRequest는 얼굴의 상세 특징점을 감지합니다.
+                    이 Request는 내부적으로 얼굴 감지도 수행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNDetectFaceRectanglesRequest
+                
+                @Justification(reaction: "아쉽네요") {
+                    FaceRectanglesRequest는 얼굴 영역만 감지합니다.
+                    랜드마크는 FaceLandmarksRequest가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNRecognizeFaceRequest
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 Request는 존재하지 않습니다.
+                    랜드마크 감지는 VNDetectFaceLandmarksRequest입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            VNFaceObservation의 boundingBox는 어떤 좌표계를 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                정규화 좌표 (0.0~1.0, 좌하단 원점)
+                
+                @Justification(reaction: "정답!") {
+                    Vision의 모든 Observation은 정규화된 좌표를 사용합니다.
+                    화면에 표시하려면 좌표 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                픽셀 좌표 (좌상단 원점)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 정규화 좌표를 사용합니다.
+                    픽셀 좌표로 변환하려면 이미지 크기를 곱해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                포인트 좌표 (중앙 원점)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision의 좌표계는 좌하단이 원점이고 
+                    0.0~1.0 범위의 정규화 좌표입니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,188 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Observation 소개 & ObservableObject와의 차이") {
+        Swift 5.9에서 등장한 Observation 프레임워크가 왜 게임체인저인지 알아봅니다.
+        기존 ObservableObject의 한계와 새로운 @Observable의 혁신을 비교합니다.
+    }
+    
+    @Section(title: "ObservableObject의 한계") {
+        @ContentAndMedia {
+            Combine 기반의 ObservableObject는 SwiftUI 초기부터 함께했지만,
+            몇 가지 **구조적 한계**가 있었습니다.
+            
+            이러한 한계들이 왜 문제가 되는지 코드로 직접 확인해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                **전체 뷰 다시 그리기 문제**
+                
+                ObservableObject를 사용하면 `@Published` 프로퍼티 중 
+                **하나라도** 변경되면 해당 객체를 관찰하는 **모든 뷰**가 다시 그려집니다.
+                
+                이 코드에서 `name`만 바꿔도 `count`를 보여주는 뷰까지 업데이트됩니다.
+                
+                @Code(name: "OldWayProblem.swift", file: "01-old-way-problem.swift")
+            }
+            
+            @Step {
+                **@StateObject vs @ObservedObject 혼란**
+                
+                언제 `@StateObject`를 쓰고 언제 `@ObservedObject`를 써야 하는지
+                개발자들이 항상 혼란스러워했습니다.
+                
+                잘못 사용하면 메모리 누수나 예상치 못한 뷰 업데이트가 발생합니다.
+                
+                @Code(name: "OwnershipConfusion.swift", file: "01-ownership-confusion.swift")
+            }
+            
+            @Step {
+                **Combine 의존성**
+                
+                ObservableObject는 내부적으로 Combine의 `ObjectWillChangePublisher`를 사용합니다.
+                단순히 상태 변화를 추적하고 싶을 뿐인데, 
+                리액티브 프로그래밍 프레임워크 전체에 의존해야 했습니다.
+                
+                @Code(name: "CombineDependency.swift", file: "01-combine-dependency.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Observation의 혁신") {
+        @ContentAndMedia {
+            Apple은 WWDC23에서 **Observation 프레임워크**를 발표했습니다.
+            Swift 5.9의 매크로 기능을 활용해 
+            위에서 언급한 모든 문제를 우아하게 해결합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **세밀한 관찰 (Granular Observation)**
+                
+                @Observable을 사용하면 뷰는 **실제로 읽은 프로퍼티**만 관찰합니다.
+                `name`을 보는 뷰는 `name`이 변할 때만, 
+                `count`를 보는 뷰는 `count`가 변할 때만 업데이트됩니다.
+                
+                @Code(name: "NewWayBetter.swift", file: "01-new-way-better.swift")
+            }
+            
+            @Step {
+                **단순화된 소유권**
+                
+                @Observable 객체는 일반 클래스처럼 다루면 됩니다.
+                `@State`, `@Environment`, 또는 그냥 프로퍼티로 저장하세요.
+                더 이상 @StateObject/@ObservedObject 고민 없습니다.
+                
+                @Code(name: "SimpleOwnership.swift", file: "01-simple-ownership.swift")
+            }
+            
+            @Step {
+                **Combine 불필요**
+                
+                Observation은 Combine에 의존하지 않습니다.
+                순수 Swift로 구현되어 더 가볍고 직관적입니다.
+                물론 필요하면 Combine과 함께 쓸 수도 있습니다.
+                
+                @Code(name: "NoCombine.swift", file: "01-no-combine.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow 프로젝트 시작하기") {
+        @ContentAndMedia {
+            이제부터 **CartFlow** 쇼핑 카트 앱을 함께 만들어봅니다.
+            Observation의 모든 기능을 실전에서 활용하는 방법을 배웁니다.
+            
+            프로젝트 구조를 설정하고 첫 번째 @Observable 모델을 만들어봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 새 iOS 프로젝트를 생성합니다.
+                템플릿은 **App**, Interface는 **SwiftUI**를 선택합니다.
+                프로젝트 이름은 `CartFlow`로 합니다.
+                
+                @Code(name: "CartFlowApp.swift", file: "01-cartflow-app.swift")
+            }
+            
+            @Step {
+                첫 번째 @Observable 모델인 `Product`를 만듭니다.
+                상품의 이름, 가격, 수량을 담는 간단한 모델입니다.
+                
+                @Code(name: "Product.swift", file: "01-product-model.swift")
+            }
+            
+            @Step {
+                쇼핑 카트를 관리하는 `CartStore`를 만듭니다.
+                상품 목록과 총 가격 계산 로직을 포함합니다.
+                
+                이것이 앱 전체에서 사용할 메인 상태 저장소가 됩니다.
+                
+                @Code(name: "CartStore.swift", file: "01-cart-store.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ObservableObject의 가장 큰 문제점은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                @Published 프로퍼티 하나만 변해도 모든 관찰 뷰가 다시 그려진다
+                
+                @Justification(reaction: "정답!") {
+                    ObservableObject는 객체 단위로 변화를 알리기 때문에, 
+                    어떤 프로퍼티가 변했는지 세밀하게 추적하지 못합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 13 이하에서 사용할 수 없다
+                
+                @Justification(reaction: "아쉽네요") {
+                    ObservableObject는 iOS 13부터 지원됩니다. 
+                    문제는 성능과 복잡성입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                struct에서 사용할 수 없다
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Observable도 class에서만 사용합니다. 
+                    핵심 문제는 관찰 세분화의 부재입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Observation 프레임워크의 핵심 장점은?
+            
+            @Choice(isCorrect: true) {
+                뷰가 실제로 읽은 프로퍼티만 관찰하여 불필요한 업데이트 방지
+                
+                @Justification(reaction: "완벽합니다!") {
+                    이것이 "세밀한 관찰(Granular Observation)"이며, 
+                    Observation의 가장 혁신적인 부분입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                struct에서도 사용 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Observable은 class에서만 사용합니다. 
+                    struct는 값 타입이라 관찰 패턴이 맞지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 14까지 하위 호환
+                
+                @Justification(reaction: "아쉽네요") {
+                    Observation은 iOS 17 이상이 필요합니다. 
+                    Swift 5.9의 매크로 기능을 사용하기 때문입니다.
+                }
+            }
+        }
+    }
+}

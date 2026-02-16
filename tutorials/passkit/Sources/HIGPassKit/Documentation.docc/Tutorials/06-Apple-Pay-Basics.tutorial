@@ -1,0 +1,207 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Apple Pay 결제 기초") {
+        Apple Pay의 동작 원리와 
+        앱에서 결제를 준비하는 방법을 배웁니다.
+        
+        @Image(source: "apple-pay-basics.png", alt: "Apple Pay 기초")
+    }
+    
+    @Section(title: "Apple Pay 동작 원리") {
+        @ContentAndMedia {
+            Apple Pay는 토큰화 기반의 안전한 결제 시스템입니다.
+            실제 카드 번호 대신 일회용 토큰을 사용합니다.
+            
+            **보안 특징:**
+            - Device Account Number: 기기별 고유 가상 카드 번호
+            - Dynamic Security Code: 거래마다 생성되는 보안 코드
+            - Secure Element: 하드웨어 수준의 보안 저장소
+            
+            @Image(source: "apple-pay-flow.png", alt: "Apple Pay 흐름")
+        }
+        
+        @Steps {
+            @Step {
+                Apple Pay 결제 흐름을 이해합니다.
+                사용자 → 앱 → Payment Gateway → 카드사 → 가맹점 순으로 진행됩니다.
+                
+                @Code(name: "PaymentFlow.swift", file: "06-01-payment-flow.swift")
+            }
+            
+            @Step {
+                앱은 암호화된 Payment Token을 받아 서버로 전달합니다.
+                서버에서 결제 처리 업체(PG)를 통해 실제 결제합니다.
+                
+                @Code(name: "TokenHandling.swift", file: "06-02-token-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Merchant ID 설정") {
+        @ContentAndMedia {
+            Apple Pay를 사용하려면 Merchant ID를 등록해야 합니다.
+            이는 결제를 처리할 가맹점을 식별합니다.
+            
+            **설정 단계:**
+            1. Apple Developer Portal에서 Merchant ID 생성
+            2. 결제 처리 인증서 생성
+            3. Xcode 프로젝트에 Apple Pay Capability 추가
+        }
+        
+        @Steps {
+            @Step {
+                Developer Portal에서 Merchant ID를 등록합니다.
+                `merchant.com.yourcompany.appname` 형식을 사용합니다.
+                
+                @Code(name: "MerchantID.swift", file: "06-03-merchant-id.swift")
+            }
+            
+            @Step {
+                Xcode에서 Apple Pay Capability를 추가합니다.
+                Signing & Capabilities에서 + Capability를 클릭합니다.
+                
+                @Code(name: "Capability.swift", file: "06-04-capability.swift")
+            }
+            
+            @Step {
+                등록한 Merchant ID를 선택하고 연결합니다.
+                entitlements 파일에 자동으로 추가됩니다.
+                
+                @Code(name: "Entitlements.swift", file: "06-05-entitlements.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 가능 여부 확인") {
+        @ContentAndMedia {
+            모든 기기나 지역에서 Apple Pay를 사용할 수 있는 것은 아닙니다.
+            결제 버튼을 표시하기 전에 가용성을 확인해야 합니다.
+            
+            **확인 사항:**
+            - 기기 지원 여부 (NFC 탑재)
+            - 카드 등록 여부
+            - 지원 네트워크 가용성
+        }
+        
+        @Steps {
+            @Step {
+                PKPaymentAuthorizationController로 결제 가능 여부를 확인합니다.
+                canMakePayments()는 기기 지원만 확인합니다.
+                
+                @Code(name: "CanMakePayments.swift", file: "06-06-can-make-payments.swift")
+            }
+            
+            @Step {
+                canMakePayments(usingNetworks:)로 특정 카드 네트워크 지원을 확인합니다.
+                Visa, Mastercard, AMEX 등을 지정합니다.
+                
+                @Code(name: "NetworkCheck.swift", file: "06-07-network-check.swift")
+            }
+            
+            @Step {
+                사용자가 카드를 등록하지 않은 경우의 처리입니다.
+                카드 추가를 유도하는 버튼을 표시할 수 있습니다.
+                
+                @Code(name: "SetupButton.swift", file: "06-08-setup-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PKPaymentButton 사용") {
+        @ContentAndMedia {
+            Apple은 표준화된 결제 버튼 디자인을 제공합니다.
+            Human Interface Guidelines를 준수하는 것이 필수입니다.
+            
+            **버튼 타입:**
+            - `.buy`: Buy with Apple Pay
+            - `.checkout`: Checkout with Apple Pay
+            - `.plain`: Apple Pay 로고만
+            - `.setUp`: Set up Apple Pay
+        }
+        
+        @Steps {
+            @Step {
+                SwiftUI에서 PaymentButton을 사용합니다.
+                iOS 16부터 네이티브 SwiftUI 버튼을 지원합니다.
+                
+                @Code(name: "PaymentButtonSwiftUI.swift", file: "06-09-payment-button-swiftui.swift")
+            }
+            
+            @Step {
+                버튼 스타일을 앱 테마에 맞게 조정합니다.
+                검정, 흰색, 자동 스타일을 선택할 수 있습니다.
+                
+                @Code(name: "ButtonStyle.swift", file: "06-10-button-style.swift")
+            }
+            
+            @Step {
+                결제 가능 상태에 따라 적절한 버튼을 표시합니다.
+                canMakePayments 결과로 분기 처리합니다.
+                
+                @Code(name: "ConditionalButton.swift", file: "06-11-conditional-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Apple Pay에서 실제 카드 번호 대신 사용되는 것은?
+            
+            @Choice(isCorrect: true) {
+                Device Account Number (토큰)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Apple Pay는 기기별 고유 가상 카드 번호를 생성하여
+                    실제 카드 정보를 보호합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CVV 코드
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    CVV는 카드 뒷면의 보안 코드로, 
+                    Apple Pay의 토큰화와는 다릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                암호화된 실제 카드 번호
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    단순 암호화가 아닌 완전히 다른 
+                    가상 번호를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PKPaymentAuthorizationController.canMakePayments(usingNetworks:)의 역할은?
+            
+            @Choice(isCorrect: false) {
+                결제 처리 서버 연결 상태 확인
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    서버 연결이 아닌 로컬 기기 상태를 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                지정된 카드 네트워크 결제 가능 여부 확인
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Visa, Mastercard 등 지정된 네트워크의 카드가 
+                    등록되어 있는지 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Merchant ID 유효성 검증
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Merchant ID 검증은 결제 요청 시 
+                    서버에서 처리됩니다.
+                }
+            }
+        }
+    }
+}

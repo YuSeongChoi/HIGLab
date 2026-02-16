@@ -1,0 +1,172 @@
+@Tutorial(time: 10) {
+    @Intro(title: "생체 인증 상태 확인") {
+        기기의 생체 인증 가용성을 확인하고,
+        Face ID와 Touch ID를 구분하여 적절한 UI를 제공하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "biometryType 속성") {
+        @ContentAndMedia {
+            LAContext의 biometryType 속성으로
+            현재 기기가 어떤 생체 인증을 지원하는지 확인할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **LABiometryType 열거형**
+                
+                - `.none`: 생체 인증 미지원
+                - `.touchID`: Touch ID 지원
+                - `.faceID`: Face ID 지원
+                - `.opticID`: Optic ID 지원 (visionOS)
+                
+                @Code(name: "BiometryType.swift", file: "05-biometry-type.swift")
+            }
+            
+            @Step {
+                **타입별 아이콘 표시**
+                
+                Face ID와 Touch ID는 다른 아이콘을 사용합니다.
+                SF Symbols의 faceid, touchid.fill을 활용하세요.
+                
+                @Code(name: "BiometryIcon.swift", file: "05-biometry-icon.swift")
+            }
+            
+            @Step {
+                **타입별 텍스트 제공**
+                
+                사용자에게 적절한 안내 메시지를 표시합니다.
+                "Face ID로 잠금 해제" vs "Touch ID로 잠금 해제"
+                
+                @Code(name: "BiometryText.swift", file: "05-biometry-text.swift")
+            }
+        }
+    }
+    
+    @Section(title: "상태 확인 메서드 구현") {
+        @ContentAndMedia {
+            생체 인증의 다양한 상태를 체계적으로 확인하는 메서드를 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                **BiometryStatus 열거형**
+                
+                가능한 모든 상태를 열거형으로 정의합니다.
+                - available: 사용 가능
+                - notEnrolled: 미등록
+                - lockout: 잠금됨
+                - unavailable: 사용 불가
+                
+                @Code(name: "BiometryStatus.swift", file: "05-biometry-status.swift")
+            }
+            
+            @Step {
+                **상태 확인 로직**
+                
+                canEvaluatePolicy와 에러 코드를 조합하여 정확한 상태를 판단합니다.
+                
+                @Code(name: "CheckStatus.swift", file: "05-check-status.swift")
+            }
+            
+            @Step {
+                **상태별 UI 분기**
+                
+                각 상태에 맞는 UI를 보여줍니다.
+                미등록이면 설정 안내, 잠금이면 패스코드 안내 등.
+                
+                @Code(name: "StatusUI.swift", file: "05-status-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 상태 모니터링") {
+        @ContentAndMedia {
+            앱이 백그라운드에서 포그라운드로 돌아올 때
+            생체 인증 상태가 변경되었을 수 있으므로 다시 확인합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ScenePhase 활용**
+                
+                SwiftUI의 scenePhase를 감지하여
+                앱이 활성화될 때마다 상태를 새로 확인합니다.
+                
+                @Code(name: "ScenePhase.swift", file: "05-scene-phase.swift")
+            }
+            
+            @Step {
+                **상태 변화 대응**
+                
+                Face ID가 갑자기 잠기거나, 
+                설정에서 해제된 경우를 처리합니다.
+                
+                @Code(name: "StateChange.swift", file: "05-state-change.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            LABiometryType.opticID는 어떤 기기에서 사용되나요?
+            
+            @Choice(isCorrect: true) {
+                Apple Vision Pro
+                
+                @Justification(reaction: "정답입니다!") {
+                    Optic ID는 Apple Vision Pro에서 눈의 홍채 패턴을 인식하는 
+                    새로운 생체 인증 방식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iPhone 15 Pro
+                
+                @Justification(reaction: "아쉽네요") {
+                    iPhone은 Face ID 또는 Touch ID를 사용합니다.
+                    Optic ID는 Apple Vision Pro 전용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 Face ID 지원 기기
+                
+                @Justification(reaction: "아쉽네요") {
+                    Optic ID는 Face ID와 다른 기술입니다.
+                    Apple Vision Pro에서만 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            canEvaluatePolicy가 false를 반환하고 에러가 biometryNotEnrolled일 때, 사용자에게 어떤 안내를 해야 할까요?
+            
+            @Choice(isCorrect: true) {
+                설정 앱에서 Face ID/Touch ID를 등록하도록 안내
+                
+                @Justification(reaction: "맞습니다!") {
+                    biometryNotEnrolled는 기기는 지원하지만 생체 데이터가 등록되지 않은 상태입니다.
+                    사용자가 설정에서 등록하면 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기기를 교체하도록 안내
+                
+                @Justification(reaction: "아쉽네요") {
+                    기기는 이미 생체 인증을 지원합니다.
+                    설정에서 등록만 하면 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱을 재설치하도록 안내
+                
+                @Justification(reaction: "아쉽네요") {
+                    앱 문제가 아니라 사용자가 생체 데이터를 등록하지 않은 것입니다.
+                    설정 앱으로 안내하세요.
+                }
+            }
+        }
+    }
+}

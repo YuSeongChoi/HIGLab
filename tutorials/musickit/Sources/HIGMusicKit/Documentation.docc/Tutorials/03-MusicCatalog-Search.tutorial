@@ -1,0 +1,237 @@
+@Tutorial(time: 18) {
+    @Intro(title: "MusicCatalog 검색") {
+        Apple Music 카탈로그에서 음악을 검색하고
+        결과를 화면에 표시합니다.
+    }
+    
+    @Section(title: "MusicCatalogSearchRequest") {
+        @ContentAndMedia {
+            MusicKit은 Apple Music의 방대한 카탈로그를 검색할 수 있는
+            강력한 API를 제공합니다. 모든 요청은 async/await로 처리됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 검색 요청**
+                
+                `MusicCatalogSearchRequest`를 사용해
+                텍스트로 음악을 검색합니다.
+                
+                검색 대상 타입(Song, Album, Artist 등)을 지정해야 합니다.
+                
+                @Code(name: "BasicSearch.swift", file: "03-basic-search.swift")
+            }
+            
+            @Step {
+                **검색 결과 타입**
+                
+                검색 결과는 `MusicCatalogSearchResponse`로 반환됩니다.
+                요청한 타입별로 결과에 접근할 수 있습니다.
+                
+                - `response.songs`: 노래 목록
+                - `response.albums`: 앨범 목록
+                - `response.artists`: 아티스트 목록
+                
+                @Code(name: "SearchResponse.swift", file: "03-search-response.swift")
+            }
+            
+            @Step {
+                **여러 타입 동시 검색**
+                
+                한 번의 요청으로 여러 타입을 동시에 검색할 수 있습니다.
+                네트워크 효율성을 위해 권장되는 방식입니다.
+                
+                @Code(name: "MultiTypeSearch.swift", file: "03-multi-type.swift")
+            }
+            
+            @Step {
+                **검색 옵션 설정**
+                
+                `limit`으로 결과 수를 제한하고,
+                `offset`으로 페이지네이션을 구현합니다.
+                
+                @Code(name: "SearchOptions.swift", file: "03-search-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Song 모델 이해하기") {
+        @ContentAndMedia {
+            MusicKit의 Song은 풍부한 메타데이터를 포함합니다.
+            앨범 아트, 아티스트 정보, 재생 시간 등을 활용해
+            멋진 UI를 만들 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Song 기본 속성**
+                
+                - `title`: 노래 제목
+                - `artistName`: 아티스트 이름
+                - `albumTitle`: 앨범 제목
+                - `duration`: 재생 시간
+                - `artwork`: 앨범 아트워크
+                
+                @Code(name: "SongProperties.swift", file: "03-song-properties.swift")
+            }
+            
+            @Step {
+                **Artwork 표시하기**
+                
+                `artwork?.url(width:height:)`로 이미지 URL을 얻습니다.
+                AsyncImage와 함께 사용하면 편리합니다.
+                
+                @Code(name: "ArtworkDisplay.swift", file: "03-artwork-display.swift")
+            }
+            
+            @Step {
+                **재생 시간 포맷팅**
+                
+                `duration`은 TimeInterval(Double) 타입입니다.
+                "3:45" 같은 형식으로 변환해서 표시합니다.
+                
+                @Code(name: "DurationFormat.swift", file: "03-duration-format.swift")
+            }
+        }
+    }
+    
+    @Section(title: "검색 UI 구현") {
+        @ContentAndMedia {
+            실제 검색 화면을 SwiftUI로 구현합니다.
+            검색창, 결과 목록, 로딩 상태를 포함합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SearchViewModel 만들기**
+                
+                검색 로직을 ViewModel로 분리합니다.
+                검색어 변경 시 자동으로 검색하도록 debounce를 적용합니다.
+                
+                @Code(name: "SearchViewModel.swift", file: "03-search-viewmodel.swift")
+            }
+            
+            @Step {
+                **검색 결과 행 디자인**
+                
+                각 노래를 표시하는 SongRow 컴포넌트를 만듭니다.
+                앨범 아트, 제목, 아티스트를 보여줍니다.
+                
+                @Code(name: "SongRow.swift", file: "03-song-row.swift")
+            }
+            
+            @Step {
+                **SearchView 완성**
+                
+                검색창과 결과 목록을 조합해 완전한 검색 화면을 만듭니다.
+                `.searchable` modifier를 활용합니다.
+                
+                @Code(name: "SearchView.swift", file: "03-search-view.swift")
+            }
+            
+            @Step {
+                **로딩 및 에러 상태**
+                
+                검색 중에는 ProgressView를 표시하고,
+                에러 발생 시 친절한 메시지를 보여줍니다.
+                
+                @Code(name: "SearchStates.swift", file: "03-search-states.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MusicCatalogSearchRequest에서 여러 타입을 동시에 검색하려면?
+            
+            @Choice(isCorrect: true) {
+                types 파라미터에 배열로 전달
+                
+                @Justification(reaction: "정답입니다!") {
+                    types: [Song.self, Album.self, Artist.self]처럼
+                    배열로 전달하면 한 번의 요청으로 모두 검색됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                각 타입별로 별도 요청 생성
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    별도 요청도 가능하지만, 네트워크 효율을 위해
+                    한 번에 여러 타입을 요청하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicCatalogSearchRequest는 단일 타입만 지원
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    MusicCatalogSearchRequest는 types 배열을 받아
+                    여러 타입을 동시에 검색할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Song의 artwork에서 이미지 URL을 얻으려면?
+            
+            @Choice(isCorrect: false) {
+                artwork.imageURL 속성 접근
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Artwork는 imageURL 속성이 없습니다.
+                    크기를 지정하는 메서드를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                artwork?.url(width:height:) 메서드 호출
+                
+                @Justification(reaction: "정답입니다!") {
+                    url(width:height:) 메서드로 원하는 크기의
+                    이미지 URL을 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                artwork.data로 직접 이미지 데이터 로드
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Artwork는 URL 기반입니다.
+                    AsyncImage 등으로 URL에서 로드해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            검색 결과 페이지네이션을 위해 사용하는 옵션은?
+            
+            @Choice(isCorrect: false) {
+                page와 pageSize
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    MusicKit은 page 기반이 아닌
+                    offset/limit 기반 페이지네이션을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                limit과 offset
+                
+                @Justification(reaction: "정답입니다!") {
+                    limit으로 결과 수를 제한하고,
+                    offset으로 시작 위치를 지정해 페이지네이션합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                cursor 토큰
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    MusicKit 검색은 cursor가 아닌
+                    offset 기반 페이지네이션을 사용합니다.
+                }
+            }
+        }
+    }
+}

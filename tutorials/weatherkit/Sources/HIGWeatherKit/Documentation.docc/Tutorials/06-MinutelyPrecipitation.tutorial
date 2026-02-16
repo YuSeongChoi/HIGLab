@@ -1,0 +1,154 @@
+@Tutorial(time: 15) {
+    @Intro(title: "분별 강수 예보") {
+        MinuteWeather 데이터를 활용해 정밀한 강수 예보를 
+        제공하는 방법을 학습합니다.
+        
+        @Image(source: "minutely-forecast.png", alt: "분별 강수 예보 UI")
+    }
+    
+    @Section(title: "MinutelyForecast 데이터 요청") {
+        @ContentAndMedia {
+            MinutelyForecast는 향후 1시간의 분 단위 강수 예보를 제공합니다.
+            "7분 후 비가 그칩니다" 같은 정보를 구현할 수 있습니다.
+            
+            ⚠️ 일부 지역에서만 사용 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                분별 강수 예보를 요청합니다.
+                지원되지 않는 지역에서는 nil을 반환합니다.
+                
+                @Code(name: "MinutelyForecast.swift", file: "06-01-request.swift")
+            }
+            
+            @Step {
+                Forecast<MinuteWeather> 컬렉션을 순회합니다.
+                각 분의 강수 정보에 접근할 수 있습니다.
+                
+                @Code(name: "MinutelyForecast.swift", file: "06-02-iterate.swift")
+            }
+            
+            @Step {
+                분별 예보의 요약 정보를 확인합니다.
+                
+                @Code(name: "MinutelyForecast.swift", file: "06-03-summary.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MinuteWeather 속성 활용") {
+        @ContentAndMedia {
+            MinuteWeather는 특정 분의 강수 정보를 담고 있습니다.
+            강수 확률과 강수량을 확인할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                MinuteWeather의 주요 속성을 확인합니다.
+                
+                - `date`: 해당 시간
+                - `precipitationChance`: 강수 확률
+                - `precipitationIntensity`: 강수 강도
+                - `precipitation`: 강수 유형
+                
+                @Code(name: "MinuteWeather.swift", file: "06-04-properties.swift")
+            }
+            
+            @Step {
+                강수 시작/종료 시간을 계산합니다.
+                
+                @Code(name: "MinuteWeather.swift", file: "06-05-timing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "강수 예보 UI 구현") {
+        @ContentAndMedia {
+            "10분 후 비가 시작됩니다" 같은 자연스러운 메시지와 
+            시각적 강수 차트를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                강수 상태 메시지를 생성합니다.
+                
+                @Code(name: "PrecipitationView.swift", file: "06-06-message.swift")
+            }
+            
+            @Step {
+                강수 강도를 차트로 시각화합니다.
+                
+                @Code(name: "PrecipitationView.swift", file: "06-07-chart.swift")
+            }
+            
+            @Step {
+                전체 분별 강수 예보 View를 완성합니다.
+                
+                @Code(name: "PrecipitationView.swift", file: "06-08-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MinutelyForecast가 nil을 반환하는 경우는?
+            
+            @Choice(isCorrect: true) {
+                분별 강수 예보를 지원하지 않는 지역
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    MinutelyForecast는 특정 지역에서만 지원됩니다.
+                    지원되지 않는 지역에서는 nil이 반환됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                비가 오지 않을 때
+                
+                @Justification(reaction: "아닙니다.") {
+                    비가 오지 않아도 데이터는 반환됩니다.
+                    강수 확률이 0인 분별 데이터가 제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1시간 이후의 예보를 요청할 때
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    MinutelyForecast는 항상 향후 1시간의 데이터만 제공합니다.
+                    그 이상의 요청은 에러가 아닌 1시간 데이터만 반환됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MinutelyForecast가 제공하는 예보 기간은?
+            
+            @Choice(isCorrect: false) {
+                30분
+                
+                @Justification(reaction: "더 길게 제공합니다.") {
+                    MinutelyForecast는 30분보다 긴 예보를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                1시간 (60분)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    MinutelyForecast는 향후 1시간(60분)의 
+                    분 단위 강수 예보를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                2시간 (120분)
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    분별 강수 예보는 최대 1시간까지만 제공됩니다.
+                }
+            }
+        }
+    }
+}

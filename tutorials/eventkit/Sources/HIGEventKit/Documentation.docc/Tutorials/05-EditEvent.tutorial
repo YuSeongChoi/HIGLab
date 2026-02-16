@@ -1,0 +1,146 @@
+@Tutorial(time: 12) {
+    @Intro(title: "이벤트 수정 & 삭제") {
+        기존 이벤트를 수정하고 삭제하는 방법과 
+        반복 이벤트 처리 시 주의사항을 배웁니다.
+    }
+    
+    @Section(title: "이벤트 조회하기") {
+        @ContentAndMedia {
+            수정하거나 삭제하려면 먼저 
+            이벤트를 조회해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                날짜 범위로 이벤트를 조회합니다.
+                
+                `predicateForEvents()`로 조건을 만들고 
+                `events(matching:)`으로 검색합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-01-fetch.swift")
+            }
+            
+            @Step {
+                특정 식별자로 이벤트를 조회합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-02-byid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 수정하기") {
+        @ContentAndMedia {
+            조회한 이벤트의 프로퍼티를 수정하고 
+            다시 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                이벤트 프로퍼티를 수정합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-03-modify.swift")
+            }
+            
+            @Step {
+                수정된 이벤트를 저장합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-04-save.swift")
+            }
+            
+            @Step {
+                반복 이벤트 수정 시 span 옵션을 선택합니다.
+                
+                사용자에게 어떤 이벤트를 수정할지 물어봐야 합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-05-span.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 삭제하기") {
+        @ContentAndMedia {
+            `remove(_:span:commit:)` 메서드로 
+            이벤트를 삭제합니다.
+        }
+        
+        @Steps {
+            @Step {
+                단일 이벤트를 삭제합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-06-delete.swift")
+            }
+            
+            @Step {
+                반복 이벤트 삭제 옵션을 처리합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "05-07-delete-recurring.swift")
+            }
+            
+            @Step {
+                삭제 확인 다이얼로그를 구현합니다.
+                
+                @Code(name: "EventDetailView.swift", file: "05-08-confirm.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            날짜 범위로 이벤트를 검색할 때 사용하는 메서드는?
+            
+            @Choice(isCorrect: false) {
+                `fetchEvents(from:to:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `predicateForEvents()`와 `events(matching:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    먼저 predicate를 만들고 
+                    matching으로 검색합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `searchEvents()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            반복 이벤트 중 선택한 이벤트와 이후 모든 이벤트를 수정하려면?
+            
+            @Choice(isCorrect: false) {
+                `.thisEvent`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `.thisEvent`는 현재 이벤트만 영향받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.futureEvents`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `.futureEvents`는 현재 이벤트부터 
+                    미래의 모든 반복 이벤트에 영향을 줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.allEvents`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 옵션은 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

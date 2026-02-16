@@ -1,0 +1,161 @@
+@Tutorial(time: 15) {
+    @Intro(title: "PassKit 소개 & Wallet") {
+        PassKit 프레임워크의 핵심 개념과 
+        Wallet 앱이 제공하는 기능들을 이해합니다.
+        
+        @Image(source: "passkit-intro.png", alt: "PassKit 개요")
+    }
+    
+    @Section(title: "PassKit이란?") {
+        @ContentAndMedia {
+            PassKit은 Apple의 Wallet 앱과 상호작용하는 프레임워크입니다.
+            두 가지 주요 기능을 제공합니다:
+            
+            - **패스 관리**: 멤버십 카드, 티켓, 쿠폰, 탑승권 등
+            - **Apple Pay**: 안전한 비접촉 결제 시스템
+            
+            @Image(source: "wallet-app.png", alt: "Wallet 앱")
+        }
+        
+        @Steps {
+            @Step {
+                PassKit 프레임워크를 임포트합니다.
+                iOS 6부터 지원되며, 현재 모든 Apple 플랫폼에서 사용 가능합니다.
+                
+                @Code(name: "PassKitImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Wallet 앱의 가용성을 확인합니다.
+                일부 지역이나 기기에서는 Wallet이 비활성화될 수 있습니다.
+                
+                @Code(name: "WalletAvailability.swift", file: "01-02-availability.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Wallet에서 지원하는 패스 타입") {
+        @ContentAndMedia {
+            Wallet은 다양한 타입의 패스를 지원합니다.
+            각 타입은 용도에 맞는 레이아웃과 기능을 제공합니다.
+            
+            - **Boarding Pass**: 항공권, 기차표
+            - **Coupon**: 할인 쿠폰, 프로모션
+            - **Event Ticket**: 콘서트, 영화 티켓
+            - **Store Card**: 멤버십, 포인트 카드
+            - **Generic**: 기타 범용 패스
+        }
+        
+        @Steps {
+            @Step {
+                패스 타입에 따라 Wallet에서의 표시 방식이 달라집니다.
+                멤버십 카드 앱에서는 주로 `storeCard` 타입을 사용합니다.
+                
+                @Code(name: "PassTypes.swift", file: "01-03-pass-types.swift")
+            }
+            
+            @Step {
+                PKPassLibrary를 사용해 사용자의 패스를 관리합니다.
+                추가, 삭제, 업데이트 등의 작업이 가능합니다.
+                
+                @Code(name: "PassLibrary.swift", file: "01-04-pass-library.swift")
+            }
+            
+            @Step {
+                사용자가 이미 가지고 있는 패스인지 확인할 수 있습니다.
+                중복 추가를 방지하고 UX를 개선합니다.
+                
+                @Code(name: "ContainsPass.swift", file: "01-05-contains-pass.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Apple Pay 개요") {
+        @ContentAndMedia {
+            Apple Pay는 안전한 비접촉 결제 시스템입니다.
+            실제 카드 번호 대신 토큰화된 정보를 사용합니다.
+            
+            - **보안**: Device Account Number로 실제 카드 정보 보호
+            - **편의성**: Face ID / Touch ID로 빠른 인증
+            - **프라이버시**: Apple은 거래 정보를 저장하지 않음
+        }
+        
+        @Steps {
+            @Step {
+                Apple Pay 결제 가능 여부를 확인합니다.
+                기기가 NFC를 지원하고, 결제 카드가 등록되어 있어야 합니다.
+                
+                @Code(name: "ApplePayAvailability.swift", file: "01-06-apple-pay-check.swift")
+            }
+            
+            @Step {
+                PKPaymentButton으로 표준 Apple Pay 버튼을 표시합니다.
+                Human Interface Guidelines에 따른 디자인을 제공합니다.
+                
+                @Code(name: "PaymentButton.swift", file: "01-07-payment-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PassKit 프레임워크가 제공하는 두 가지 주요 기능은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                패스 관리와 Apple Pay 결제
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    PassKit은 Wallet 패스(멤버십, 티켓 등)와 
+                    Apple Pay 결제를 모두 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                푸시 알림과 위치 기반 서비스
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    패스는 위치 기반 알림을 지원하지만, 
+                    이는 핵심 기능이 아닌 부가 기능입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사진 관리와 문서 스캔
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    사진과 문서는 각각 PhotosUI와 VisionKit에서 처리합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            멤버십 카드를 만들 때 가장 적합한 패스 타입은?
+            
+            @Choice(isCorrect: false) {
+                boardingPass
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    boardingPass는 항공권이나 기차표에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                storeCard
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    storeCard는 멤버십 카드, 포인트 카드, 
+                    로열티 프로그램에 최적화된 타입입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                eventTicket
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    eventTicket은 콘서트나 영화 티켓처럼 
+                    일회성 이벤트에 적합합니다.
+                }
+            }
+        }
+    }
+}

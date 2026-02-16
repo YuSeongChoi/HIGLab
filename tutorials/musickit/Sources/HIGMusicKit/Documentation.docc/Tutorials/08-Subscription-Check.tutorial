@@ -1,0 +1,222 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Apple Music 구독 확인") {
+        사용자의 Apple Music 구독 상태를 확인하고
+        구독 여부에 따른 기능 분기를 구현합니다.
+    }
+    
+    @Section(title: "구독 상태 확인") {
+        @ContentAndMedia {
+            MusicSubscription API로 현재 사용자의
+            Apple Music 구독 상태를 확인합니다.
+            재생 기능은 구독이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicSubscription.current**
+                
+                현재 구독 정보를 비동기로 가져옵니다.
+                구독 여부, 가족 공유, 학생 할인 등의 정보를 포함합니다.
+                
+                @Code(name: "CurrentSubscription.swift", file: "08-current-subscription.swift")
+            }
+            
+            @Step {
+                **구독 상태 속성**
+                
+                MusicSubscription의 주요 속성들:
+                
+                - `canPlayCatalogContent`: 카탈로그 재생 가능 여부
+                - `canBecomeSubscriber`: 구독 가능 여부
+                - `hasCloudLibraryEnabled`: 클라우드 라이브러리 활성화
+                
+                @Code(name: "SubscriptionProperties.swift", file: "08-subscription-properties.swift")
+            }
+            
+            @Step {
+                **구독 변경 감지**
+                
+                `MusicSubscription.subscriptionUpdates` 스트림으로
+                구독 상태 변경을 실시간 감지합니다.
+                
+                @Code(name: "SubscriptionUpdates.swift", file: "08-subscription-updates.swift")
+            }
+        }
+    }
+    
+    @Section(title: "구독 유도 화면") {
+        @ContentAndMedia {
+            비구독 사용자에게 Apple Music 구독을 유도하는
+            화면을 구현합니다. MusicKit의 오퍼 기능을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicSubscriptionOffer**
+                
+                Apple Music 구독 오퍼 시트를 표시합니다.
+                무료 체험, 요금제 선택 화면을 시스템이 제공합니다.
+                
+                @Code(name: "SubscriptionOffer.swift", file: "08-subscription-offer.swift")
+            }
+            
+            @Step {
+                **musicSubscriptionOffer modifier**
+                
+                SwiftUI의 `.musicSubscriptionOffer()` modifier로
+                쉽게 오퍼 시트를 표시합니다.
+                
+                @Code(name: "OfferModifier.swift", file: "08-offer-modifier.swift")
+            }
+            
+            @Step {
+                **맞춤형 구독 안내 화면**
+                
+                오퍼 시트 전에 앱 자체의 안내 화면을 보여주면
+                전환율이 높아집니다.
+                
+                @Code(name: "CustomOfferView.swift", file: "08-custom-offer-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "기능별 구독 분기") {
+        @ContentAndMedia {
+            구독 상태에 따라 앱 기능을 분기합니다.
+            비구독자도 일부 기능은 사용할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **구독 필요 기능 vs 무료 기능**
+                
+                - 구독 필요: 전체 곡 재생, 오프라인 저장
+                - 무료 가능: 검색, 미리듣기, 라이브러리 조회
+                
+                @Code(name: "FeatureMatrix.swift", file: "08-feature-matrix.swift")
+            }
+            
+            @Step {
+                **재생 시도 전 체크**
+                
+                재생 버튼 탭 시 구독 상태를 확인하고,
+                비구독자면 오퍼 화면을 표시합니다.
+                
+                @Code(name: "PlaybackCheck.swift", file: "08-playback-check.swift")
+            }
+            
+            @Step {
+                **SubscriptionGate 컴포넌트**
+                
+                구독이 필요한 UI를 감싸는 재사용 가능한
+                게이트 컴포넌트를 만듭니다.
+                
+                @Code(name: "SubscriptionGate.swift", file: "08-subscription-gate.swift")
+            }
+            
+            @Step {
+                **구독 상태 전역 관리**
+                
+                앱 전체에서 구독 상태를 공유하는
+                SubscriptionManager를 만듭니다.
+                
+                @Code(name: "SubscriptionManager.swift", file: "08-subscription-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Apple Music 카탈로그의 전체 곡을 재생하려면 필요한 것은?
+            
+            @Choice(isCorrect: true) {
+                Apple Music 구독
+                
+                @Justification(reaction: "정답입니다!") {
+                    전체 곡 스트리밍 재생에는 
+                    유효한 Apple Music 구독이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicKit 권한만 있으면 됨
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    권한은 API 접근용입니다.
+                    실제 재생에는 구독이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 내 결제(IAP)
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Apple Music은 별도의 Apple 구독 서비스입니다.
+                    앱 내 결제로 제공되지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MusicSubscription에서 재생 가능 여부를 확인하는 속성은?
+            
+            @Choice(isCorrect: true) {
+                canPlayCatalogContent
+                
+                @Justification(reaction: "정답입니다!") {
+                    canPlayCatalogContent가 true면
+                    Apple Music 카탈로그 콘텐츠를 재생할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isSubscribed
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    isSubscribed 속성은 없습니다.
+                    canPlayCatalogContent를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                hasValidSubscription
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    hasValidSubscription 속성은 없습니다.
+                    canPlayCatalogContent를 확인합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비구독자에게 Apple Music 구독을 유도하는 SwiftUI modifier는?
+            
+            @Choice(isCorrect: false) {
+                .subscriptionSheet()
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    subscriptionSheet modifier는 없습니다.
+                    MusicKit 전용 modifier를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .musicSubscriptionOffer()
+                
+                @Justification(reaction: "정답입니다!") {
+                    .musicSubscriptionOffer() modifier로
+                    시스템 구독 오퍼 시트를 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .appleMusicOffer()
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    appleMusicOffer modifier는 없습니다.
+                    .musicSubscriptionOffer()를 사용합니다.
+                }
+            }
+        }
+    }
+}

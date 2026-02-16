@@ -1,0 +1,178 @@
+@Tutorial(time: 12) {
+    @Intro(title: "폴백 처리 (패스코드)") {
+        생체 인증이 실패하거나 사용할 수 없을 때,
+        패스코드를 대체 인증 수단으로 활용하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "폴백이 필요한 상황") {
+        @ContentAndMedia {
+            생체 인증만으로는 모든 상황을 커버할 수 없습니다.
+            사용자 경험을 위해 적절한 폴백 전략이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **폴백이 필요한 케이스들**
+                
+                - 생체 인증 실패 횟수 초과 (잠금)
+                - 생체 데이터 변경 후 (새 얼굴/지문 등록)
+                - 기기 재시작 직후
+                - 48시간 이상 미사용 후
+                
+                @Code(name: "FallbackCases.swift", file: "04-fallback-cases.swift")
+            }
+            
+            @Step {
+                **LAError.biometryLockout**
+                
+                Face ID/Touch ID 시도 횟수를 초과하면 이 에러가 발생합니다.
+                이때는 패스코드로 잠금을 해제해야 합니다.
+                
+                @Code(name: "Lockout.swift", file: "04-lockout.swift")
+            }
+            
+            @Step {
+                **LAError.biometryNotAvailable**
+                
+                기기가 생체 인증을 지원하지 않거나,
+                하드웨어에 문제가 있을 때 발생합니다.
+                
+                @Code(name: "NotAvailable.swift", file: "04-not-available.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시스템 패스코드 폴백 활용") {
+        @ContentAndMedia {
+            .deviceOwnerAuthentication 정책을 사용하면
+            시스템이 자동으로 패스코드 폴백을 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **정책 선택 전략**
+                
+                보안 수준과 사용자 편의성을 고려하여 정책을 선택합니다.
+                금융 앱은 생체 인증만, 메모 앱은 폴백 허용 등.
+                
+                @Code(name: "PolicyStrategy.swift", file: "04-policy-strategy.swift")
+            }
+            
+            @Step {
+                **시스템 폴백 UI 활용**
+                
+                deviceOwnerAuthentication 사용 시,
+                생체 인증 실패 후 자동으로 패스코드 입력 UI가 표시됩니다.
+                
+                @Code(name: "SystemFallback.swift", file: "04-system-fallback.swift")
+            }
+            
+            @Step {
+                **폴백 버튼 커스터마이징**
+                
+                localizedFallbackTitle로 "비밀번호 입력" 버튼 텍스트를 변경합니다.
+                앱에 맞는 문구로 설정하세요.
+                
+                @Code(name: "FallbackButton.swift", file: "04-fallback-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 폴백 구현") {
+        @ContentAndMedia {
+            앱 내부에서 별도의 PIN이나 패턴을 사용하고 싶다면,
+            커스텀 폴백 로직을 구현할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 자체 PIN 코드**
+                
+                시스템 패스코드 대신 앱만의 PIN을 사용할 수 있습니다.
+                이 경우 별도의 키체인 저장 및 검증 로직이 필요합니다.
+                
+                @Code(name: "CustomPIN.swift", file: "04-custom-pin.swift")
+            }
+            
+            @Step {
+                **폴백 화면 전환 로직**
+                
+                생체 인증 실패 시 커스텀 PIN 입력 화면으로 전환합니다.
+                
+                @Code(name: "FallbackNavigation.swift", file: "04-fallback-navigation.swift")
+            }
+            
+            @Step {
+                **PINEntryView 구현**
+                
+                깔끔한 PIN 입력 UI를 SwiftUI로 구현합니다.
+                
+                @Code(name: "PINEntryView.swift", file: "04-pin-entry-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            LAError.biometryLockout이 발생하는 상황은?
+            
+            @Choice(isCorrect: true) {
+                생체 인증 시도 횟수를 초과했을 때
+                
+                @Justification(reaction: "정답입니다!") {
+                    Face ID는 5회, Touch ID는 5회 실패 시 잠금됩니다.
+                    이때 패스코드로 해제해야 다시 생체 인증을 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기기가 생체 인증을 지원하지 않을 때
+                
+                @Justification(reaction: "아쉽네요") {
+                    그 경우는 biometryNotAvailable 에러입니다.
+                    lockout은 시도 횟수 초과 시 발생합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                생체 데이터가 등록되지 않았을 때
+                
+                @Justification(reaction: "아쉽네요") {
+                    그 경우는 biometryNotEnrolled 에러입니다.
+                    lockout은 인증 실패 횟수 초과 시 발생합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            .deviceOwnerAuthentication 정책의 장점은?
+            
+            @Choice(isCorrect: true) {
+                생체 인증 실패 시 자동으로 패스코드 폴백 UI가 제공된다
+                
+                @Justification(reaction: "맞습니다!") {
+                    시스템이 폴백 로직을 처리해주므로
+                    개발자가 별도의 UI를 구현하지 않아도 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                생체 인증 속도가 더 빠르다
+                
+                @Justification(reaction: "아쉽네요") {
+                    정책 차이가 속도에 영향을 주지 않습니다.
+                    차이점은 폴백 허용 여부입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                인증 실패 시 에러가 발생하지 않는다
+                
+                @Justification(reaction: "아쉽네요") {
+                    폴백까지 실패하면 여전히 에러가 발생합니다.
+                    폴백은 추가 기회를 제공할 뿐입니다.
+                }
+            }
+        }
+    }
+}

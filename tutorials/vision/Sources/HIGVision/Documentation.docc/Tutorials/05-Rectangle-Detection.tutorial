@@ -1,0 +1,252 @@
+@Tutorial(time: 20) {
+    @Intro(title: "문서 경계 감지 (사각형 감지)") {
+        VNDetectRectanglesRequest로 문서의 사각형 경계를 감지합니다.
+        문서 스캐너의 핵심인 자동 문서 영역 인식을 구현합니다.
+    }
+    
+    @Section(title: "VNDetectRectanglesRequest 기초") {
+        @ContentAndMedia {
+            **VNDetectRectanglesRequest**는 이미지에서 
+            사각형 형태를 감지합니다.
+            
+            문서, 카드, 영수증 등의 경계를 자동으로 찾아
+            스캔 영역을 정의하는 데 사용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 사각형 감지 구현**
+                
+                VNDetectRectanglesRequest를 생성하고 
+                이미지에서 사각형을 감지합니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-basic-rect-request.swift")
+            }
+            
+            @Step {
+                **감지 파라미터 설정**
+                
+                minimumAspectRatio, maximumAspectRatio로 
+                감지할 사각형의 비율을 제한합니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-aspect-ratio.swift")
+            }
+            
+            @Step {
+                **최대 감지 개수 설정**
+                
+                maximumObservations로 반환할 사각형 수를 제한합니다.
+                문서 스캔에서는 보통 1개만 필요합니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-max-observations.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사각형 좌표 활용") {
+        @ContentAndMedia {
+            VNRectangleObservation은 4개의 코너 포인트를 제공합니다.
+            이를 활용해 정확한 문서 영역을 추출합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **4개 코너 포인트 추출**
+                
+                topLeft, topRight, bottomLeft, bottomRight
+                4개의 정규화된 포인트를 가져옵니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-corner-points.swift")
+            }
+            
+            @Step {
+                **좌표 변환**
+                
+                정규화된 코너 포인트를 이미지 좌표로 변환합니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-coord-conversion.swift")
+            }
+            
+            @Step {
+                **기울어진 사각형 처리**
+                
+                비뚤어진 문서도 정확히 감지되도록 
+                quadrilateral(사변형)을 처리합니다.
+                
+                @Code(name: "RectangleDetector.swift", file: "05-quadrilateral.swift")
+            }
+        }
+    }
+    
+    @Section(title: "문서 영역 추출 (Perspective Correction)") {
+        @ContentAndMedia {
+            감지된 사각형 영역을 추출하고 
+            원근 왜곡을 보정해 평평한 문서 이미지를 얻습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CIFilter를 사용한 원근 보정**
+                
+                CIPerspectiveCorrection 필터로 
+                기울어진 문서를 평평하게 펴줍니다.
+                
+                @Code(name: "DocumentExtractor.swift", file: "05-perspective-filter.swift")
+            }
+            
+            @Step {
+                **문서 이미지 크롭**
+                
+                보정된 이미지에서 문서 영역만 추출합니다.
+                
+                @Code(name: "DocumentExtractor.swift", file: "05-crop-document.swift")
+            }
+            
+            @Step {
+                **이미지 향상**
+                
+                추출된 문서 이미지의 대비와 선명도를 향상시킵니다.
+                
+                @Code(name: "DocumentExtractor.swift", file: "05-enhance-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI 구현") {
+        @ContentAndMedia {
+            문서 경계를 시각적으로 표시하고
+            사용자가 영역을 조정할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **문서 경계 모델**
+                
+                감지된 문서 경계 정보를 담는 모델을 정의합니다.
+                
+                @Code(name: "DocumentBounds.swift", file: "05-bounds-model.swift")
+            }
+            
+            @Step {
+                **문서 경계 오버레이**
+                
+                감지된 사각형 영역을 선으로 표시합니다.
+                
+                @Code(name: "DocumentOverlayView.swift", file: "05-rect-overlay.swift")
+            }
+            
+            @Step {
+                **코너 핸들 구현**
+                
+                사용자가 드래그해서 경계를 조정할 수 있는 
+                코너 핸들을 추가합니다.
+                
+                @Code(name: "CornerHandleView.swift", file: "05-corner-handles.swift")
+            }
+            
+            @Step {
+                **문서 스캔 뷰 완성**
+                
+                감지, 조정, 추출을 모두 포함한 
+                완전한 문서 스캔 뷰를 구현합니다.
+                
+                @Code(name: "DocumentScanView.swift", file: "05-scan-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            VNRectangleObservation이 제공하는 코너 포인트 개수는?
+            
+            @Choice(isCorrect: true) {
+                4개 (topLeft, topRight, bottomLeft, bottomRight)
+                
+                @Justification(reaction: "정답!") {
+                    VNRectangleObservation은 사각형의 4개 코너 포인트를
+                    정규화된 좌표로 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                2개 (origin, size)
+                
+                @Justification(reaction: "아쉽네요") {
+                    CGRect의 표현 방식입니다.
+                    VNRectangleObservation은 4개의 코너 포인트를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                8개 (각 코너의 x, y)
+                
+                @Justification(reaction: "아쉽네요") {
+                    4개의 CGPoint 프로퍼티로 제공됩니다.
+                    각 포인트가 x, y를 포함하고 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            문서의 원근 왜곡을 보정하는 데 사용하는 CIFilter는?
+            
+            @Choice(isCorrect: true) {
+                CIPerspectiveCorrection
+                
+                @Justification(reaction: "정확합니다!") {
+                    CIPerspectiveCorrection 필터는 4개의 코너 포인트를 받아
+                    이미지를 평평하게 펴는 원근 보정을 수행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CICrop
+                
+                @Justification(reaction: "아쉽네요") {
+                    CICrop은 단순 크롭만 수행합니다.
+                    원근 보정은 CIPerspectiveCorrection이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIAffineTransform
+                
+                @Justification(reaction: "아쉽네요") {
+                    AffineTransform은 2D 변환용입니다.
+                    원근 보정은 CIPerspectiveCorrection이 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            문서 스캔에서 maximumObservations를 1로 설정하는 이유는?
+            
+            @Choice(isCorrect: true) {
+                보통 하나의 문서만 스캔하므로 가장 큰 사각형만 필요하다
+                
+                @Justification(reaction: "정답!") {
+                    문서 스캔 시 일반적으로 하나의 문서만 프레임에 있으므로,
+                    가장 신뢰도가 높은 하나의 결과만 받으면 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능과 무관하다
+                
+                @Justification(reaction: "아쉽네요") {
+                    감지 개수를 제한하면 처리량이 줄어
+                    성능이 향상됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Vision이 1개만 지원한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 여러 사각형을 감지할 수 있습니다.
+                    maximumObservations로 개수를 조절합니다.
+                }
+            }
+        }
+    }
+}

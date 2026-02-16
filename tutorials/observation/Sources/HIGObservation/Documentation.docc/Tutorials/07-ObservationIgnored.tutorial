@@ -1,0 +1,162 @@
+@Tutorial(time: 10) {
+    @Intro(title: "@ObservationIgnored 활용") {
+        특정 프로퍼티를 관찰 대상에서 제외하는 방법을 배웁니다.
+        캐시, 임시 데이터, 무거운 연산 결과 등을 효율적으로 관리합니다.
+    }
+    
+    @Section(title: "@ObservationIgnored 기본") {
+        @ContentAndMedia {
+            @ObservationIgnored는 프로퍼티를 관찰 대상에서 
+            완전히 제외합니다. 변경되어도 뷰가 업데이트되지 않습니다.
+            
+            이것은 성능 최적화와 의도적인 업데이트 방지에 유용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                기본 사용법입니다.
+                @ObservationIgnored를 프로퍼티 앞에 붙입니다.
+                
+                @Code(name: "IgnoredBasic.swift", file: "07-ignored-basic.swift")
+            }
+            
+            @Step {
+                **언제 사용해야 할까요?**
+                뷰 업데이트가 필요 없는 내부 상태에 적합합니다.
+                
+                @Code(name: "WhenToUse.swift", file: "07-when-to-use.swift")
+            }
+            
+            @Step {
+                주의: 무분별한 사용은 버그를 만듭니다!
+                정말 뷰 업데이트가 필요 없는지 신중히 판단하세요.
+                
+                @Code(name: "IgnoredCaution.swift", file: "07-ignored-caution.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실전 활용 패턴") {
+        @ContentAndMedia {
+            @ObservationIgnored의 실제 활용 사례를 살펴봅니다.
+            캐시, 의존성 주입, 디버그 정보 등에 유용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **패턴 1**: 캐시 관리
+                계산된 결과를 캐시하되 뷰 업데이트를 트리거하지 않습니다.
+                
+                @Code(name: "CachePattern.swift", file: "07-cache-pattern.swift")
+            }
+            
+            @Step {
+                **패턴 2**: 의존성 주입
+                서비스 객체를 저장하지만 관찰할 필요가 없습니다.
+                
+                @Code(name: "DependencyInjection.swift", file: "07-dependency-injection.swift")
+            }
+            
+            @Step {
+                **패턴 3**: 디버그 및 분석
+                개발/분석 목적의 데이터를 뷰와 분리합니다.
+                
+                @Code(name: "DebugData.swift", file: "07-debug-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 성능 최적화") {
+        @ContentAndMedia {
+            CartFlow 앱에 @ObservationIgnored를 적용하여
+            불필요한 뷰 업데이트를 방지합니다.
+        }
+        
+        @Steps {
+            @Step {
+                가격 계산 캐시를 추가합니다.
+                자주 접근하지만 뷰 업데이트는 필요 없습니다.
+                
+                @Code(name: "PriceCache.swift", file: "07-price-cache.swift")
+            }
+            
+            @Step {
+                분석 데이터 추적을 추가합니다.
+                사용자 행동을 기록하지만 UI에는 영향을 주지 않습니다.
+                
+                @Code(name: "AnalyticsTracking.swift", file: "07-analytics-tracking.swift")
+            }
+            
+            @Step {
+                네트워크 서비스 의존성을 주입합니다.
+                서비스 객체는 변경되어도 뷰를 다시 그릴 필요가 없습니다.
+                
+                @Code(name: "ServiceInjection.swift", file: "07-service-injection.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @ObservationIgnored를 사용하기 적합한 경우는?
+            
+            @Choice(isCorrect: true) {
+                캐시 데이터나 뷰에 표시되지 않는 내부 상태
+                
+                @Justification(reaction: "정답!") {
+                    캐시, 분석 데이터, 서비스 의존성 등
+                    UI와 무관한 데이터에 사용하면 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자주 변경되는 모든 프로퍼티
+                
+                @Justification(reaction: "아쉽네요") {
+                    자주 변경되더라도 뷰에 표시되면
+                    @ObservationIgnored를 사용하면 안 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 최적화를 위해 가능한 많이 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    무분별한 사용은 뷰가 업데이트되지 않는 버그를 만듭니다.
+                    신중하게 판단하세요.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            @ObservationIgnored가 붙은 프로퍼티가 변경되면?
+            
+            @Choice(isCorrect: true) {
+                뷰가 다시 그려지지 않음
+                
+                @Justification(reaction: "완벽합니다!") {
+                    @ObservationIgnored는 프로퍼티를 완전히 
+                    관찰 시스템에서 제외하므로 변경 알림이 발생하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                일반 프로퍼티처럼 뷰가 업데이트됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    아닙니다. @ObservationIgnored 프로퍼티의 변경은
+                    관찰 시스템에 알려지지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러가 발생함
+                
+                @Justification(reaction: "아쉽네요") {
+                    에러 없이 정상 동작합니다.
+                    단지 뷰 업데이트가 발생하지 않을 뿐입니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,219 @@
+@Tutorial(time: 20) {
+    @Intro(title: "View 프로토콜 & body 이해하기") {
+        SwiftUI의 핵심인 View 프로토콜을 깊이 있게 탐구합니다.
+        body 프로퍼티의 역할과 @ViewBuilder의 마법을 배웁니다.
+    }
+    
+    @Section(title: "View 프로토콜의 비밀") {
+        @ContentAndMedia {
+            SwiftUI에서 화면에 보이는 모든 것은 **View 프로토콜**을 따릅니다.
+            
+            Text, Image, Button, VStack, List...
+            모두 View입니다.
+            
+            View 프로토콜은 단 하나의 요구사항만 있습니다:
+            `body` 프로퍼티
+        }
+        
+        @Steps {
+            @Step {
+                **View 프로토콜 정의**
+                
+                View 프로토콜의 정의를 살펴봅시다.
+                놀랍도록 단순합니다!
+                
+                `associatedtype Body: View`와
+                `var body: Body { get }`만 있습니다.
+                
+                @Code(name: "ViewProtocol.swift", file: "02-view-protocol.swift")
+            }
+            
+            @Step {
+                **body는 computed property**
+                
+                body는 저장 프로퍼티가 아니라 연산 프로퍼티입니다.
+                매번 호출될 때마다 새로운 뷰 계층을 반환합니다.
+                
+                SwiftUI는 이 body를 상태가 바뀔 때마다 다시 호출하여
+                변경된 부분만 효율적으로 업데이트합니다.
+                
+                @Code(name: "BodyProperty.swift", file: "02-body-computed.swift")
+            }
+            
+            @Step {
+                **some View의 의미**
+                
+                `some View`는 "어떤 구체적인 View 타입"을 의미합니다.
+                Opaque Return Type이라고 부릅니다.
+                
+                컴파일러가 실제 타입을 추론하지만,
+                외부에서는 "View라는 것"만 알 수 있습니다.
+                
+                @Code(name: "SomeView.swift", file: "02-some-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@ViewBuilder의 마법") {
+        @ContentAndMedia {
+            body 안에서 여러 뷰를 나열할 수 있는 이유는
+            **@ViewBuilder** 덕분입니다.
+            
+            @ViewBuilder는 Swift의 Result Builder 기능을 활용하여
+            여러 뷰를 하나의 뷰로 조합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **여러 뷰를 반환하기**
+                
+                body 안에서 VStack 없이 여러 뷰를 나열하면?
+                @ViewBuilder가 자동으로 TupleView로 묶어줍니다.
+                
+                하지만 보통은 Stack으로 감싸는 것이 좋습니다.
+                레이아웃을 명확하게 제어할 수 있기 때문입니다.
+                
+                @Code(name: "ViewBuilder.swift", file: "02-viewbuilder.swift")
+            }
+            
+            @Step {
+                **조건부 뷰 렌더링**
+                
+                @ViewBuilder 덕분에 if문으로 뷰를 조건부 표시할 수 있습니다.
+                
+                ChefBook에서 "즐겨찾기 표시"를 조건부로 보여줘봅시다.
+                
+                @Code(name: "ConditionalView.swift", file: "02-conditional.swift")
+            }
+            
+            @Step {
+                **커스텀 @ViewBuilder 만들기**
+                
+                나만의 컨테이너 뷰를 만들 때 @ViewBuilder를 활용합니다.
+                
+                ChefBook의 "섹션 카드"를 만들어봅시다.
+                제목과 컨텐츠를 받는 재사용 가능한 컨테이너입니다.
+                
+                @Code(name: "CustomViewBuilder.swift", file: "02-custom-viewbuilder.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 레시피 헤더 만들기") {
+        @ContentAndMedia {
+            배운 것을 활용해서 ChefBook의 레시피 상세 화면 헤더를 만들어봅시다!
+            
+            레시피 이름, 설명, 조리 시간, 난이도를 보여주는 뷰입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **RecipeHeaderView 구조 설계**
+                
+                먼저 어떤 정보를 표시할지 생각합니다.
+                
+                - 레시피 이름 (큰 폰트)
+                - 설명 (서브텍스트)
+                - 아이콘 + 조리시간
+                - 난이도 뱃지
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-start.swift")
+            }
+            
+            @Step {
+                **레시피 데이터 모델 연결**
+                
+                Recipe 구조체를 받아서 정보를 표시합니다.
+                각 정보에 적절한 스타일을 적용합니다.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-model.swift")
+            }
+            
+            @Step {
+                **뷰 모디파이어로 스타일링**
+                
+                SwiftUI의 **Modifier** 체인으로 스타일을 적용합니다.
+                
+                .font(), .foregroundStyle(), .padding() 등을
+                체인처럼 연결합니다.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-styled.swift")
+            }
+            
+            @Step {
+                **Preview로 확인**
+                
+                #Preview 매크로로 다양한 상태를 미리보기합니다.
+                
+                실제 데이터와 다양한 케이스를 테스트해봅시다.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            View 프로토콜의 유일한 필수 요구사항은?
+            
+            @Choice(isCorrect: true) {
+                body 프로퍼티
+                
+                @Justification(reaction: "정답! 🎯") {
+                    View 프로토콜은 body 하나만 요구합니다.
+                    나머지는 모두 확장과 modifier로 제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                init() 생성자
+                
+                @Justification(reaction: "아쉽네요") {
+                    생성자는 View 프로토콜의 요구사항이 아닙니다.
+                    필요에 따라 커스텀 생성자를 만들 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                draw() 메서드
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftUI에는 draw() 메서드가 없습니다.
+                    body가 UI를 "선언"합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            `some View`가 의미하는 것은?
+            
+            @Choice(isCorrect: true) {
+                컴파일러가 추론하는 구체적인 View 타입
+                
+                @Justification(reaction: "정확합니다! ⭐") {
+                    Opaque Return Type으로,
+                    컴파일러는 정확한 타입을 알지만
+                    외부에는 "View"라는 것만 노출합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아무 View나 반환해도 된다는 의미
+                
+                @Justification(reaction: "아쉽네요") {
+                    some View는 "하나의 구체적인 타입"을 의미합니다.
+                    매번 다른 타입을 반환할 수는 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Optional<View>와 같은 의미
+                
+                @Justification(reaction: "아쉽네요") {
+                    some View는 Optional과 다릅니다.
+                    항상 구체적인 View 타입을 반환합니다.
+                }
+            }
+        }
+    }
+}

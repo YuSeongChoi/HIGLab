@@ -1,0 +1,281 @@
+@Tutorial(time: 18) {
+    @Intro(title: "ShazamKit + MusicKit 통합") {
+        ShazamKit과 MusicKit을 연동해 완벽한 음악 경험을 제공합니다.
+        인식된 곡을 Apple Music에서 재생하고 라이브러리에 추가합니다.
+    }
+    
+    @Section(title: "MusicKit 소개") {
+        @ContentAndMedia {
+            MusicKit은 Apple Music과 상호작용하는 프레임워크입니다.
+            ShazamKit으로 인식한 곡을 MusicKit으로 재생하고 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicKit 핵심 기능**
+                
+                - Apple Music 카탈로그 검색
+                - 음악 재생 (구독자)
+                - 라이브러리 관리
+                - 추천 및 차트 접근
+                
+                @Code(name: "MusicKitOverview.swift", file: "10-musickit-overview.swift")
+            }
+            
+            @Step {
+                **권한 설정**
+                
+                MusicKit 사용을 위해 앱 설정이 필요합니다.
+                App Store Connect에서 MusicKit 활성화합니다.
+                
+                @Code(name: "MusicKitSetup.swift", file: "10-musickit-setup.swift")
+            }
+            
+            @Step {
+                **MusicAuthorization 요청**
+                
+                MusicAuthorization.request()로 권한을 요청합니다.
+                사용자가 Apple Music 접근을 허용해야 합니다.
+                
+                @Code(name: "MusicAuth.swift", file: "10-music-auth.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ShazamKit → MusicKit 연결") {
+        @ContentAndMedia {
+            SHMatchedMediaItem의 정보를 MusicKit의 
+            Song이나 Track으로 변환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **appleMusicID 활용**
+                
+                SHMatchedMediaItem.appleMusicID로 
+                MusicKit에서 곡을 찾습니다.
+                
+                @Code(name: "AppleMusicID.swift", file: "10-apple-music-id.swift")
+            }
+            
+            @Step {
+                **MusicCatalogResourceRequest**
+                
+                MusicCatalogResourceRequest로 
+                Apple Music 카탈로그에서 곡 정보를 가져옵니다.
+                
+                @Code(name: "CatalogRequest.swift", file: "10-catalog-request.swift")
+            }
+            
+            @Step {
+                **ShazamToMusicKit 변환기**
+                
+                ShazamKit 결과를 MusicKit 객체로 
+                변환하는 유틸리티를 만듭니다.
+                
+                @Code(name: "ShazamToMusicKit.swift", file: "10-shazam-to-musickit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Apple Music 재생") {
+        @ContentAndMedia {
+            MusicKit의 ApplicationMusicPlayer로 
+            인식된 곡을 Apple Music에서 재생합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ApplicationMusicPlayer 기본**
+                
+                시스템 음악 플레이어를 제어합니다.
+                재생, 일시정지, 다음 곡 등을 관리합니다.
+                
+                @Code(name: "MusicPlayerBasics.swift", file: "10-player-basics.swift")
+            }
+            
+            @Step {
+                **인식된 곡 바로 재생**
+                
+                Shazam으로 인식한 곡을 
+                Apple Music에서 바로 재생합니다.
+                
+                @Code(name: "PlayRecognizedSong.swift", file: "10-play-recognized.swift")
+            }
+            
+            @Step {
+                **재생 상태 모니터링**
+                
+                플레이어 상태를 관찰하고 UI를 업데이트합니다.
+                재생 중, 일시정지, 완료 등 상태를 표시합니다.
+                
+                @Code(name: "PlaybackState.swift", file: "10-playback-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "라이브러리 관리") {
+        @ContentAndMedia {
+            인식된 곡을 사용자의 Apple Music 라이브러리에 추가하고,
+            플레이리스트를 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **라이브러리에 곡 추가**
+                
+                MusicLibrary.shared.add(_:)로 
+                곡을 라이브러리에 추가합니다.
+                
+                @Code(name: "AddToLibrary.swift", file: "10-add-to-library.swift")
+            }
+            
+            @Step {
+                **"Shazam 발견" 플레이리스트**
+                
+                Shazam으로 인식한 곡들을 모아둘 
+                전용 플레이리스트를 생성합니다.
+                
+                @Code(name: "ShazamPlaylist.swift", file: "10-shazam-playlist.swift")
+            }
+            
+            @Step {
+                **통합 MusicManager 구현**
+                
+                ShazamKit + MusicKit 통합을 관리하는 
+                완전한 매니저 클래스를 구현합니다.
+                
+                @Code(name: "MusicManager.swift", file: "10-music-manager.swift")
+            }
+        }
+    }
+    
+    @Section(title: "완성된 음악 인식 앱") {
+        @ContentAndMedia {
+            지금까지 배운 모든 것을 통합해 
+            완전한 음악 인식 앱을 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 아키텍처 정리**
+                
+                - MusicRecognizer: ShazamKit 매칭
+                - MusicManager: MusicKit 연동
+                - ContentView: UI 표시
+                
+                @Code(name: "AppArchitecture.swift", file: "10-app-architecture.swift")
+            }
+            
+            @Step {
+                **메인 화면 구현**
+                
+                인식 버튼, 결과 표시, 재생 컨트롤을 
+                모두 포함한 메인 화면입니다.
+                
+                @Code(name: "MainView.swift", file: "10-main-view.swift")
+            }
+            
+            @Step {
+                **완성! 🎉**
+                
+                ShazamKit으로 음악을 인식하고,
+                MusicKit으로 바로 재생하는 앱이 완성되었습니다!
+                
+                @Code(name: "Complete.swift", file: "10-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SHMatchedMediaItem에서 MusicKit 곡을 찾기 위한 키는?
+            
+            @Choice(isCorrect: true) {
+                appleMusicID
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    appleMusicID를 사용해 MusicCatalogResourceRequest로 
+                    Apple Music에서 곡을 찾습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                shazamID
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    shazamID는 Shazam 내부 ID입니다.
+                    MusicKit에는 appleMusicID를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isrc
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    ISRC도 사용 가능하지만, 
+                    appleMusicID가 더 직접적인 방법입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MusicKit에서 음악을 재생하는 객체는?
+            
+            @Choice(isCorrect: true) {
+                ApplicationMusicPlayer
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    ApplicationMusicPlayer.shared로 
+                    시스템 음악 플레이어를 제어합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicPlayer
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    ApplicationMusicPlayer가 정확한 이름입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVAudioPlayer
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    AVAudioPlayer는 로컬 파일 재생용입니다.
+                    Apple Music은 ApplicationMusicPlayer를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MusicKit 사용 권한을 요청하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                MusicAuthorization.request()
+                
+                @Justification(reaction: "정답! 🎉") {
+                    MusicAuthorization.request()로 
+                    Apple Music 접근 권한을 요청합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicKit.authorize()
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    MusicAuthorization.request()가 정확합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AppleMusic.requestPermission()
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    MusicAuthorization.request()를 사용하세요.
+                }
+            }
+        }
+    }
+}

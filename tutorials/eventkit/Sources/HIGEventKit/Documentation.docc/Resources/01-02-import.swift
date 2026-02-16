@@ -1,0 +1,5 @@
+import EventKit
+
+class CalendarManager {
+    
+}

@@ -1,0 +1,166 @@
+@Tutorial(time: 15) {
+    @Intro(title: "WeatherKit 소개 & 설정") {
+        Apple WeatherKit의 개념과 앱에서 사용하기 위한 
+        설정 과정을 단계별로 학습합니다.
+        
+        @Image(source: "weatherkit-intro.png", alt: "WeatherKit 개요")
+    }
+    
+    @Section(title: "WeatherKit이란?") {
+        @ContentAndMedia {
+            WeatherKit은 Apple이 2022년 WWDC에서 발표한 날씨 데이터 프레임워크입니다.
+            Dark Sky 인수 후 Apple Weather 서비스의 강력한 데이터를 
+            개발자에게 제공합니다.
+            
+            - **정확한 예보**: Apple Weather 서비스의 고품질 데이터
+            - **전 세계 지원**: 글로벌 날씨 데이터 제공
+            - **개인정보 보호**: 위치 데이터가 Apple 서버에 저장되지 않음
+            - **무료 티어**: 월 500,000건의 API 호출 무료
+        }
+        
+        @Steps {
+            @Step {
+                WeatherKit은 iOS 16+, macOS 13+, watchOS 9+, tvOS 16+에서 사용 가능합니다.
+                Swift 네이티브 API를 제공하며, REST API도 별도로 제공됩니다.
+                
+                @Code(name: "WeatherKitOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                WeatherKit이 제공하는 데이터 종류를 확인합니다.
+                
+                - CurrentWeather: 현재 날씨
+                - HourlyForecast: 시간별 예보 (최대 240시간)
+                - DailyForecast: 일별 예보 (최대 10일)
+                - MinutelyForecast: 분별 강수 예보 (향후 1시간)
+                - WeatherAlerts: 기상 특보
+                
+                @Code(name: "WeatherKitOverview.swift", file: "01-02-datatypes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Store Connect 설정") {
+        @ContentAndMedia {
+            WeatherKit을 사용하려면 App Store Connect에서 
+            해당 capability를 활성화해야 합니다.
+            
+            Apple Developer Program 멤버십이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                App Store Connect에서 앱의 Identifiers로 이동합니다.
+                Capabilities 섹션에서 WeatherKit을 찾아 활성화합니다.
+                
+                @Image(source: "asc-weatherkit.png", alt: "App Store Connect WeatherKit 설정")
+            }
+            
+            @Step {
+                Xcode 프로젝트에서 Signing & Capabilities 탭을 엽니다.
+                "+ Capability" 버튼을 클릭하고 WeatherKit을 추가합니다.
+                
+                @Code(name: "WeatherKitSetup.swift", file: "01-03-capability.swift")
+            }
+            
+            @Step {
+                WeatherKit 프레임워크를 import합니다.
+                이제 WeatherService를 사용할 준비가 완료되었습니다.
+                
+                @Code(name: "WeatherKitSetup.swift", file: "01-04-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "API 사용량 및 요금") {
+        @ContentAndMedia {
+            WeatherKit은 무료 티어를 제공하지만, 
+            사용량이 많은 앱은 추가 비용이 발생할 수 있습니다.
+            
+            | 티어 | 월간 API 호출 | 비용 |
+            |-----|-------------|------|
+            | 무료 | 500,000건 | $0 |
+            | 유료 | 1,000,000건당 | $0.50 |
+        }
+        
+        @Steps {
+            @Step {
+                App Store Connect의 App Analytics에서 
+                WeatherKit API 사용량을 모니터링할 수 있습니다.
+                
+                @Code(name: "WeatherKitUsage.swift", file: "01-05-usage.swift")
+            }
+            
+            @Step {
+                API 호출을 최적화하는 방법:
+                
+                - 필요한 DataSet만 요청
+                - 결과 캐싱
+                - 백그라운드 새로고침 주기 조절
+                
+                @Code(name: "WeatherKitUsage.swift", file: "01-06-optimization.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            WeatherKit의 무료 티어에서 월간 허용되는 API 호출 수는?
+            
+            @Choice(isCorrect: false) {
+                100,000건
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    무료 티어는 더 많은 호출을 허용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                500,000건
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    WeatherKit 무료 티어는 월 500,000건의 API 호출을 제공합니다.
+                    대부분의 앱에 충분한 양입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1,000,000건
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    1,000,000건은 유료 티어에서 추가 구매 가능한 단위입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            WeatherKit을 사용하기 전에 반드시 필요한 설정은?
+            
+            @Choice(isCorrect: true) {
+                App Store Connect에서 WeatherKit capability 활성화
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    WeatherKit을 사용하려면 반드시 
+                    App Store Connect와 Xcode 모두에서 capability를 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 API 키 발급
+                
+                @Justification(reaction: "아닙니다.") {
+                    WeatherKit은 별도의 API 키가 필요 없습니다.
+                    App Store Connect의 capability 설정만으로 사용 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Weather 앱 설치
+                
+                @Justification(reaction: "관계없습니다.") {
+                    WeatherKit 사용에 Apple Weather 앱 설치는 필요 없습니다.
+                }
+            }
+        }
+    }
+}

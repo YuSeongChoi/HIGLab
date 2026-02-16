@@ -1,0 +1,205 @@
+@Tutorial(time: 20) {
+    @Intro(title: "드로잉 이미지 변환") {
+        PKDrawing을 UIImage로 변환하고 
+        다양한 방식으로 공유하는 방법을 배웁니다.
+        
+        @Image(source: "image-export.png", alt: "이미지 내보내기")
+    }
+    
+    @Section(title: "PKDrawing을 UIImage로 변환") {
+        @ContentAndMedia {
+            PKDrawing의 image(from:scale:) 메서드를 사용하여
+            드로잉을 UIImage로 변환할 수 있습니다.
+            
+            - **from**: 렌더링할 영역 (CGRect)
+            - **scale**: 이미지 스케일 (1.0, 2.0, 3.0 등)
+            
+            투명 배경 또는 커스텀 배경색을 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKDrawing의 bounds를 사용하여 
+                전체 드로잉을 이미지로 변환합니다.
+                
+                @Code(name: "BasicImageExport.swift", file: "05-01-basic-export.swift")
+            }
+            
+            @Step {
+                특정 영역만 이미지로 추출합니다.
+                크롭 기능을 구현할 때 유용합니다.
+                
+                @Code(name: "CroppedExport.swift", file: "05-02-cropped.swift")
+            }
+            
+            @Step {
+                고해상도 이미지를 위해 scale 값을 조정합니다.
+                인쇄용으로는 3.0 이상을 권장합니다.
+                
+                @Code(name: "HighResExport.swift", file: "05-03-high-res.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배경색 추가") {
+        @ContentAndMedia {
+            PKDrawing.image()는 기본적으로 투명 배경을 생성합니다.
+            Core Graphics를 사용하여 배경색을 추가할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                UIGraphicsImageRenderer를 사용하여
+                배경색이 있는 이미지를 생성합니다.
+                
+                @Code(name: "BackgroundColor.swift", file: "05-04-background.swift")
+            }
+            
+            @Step {
+                그라데이션 배경을 추가하여 
+                더 세련된 이미지를 만듭니다.
+                
+                @Code(name: "GradientBackground.swift", file: "05-05-gradient.swift")
+            }
+            
+            @Step {
+                배경 이미지 위에 드로잉을 합성합니다.
+                사진 위에 그린 낙서를 저장할 때 유용합니다.
+                
+                @Code(name: "CompositeImage.swift", file: "05-06-composite.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 공유 및 저장") {
+        @ContentAndMedia {
+            생성된 이미지를 사진 앨범에 저장하거나
+            다른 앱과 공유할 수 있습니다.
+            
+            UIActivityViewController를 사용하면
+            다양한 공유 옵션을 제공할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                UIImageWriteToSavedPhotosAlbum을 사용하여
+                이미지를 사진 앨범에 저장합니다.
+                
+                @Code(name: "SaveToPhotos.swift", file: "05-07-save-photos.swift")
+            }
+            
+            @Step {
+                UIActivityViewController로 
+                공유 시트를 표시합니다.
+                
+                @Code(name: "ShareSheet.swift", file: "05-08-share.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 ShareLink를 사용하여
+                드로잉 이미지를 공유합니다.
+                
+                @Code(name: "SwiftUIShare.swift", file: "05-09-swiftui-share.swift")
+            }
+        }
+    }
+    
+    @Section(title: "다양한 포맷으로 내보내기") {
+        @ContentAndMedia {
+            PNG, JPEG, PDF 등 다양한 포맷으로 
+            드로잉을 내보낼 수 있습니다.
+            
+            | 포맷 | 특징 | 용도 |
+            |-----|------|------|
+            | PNG | 투명 배경 지원 | 웹, 앱 |
+            | JPEG | 파일 크기 작음 | 사진 공유 |
+            | PDF | 벡터 출력 | 인쇄, 문서 |
+        }
+        
+        @Steps {
+            @Step {
+                PNG 형식으로 내보내기.
+                투명 배경을 유지합니다.
+                
+                @Code(name: "ExportPNG.swift", file: "05-10-export-png.swift")
+            }
+            
+            @Step {
+                JPEG 형식으로 압축하여 내보냅니다.
+                품질을 조절할 수 있습니다.
+                
+                @Code(name: "ExportJPEG.swift", file: "05-11-export-jpeg.swift")
+            }
+            
+            @Step {
+                PDF로 내보내면 확대해도 품질 저하가 없습니다.
+                UIGraphicsPDFRenderer를 사용합니다.
+                
+                @Code(name: "ExportPDF.swift", file: "05-12-export-pdf.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKDrawing.image(from:scale:)의 scale 파라미터는 무엇을 의미하나요?
+            
+            @Choice(isCorrect: true) {
+                출력 이미지의 픽셀 밀도 (1.0 = 1x, 2.0 = 2x)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    scale 값이 높을수록 고해상도 이미지가 생성됩니다.
+                    Retina 디스플레이용은 2.0 이상을 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지 크기의 백분율 (0.5 = 50%)
+                
+                @Justification(reaction: "아닙니다.") {
+                    크기 조절은 from 파라미터의 CGRect로 합니다.
+                    scale은 픽셀 밀도입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                드로잉의 확대 비율
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    드로잉 자체의 크기가 아닌 
+                    출력 이미지의 해상도를 결정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            인쇄용 고품질 이미지를 생성하려면 어떤 포맷이 가장 적합한가요?
+            
+            @Choice(isCorrect: false) {
+                JPEG (품질 0.8)
+                
+                @Justification(reaction: "최선은 아닙니다.") {
+                    JPEG는 손실 압축으로 품질이 저하될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDF
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    PDF는 벡터 형식으로 
+                    어떤 크기로 인쇄해도 품질이 유지됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PNG (scale 1.0)
+                
+                @Justification(reaction: "scale이 너무 낮습니다.") {
+                    인쇄용으로는 scale 3.0 이상 또는 
+                    PDF가 더 적합합니다.
+                }
+            }
+        }
+    }
+}

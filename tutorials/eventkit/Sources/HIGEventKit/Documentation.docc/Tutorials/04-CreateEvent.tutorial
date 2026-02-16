@@ -1,0 +1,151 @@
+@Tutorial(time: 15) {
+    @Intro(title: "이벤트 생성") {
+        새로운 캘린더 이벤트를 생성하고 
+        저장하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "EKEvent 생성하기") {
+        @ContentAndMedia {
+            `EKEvent`는 캘린더의 개별 이벤트를 나타냅니다.
+            제목, 시작/종료 시간, 위치 등을 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                새 EKEvent 인스턴스를 생성합니다.
+                
+                `eventStore`를 파라미터로 전달해야 합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-01-create.swift")
+            }
+            
+            @Step {
+                이벤트의 기본 정보를 설정합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-02-basic.swift")
+            }
+            
+            @Step {
+                이벤트에 캘린더를 지정합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-03-calendar.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 저장하기") {
+        @ContentAndMedia {
+            `EKEventStore`의 `save(_:span:commit:)` 메서드로 
+            이벤트를 캘린더에 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                이벤트를 저장하는 메서드를 작성합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-04-save.swift")
+            }
+            
+            @Step {
+                저장 시 에러 처리를 추가합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-05-error.swift")
+            }
+            
+            @Step {
+                span 옵션의 차이를 이해합니다.
+                
+                반복 이벤트에서 중요한 개념입니다.
+                
+                @Code(name: "CalendarManager.swift", file: "04-06-span.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 생성 UI") {
+        @ContentAndMedia {
+            SwiftUI로 이벤트를 생성하는 
+            폼을 만들어봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                이벤트 생성 폼 View를 만듭니다.
+                
+                @Code(name: "CreateEventView.swift", file: "04-07-form.swift")
+            }
+            
+            @Step {
+                날짜/시간 선택 기능을 추가합니다.
+                
+                @Code(name: "CreateEventView.swift", file: "04-08-picker.swift")
+            }
+            
+            @Step {
+                저장 버튼과 액션을 연결합니다.
+                
+                @Code(name: "CreateEventView.swift", file: "04-09-action.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            EKEvent를 생성할 때 필수로 전달해야 하는 파라미터는?
+            
+            @Choice(isCorrect: true) {
+                `eventStore`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    EKEvent는 항상 EKEventStore와 
+                    연결되어야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `calendar`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    calendar는 생성 후에 설정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `title`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    title은 생성 후에 설정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            이벤트를 저장할 때 `.thisEvent` span은 언제 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                현재 이벤트만 저장할 때
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `.thisEvent`는 반복 이벤트 중 
+                    현재 이벤트만 영향을 받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 미래 이벤트를 저장할 때
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    미래 이벤트는 `.futureEvents`를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이벤트를 삭제할 때
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    span은 저장과 삭제 모두에서 사용됩니다.
+                }
+            }
+        }
+    }
+}

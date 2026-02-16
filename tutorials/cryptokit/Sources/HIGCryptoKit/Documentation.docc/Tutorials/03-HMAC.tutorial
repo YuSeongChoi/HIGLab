@@ -1,0 +1,63 @@
+@Tutorial(time: 20) {
+    @Intro(title: "HMAC 인증") {
+        HMAC(Hash-based Message Authentication Code)으로 메시지의 무결성과 진본성을 검증합니다.
+        비밀 키를 사용하여 해시를 생성하므로 위변조를 탐지할 수 있습니다.
+    }
+    
+    @Section(title: "HMAC 생성과 검증") {
+        @ContentAndMedia {
+            HMAC은 해시 함수와 비밀 키를 결합하여 인증 코드를 생성합니다.
+            API 인증, 메시지 검증 등에 널리 사용됩니다.
+        }
+        @Steps {
+            @Step {
+                대칭 키를 생성하고 HMAC을 계산합니다.
+                @Code(name: "HMAC.swift", file: "03-01-create.swift")
+            }
+            @Step {
+                HMAC을 사용하여 메시지를 검증합니다.
+                @Code(name: "HMAC.swift", file: "03-02-verify.swift")
+            }
+            @Step {
+                메시지 앱에서 HMAC을 활용한 메시지 인증을 구현합니다.
+                @Code(name: "HMAC.swift", file: "03-03-message.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HMAC vs 단순 해시") {
+        @ContentAndMedia {
+            단순 해시는 누구나 계산할 수 있지만, HMAC은 비밀 키가 있어야만 생성할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                HMAC이 단순 해시보다 안전한 이유를 이해합니다.
+                @Code(name: "HMAC.swift", file: "03-04-comparison.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            HMAC이 단순 해시보다 안전한 이유는?
+            @Choice(isCorrect: true) {
+                비밀 키가 있어야만 동일한 HMAC을 생성할 수 있기 때문
+                @Justification(reaction: "정답입니다!") {
+                    HMAC은 비밀 키를 알아야만 생성할 수 있어 위변조를 방지합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                해시 길이가 더 길기 때문
+                @Justification(reaction: "다시 생각해보세요.") {
+                    HMAC과 해시의 길이는 동일합니다. 보안은 키의 비밀성에서 옵니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                계산 속도가 더 느리기 때문
+                @Justification(reaction: "다시 생각해보세요.") {
+                    속도는 보안과 직접적인 관련이 없습니다.
+                }
+            }
+        }
+    }
+}

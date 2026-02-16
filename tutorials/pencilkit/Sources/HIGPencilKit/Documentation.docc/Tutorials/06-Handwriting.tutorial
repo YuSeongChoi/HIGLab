@@ -1,0 +1,199 @@
+@Tutorial(time: 25) {
+    @Intro(title: "손글씨 인식") {
+        PencilKit의 strokes를 분석하여 
+        손글씨를 텍스트로 인식하는 방법을 배웁니다.
+        
+        @Image(source: "handwriting.png", alt: "손글씨 인식")
+    }
+    
+    @Section(title: "Vision 프레임워크와 통합") {
+        @ContentAndMedia {
+            Apple의 Vision 프레임워크는 강력한 
+            텍스트 인식(OCR) 기능을 제공합니다.
+            
+            PKDrawing을 이미지로 변환한 후 
+            VNRecognizeTextRequest로 텍스트를 추출합니다.
+            
+            - **한국어** 지원 (iOS 16+)
+            - **실시간 인식** 가능
+            - **높은 정확도**
+            
+            @Image(source: "vision-ocr.png", alt: "Vision OCR 파이프라인")
+        }
+        
+        @Steps {
+            @Step {
+                Vision 프레임워크를 import하고
+                텍스트 인식 요청을 준비합니다.
+                
+                @Code(name: "VisionSetup.swift", file: "06-01-vision-setup.swift")
+            }
+            
+            @Step {
+                PKDrawing을 이미지로 변환하여
+                Vision 요청에 전달합니다.
+                
+                @Code(name: "DrawingToVision.swift", file: "06-02-drawing-to-vision.swift")
+            }
+            
+            @Step {
+                VNRecognizeTextRequest를 실행하고
+                인식된 텍스트를 추출합니다.
+                
+                @Code(name: "TextRecognition.swift", file: "06-03-text-recognition.swift")
+            }
+        }
+    }
+    
+    @Section(title: "한국어 손글씨 인식") {
+        @ContentAndMedia {
+            iOS 16부터 한국어 손글씨 인식이 지원됩니다.
+            recognitionLanguages에 "ko-KR"을 추가합니다.
+            
+            다국어 인식도 가능하며, 
+            언어 우선순위를 배열로 지정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                한국어를 인식 언어로 설정합니다.
+                자동 언어 감지도 가능합니다.
+                
+                @Code(name: "KoreanRecognition.swift", file: "06-04-korean.swift")
+            }
+            
+            @Step {
+                여러 언어를 동시에 인식하도록 설정합니다.
+                한국어, 영어, 일본어를 모두 인식합니다.
+                
+                @Code(name: "MultiLanguage.swift", file: "06-05-multi-lang.swift")
+            }
+            
+            @Step {
+                인식 정확도를 높이는 옵션을 설정합니다.
+                accurate vs fast 모드의 차이를 이해합니다.
+                
+                @Code(name: "AccuracyOptions.swift", file: "06-06-accuracy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 손글씨 인식") {
+        @ContentAndMedia {
+            드로잉이 완료될 때마다 실시간으로 
+            텍스트를 인식할 수 있습니다.
+            
+            성능을 위해 디바운싱을 적용하고,
+            백그라운드 스레드에서 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKCanvasViewDelegate에서 
+                드로잉 변경을 감지합니다.
+                
+                @Code(name: "RealtimeDetection.swift", file: "06-07-realtime.swift")
+            }
+            
+            @Step {
+                디바운싱을 적용하여 
+                과도한 인식 요청을 방지합니다.
+                
+                @Code(name: "Debounce.swift", file: "06-08-debounce.swift")
+            }
+            
+            @Step {
+                인식 결과를 UI에 실시간으로 표시합니다.
+                인식 중 상태도 함께 보여줍니다.
+                
+                @Code(name: "RealtimeUI.swift", file: "06-09-realtime-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "수식 인식") {
+        @ContentAndMedia {
+            수학 표기 인식을 위해 별도의 처리가 필요합니다.
+            Vision의 기본 OCR은 수식에 제한적입니다.
+            
+            서드파티 라이브러리나 
+            ML 모델을 활용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                기본적인 숫자와 연산자 인식을 구현합니다.
+                간단한 사칙연산은 Vision으로 처리 가능합니다.
+                
+                @Code(name: "BasicMath.swift", file: "06-10-basic-math.swift")
+            }
+            
+            @Step {
+                인식된 수식을 계산하여 결과를 표시합니다.
+                NSExpression을 활용합니다.
+                
+                @Code(name: "MathCalculation.swift", file: "06-11-math-calc.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Vision 프레임워크로 한국어 손글씨를 인식하려면 최소 iOS 버전은?
+            
+            @Choice(isCorrect: false) {
+                iOS 13
+                
+                @Justification(reaction: "아닙니다.") {
+                    iOS 13에서는 영어 위주의 제한된 언어만 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 15
+                
+                @Justification(reaction: "조금 더 높습니다.") {
+                    iOS 15에서는 아직 한국어가 지원되지 않았습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                iOS 16
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    iOS 16부터 한국어(ko-KR) 손글씨 인식이 추가되었습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            VNRecognizeTextRequest의 recognitionLevel에서 .accurate와 .fast의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                .accurate는 더 정확하지만 느리고, .fast는 빠르지만 정확도가 낮다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    .accurate는 신경망 기반으로 정확하고,
+                    .fast는 간단한 알고리즘으로 빠릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .accurate는 더 많은 언어를 지원한다
+                
+                @Justification(reaction: "아닙니다.") {
+                    지원 언어는 동일합니다.
+                    속도와 정확도의 트레이드오프입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                차이가 없다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    두 모드는 성능과 정확도에서 명확한 차이가 있습니다.
+                }
+            }
+        }
+    }
+}

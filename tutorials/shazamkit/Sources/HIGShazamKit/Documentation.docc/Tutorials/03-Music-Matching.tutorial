@@ -1,0 +1,240 @@
+@Tutorial(time: 20) {
+    @Intro(title: "음악 매칭") {
+        Shazam 카탈로그에서 음악을 매칭하는 핵심 기능을 구현합니다.
+        오디오 버퍼를 분석하고 매칭 결과를 얻는 과정을 배웁니다.
+    }
+    
+    @Section(title: "매칭 프로세스 이해하기") {
+        @ContentAndMedia {
+            ShazamKit의 음악 매칭은 3단계로 진행됩니다:
+            
+            1. **오디오 캡처**: 마이크로 주변 소리 녹음
+            2. **시그니처 생성**: 오디오에서 고유한 핑거프린트 추출
+            3. **카탈로그 매칭**: 시그니처를 데이터베이스와 비교
+            
+            SHManagedSession은 이 과정을 자동화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **매칭 결과 타입** 이해하기
+                
+                SHSession.Result는 enum으로 3가지 케이스가 있습니다.
+                - `.match(SHMatch)`: 매칭 성공
+                - `.noMatch(SHSignature)`: 매칭 실패 (카탈로그에 없음)
+                - `.error(Error, SHSignature?)`: 오류 발생
+                
+                @Code(name: "MatchResult.swift", file: "03-match-result.swift")
+            }
+            
+            @Step {
+                **SHMatch 구조** 살펴보기
+                
+                매칭에 성공하면 SHMatch 객체를 받습니다.
+                mediaItems 배열에 인식된 곡 정보가 담겨 있습니다.
+                
+                @Code(name: "SHMatch.swift", file: "03-shmatch.swift")
+            }
+        }
+    }
+    
+    @Section(title: "기본 매칭 구현") {
+        @ContentAndMedia {
+            SHManagedSession을 사용해 실제 음악 매칭을 구현합니다.
+            결과에 따라 적절한 처리를 수행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **단일 매칭 구현**
+                
+                한 번의 인식 시도로 결과를 얻는 기본 구현입니다.
+                result() 메서드가 async로 결과를 반환합니다.
+                
+                @Code(name: "SingleMatch.swift", file: "03-single-match.swift")
+            }
+            
+            @Step {
+                **결과 처리 switch문**
+                
+                SHSession.Result의 각 케이스를 처리합니다.
+                사용자에게 적절한 피드백을 제공합니다.
+                
+                @Code(name: "HandleResult.swift", file: "03-handle-result.swift")
+            }
+            
+            @Step {
+                **매칭된 곡 정보 추출**
+                
+                SHMatchedMediaItem에서 필요한 정보를 가져옵니다.
+                title, artist, artworkURL 등이 포함됩니다.
+                
+                @Code(name: "ExtractInfo.swift", file: "03-extract-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연속 매칭 구현") {
+        @ContentAndMedia {
+            실시간으로 계속 음악을 인식하는 연속 매칭을 구현합니다.
+            results 프로퍼티로 AsyncStream을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AsyncStream으로 연속 결과 받기**
+                
+                session.results는 AsyncStream<SHSession.Result>입니다.
+                for await로 지속적으로 결과를 받을 수 있습니다.
+                
+                @Code(name: "ContinuousMatching.swift", file: "03-continuous.swift")
+            }
+            
+            @Step {
+                **Task로 백그라운드 처리**
+                
+                연속 매칭을 별도 Task에서 실행합니다.
+                취소 가능하도록 Task를 저장해둡니다.
+                
+                @Code(name: "BackgroundTask.swift", file: "03-background-task.swift")
+            }
+            
+            @Step {
+                **중복 제거 로직**
+                
+                같은 곡이 계속 인식되는 것을 방지합니다.
+                마지막 인식된 곡과 비교해 중복을 필터링합니다.
+                
+                @Code(name: "Deduplication.swift", file: "03-deduplication.swift")
+            }
+        }
+    }
+    
+    @Section(title: "에러 처리") {
+        @ContentAndMedia {
+            매칭 과정에서 발생할 수 있는 에러를 처리합니다.
+            사용자에게 이해하기 쉬운 메시지를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHError 타입** 이해하기
+                
+                ShazamKit에서 발생하는 에러는 SHError 타입입니다.
+                네트워크, 권한, 세션 관련 에러가 있습니다.
+                
+                @Code(name: "SHError.swift", file: "03-sherror.swift")
+            }
+            
+            @Step {
+                **에러 메시지 변환**
+                
+                SHError를 사용자 친화적인 메시지로 변환합니다.
+                각 에러 케이스에 맞는 안내를 제공합니다.
+                
+                @Code(name: "ErrorMessage.swift", file: "03-error-message.swift")
+            }
+            
+            @Step {
+                **재시도 로직 구현**
+                
+                일시적 오류의 경우 자동 재시도를 구현합니다.
+                지수 백오프로 서버 부하를 방지합니다.
+                
+                @Code(name: "RetryLogic.swift", file: "03-retry-logic.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            음악 인식이 성공했을 때 SHSession.Result의 케이스는?
+            
+            @Choice(isCorrect: true) {
+                .match(SHMatch)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    매칭에 성공하면 .match 케이스로 SHMatch 객체가 전달됩니다.
+                    mediaItems에서 인식된 곡 정보를 확인할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .success(SHMatch)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    .success가 아니라 .match입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .found(SHMatchedMediaItem)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    .match(SHMatch)가 정답입니다.
+                    SHMatchedMediaItem은 SHMatch.mediaItems에 포함됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            연속 매칭을 위해 사용하는 SHManagedSession의 프로퍼티는?
+            
+            @Choice(isCorrect: true) {
+                results
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    results는 AsyncStream<SHSession.Result>로
+                    for await로 지속적으로 결과를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matches
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    matches가 아니라 results입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                stream
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    stream이 아니라 results입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Shazam 카탈로그에 없는 음악을 인식하면 어떤 결과가 반환되나요?
+            
+            @Choice(isCorrect: true) {
+                .noMatch(SHSignature)
+                
+                @Justification(reaction: "정답! 🎉") {
+                    카탈로그에 매칭되는 곡이 없으면 .noMatch와 함께
+                    생성된 시그니처가 반환됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .error(Error, nil)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    매칭 실패는 에러가 아닙니다.
+                    .noMatch로 명확히 구분됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .match(nil)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    .match는 성공 시에만 사용됩니다.
+                    매칭 실패는 .noMatch입니다.
+                }
+            }
+        }
+    }
+}

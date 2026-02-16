@@ -1,0 +1,163 @@
+@Tutorial(time: 20) {
+    @Intro(title: "시간별 예보") {
+        HourWeather 데이터를 활용해 시간대별 날씨 예보를 
+        구현하는 방법을 학습합니다.
+        
+        @Image(source: "hourly-forecast.png", alt: "시간별 예보 UI")
+    }
+    
+    @Section(title: "HourlyForecast 데이터 요청") {
+        @ContentAndMedia {
+            HourlyForecast는 최대 240시간(10일)의 시간별 예보를 제공합니다.
+            각 시간의 온도, 강수 확률, 날씨 상태 등을 확인할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                시간별 예보를 요청합니다.
+                Forecast<HourWeather> 타입으로 반환됩니다.
+                
+                @Code(name: "HourlyForecast.swift", file: "04-01-request.swift")
+            }
+            
+            @Step {
+                Forecast는 Sequence 프로토콜을 채택합니다.
+                for-in 루프나 고차함수로 순회할 수 있습니다.
+                
+                @Code(name: "HourlyForecast.swift", file: "04-02-iterate.swift")
+            }
+            
+            @Step {
+                특정 시간 범위의 예보만 필터링합니다.
+                오늘 남은 시간이나 다음 24시간 등을 추출할 수 있습니다.
+                
+                @Code(name: "HourlyForecast.swift", file: "04-03-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HourWeather 속성 활용") {
+        @ContentAndMedia {
+            HourWeather는 특정 시간의 상세한 기상 정보를 담고 있습니다.
+            강수 확률, 강수량, 자외선 지수 등 다양한 데이터를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                HourWeather의 주요 속성을 확인합니다.
+                
+                - `date`: 해당 시간
+                - `temperature`: 예상 온도
+                - `precipitationChance`: 강수 확률
+                - `condition`: 날씨 상태
+                
+                @Code(name: "HourWeather.swift", file: "04-04-properties.swift")
+            }
+            
+            @Step {
+                강수 관련 상세 정보에 접근합니다.
+                
+                - `precipitation`: 강수 유형 (비, 눈 등)
+                - `precipitationAmount`: 예상 강수량
+                - `snowfallAmount`: 예상 적설량
+                
+                @Code(name: "HourWeather.swift", file: "04-05-precipitation.swift")
+            }
+            
+            @Step {
+                자외선 지수와 가시거리 정보를 활용합니다.
+                
+                @Code(name: "HourWeather.swift", file: "04-06-uv-visibility.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시간별 예보 UI 구현") {
+        @ContentAndMedia {
+            가로 스크롤 뷰로 시간별 예보를 표시합니다.
+            각 셀에 시간, 아이콘, 온도를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                시간별 예보 카드 UI를 만듭니다.
+                
+                @Code(name: "HourlyForecastView.swift", file: "04-07-view.swift")
+            }
+            
+            @Step {
+                ScrollView와 LazyHStack으로 효율적인 가로 스크롤을 구현합니다.
+                
+                @Code(name: "HourlyForecastView.swift", file: "04-08-scroll.swift")
+            }
+            
+            @Step {
+                강수 확률을 시각적으로 표시합니다.
+                높은 확률일 때 물방울 아이콘을 추가합니다.
+                
+                @Code(name: "HourlyForecastView.swift", file: "04-09-rain.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            HourlyForecast가 제공하는 최대 예보 기간은?
+            
+            @Choice(isCorrect: false) {
+                48시간
+                
+                @Justification(reaction: "더 길게 제공합니다.") {
+                    HourlyForecast는 더 긴 기간의 예보를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                7일 (168시간)
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    HourlyForecast는 더 긴 기간까지 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                10일 (240시간)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    HourlyForecast는 최대 240시간(10일)의 
+                    시간별 예보를 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HourWeather의 precipitationChance 값이 0.75일 때 의미는?
+            
+            @Choice(isCorrect: true) {
+                75% 강수 확률
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    precipitationChance는 0.0~1.0 범위의 비율로 표현됩니다.
+                    0.75는 75% 확률을 의미합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                0.75mm 강수량
+                
+                @Justification(reaction: "아닙니다.") {
+                    강수량은 precipitationAmount 속성에서 확인합니다.
+                    precipitationChance는 강수 확률입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                7.5% 강수 확률
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    값이 비율로 표현되므로 0.75는 75%를 의미합니다.
+                }
+            }
+        }
+    }
+}

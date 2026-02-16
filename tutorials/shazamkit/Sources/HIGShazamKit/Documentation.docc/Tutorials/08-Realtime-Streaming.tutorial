@@ -1,0 +1,246 @@
+@Tutorial(time: 22) {
+    @Intro(title: "실시간 스트림 매칭") {
+        오디오 스트림을 실시간으로 분석하고 매칭합니다.
+        AVAudioEngine과 ShazamKit의 통합을 구현합니다.
+    }
+    
+    @Section(title: "실시간 매칭이 필요한 경우") {
+        @ContentAndMedia {
+            실시간 스트림 매칭은 다음과 같은 경우에 유용합니다:
+            
+            - 라디오/TV 시청 중 계속 곡 식별
+            - 음악 앱의 "지금 재생 중" 위젯
+            - DJ 세트에서 곡 전환 감지
+            - 동기화 경험 (다음 챕터에서 상세히)
+        }
+        
+        @Steps {
+            @Step {
+                **단일 매칭 vs 연속 매칭**
+                
+                단일 매칭: 한 번 인식하고 종료
+                연속 매칭: 계속해서 스트림을 모니터링
+                
+                @Code(name: "MatchingModes.swift", file: "08-matching-modes.swift")
+            }
+            
+            @Step {
+                **AVAudioEngine의 역할**
+                
+                실시간 오디오 처리의 핵심입니다.
+                마이크 입력을 캡처하고 버퍼를 ShazamKit에 전달합니다.
+                
+                @Code(name: "AudioEngineRole.swift", file: "08-engine-role.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVAudioEngine 설정") {
+        @ContentAndMedia {
+            실시간 오디오 캡처를 위한 AVAudioEngine을 설정합니다.
+            오디오 세션과 입력 노드를 구성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AVAudioSession 설정**
+                
+                먼저 오디오 세션을 적절히 설정합니다.
+                녹음 카테고리와 모드를 지정합니다.
+                
+                @Code(name: "AudioSessionSetup.swift", file: "08-session-setup.swift")
+            }
+            
+            @Step {
+                **AVAudioEngine 초기화**
+                
+                AVAudioEngine을 생성하고 입력 노드를 확인합니다.
+                입력 포맷을 ShazamKit 호환 포맷으로 설정합니다.
+                
+                @Code(name: "EngineInit.swift", file: "08-engine-init.swift")
+            }
+            
+            @Step {
+                **입력 노드 탭 설치**
+                
+                installTap(onBus:bufferSize:format:block:)으로 
+                오디오 버퍼를 캡처합니다.
+                
+                @Code(name: "InstallInputTap.swift", file: "08-install-tap.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SHSession 연동") {
+        @ContentAndMedia {
+            AVAudioEngine에서 캡처한 버퍼를 
+            SHSession에 전달해 매칭합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHSignatureGenerator 연결**
+                
+                캡처된 버퍼로 실시간 시그니처를 생성합니다.
+                SHSignatureGenerator.append(_:at:)를 호출합니다.
+                
+                @Code(name: "GeneratorConnection.swift", file: "08-generator-connection.swift")
+            }
+            
+            @Step {
+                **SHSession.matchStreamingBuffer**
+                
+                버퍼를 직접 SHSession에 전달할 수도 있습니다.
+                matchStreamingBuffer(_:at:)로 실시간 매칭합니다.
+                
+                @Code(name: "StreamingBuffer.swift", file: "08-streaming-buffer.swift")
+            }
+            
+            @Step {
+                **델리게이트로 결과 처리**
+                
+                SHSessionDelegate로 매칭 결과를 비동기로 받습니다.
+                UI 업데이트는 MainActor에서 수행합니다.
+                
+                @Code(name: "DelegateResults.swift", file: "08-delegate-results.swift")
+            }
+        }
+    }
+    
+    @Section(title: "RealtimeAudioMatcher 구현") {
+        @ContentAndMedia {
+            지금까지 배운 내용을 통합해 
+            완전한 실시간 매칭 클래스를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 구조**
+                
+                RealtimeAudioMatcher 클래스의 기본 구조입니다.
+                AVAudioEngine, SHSession, 델리게이트를 포함합니다.
+                
+                @Code(name: "RealtimeMatcherBase.swift", file: "08-matcher-base.swift")
+            }
+            
+            @Step {
+                **start/stop 메서드**
+                
+                매칭 시작과 중지를 제어하는 메서드입니다.
+                리소스 정리를 신경 씁니다.
+                
+                @Code(name: "StartStopMethods.swift", file: "08-start-stop.swift")
+            }
+            
+            @Step {
+                **콜백과 상태 관리**
+                
+                매칭 결과를 외부에 알리는 콜백을 구현합니다.
+                현재 상태(녹음 중, 매칭 중 등)를 추적합니다.
+                
+                @Code(name: "CallbackState.swift", file: "08-callback-state.swift")
+            }
+            
+            @Step {
+                **전체 구현 완성**
+                
+                모든 기능을 통합한 완전한 RealtimeAudioMatcher입니다.
+                에러 처리와 리소스 관리가 포함됩니다.
+                
+                @Code(name: "RealtimeMatcherFull.swift", file: "08-matcher-full.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVAudioEngine에서 오디오 버퍼를 캡처하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                installTap(onBus:bufferSize:format:block:)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    inputNode.installTap()으로 오디오 버퍼를 
+                    실시간으로 캡처할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                addListener(callback:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    installTap(onBus:bufferSize:format:block:)이 
+                    정확한 메서드입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                captureBuffer(handler:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    installTap을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SHSession에서 스트리밍 버퍼를 직접 매칭하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                matchStreamingBuffer(_:at:)
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    matchStreamingBuffer(_:at:)로 AVAudioPCMBuffer를 
+                    직접 SHSession에 전달해 매칭합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                match(buffer:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    matchStreamingBuffer(_:at:)가 정확한 메서드입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                processAudio(_:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    matchStreamingBuffer(_:at:)를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            실시간 매칭에서 UI 업데이트를 위해 사용해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                @MainActor 또는 DispatchQueue.main
+                
+                @Justification(reaction: "정답! 🎉") {
+                    델리게이트 콜백은 백그라운드 스레드에서 호출되므로,
+                    UI 업데이트는 메인 스레드에서 수행해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Task.detached
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    UI 업데이트는 메인 스레드에서 해야 합니다.
+                    @MainActor나 DispatchQueue.main을 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도 처리 없이 바로 업데이트
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    델리게이트는 백그라운드에서 호출되므로
+                    메인 스레드 전환이 필요합니다.
+                }
+            }
+        }
+    }
+}

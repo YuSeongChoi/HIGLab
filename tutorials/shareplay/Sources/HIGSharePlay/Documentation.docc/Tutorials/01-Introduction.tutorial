@@ -1,0 +1,174 @@
+@Tutorial(time: 12) {
+    @Intro(title: "SharePlay 소개 & GroupActivities") {
+        SharePlay가 무엇인지, GroupActivities 프레임워크의 핵심 개념을 학습합니다.
+        FaceTime이나 메시지 앱에서 동작하는 공동 경험을 만드는 첫 걸음입니다.
+    }
+    
+    @Section(title: "SharePlay란?") {
+        @ContentAndMedia {
+            SharePlay는 iOS 15에서 도입된 기능으로, 
+            **FaceTime 통화 또는 메시지 앱에서 여러 사용자가 동시에 
+            같은 콘텐츠를 경험**할 수 있게 해줍니다.
+            
+            넷플릭스를 친구와 같이 보거나, 음악을 함께 듣거나,
+            게임을 실시간으로 플레이하는 것이 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SharePlay의 핵심 특징을 이해합니다.
+                
+                - **동기화된 재생**: 모든 참가자가 같은 위치에서 콘텐츠 재생
+                - **실시간 소통**: FaceTime/메시지와 함께 사용
+                - **시스템 통합**: iOS/iPadOS/macOS/tvOS에서 네이티브 지원
+                
+                @Code(name: "SharePlayConcept.swift", file: "01-concept.swift")
+            }
+            
+            @Step {
+                GroupActivities 프레임워크는 SharePlay의 기반입니다.
+                
+                핵심 구성요소:
+                - **GroupActivity**: 공유 가능한 활동 정의
+                - **GroupSession**: 활동 세션 관리
+                - **GroupSessionMessenger**: 참가자 간 메시지 교환
+                
+                @Code(name: "GroupActivitiesOverview.swift", file: "01-framework.swift")
+            }
+            
+            @Step {
+                SharePlay 지원을 위해 Info.plist에 필요한 설정을 추가합니다.
+                
+                `NSSupportsGroupActivities` 키를 `YES`로 설정해야
+                앱이 SharePlay를 지원할 수 있습니다.
+                
+                @Code(name: "Info.plist", file: "01-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SharePlay 사용 시나리오") {
+        @ContentAndMedia {
+            SharePlay는 다양한 앱 유형에서 활용될 수 있습니다.
+            각 시나리오에 맞는 구현 전략을 이해해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                **미디어 재생 앱**: 영화, 드라마, 음악 등
+                
+                가장 일반적인 SharePlay 사용 사례입니다.
+                AVPlayer와 연동해 재생 위치를 동기화합니다.
+                
+                @Code(name: "MediaScenario.swift", file: "01-media-scenario.swift")
+            }
+            
+            @Step {
+                **실시간 협업 앱**: 화이트보드, 문서 편집 등
+                
+                커스텀 데이터를 실시간으로 동기화해
+                모든 참가자가 같은 상태를 봅니다.
+                
+                @Code(name: "CollabScenario.swift", file: "01-collab-scenario.swift")
+            }
+            
+            @Step {
+                **게임**: 멀티플레이어 게임
+                
+                게임 상태와 플레이어 입력을 동기화해
+                실시간 대전이나 협동 플레이를 구현합니다.
+                
+                @Code(name: "GameScenario.swift", file: "01-game-scenario.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로젝트 설정") {
+        @ContentAndMedia {
+            SharePlay를 지원하는 프로젝트의 기본 구조를 설정합니다.
+            이 튜토리얼에서는 영화 공동 시청 앱을 만들어봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                프로젝트에 GroupActivities 프레임워크를 import합니다.
+                
+                iOS 15.0 이상에서 사용 가능하며,
+                macOS 12.0, tvOS 15.0에서도 지원됩니다.
+                
+                @Code(name: "AppSetup.swift", file: "01-app-setup.swift")
+            }
+            
+            @Step {
+                공동 시청 앱의 기본 데이터 모델을 정의합니다.
+                
+                영화 정보를 담는 구조체로,
+                나중에 GroupActivity에서 사용됩니다.
+                
+                @Code(name: "MovieModel.swift", file: "01-movie-model.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SharePlay가 동작하는 환경은?
+            
+            @Choice(isCorrect: true) {
+                FaceTime 통화 또는 메시지 앱
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    SharePlay는 FaceTime 통화 중이거나 메시지 앱의 
+                    SharePlay 세션에서 동작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                어떤 상황에서든 동작
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SharePlay는 FaceTime이나 메시지 앱의 세션이 필요합니다.
+                    단독으로는 동작하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Wi-Fi 연결 시에만 동작
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    네트워크 종류와는 무관합니다. 
+                    FaceTime/메시지 세션이 핵심 조건입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            GroupActivities 프레임워크의 핵심 구성요소가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                GroupActivity
+                
+                @Justification(reaction: "이건 핵심 구성요소입니다") {
+                    GroupActivity는 공유 가능한 활동을 정의하는 핵심 프로토콜입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                GroupSession
+                
+                @Justification(reaction: "이건 핵심 구성요소입니다") {
+                    GroupSession은 활동 세션을 관리하는 핵심 클래스입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                GroupNotification
+                
+                @Justification(reaction: "정답! 🎉") {
+                    GroupNotification은 존재하지 않습니다.
+                    핵심 요소는 GroupActivity, GroupSession, GroupSessionMessenger입니다.
+                }
+            }
+        }
+    }
+}

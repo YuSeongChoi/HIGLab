@@ -1,0 +1,178 @@
+@Tutorial(time: 18) {
+    @Intro(title: "미디어 동기화 (AVPlayer)") {
+        AVPlayer와 SharePlay를 연동해 여러 사용자의 재생 위치를 
+        자동으로 동기화하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "AVPlaybackCoordinator 이해하기") {
+        @ContentAndMedia {
+            AVPlayer는 `playbackCoordinator` 프로퍼티를 통해
+            SharePlay와 자동으로 연동됩니다.
+            재생, 일시정지, 탐색이 모든 참가자에게 동기화됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayer의 playbackCoordinator를 확인합니다.
+                
+                iOS 15+에서 AVPlayer는 기본적으로
+                `playbackCoordinator` 프로퍼티를 제공합니다.
+                
+                @Code(name: "PlaybackCoordinator.swift", file: "04-coordinator-intro.swift")
+            }
+            
+            @Step {
+                GroupSession의 systemCoordinator와 연결합니다.
+                
+                `AVPlaybackCoordinator`를 GroupSession의 
+                `SystemCoordinator`에 연결해야 동기화가 시작됩니다.
+                
+                @Code(name: "ConnectCoordinator.swift", file: "04-connect-coordinator.swift")
+            }
+            
+            @Step {
+                CoordinatedPlayback를 위한 AVPlayer 설정을 완료합니다.
+                
+                자동 재생 대기와 외부 재생 모드를 설정합니다.
+                
+                @Code(name: "ConfigurePlayer.swift", file: "04-configure-player.swift")
+            }
+        }
+    }
+    
+    @Section(title: "동기화된 재생 구현") {
+        @ContentAndMedia {
+            SharePlay 세션에서 미디어 재생을 시작하고,
+            모든 참가자가 동시에 같은 위치에서 재생되게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SharePlay 지원 VideoPlayer View를 만듭니다.
+                
+                AVPlayer를 래핑하고 SharePlay 상태를
+                함께 관리하는 View입니다.
+                
+                @Code(name: "SharePlayVideoPlayer.swift", file: "04-video-player.swift")
+            }
+            
+            @Step {
+                재생 대기 상태를 처리합니다.
+                
+                `coordinatedPlayback`이 활성화되면
+                참가자들이 준비될 때까지 재생을 대기합니다.
+                
+                @Code(name: "WaitingForPlayback.swift", file: "04-waiting.swift")
+            }
+            
+            @Step {
+                참가자별 재생 상태를 표시합니다.
+                
+                누가 재생 중이고, 누가 버퍼링 중인지
+                UI에 표시할 수 있습니다.
+                
+                @Code(name: "ParticipantPlaybackState.swift", file: "04-participant-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재생 제어 동기화") {
+        @ContentAndMedia {
+            재생/일시정지, 탐색(seek) 동작이
+            모든 참가자에게 어떻게 동기화되는지 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                재생/일시정지는 자동으로 동기화됩니다.
+                
+                한 참가자가 일시정지하면 모든 참가자의 
+                재생이 일시정지됩니다.
+                
+                @Code(name: "PlayPauseSync.swift", file: "04-play-pause.swift")
+            }
+            
+            @Step {
+                탐색(seek) 동작도 동기화됩니다.
+                
+                슬라이더로 재생 위치를 변경하면
+                모든 참가자가 같은 위치로 이동합니다.
+                
+                @Code(name: "SeekSync.swift", file: "04-seek-sync.swift")
+            }
+            
+            @Step {
+                `suspensionReasons`로 재생 중단 원인을 확인합니다.
+                
+                네트워크 문제나 참가자 대기 등
+                재생이 중단된 이유를 파악할 수 있습니다.
+                
+                @Code(name: "SuspensionReasons.swift", file: "04-suspension.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVPlayer와 SharePlay를 연동하는 데 사용되는 프로퍼티는?
+            
+            @Choice(isCorrect: true) {
+                playbackCoordinator
+                
+                @Justification(reaction: "정답! 🎉") {
+                    AVPlayer의 playbackCoordinator를 GroupSession의 
+                    systemCoordinator에 연결하면 자동 동기화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                sharePlayHandler
+                
+                @Justification(reaction: "존재하지 않는 프로퍼티입니다") {
+                    sharePlayHandler라는 프로퍼티는 없습니다.
+                    playbackCoordinator가 정답입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                groupSyncManager
+                
+                @Justification(reaction: "존재하지 않는 프로퍼티입니다") {
+                    groupSyncManager라는 프로퍼티는 없습니다.
+                    playbackCoordinator가 정답입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SharePlay에서 한 참가자가 영상을 일시정지하면?
+            
+            @Choice(isCorrect: true) {
+                모든 참가자의 재생이 일시정지됨
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Coordinated Playback에서는 재생 제어가 
+                    모든 참가자에게 동기화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                해당 참가자만 일시정지됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    SharePlay의 핵심은 동기화입니다.
+                    재생 제어는 모든 참가자에게 적용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                호스트에게 승인 요청을 보냄
+                
+                @Justification(reaction: "아쉽네요") {
+                    SharePlay에서 별도의 승인 과정은 없습니다.
+                    모든 참가자가 동등한 권한을 갖습니다.
+                }
+            }
+        }
+    }
+}

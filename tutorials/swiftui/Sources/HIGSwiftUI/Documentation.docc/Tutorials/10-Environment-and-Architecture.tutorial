@@ -1,0 +1,318 @@
+@Tutorial(time: 30) {
+    @Intro(title: "환경 객체와 앱 아키텍처") {
+        @Environment와 @EnvironmentObject로 앱 전체 상태를 관리합니다.
+        ChefBook을 확장 가능한 구조로 완성하고,
+        실전에서 사용할 수 있는 앱 아키텍처를 배웁니다.
+    }
+    
+    @Section(title: "@Environment — 시스템 환경 값") {
+        @ContentAndMedia {
+            **@Environment**는 시스템이 제공하는 환경 값에 접근합니다.
+            
+            - 화면 크기, 색상 모드, 접근성 설정
+            - dismiss, openURL 같은 액션
+            - 커스텀 환경 값도 만들 수 있습니다
+        }
+        
+        @Steps {
+            @Step {
+                **시스템 환경 값 사용**
+                
+                자주 사용하는 환경 값들:
+                - \.colorScheme: 라이트/다크 모드
+                - \.dismiss: 현재 화면 닫기
+                - \.horizontalSizeClass: 컴팩트/레귤러
+                
+                @Code(name: "EnvironmentBasic.swift", file: "10-environment-basic.swift")
+            }
+            
+            @Step {
+                **다크 모드 대응**
+                
+                \.colorScheme을 읽어 다크 모드에서 
+                다른 스타일을 적용합니다.
+                
+                @Code(name: "DarkModeSupport.swift", file: "10-dark-mode.swift")
+            }
+            
+            @Step {
+                **Dynamic Type 대응**
+                
+                \.dynamicTypeSize로 사용자의 텍스트 크기 설정을 읽습니다.
+                접근성을 위해 매우 중요합니다!
+                
+                @Code(name: "DynamicType.swift", file: "10-dynamic-type.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 Environment 값") {
+        @ContentAndMedia {
+            앱 전용 환경 값을 만들 수 있습니다.
+            
+            테마 설정, 기능 플래그 등을 
+            뷰 계층 전체에 주입할 때 유용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **EnvironmentKey 정의**
+                
+                커스텀 환경 값을 만들려면:
+                1. EnvironmentKey 구조체 정의
+                2. EnvironmentValues 확장
+                3. View 확장 (선택적)
+                
+                @Code(name: "CustomEnvironmentKey.swift", file: "10-custom-env-key.swift")
+            }
+            
+            @Step {
+                **커스텀 환경 값 사용**
+                
+                .environment()로 값을 주입하고,
+                @Environment로 읽습니다.
+                
+                @Code(name: "CustomEnvironmentUse.swift", file: "10-custom-env-use.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Observable과 @EnvironmentObject") {
+        @ContentAndMedia {
+            앱 전체에서 공유하는 데이터 모델을 만들 때 사용합니다.
+            
+            iOS 17+에서는 **@Observable** 매크로를,
+            이전 버전에서는 **ObservableObject**를 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **@Observable 모델 (iOS 17+)**
+                
+                @Observable 매크로를 붙이면
+                프로퍼티 변화가 자동으로 추적됩니다.
+                
+                @Published 없이도 작동합니다!
+                
+                @Code(name: "ObservableModel.swift", file: "10-observable.swift")
+            }
+            
+            @Step {
+                **ObservableObject (iOS 14+)**
+                
+                iOS 17 이전에는 ObservableObject 프로토콜과
+                @Published를 사용합니다.
+                
+                @Code(name: "ObservableObject.swift", file: "10-observableobject.swift")
+            }
+            
+            @Step {
+                **environmentObject로 주입**
+                
+                앱 루트에서 .environmentObject()로 주입하면
+                모든 하위 뷰에서 @EnvironmentObject로 접근할 수 있습니다.
+                
+                @Code(name: "EnvironmentObjectInject.swift", file: "10-envobject-inject.swift")
+            }
+            
+            @Step {
+                **자식 뷰에서 사용**
+                
+                @EnvironmentObject로 선언만 하면
+                자동으로 상위에서 주입된 객체를 받습니다.
+                
+                단, 주입 안 되면 런타임 크래시가 발생합니다!
+                
+                @Code(name: "EnvironmentObjectUse.swift", file: "10-envobject-use.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앱 아키텍처 설계") {
+        @ContentAndMedia {
+            실제 앱을 위한 구조 설계 패턴을 배웁니다.
+            
+            - MVVM (Model-View-ViewModel)
+            - Repository 패턴
+            - Dependency Injection
+        }
+        
+        @Steps {
+            @Step {
+                **MVVM 기본 구조**
+                
+                - Model: 데이터 구조 (Recipe, Ingredient)
+                - View: SwiftUI 뷰
+                - ViewModel: 비즈니스 로직, 상태 관리
+                
+                @Code(name: "MVVMStructure.swift", file: "10-mvvm.swift")
+            }
+            
+            @Step {
+                **Repository 패턴**
+                
+                데이터 접근 로직을 별도 레이어로 분리합니다.
+                로컬 저장소, 네트워크 등을 추상화합니다.
+                
+                @Code(name: "Repository.swift", file: "10-repository.swift")
+            }
+            
+            @Step {
+                **의존성 주입 (DI)**
+                
+                Environment를 활용한 의존성 주입으로
+                테스트하기 쉬운 코드를 만듭니다.
+                
+                @Code(name: "DependencyInjection.swift", file: "10-di.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook 완성하기") {
+        @ContentAndMedia {
+            지금까지 배운 모든 것을 종합하여
+            ChefBook을 완성합니다!
+            
+            - RecipeStore: 레시피 데이터 관리
+            - UserSettings: 사용자 설정
+            - 앱 전체 구조 정리
+        }
+        
+        @Steps {
+            @Step {
+                **RecipeStore 만들기**
+                
+                레시피 목록을 관리하는 Observable 클래스입니다.
+                CRUD 작업과 필터링을 담당합니다.
+                
+                @Code(name: "RecipeStore.swift", file: "10-chefbook-store.swift")
+            }
+            
+            @Step {
+                **UserSettings 만들기**
+                
+                사용자 설정을 관리합니다.
+                다크 모드, 기본 서빙 인원, 측정 단위 등.
+                
+                @AppStorage로 영구 저장합니다.
+                
+                @Code(name: "UserSettings.swift", file: "10-chefbook-settings.swift")
+            }
+            
+            @Step {
+                **앱 진입점 구성**
+                
+                ChefBookApp에서 모든 환경 객체를 주입합니다.
+                앱 전체에서 사용할 수 있게 됩니다.
+                
+                @Code(name: "ChefBookApp.swift", file: "10-chefbook-app.swift")
+            }
+            
+            @Step {
+                **최종 앱 구조**
+                
+                완성된 ChefBook의 전체 구조입니다!
+                
+                - ChefBookApp (진입점)
+                - RecipeStore (데이터)
+                - UserSettings (설정)
+                - Views (UI)
+                
+                @Code(name: "FinalStructure.swift", file: "10-chefbook-final.swift")
+            }
+        }
+    }
+    
+    @Section(title: "다음 단계") {
+        @ContentAndMedia {
+            축하합니다! 🎉
+            
+            SwiftUI의 핵심을 모두 학습했습니다.
+            이제 자신만의 앱을 만들 준비가 되었습니다!
+            
+            더 공부할 주제:
+            - SwiftData (데이터 영구 저장)
+            - 네트워크 통신 (URLSession, async/await)
+            - 위젯, 워치 앱 확장
+            - 앱 스토어 출시
+        }
+        
+        @Steps {
+            @Step {
+                **학습 로드맵**
+                
+                SwiftUI 마스터가 되기 위한 다음 단계:
+                
+                1. SwiftData로 데이터 영구 저장
+                2. 네트워크 통신과 async/await
+                3. 단위 테스트와 UI 테스트
+                4. 앱 스토어 배포
+                
+                @Code(name: "NextSteps.swift", file: "10-next-steps.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @Environment와 @EnvironmentObject의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                @Environment는 단순 값, @EnvironmentObject는 Observable 객체
+                
+                @Justification(reaction: "정답! 🎯") {
+                    @Environment는 colorScheme 같은 단순 값에,
+                    @EnvironmentObject는 앱 전체 상태를 관리하는
+                    Observable 객체에 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                같은 것의 다른 이름이다
+                
+                @Justification(reaction: "아쉽네요") {
+                    다른 용도로 사용됩니다.
+                    Environment는 키-값, EnvironmentObject는 객체 전체입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @EnvironmentObject가 더 빠르다
+                
+                @Justification(reaction: "아쉽네요") {
+                    성능 차이보다는 용도 차이가 중요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MVVM에서 ViewModel의 역할은?
+            
+            @Choice(isCorrect: true) {
+                뷰를 위한 데이터 변환과 비즈니스 로직 처리
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    ViewModel은 Model의 데이터를 View가 사용하기 좋은 
+                    형태로 변환하고, 사용자 액션에 따른 로직을 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                데이터베이스 연결
+                
+                @Justification(reaction: "아쉽네요") {
+                    데이터베이스 접근은 보통 Repository 레이어가 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UI 렌더링
+                
+                @Justification(reaction: "아쉽네요") {
+                    UI 렌더링은 View의 역할입니다.
+                    ViewModel은 데이터와 로직을 제공합니다.
+                }
+            }
+        }
+    }
+}

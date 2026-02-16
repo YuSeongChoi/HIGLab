@@ -1,0 +1,210 @@
+@Tutorial(time: 20) {
+    @Intro(title: "네트워크 조건 테스트") {
+        Network Link Conditioner로 다양한 
+        네트워크 환경을 시뮬레이션합니다.
+        
+        @Image(source: "network-conditions.png", alt: "네트워크 조건 테스트")
+    }
+    
+    @Section(title: "네트워크 테스트의 중요성") {
+        @ContentAndMedia {
+            실제 사용자는 다양한 네트워크 환경에서 앱을 사용합니다.
+            
+            - **느린 3G**: 개발도상국, 지하철
+            - **불안정한 Wi-Fi**: 카페, 공항
+            - **높은 패킷 손실**: 혼잡한 네트워크
+            - **높은 지연**: 해외 서버 연결
+            
+            @Image(source: "network-scenarios.png", alt: "다양한 네트워크 시나리오")
+        }
+        
+        @Steps {
+            @Step {
+                네트워크 문제가 발생할 수 있는 상황을 이해합니다.
+                
+                - 타임아웃 처리 미흡
+                - 재시도 로직 부재
+                - 대용량 데이터 처리
+                
+                @Code(name: "NetworkIssues.swift", file: "10-01-network-issues.swift")
+            }
+            
+            @Step {
+                테스트해야 할 시나리오를 정의합니다.
+                
+                - 오프라인 전환
+                - 매우 느린 연결
+                - 높은 지연과 손실
+                
+                @Code(name: "TestScenarios.swift", file: "10-02-test-scenarios.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Network Link Conditioner 설정") {
+        @ContentAndMedia {
+            Apple은 네트워크 조건을 시뮬레이션하는 
+            도구를 제공합니다.
+            
+            **iOS**: 설정 > 개발자 > Network Link Conditioner
+            **macOS**: Xcode > Additional Tools에서 설치
+        }
+        
+        @Steps {
+            @Step {
+                iOS에서 개발자 옵션을 활성화합니다.
+                Xcode로 기기를 연결하면 자동으로 나타납니다.
+                
+                @Code(name: "EnableDeveloper.swift", file: "10-03-enable-developer.swift")
+            }
+            
+            @Step {
+                제공되는 프리셋을 활용합니다.
+                
+                - **100% Loss**: 모든 패킷 손실
+                - **3G**: 느린 모바일 네트워크
+                - **High Latency DNS**: DNS 지연
+                - **Very Bad Network**: 극심한 불안정
+                
+                @Code(name: "Presets.swift", file: "10-04-presets.swift")
+            }
+            
+            @Step {
+                커스텀 프로파일을 만듭니다.
+                특정 조건을 정확히 재현합니다.
+                
+                @Code(name: "CustomProfile.swift", file: "10-05-custom-profile.swift")
+            }
+        }
+    }
+    
+    @Section(title: "방어적 코드 작성") {
+        @ContentAndMedia {
+            열악한 네트워크에서도 앱이 정상 동작하도록 
+            방어적 코드를 작성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                적절한 타임아웃을 설정합니다.
+                너무 길면 UX 저하, 너무 짧으면 실패 증가.
+                
+                @Code(name: "Timeout.swift", file: "10-06-timeout.swift")
+            }
+            
+            @Step {
+                지수 백오프 재시도를 구현합니다.
+                실패 시 점점 늦게 재시도합니다.
+                
+                @Code(name: "ExponentialBackoff.swift", file: "10-07-exponential-backoff.swift")
+            }
+            
+            @Step {
+                연결 품질에 따라 동작을 조절합니다.
+                느린 네트워크에서는 저화질로 전환합니다.
+                
+                @Code(name: "AdaptiveQuality.swift", file: "10-08-adaptive-quality.swift")
+            }
+        }
+    }
+    
+    @Section(title: "P2P 채팅 품질 향상") {
+        @ContentAndMedia {
+            지금까지 만든 채팅 앱에 
+            네트워크 방어 로직을 추가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                메시지 전송 실패 시 재시도합니다.
+                로컬에 저장 후 연결 복구 시 재전송합니다.
+                
+                @Code(name: "MessageRetry.swift", file: "10-09-message-retry.swift")
+            }
+            
+            @Step {
+                연결 상태를 사용자에게 표시합니다.
+                연결 중, 재연결 중 등 상태를 보여줍니다.
+                
+                @Code(name: "ConnectionStatus.swift", file: "10-10-connection-status.swift")
+            }
+            
+            @Step {
+                오프라인 모드를 지원합니다.
+                로컬 캐시에서 이전 메시지를 표시합니다.
+                
+                @Code(name: "OfflineMode.swift", file: "10-11-offline-mode.swift")
+            }
+            
+            @Step {
+                최종 P2P 채팅 앱을 완성합니다.
+                모든 네트워크 조건에서 안정적으로 동작합니다.
+                
+                @Code(name: "FinalChatApp.swift", file: "10-12-final-chat.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            지수 백오프(Exponential Backoff)를 사용하는 이유는?
+            
+            @Choice(isCorrect: false) {
+                재시도를 더 빠르게 하기 위해
+                
+                @Justification(reaction: "반대입니다.") {
+                    지수 백오프는 재시도 간격을 점점 늘립니다.
+                    서버 부하를 줄이기 위한 전략입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                서버 과부하를 방지하고 복구 시간을 주기 위해
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    실패가 반복되면 간격을 늘려 
+                    서버가 복구될 시간을 줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                암호화 키를 갱신하기 위해
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    암호화와 재시도 전략은 관련이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Network Link Conditioner의 100% Loss 프로파일로 테스트해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                타임아웃 처리와 오프라인 모드 전환
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    완전한 네트워크 단절 상황에서 
+                    앱이 적절히 대응하는지 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                고화질 이미지 로딩 속도
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    100% 손실에서는 아무것도 로드되지 않습니다.
+                    이건 다른 프로파일로 테스트합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                멀티패스 TCP 성능
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    100% 손실에서는 멀티패스도 동작하지 않습니다.
+                    불안정한 네트워크에서 테스트하세요.
+                }
+            }
+        }
+    }
+}

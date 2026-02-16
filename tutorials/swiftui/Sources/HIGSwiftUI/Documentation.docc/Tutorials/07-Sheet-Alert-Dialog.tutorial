@@ -1,0 +1,262 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Sheet, Alert, Confirmation Dialog") {
+        모달 프레젠테이션으로 사용자와 소통하는 방법을 배웁니다.
+        새 레시피 추가 Sheet와 삭제 확인 Dialog를 구현합니다.
+    }
+    
+    @Section(title: "Sheet — 모달 화면") {
+        @ContentAndMedia {
+            **Sheet**는 화면 하단에서 올라오는 모달입니다.
+            
+            새 콘텐츠 작성, 상세 정보 표시, 설정 화면 등에 사용합니다.
+            사용자는 아래로 스와이프하거나 닫기 버튼으로 닫을 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Sheet 기본 사용법**
+                
+                `.sheet(isPresented:)`로 Sheet를 표시합니다.
+                @State Bool 값으로 표시 여부를 제어합니다.
+                
+                @Code(name: "SheetBasic.swift", file: "07-sheet-basic.swift")
+            }
+            
+            @Step {
+                **Sheet에 데이터 전달**
+                
+                `.sheet(item:)`을 사용하면 
+                Optional 아이템으로 Sheet를 제어할 수 있습니다.
+                nil이 아니면 Sheet가 열리고, 그 아이템을 사용합니다.
+                
+                @Code(name: "SheetItem.swift", file: "07-sheet-item.swift")
+            }
+            
+            @Step {
+                **Sheet 닫기**
+                
+                `@Environment(\.dismiss)`로 Sheet를 코드에서 닫습니다.
+                저장 후 자동으로 닫히는 동작을 구현할 수 있습니다.
+                
+                @Code(name: "SheetDismiss.swift", file: "07-sheet-dismiss.swift")
+            }
+            
+            @Step {
+                **Sheet 커스터마이징**
+                
+                `.presentationDetents()`로 Sheet 높이를 조절합니다.
+                `.presentationDragIndicator()`로 드래그 바를 표시/숨김합니다.
+                
+                @Code(name: "SheetCustom.swift", file: "07-sheet-custom.swift")
+            }
+        }
+    }
+    
+    @Section(title: "fullScreenCover — 전체 화면 모달") {
+        @ContentAndMedia {
+            **fullScreenCover**는 화면 전체를 덮는 모달입니다.
+            
+            Sheet와 달리 스와이프로 닫을 수 없습니다.
+            로그인 화면, 온보딩, 이미지 뷰어 등에 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **fullScreenCover 사용법**
+                
+                사용법은 Sheet와 거의 동일합니다.
+                단, 사용자가 명시적으로 닫아야만 닫힙니다.
+                
+                @Code(name: "FullScreenCover.swift", file: "07-fullscreen.swift")
+            }
+            
+            @Step {
+                **닫기 버튼 필수**
+                
+                fullScreenCover는 스와이프로 못 닫으므로
+                반드시 닫기 버튼을 제공해야 합니다.
+                
+                @Code(name: "FullScreenClose.swift", file: "07-fullscreen-close.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Alert — 경고 대화상자") {
+        @ContentAndMedia {
+            **Alert**는 중요한 정보를 알리거나
+            사용자의 확인을 받을 때 사용합니다.
+            
+            HIG 가이드: Alert는 정말 중요한 상황에만 사용하세요.
+            너무 자주 사용하면 사용자가 무시하게 됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Alert 기본 사용법**
+                
+                `.alert()`로 경고창을 표시합니다.
+                제목, 메시지, 버튼을 설정합니다.
+                
+                @Code(name: "AlertBasic.swift", file: "07-alert-basic.swift")
+            }
+            
+            @Step {
+                **여러 버튼 추가**
+                
+                여러 액션 버튼을 추가할 수 있습니다.
+                .destructive role은 빨간색으로 표시됩니다.
+                .cancel role은 자동으로 굵은 글씨가 됩니다.
+                
+                @Code(name: "AlertButtons.swift", file: "07-alert-buttons.swift")
+            }
+            
+            @Step {
+                **Alert에 TextField 추가**
+                
+                iOS 15+에서는 Alert에 TextField를 추가할 수 있습니다.
+                간단한 입력을 받을 때 유용합니다.
+                
+                @Code(name: "AlertTextField.swift", file: "07-alert-textfield.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ConfirmationDialog — 액션 시트") {
+        @ContentAndMedia {
+            **ConfirmationDialog**는 여러 선택지를 제공하는 대화상자입니다.
+            
+            iPhone에서는 하단에서 올라오고,
+            iPad에서는 팝오버로 표시됩니다.
+            
+            삭제 확인, 공유 옵션 등에 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ConfirmationDialog 기본 사용법**
+                
+                Alert와 비슷하지만 더 많은 옵션을 표시할 수 있습니다.
+                titleVisibility로 제목 표시 여부를 설정합니다.
+                
+                @Code(name: "DialogBasic.swift", file: "07-dialog-basic.swift")
+            }
+            
+            @Step {
+                **버튼 역할(Role) 지정**
+                
+                .destructive는 빨간색으로, 
+                .cancel은 별도 구역에 표시됩니다.
+                
+                @Code(name: "DialogRoles.swift", file: "07-dialog-roles.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 레시피 추가 & 삭제") {
+        @ContentAndMedia {
+            ChefBook에 레시피 추가 Sheet와
+            삭제 확인 Dialog를 구현합니다!
+        }
+        
+        @Steps {
+            @Step {
+                **새 레시피 추가 버튼**
+                
+                네비게이션 바에 + 버튼을 추가합니다.
+                탭하면 레시피 추가 Sheet가 열립니다.
+                
+                @Code(name: "AddRecipeButton.swift", file: "07-chefbook-add-button.swift")
+            }
+            
+            @Step {
+                **레시피 추가 폼 Sheet**
+                
+                이름, 설명, 카테고리, 난이도 등을 입력받는 폼입니다.
+                @Environment(\.dismiss)로 저장 후 닫습니다.
+                
+                @Code(name: "AddRecipeSheet.swift", file: "07-chefbook-add-sheet.swift")
+            }
+            
+            @Step {
+                **삭제 확인 Dialog**
+                
+                레시피 삭제 전 확인 Dialog를 표시합니다.
+                실수로 삭제하는 것을 방지합니다.
+                
+                @Code(name: "DeleteConfirmation.swift", file: "07-chefbook-delete.swift")
+            }
+            
+            @Step {
+                **저장 성공 Alert**
+                
+                레시피가 저장되면 성공 Alert를 표시합니다.
+                
+                @Code(name: "SaveSuccessAlert.swift", file: "07-chefbook-success.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Sheet와 fullScreenCover의 가장 큰 차이점은?
+            
+            @Choice(isCorrect: true) {
+                Sheet는 스와이프로 닫을 수 있지만, fullScreenCover는 명시적 닫기 필요
+                
+                @Justification(reaction: "정답! 🎯") {
+                    Sheet는 사용자가 아래로 스와이프해서 닫을 수 있습니다.
+                    fullScreenCover는 반드시 닫기 버튼이나 코드로 닫아야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 차이만 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    동작 방식이 다릅니다.
+                    fullScreenCover는 전체 화면을 덮고 스와이프로 닫을 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Sheet는 iPhone용, fullScreenCover는 iPad용
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 모든 기기에서 사용 가능합니다.
+                    용도에 따라 선택합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Apple HIG에서 Alert 사용에 대한 권장사항은?
+            
+            @Choice(isCorrect: true) {
+                정말 중요한 상황에만 사용하고, 남용하지 않는다
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    Alert가 너무 자주 나타나면 사용자가 읽지 않고
+                    무조건 닫게 됩니다. 중요한 정보에만 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 에러 상황에 Alert를 표시해야 한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    사소한 에러는 inline으로 표시하는 것이 좋습니다.
+                    Alert는 중요한 상황에만 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Alert보다 Toast를 사용해야 한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    상황에 따라 적절한 방식을 선택합니다.
+                    사용자 확인이 필요한 경우 Alert가 적합합니다.
+                }
+            }
+        }
+    }
+}

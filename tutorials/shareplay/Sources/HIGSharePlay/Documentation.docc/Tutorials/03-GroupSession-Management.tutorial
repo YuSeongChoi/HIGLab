@@ -1,0 +1,178 @@
+@Tutorial(time: 15) {
+    @Intro(title: "GroupSession 관리") {
+        GroupSession의 생명주기를 이해하고, 세션 참여와 종료를 
+        올바르게 처리하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "GroupSession 이해하기") {
+        @ContentAndMedia {
+            GroupSession은 SharePlay 활동의 핵심입니다.
+            세션은 활동이 시작될 때 생성되고, 
+            모든 참가자가 떠나면 종료됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                GroupSession의 주요 프로퍼티를 이해합니다.
+                
+                - `activity`: 현재 세션의 Activity 정보
+                - `state`: 세션의 현재 상태 (waiting, joined, invalidated)
+                - `activeParticipants`: 참여 중인 사용자 목록
+                
+                @Code(name: "SessionProperties.swift", file: "03-session-properties.swift")
+            }
+            
+            @Step {
+                세션 상태 변화를 모니터링합니다.
+                
+                `$state` 퍼블리셔를 통해 상태 변화를 관찰하고,
+                UI를 적절히 업데이트합니다.
+                
+                @Code(name: "SessionState.swift", file: "03-session-state.swift")
+            }
+            
+            @Step {
+                세션 참여 순서를 이해합니다.
+                
+                1. 세션 수신 (`sessions()`)
+                2. 세션 설정 (coordinator 연결 등)
+                3. 세션 참여 (`join()`)
+                
+                @Code(name: "SessionJoinFlow.swift", file: "03-join-flow.swift")
+            }
+        }
+    }
+    
+    @Section(title: "세션 참여 구현") {
+        @ContentAndMedia {
+            `join()` 메서드를 호출해 세션에 참여합니다.
+            참여 전에 필요한 설정을 완료해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                세션 참여를 위한 ViewModel을 만듭니다.
+                
+                세션과 관련된 모든 상태를 관리하는
+                @Observable 클래스입니다.
+                
+                @Code(name: "SharePlayViewModel.swift", file: "03-viewmodel.swift")
+            }
+            
+            @Step {
+                세션 설정 후 `join()`을 호출합니다.
+                
+                join()을 호출하기 전에 coordinator 연결,
+                messenger 설정 등을 완료해야 합니다.
+                
+                @Code(name: "JoinSession.swift", file: "03-join-session.swift")
+            }
+            
+            @Step {
+                `systemCoordinator`를 연결합니다.
+                
+                시스템 미디어 플레이어와 연동하려면
+                AVPlayer의 playbackCoordinator를 사용합니다.
+                
+                @Code(name: "SystemCoordinator.swift", file: "03-system-coordinator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "세션 종료 처리") {
+        @ContentAndMedia {
+            세션이 종료되는 다양한 시나리오를 처리합니다.
+            사용자가 나가거나, 마지막 참가자가 떠나거나,
+            오류가 발생할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                세션 종료 방법을 이해합니다.
+                
+                - `leave()`: 현재 사용자만 세션 떠남 (세션은 유지)
+                - `end()`: 모든 참가자에게 세션 종료 (전체 종료)
+                
+                @Code(name: "EndSession.swift", file: "03-end-session.swift")
+            }
+            
+            @Step {
+                세션 invalidated 상태를 처리합니다.
+                
+                세션이 무효화되면 UI를 초기 상태로 되돌리고,
+                필요한 정리 작업을 수행합니다.
+                
+                @Code(name: "HandleInvalidation.swift", file: "03-invalidation.swift")
+            }
+            
+            @Step {
+                메모리 정리를 위해 subscriptions를 취소합니다.
+                
+                세션 종료 시 모든 Combine subscription과
+                Task를 취소해야 합니다.
+                
+                @Code(name: "Cleanup.swift", file: "03-cleanup.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            GroupSession의 세 가지 상태(state)가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                waiting
+                
+                @Justification(reaction: "이건 유효한 상태입니다") {
+                    waiting은 세션이 생성되었지만 아직 join()하지 않은 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                joined
+                
+                @Justification(reaction: "이건 유효한 상태입니다") {
+                    joined는 세션에 성공적으로 참여한 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                paused
+                
+                @Justification(reaction: "정답! 🎉") {
+                    paused 상태는 존재하지 않습니다.
+                    상태는 waiting, joined, invalidated 세 가지입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            `leave()`와 `end()`의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                leave()는 현재 사용자만, end()는 모든 참가자를 세션에서 내보냄
+                
+                @Justification(reaction: "정답! 🎉") {
+                    leave()는 호출한 사용자만 세션을 떠나고,
+                    end()는 모든 참가자에게 세션 종료를 알립니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                leave()는 즉시, end()는 지연 종료
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 즉시 실행됩니다. 차이는 영향 범위입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기능적으로 동일함
+                
+                @Justification(reaction: "아쉽네요") {
+                    leave()와 end()는 영향 범위가 다릅니다.
+                }
+            }
+        }
+    }
+}

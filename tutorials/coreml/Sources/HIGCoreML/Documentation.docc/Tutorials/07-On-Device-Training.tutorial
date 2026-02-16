@@ -1,0 +1,228 @@
+@Tutorial(time: 22) {
+    @Intro(title: "온디바이스 학습 (On-Device Training)") {
+        사용자 기기에서 직접 모델을 업데이트하는
+        개인화된 AI 경험을 구현합니다.
+    }
+    
+    @Section(title: "온디바이스 학습의 이해") {
+        @ContentAndMedia {
+            온디바이스 학습은 배포 후에도 
+            **사용자 데이터로 모델을 개선**할 수 있게 합니다.
+            
+            데이터가 서버로 전송되지 않으므로
+            프라이버시를 보장하면서 개인화가 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MLUpdateTask 소개**
+                
+                iOS 13+에서 지원하는 온디바이스 학습 API입니다.
+                사용자가 앱을 사용하면서 모델을 개선합니다.
+                
+                @Code(name: "MLUpdateTaskIntro.swift", file: "07-update-task-intro.swift")
+            }
+            
+            @Step {
+                **업데이트 가능 모델 조건**
+                
+                모든 CoreML 모델이 업데이트 가능한 것은 아닙니다.
+                Neural Network 레이어 중 일부만 업데이트 가능하게 설정해야 합니다.
+                
+                @Code(name: "UpdatableModel.swift", file: "07-updatable-model.swift")
+            }
+            
+            @Step {
+                **업데이트 vs 재학습**
+                
+                온디바이스 업데이트는 **파인튜닝**입니다.
+                전체 재학습이 아니라 일부 레이어만 조정합니다.
+                따라서 빠르고 배터리 효율적입니다.
+                
+                @Code(name: "FinetuningConcept.swift", file: "07-finetuning.swift")
+            }
+        }
+    }
+    
+    @Section(title: "업데이트 가능 모델 만들기") {
+        @ContentAndMedia {
+            Create ML 또는 coremltools를 사용하여
+            업데이트 가능한 모델을 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **coremltools로 업데이트 가능 설정**
+                
+                Python coremltools 라이브러리를 사용하여
+                기존 모델에 업데이트 가능 플래그를 추가합니다.
+                
+                @Code(name: "CoremlToolsSetup.swift", file: "07-coremltools.swift")
+            }
+            
+            @Step {
+                **손실 함수와 옵티마이저 설정**
+                
+                학습에 사용할 손실 함수(Cross Entropy 등)와
+                옵티마이저(SGD, Adam)를 지정합니다.
+                
+                @Code(name: "LossOptimizer.swift", file: "07-loss-optimizer.swift")
+            }
+            
+            @Step {
+                **학습 입력 정의**
+                
+                모델 업데이트에 사용할 학습 입력을 정의합니다.
+                특성(features)과 레이블(target)을 지정합니다.
+                
+                @Code(name: "TrainingInputs.swift", file: "07-training-inputs.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MLUpdateTask 구현") {
+        @ContentAndMedia {
+            Swift에서 MLUpdateTask를 사용하여
+            실제 온디바이스 학습을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **학습 데이터 준비**
+                
+                MLBatchProvider로 학습 데이터를 준비합니다.
+                사용자 피드백(정답/오답)을 수집합니다.
+                
+                @Code(name: "TrainingDataBatch.swift", file: "07-training-batch.swift")
+            }
+            
+            @Step {
+                **MLUpdateTask 생성 및 실행**
+                
+                모델 URL, 학습 데이터, 설정을 전달하여
+                업데이트 태스크를 실행합니다.
+                
+                @Code(name: "ExecuteUpdate.swift", file: "07-execute-update.swift")
+            }
+            
+            @Step {
+                **업데이트된 모델 저장**
+                
+                업데이트된 모델을 앱의 Documents 폴더에 저장합니다.
+                번들의 원본 모델은 읽기 전용이므로 복사 필요합니다.
+                
+                @Code(name: "SaveUpdatedModel.swift", file: "07-save-model.swift")
+            }
+            
+            @Step {
+                **업데이트 진행 상황 모니터링**
+                
+                progressHandlers를 사용하여 학습 진행률과
+                에포크별 손실값을 모니터링합니다.
+                
+                @Code(name: "ProgressMonitoring.swift", file: "07-progress-monitor.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실전 예제: 개인화 분류기") {
+        @ContentAndMedia {
+            사용자 피드백을 받아 분류 정확도를
+            점점 개선하는 앱을 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **피드백 UI 구현**
+                
+                분류 결과에 대해 "맞음/틀림" 버튼으로
+                사용자 피드백을 수집합니다.
+                
+                @Code(name: "FeedbackUI.swift", file: "07-feedback-ui.swift")
+            }
+            
+            @Step {
+                **피드백 기반 학습 트리거**
+                
+                일정 개수의 피드백이 쌓이면
+                백그라운드에서 학습을 실행합니다.
+                
+                @Code(name: "FeedbackLearning.swift", file: "07-feedback-learning.swift")
+            }
+            
+            @Step {
+                **학습 스케줄 관리**
+                
+                배터리 상태, 충전 중 여부를 확인하여
+                적절한 시점에 학습을 실행합니다.
+                
+                @Code(name: "LearningScheduler.swift", file: "07-learning-scheduler.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            온디바이스 학습의 가장 큰 장점은?
+            
+            @Choice(isCorrect: true) {
+                프라이버시 보장 — 데이터가 기기를 떠나지 않음
+                
+                @Justification(reaction: "정답!") {
+                    사용자 데이터로 개인화하면서도 
+                    서버로 데이터가 전송되지 않아 프라이버시가 보장됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서버 학습보다 더 정확함
+                
+                @Justification(reaction: "아쉽네요") {
+                    서버에서 더 많은 데이터로 학습하면 
+                    더 정확할 수 있습니다.
+                    온디바이스의 핵심 가치는 프라이버시입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                학습 속도가 더 빠름
+                
+                @Justification(reaction: "아쉽네요") {
+                    서버의 GPU 클러스터가 더 빠릅니다.
+                    온디바이스의 가치는 프라이버시와 오프라인 지원입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            온디바이스 학습을 실행하기 좋은 시점은?
+            
+            @Choice(isCorrect: true) {
+                기기가 충전 중이고 유휴 상태일 때
+                
+                @Justification(reaction: "정확합니다!") {
+                    학습은 배터리를 소모하므로 충전 중에, 
+                    사용자 경험에 영향 없도록 유휴 상태일 때 실행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                피드백을 받자마자 즉시
+                
+                @Justification(reaction: "아쉽네요") {
+                    즉시 학습하면 앱이 느려지고 배터리가 소모됩니다.
+                    피드백을 모아뒀다가 적절한 시점에 학습하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리가 10% 미만일 때
+                
+                @Justification(reaction: "아쉽네요") {
+                    학습은 전력 소모가 큽니다.
+                    배터리가 충분하거나 충전 중일 때 실행해야 합니다.
+                }
+            }
+        }
+    }
+}

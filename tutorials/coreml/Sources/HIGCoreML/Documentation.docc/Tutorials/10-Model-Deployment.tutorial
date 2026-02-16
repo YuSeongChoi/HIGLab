@@ -1,0 +1,228 @@
+@Tutorial(time: 15) {
+    @Intro(title: "앱 배포 시 모델 관리") {
+        App Store 배포 시 ML 모델을 관리하는 
+        전략과 모범 사례를 학습합니다.
+    }
+    
+    @Section(title: "모델 배포 전략") {
+        @ContentAndMedia {
+            ML 모델을 앱에 포함하는 방법은 여러 가지입니다.
+            앱 크기, 업데이트 빈도, 사용자 경험을 고려하여 선택합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **번들 포함 (Bundled)**
+                
+                앱 바이너리에 모델을 포함합니다.
+                - 장점: 즉시 사용 가능, 오프라인 지원
+                - 단점: 앱 크기 증가, 모델 업데이트 = 앱 업데이트
+                
+                @Code(name: "BundledModel.swift", file: "10-bundled-model.swift")
+            }
+            
+            @Step {
+                **On-Demand Resource (ODR)**
+                
+                모델을 필요할 때 다운로드합니다.
+                앱 초기 다운로드 크기를 줄일 수 있습니다.
+                
+                @Code(name: "OnDemandResource.swift", file: "10-odr.swift")
+            }
+            
+            @Step {
+                **Background Assets 프레임워크**
+                
+                iOS 16+에서 앱 설치 직후 
+                백그라운드로 모델을 다운로드합니다.
+                
+                @Code(name: "BackgroundAssets.swift", file: "10-background-assets.swift")
+            }
+            
+            @Step {
+                **서버에서 동적 다운로드**
+                
+                자체 서버에서 모델을 다운로드합니다.
+                앱 업데이트 없이 모델 교체 가능합니다.
+                
+                @Code(name: "DynamicDownload.swift", file: "10-dynamic-download.swift")
+            }
+        }
+    }
+    
+    @Section(title: "모델 버전 관리") {
+        @ContentAndMedia {
+            여러 버전의 모델을 관리하고
+            업데이트를 안전하게 적용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **모델 메타데이터 활용**
+                
+                .mlmodel에 버전, 작성자, 설명 등
+                메타데이터를 포함시킵니다.
+                
+                @Code(name: "ModelMetadata.swift", file: "10-model-metadata.swift")
+            }
+            
+            @Step {
+                **마이그레이션 전략**
+                
+                새 모델이 이전 버전과 호환되는지 확인합니다.
+                입출력 형식이 바뀌면 앱 코드도 수정 필요합니다.
+                
+                @Code(name: "ModelMigration.swift", file: "10-migration.swift")
+            }
+            
+            @Step {
+                **롤백 전략**
+                
+                새 모델에 문제가 있을 경우
+                이전 버전으로 롤백할 수 있도록 준비합니다.
+                
+                @Code(name: "ModelRollback.swift", file: "10-rollback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "컴파일된 모델 관리") {
+        @ContentAndMedia {
+            .mlmodel vs .mlmodelc의 차이를 이해하고
+            적절히 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **.mlmodel vs .mlmodelc**
+                
+                - .mlmodel: 원본 모델 (빌드 시 컴파일)
+                - .mlmodelc: 컴파일된 모델 (런타임 즉시 사용)
+                
+                다운로드한 모델은 compileModel(at:)로 컴파일 필요
+                
+                @Code(name: "CompiledModel.swift", file: "10-compiled-model.swift")
+            }
+            
+            @Step {
+                **모델 컴파일 위치**
+                
+                컴파일된 모델을 캐시에 저장하여
+                앱 재시작 시 재컴파일 방지
+                
+                @Code(name: "ModelCaching.swift", file: "10-model-caching.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Store 제출 시 고려사항") {
+        @ContentAndMedia {
+            ML 앱을 App Store에 제출할 때
+            알아야 할 가이드라인과 팁입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 크기 최적화**
+                
+                App Store는 200MB 이상 앱의 
+                셀룰러 다운로드를 제한합니다.
+                모델 압축으로 크기를 줄이세요.
+                
+                @Code(name: "AppSizeOptimization.swift", file: "10-app-size.swift")
+            }
+            
+            @Step {
+                **App Thinning 활용**
+                
+                기기별로 최적화된 모델을 배포합니다.
+                iPhone용, iPad용 모델을 분리할 수 있습니다.
+                
+                @Code(name: "AppThinning.swift", file: "10-app-thinning.swift")
+            }
+            
+            @Step {
+                **개인정보 처리방침**
+                
+                ML로 수집하거나 분석하는 데이터에 대해
+                개인정보 처리방침에 명시해야 합니다.
+                온디바이스 처리도 설명하면 신뢰를 높입니다.
+                
+                @Code(name: "PrivacyPolicy.swift", file: "10-privacy.swift")
+            }
+            
+            @Step {
+                **심사 대비 테스트**
+                
+                모든 기기에서 모델이 정상 로드되는지,
+                에러 처리가 적절한지 철저히 테스트합니다.
+                
+                @Code(name: "ReviewPreparation.swift", file: "10-review-prep.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            앱 초기 다운로드 크기를 줄이면서 ML 모델을 제공하려면?
+            
+            @Choice(isCorrect: true) {
+                On-Demand Resources (ODR) 또는 Background Assets 사용
+                
+                @Justification(reaction: "정답!") {
+                    ODR은 필요할 때, Background Assets는 설치 직후
+                    모델을 다운로드하여 초기 앱 크기를 줄입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 큰 모델로 교체
+                
+                @Justification(reaction: "아쉽네요") {
+                    큰 모델은 앱 크기를 늘립니다.
+                    ODR이나 Background Assets로 분리하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                무조건 번들에 포함
+                
+                @Justification(reaction: "아쉽네요") {
+                    번들 포함은 앱 크기를 증가시킵니다.
+                    큰 모델은 분리 전략이 효과적입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            서버에서 다운로드한 .mlmodel 파일을 사용하려면?
+            
+            @Choice(isCorrect: true) {
+                MLModel.compileModel(at:)로 먼저 컴파일해야 함
+                
+                @Justification(reaction: "정확합니다!") {
+                    .mlmodel은 런타임에 컴파일이 필요합니다.
+                    컴파일 결과를 캐시에 저장하면 효율적입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                바로 MLModel(contentsOf:)로 로드 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    .mlmodel은 컴파일이 필요합니다.
+                    .mlmodelc (컴파일된 버전)는 바로 로드 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서버 다운로드는 불가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    서버에서 다운로드 후 컴파일하면 
+                    동적으로 모델을 교체할 수 있습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,245 @@
+@Tutorial(time: 20) {
+    @Intro(title: "동기화 경험 (라이브 이벤트)") {
+        콘서트, 스포츠 경기 등 라이브 이벤트와 앱을 동기화합니다.
+        시간 기반 메타데이터로 실시간 경험을 제공합니다.
+    }
+    
+    @Section(title: "동기화 경험이란?") {
+        @ContentAndMedia {
+            동기화 경험(Synchronized Experiences)은 ShazamKit의 
+            **가장 혁신적인 기능** 중 하나입니다.
+            
+            오디오를 기준으로 앱이 특정 시점에 맞춰 
+            콘텐츠를 표시하거나 동작을 수행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **활용 사례**
+                
+                - 콘서트: 곡에 맞춰 가사, 조명 효과 표시
+                - 스포츠: 하이라이트 순간에 통계, 정보 제공
+                - TV 쇼: 방송 중 퀴즈, 투표 참여
+                - 박물관: 오디오 가이드와 앱 동기화
+                
+                @Code(name: "UseCases.swift", file: "09-use-cases.swift")
+            }
+            
+            @Step {
+                **동작 원리**
+                
+                1. 레퍼런스 오디오에 시간대별 메타데이터 연결
+                2. 실시간 오디오가 레퍼런스와 매칭
+                3. 현재 재생 위치의 메타데이터 제공
+                
+                @Code(name: "HowItWorks.swift", file: "09-how-it-works.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시간대별 메타데이터 설정") {
+        @ContentAndMedia {
+            커스텀 카탈로그에 시간대별 메타데이터를 추가합니다.
+            SHMediaItem의 timeRanges를 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHMediaItem 시간 범위**
+                
+                하나의 시그니처에 여러 시간대별 
+                SHMediaItem을 연결할 수 있습니다.
+                
+                @Code(name: "TimeRangeBasics.swift", file: "09-time-range-basics.swift")
+            }
+            
+            @Step {
+                **시간대별 SHMediaItem 생성**
+                
+                각 시간 구간에 맞는 메타데이터를 생성합니다.
+                startTime, endTime으로 범위를 지정합니다.
+                
+                @Code(name: "TimeBasedMediaItems.swift", file: "09-time-based-items.swift")
+            }
+            
+            @Step {
+                **카탈로그에 추가**
+                
+                시간대별 MediaItem을 카탈로그에 추가합니다.
+                add(_:representing:)의 배열 버전을 사용합니다.
+                
+                @Code(name: "AddToCatalog.swift", file: "09-add-to-catalog.swift")
+            }
+        }
+    }
+    
+    @Section(title: "frequencySkew 활용") {
+        @ContentAndMedia {
+            매칭 결과의 frequencySkew로 재생 속도 차이를 감지합니다.
+            배속 재생이나 피치 변화를 알 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **frequencySkew란?**
+                
+                frequencySkew는 레퍼런스 대비 현재 오디오의 
+                주파수 차이 비율입니다.
+                
+                - 1.0: 동일한 속도
+                - 1.1: 10% 빠름
+                - 0.9: 10% 느림
+                
+                @Code(name: "FrequencySkew.swift", file: "09-frequency-skew.swift")
+            }
+            
+            @Step {
+                **속도 차이 보정**
+                
+                frequencySkew를 사용해 타이밍을 보정합니다.
+                느린 재생이나 배속에도 정확한 동기화가 가능합니다.
+                
+                @Code(name: "SpeedCorrection.swift", file: "09-speed-correction.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SyncExperienceManager 구현") {
+        @ContentAndMedia {
+            동기화 경험을 관리하는 완전한 매니저를 구현합니다.
+            실시간 매칭과 시간대별 콘텐츠 전환을 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 구조**
+                
+                SyncExperienceManager의 기본 뼈대입니다.
+                카탈로그, 세션, 현재 상태를 관리합니다.
+                
+                @Code(name: "SyncManagerBase.swift", file: "09-sync-manager-base.swift")
+            }
+            
+            @Step {
+                **현재 메타데이터 추적**
+                
+                매칭 결과에서 현재 시점의 메타데이터를 추출합니다.
+                mediaItems 배열에서 현재 시간 범위를 찾습니다.
+                
+                @Code(name: "TrackMetadata.swift", file: "09-track-metadata.swift")
+            }
+            
+            @Step {
+                **콘텐츠 전환 알림**
+                
+                시간대가 바뀔 때 콜백을 발생시킵니다.
+                UI가 적절히 반응할 수 있도록 합니다.
+                
+                @Code(name: "ContentTransition.swift", file: "09-content-transition.swift")
+            }
+            
+            @Step {
+                **전체 구현**
+                
+                동기화 경험의 전체 구현입니다.
+                실시간 매칭 + 시간대별 콘텐츠 + UI 연동.
+                
+                @Code(name: "SyncManagerFull.swift", file: "09-sync-manager-full.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            동기화 경험에서 현재 재생 위치를 파악하는 핵심 요소는?
+            
+            @Choice(isCorrect: true) {
+                시간대별 SHMediaItem과 매칭 결과
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    시간대별 메타데이터를 미리 설정하고,
+                    매칭 결과에서 현재 시점의 데이터를 얻습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                GPS 위치 정보
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    오디오 매칭과 시간대별 메타데이터로 
+                    현재 위치를 파악합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서버 타임스탬프
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    오디오 시그니처 매칭으로 현재 위치를 파악합니다.
+                    네트워크 없이도 동작합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            frequencySkew가 1.1이면 현재 오디오가?
+            
+            @Choice(isCorrect: true) {
+                레퍼런스보다 10% 빠르게 재생 중
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    frequencySkew 1.1은 주파수가 10% 높다는 의미로,
+                    재생 속도가 10% 빠른 것입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                레퍼런스보다 10% 느리게 재생 중
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    1.1은 10% 빠른 것입니다.
+                    느린 경우는 0.9 같은 값입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                레퍼런스와 동일한 속도
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    동일한 속도는 1.0입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            하나의 시그니처에 여러 시간대의 메타데이터를 연결하려면?
+            
+            @Choice(isCorrect: true) {
+                add(_:representing:)에 SHMediaItem 배열 전달
+                
+                @Justification(reaction: "정답! 🎉") {
+                    add(_:representing:)의 두 번째 파라미터로 
+                    시간 범위가 다른 SHMediaItem 배열을 전달합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                같은 시그니처로 add를 여러 번 호출
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    하나의 시그니처에 여러 MediaItem을 
+                    배열로 한 번에 전달해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHMediaItem에 childItems 추가
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    childItems 프로퍼티는 없습니다.
+                    add에 배열을 전달하세요.
+                }
+            }
+        }
+    }
+}

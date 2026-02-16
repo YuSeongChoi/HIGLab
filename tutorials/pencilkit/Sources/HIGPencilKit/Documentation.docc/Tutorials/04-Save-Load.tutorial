@@ -1,0 +1,191 @@
+@Tutorial(time: 20) {
+    @Intro(title: "드로잉 저장 & 로드") {
+        PKDrawing 데이터를 파일로 저장하고 
+        복원하는 다양한 방법을 배웁니다.
+        
+        @Image(source: "save-load.png", alt: "드로잉 저장과 로드")
+    }
+    
+    @Section(title: "PKDrawing 직렬화") {
+        @ContentAndMedia {
+            PKDrawing은 Data로 직렬화할 수 있어
+            파일 저장이나 네트워크 전송이 가능합니다.
+            
+            - **dataRepresentation()**: PKDrawing → Data
+            - **init(data:)**: Data → PKDrawing
+            
+            이 데이터는 Apple의 프로프라이어터리 형식이지만,
+            모든 Apple 플랫폼에서 호환됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKDrawing을 Data로 변환하는 기본 방법입니다.
+                이 Data를 파일이나 데이터베이스에 저장할 수 있습니다.
+                
+                @Code(name: "DrawingToData.swift", file: "04-01-to-data.swift")
+            }
+            
+            @Step {
+                Data에서 PKDrawing을 복원합니다.
+                손상된 데이터는 에러를 발생시킬 수 있습니다.
+                
+                @Code(name: "DataToDrawing.swift", file: "04-02-from-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파일 시스템에 저장") {
+        @ContentAndMedia {
+            드로잉 데이터를 로컬 파일로 저장하고 불러옵니다.
+            Documents 디렉토리를 사용하면 
+            iCloud 백업에도 포함됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                FileManager를 사용하여 
+                드로잉을 파일로 저장합니다.
+                
+                @Code(name: "SaveToFile.swift", file: "04-03-save-file.swift")
+            }
+            
+            @Step {
+                저장된 파일에서 드로잉을 불러옵니다.
+                파일이 없는 경우 빈 드로잉을 생성합니다.
+                
+                @Code(name: "LoadFromFile.swift", file: "04-04-load-file.swift")
+            }
+            
+            @Step {
+                드로잉 파일 관리를 위한 
+                DrawingDocument 클래스를 만듭니다.
+                
+                @Code(name: "DrawingDocument.swift", file: "04-05-document.swift")
+            }
+        }
+    }
+    
+    @Section(title: "iCloud 동기화") {
+        @ContentAndMedia {
+            iCloud를 통해 여러 기기 간에 
+            드로잉을 동기화할 수 있습니다.
+            
+            - **NSUbiquitousKeyValueStore**: 작은 데이터
+            - **CloudKit**: 대용량 드로잉
+            - **iCloud Drive**: 파일 기반 동기화
+        }
+        
+        @Steps {
+            @Step {
+                NSUbiquitousKeyValueStore를 사용하여
+                간단한 드로잉을 동기화합니다. (1MB 제한)
+                
+                @Code(name: "iCloudKeyValue.swift", file: "04-06-icloud-kv.swift")
+            }
+            
+            @Step {
+                더 큰 드로잉을 위해 iCloud Drive를 사용합니다.
+                UIDocument 서브클래스를 구현합니다.
+                
+                @Code(name: "iCloudDocument.swift", file: "04-07-icloud-doc.swift")
+            }
+            
+            @Step {
+                자동 저장 기능을 구현합니다.
+                드로잉이 변경될 때마다 저장합니다.
+                
+                @Code(name: "AutoSave.swift", file: "04-08-autosave.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Core Data와 통합") {
+        @ContentAndMedia {
+            Core Data를 사용하면 드로잉과 함께 
+            메타데이터를 효율적으로 관리할 수 있습니다.
+            
+            Binary Data 속성으로 PKDrawing을 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Core Data 엔티티에 드로잉 속성을 추가합니다.
+                External Storage 옵션을 활성화하면 
+                큰 파일이 효율적으로 저장됩니다.
+                
+                @Code(name: "DrawingEntity.swift", file: "04-09-core-data.swift")
+            }
+            
+            @Step {
+                NSManagedObject 확장으로 
+                PKDrawing 접근을 편리하게 만듭니다.
+                
+                @Code(name: "DrawingEntityExtension.swift", file: "04-10-entity-ext.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKDrawing.dataRepresentation()이 반환하는 데이터 형식은?
+            
+            @Choice(isCorrect: true) {
+                Apple 프로프라이어터리 바이너리 형식
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    PKDrawing은 자체 바이너리 형식을 사용하며,
+                    모든 Apple 플랫폼에서 호환됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                JSON
+                
+                @Justification(reaction: "아닙니다.") {
+                    PKDrawing은 바이너리 형식을 사용합니다.
+                    JSON 변환이 필요하면 별도 처리가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SVG
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    SVG 변환은 지원되지 않습니다.
+                    이미지로 내보내기는 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            드로잉 자동 저장을 구현할 때 가장 적합한 델리게이트 메서드는?
+            
+            @Choice(isCorrect: true) {
+                canvasViewDrawingDidChange
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    이 메서드는 드로잉이 변경될 때마다 호출되어
+                    자동 저장 트리거로 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                canvasViewDidBeginUsingTool
+                
+                @Justification(reaction: "적합하지 않습니다.") {
+                    도구 사용 시작은 드로잉 완료와 다릅니다.
+                    너무 자주 저장될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                viewDidAppear
+                
+                @Justification(reaction: "아닙니다.") {
+                    뷰 표시와 드로잉 변경은 별개입니다.
+                }
+            }
+        }
+    }
+}

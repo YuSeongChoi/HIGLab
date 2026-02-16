@@ -1,0 +1,191 @@
+@Tutorial(time: 20) {
+    @Intro(title: "프리뷰 레이어 (AVCaptureVideoPreviewLayer)") {
+        AVCaptureVideoPreviewLayer로 카메라 미리보기를 화면에 표시합니다.
+        SwiftUI와 UIKit을 연결하여 실시간 프리뷰를 구현합니다.
+    }
+    
+    @Section(title: "PreviewLayer 이해하기") {
+        @ContentAndMedia {
+            AVCaptureVideoPreviewLayer는 CALayer의 서브클래스입니다.
+            캡처 세션의 실시간 비디오를 화면에 렌더링합니다.
+            
+            **주요 특징:**
+            - 하드웨어 가속 렌더링
+            - 자동 회전 지원
+            - 비디오 중력(gravity) 설정
+        }
+        
+        @Steps {
+            @Step {
+                PreviewLayer의 기본 개념을 이해합니다.
+                세션과 연결하면 자동으로 비디오가 표시됩니다.
+                
+                @Code(name: "PreviewConcept.swift", file: "05-preview-concept.swift")
+            }
+            
+            @Step {
+                videoGravity 옵션을 알아봅니다.
+                - `.resizeAspect`: 비율 유지, 레터박스 가능
+                - `.resizeAspectFill`: 비율 유지, 화면 채움
+                - `.resize`: 비율 무시, 화면 채움
+                
+                @Code(name: "PreviewGravity.swift", file: "05-video-gravity.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UIViewRepresentable로 SwiftUI 연결") {
+        @ContentAndMedia {
+            SwiftUI에서 PreviewLayer를 사용하려면 UIViewRepresentable이 필요합니다.
+            UIKit 뷰를 SwiftUI에서 사용할 수 있게 래핑합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PreviewLayer를 담을 UIView를 생성합니다.
+                레이어 크기가 뷰에 맞게 조정되도록 합니다.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-preview-uiview.swift")
+            }
+            
+            @Step {
+                UIViewRepresentable을 구현합니다.
+                makeUIView와 updateUIView를 정의합니다.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-uiview-representable.swift")
+            }
+            
+            @Step {
+                CameraManager에서 previewLayer를 생성합니다.
+                세션과 연결하여 비디오 프리뷰를 설정합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-create-preview-layer.swift")
+            }
+            
+            @Step {
+                SwiftUI 뷰에서 프리뷰를 표시합니다.
+                CameraPreviewView를 화면에 배치합니다.
+                
+                @Code(name: "CameraView.swift", file: "05-show-preview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "화면 회전 대응") {
+        @ContentAndMedia {
+            기기 회전 시 프리뷰 레이어도 함께 회전해야 합니다.
+            connection의 videoRotationAngle을 조정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                기기 방향에 따른 회전 각도를 계산합니다.
+                UIDevice.orientation을 기반으로 각도를 결정합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-rotation-angle.swift")
+            }
+            
+            @Step {
+                방향 변경 감지를 설정합니다.
+                NotificationCenter로 방향 변경을 감지합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-orientation-observer.swift")
+            }
+            
+            @Step {
+                프리뷰 레이어 회전을 적용합니다.
+                videoRotationAngle을 업데이트합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-apply-rotation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "탭하여 초점 맞추기") {
+        @ContentAndMedia {
+            사용자가 화면을 탭하면 해당 지점에 초점을 맞춥니다.
+            PreviewLayer의 좌표를 카메라 좌표로 변환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                탭 제스처를 추가합니다.
+                탭 위치를 감지하여 CameraManager에 전달합니다.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-tap-gesture.swift")
+            }
+            
+            @Step {
+                화면 좌표를 카메라 좌표로 변환합니다.
+                captureDevicePointConverted를 사용합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-convert-point.swift")
+            }
+            
+            @Step {
+                초점과 노출을 설정합니다.
+                lockForConfiguration으로 장치를 잠그고 설정합니다.
+                
+                @Code(name: "CameraManager.swift", file: "05-focus-exposure.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            프리뷰 화면을 비율 유지하며 꽉 채우는 videoGravity 옵션은?
+            
+            @Choice(isCorrect: false) {
+                `.resizeAspect`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    resizeAspect는 비율을 유지하지만 레터박스가 생길 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.resizeAspectFill`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    resizeAspectFill은 비율을 유지하면서 화면을 꽉 채웁니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.resize`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    resize는 비율을 무시하고 화면을 채우므로 왜곡이 발생합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftUI에서 UIKit 뷰를 사용하기 위해 채택하는 프로토콜은?
+            
+            @Choice(isCorrect: true) {
+                `UIViewRepresentable`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    UIViewRepresentable을 통해 UIView를 SwiftUI에서 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `UIViewControllerRepresentable`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 프로토콜은 UIViewController를 래핑할 때 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `ObservableObject`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    ObservableObject는 데이터 바인딩을 위한 프로토콜입니다.
+                }
+            }
+        }
+    }
+}

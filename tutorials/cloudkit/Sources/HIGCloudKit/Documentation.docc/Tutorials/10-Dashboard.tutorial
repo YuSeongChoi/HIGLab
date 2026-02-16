@@ -1,0 +1,160 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CloudKit Dashboard 활용") {
+        CloudKit Dashboard로 데이터를 관리하고 모니터링합니다.
+        스키마 정의, 쿼리 테스트, 로그 분석 방법을 배웁니다.
+    }
+    
+    @Section(title: "Dashboard 접속") {
+        @ContentAndMedia {
+            CloudKit Dashboard는 웹 기반 관리 도구입니다.
+            developer.apple.com/icloud/dashboard에서 접근합니다.
+        }
+        @Steps {
+            @Step {
+                Dashboard에 로그인하고 컨테이너를 선택합니다.
+                @Code(name: "Dashboard.md", file: "10-01-access.md")
+            }
+            @Step {
+                Development과 Production 환경의 차이를 이해합니다.
+                @Code(name: "Dashboard.md", file: "10-02-environments.md")
+            }
+            @Step {
+                Dashboard의 주요 메뉴를 살펴봅니다.
+                Schema, Data, Logs, Telemetry 등이 있습니다.
+                @Code(name: "Dashboard.md", file: "10-03-menus.md")
+            }
+        }
+    }
+    
+    @Section(title: "스키마 관리") {
+        @ContentAndMedia {
+            레코드 타입과 인덱스를 Dashboard에서 정의하고 관리합니다.
+        }
+        @Steps {
+            @Step {
+                Record Types에서 스키마를 확인합니다.
+                앱에서 처음 저장하면 자동 생성됩니다.
+                @Code(name: "Dashboard.md", file: "10-04-recordtypes.md")
+            }
+            @Step {
+                인덱스를 추가하여 쿼리 성능을 최적화합니다.
+                QUERYABLE, SEARCHABLE, SORTABLE 인덱스가 있습니다.
+                @Code(name: "Dashboard.md", file: "10-05-indexes.md")
+            }
+            @Step {
+                스키마를 Production으로 배포합니다.
+                Deploy Schema Changes를 사용합니다.
+                @Code(name: "Dashboard.md", file: "10-06-deploy.md")
+            }
+        }
+    }
+    
+    @Section(title: "데이터 조회 및 편집") {
+        @ContentAndMedia {
+            Dashboard에서 직접 레코드를 조회, 생성, 수정, 삭제합니다.
+        }
+        @Steps {
+            @Step {
+                Data 섹션에서 레코드를 조회합니다.
+                @Code(name: "Dashboard.md", file: "10-07-querydata.md")
+            }
+            @Step {
+                새 레코드를 생성합니다.
+                테스트 데이터를 추가할 때 유용합니다.
+                @Code(name: "Dashboard.md", file: "10-08-createrecord.md")
+            }
+            @Step {
+                Zone과 Subscription을 관리합니다.
+                @Code(name: "Dashboard.md", file: "10-09-zones.md")
+            }
+        }
+    }
+    
+    @Section(title: "로그 및 모니터링") {
+        @ContentAndMedia {
+            Logs와 Telemetry로 앱 동작을 모니터링합니다.
+        }
+        @Steps {
+            @Step {
+                Logs에서 최근 요청을 확인합니다.
+                에러 디버깅에 필수입니다.
+                @Code(name: "Dashboard.md", file: "10-10-logs.md")
+            }
+            @Step {
+                Telemetry로 사용량 통계를 확인합니다.
+                요청 수, 데이터 전송량 등을 볼 수 있습니다.
+                @Code(name: "Dashboard.md", file: "10-11-telemetry.md")
+            }
+            @Step {
+                일반적인 문제와 해결 방법을 정리합니다.
+                @Code(name: "Troubleshooting.swift", file: "10-12-troubleshooting.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CloudKit Dashboard에서 Development 환경의 특징은?
+            @Choice(isCorrect: true) {
+                스키마가 자동으로 생성됨
+                @Justification(reaction: "정답입니다!") {
+                    Development에서는 코드에서 레코드를 저장하면 스키마가 자동 생성됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                실제 사용자 데이터가 저장됨
+                @Justification(reaction: "다시 생각해보세요.") {
+                    실 사용자 데이터는 Production에 저장됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                스키마 변경이 불가능함
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Development에서는 스키마를 자유롭게 변경할 수 있습니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            쿼리 성능을 위해 필드에 추가해야 하는 것은?
+            @Choice(isCorrect: false) {
+                Primary Key
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CloudKit은 recordID가 기본 키이며 별도 설정이 필요 없습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                QUERYABLE 또는 SORTABLE 인덱스
+                @Justification(reaction: "정답입니다!") {
+                    NSPredicate로 필터링하려면 QUERYABLE, 정렬하려면 SORTABLE이 필요합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Foreign Key
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CloudKit은 CKReference로 관계를 표현하며 별도 인덱스 설정입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            Production 환경에 스키마를 배포하는 방법은?
+            @Choice(isCorrect: false) {
+                자동으로 동기화됨
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Development과 Production은 별개이며 명시적 배포가 필요합니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Deploy Schema Changes 클릭
+                @Justification(reaction: "정답입니다!") {
+                    Dashboard에서 Deploy 버튼으로 스키마를 Production에 복사합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Xcode에서 Archive 시 자동 배포
+                @Justification(reaction: "다시 생각해보세요.") {
+                    스키마 배포는 Dashboard에서 별도로 수행해야 합니다.
+                }
+            }
+        }
+    }
+}

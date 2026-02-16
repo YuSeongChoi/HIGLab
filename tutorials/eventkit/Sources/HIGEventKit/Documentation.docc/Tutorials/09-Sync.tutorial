@@ -1,0 +1,148 @@
+@Tutorial(time: 12) {
+    @Intro(title: "캘린더 동기화") {
+        외부 데이터베이스 변경 감지, 새로고침, 
+        그리고 충돌 처리 방법을 배웁니다.
+    }
+    
+    @Section(title: "변경 알림 처리") {
+        @ContentAndMedia {
+            다른 앱이나 시스템에서 캘린더를 수정하면 
+            앱에서 이를 감지하고 UI를 업데이트해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `EKEventStoreChanged` 알림을 구독합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-01-notification.swift")
+            }
+            
+            @Step {
+                변경 알림을 받으면 데이터를 새로고침합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-02-refresh.swift")
+            }
+            
+            @Step {
+                Async/Await 패턴으로 리팩토링합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-03-async.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 식별자 관리") {
+        @ContentAndMedia {
+            이벤트를 추적하기 위해 식별자를 이해하고 
+            올바르게 사용해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `eventIdentifier`와 `calendarItemIdentifier`의 차이를 이해합니다.
+                
+                @Code(name: "IdentifierGuide.swift", file: "09-04-identifiers.swift")
+            }
+            
+            @Step {
+                식별자를 저장하고 나중에 이벤트를 다시 조회합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-05-store-id.swift")
+            }
+            
+            @Step {
+                이벤트가 삭제되었는지 확인합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-06-check-exists.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배치 작업과 커밋") {
+        @ContentAndMedia {
+            여러 이벤트를 효율적으로 저장하고 
+            트랜잭션처럼 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `commit: false`로 여러 작업을 배치합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-07-batch.swift")
+            }
+            
+            @Step {
+                마지막에 한 번만 `commit()`을 호출합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-08-commit.swift")
+            }
+            
+            @Step {
+                에러 시 롤백 처리를 구현합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "09-09-rollback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            반복 이벤트의 각 occurrence를 구분하는 식별자는?
+            
+            @Choice(isCorrect: true) {
+                `eventIdentifier`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `eventIdentifier`는 반복 이벤트의 
+                    각 occurrence를 고유하게 식별합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `calendarItemIdentifier`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `calendarItemIdentifier`는 반복 이벤트 전체를 
+                    하나로 식별합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `uniqueId`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 프로퍼티는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            여러 이벤트를 효율적으로 저장하려면?
+            
+            @Choice(isCorrect: false) {
+                각 이벤트마다 `commit: true`로 저장
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    매번 커밋하면 성능이 저하됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `commit: false`로 저장 후 마지막에 `commit()` 호출
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    배치 작업으로 여러 변경사항을 모아서 
+                    한 번에 커밋하면 성능이 향상됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `batchSave()` 메서드 사용
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

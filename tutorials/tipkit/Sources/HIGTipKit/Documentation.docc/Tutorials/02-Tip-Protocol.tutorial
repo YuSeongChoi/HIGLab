@@ -1,0 +1,169 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Tip 프로토콜 & 기본 팁 만들기") {
+        Tip 프로토콜을 채택하여 첫 번째 팁을 만들고,
+        title, message, image 속성을 커스터마이징합니다.
+    }
+    
+    @Section(title: "프로젝트 설정") {
+        @ContentAndMedia {
+            TipKit을 사용하기 위한 프로젝트 설정을 진행합니다.
+            iOS 17 / macOS 14 이상이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                새 SwiftUI 프로젝트를 생성합니다.
+                Deployment Target을 iOS 17.0 이상으로 설정합니다.
+                
+                @Code(name: "TipKitDemoApp.swift", file: "02-app-entry.swift")
+            }
+            
+            @Step {
+                `import TipKit`을 추가합니다.
+                TipKit은 iOS 17, macOS 14부터 시스템 프레임워크에 포함되어 있습니다.
+                
+                @Code(name: "ContentView.swift", file: "02-import-tipkit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "첫 번째 Tip 만들기") {
+        @ContentAndMedia {
+            Tip 프로토콜을 채택한 구조체를 만들어 팁을 정의합니다.
+            필수 속성은 `title` 하나뿐입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 Tip 구조체 생성**
+                
+                `Tip` 프로토콜을 채택하는 구조체를 만듭니다.
+                `title`은 필수, `message`와 `image`는 선택입니다.
+                
+                @Code(name: "FavoriteTip.swift", file: "02-basic-tip.swift")
+            }
+            
+            @Step {
+                **제목과 메시지 설정**
+                
+                `title`은 팁의 핵심 내용을 한 줄로 요약합니다.
+                `message`는 추가 설명을 제공합니다.
+                
+                간결하고 명확하게 작성하세요!
+                
+                @Code(name: "FavoriteTip.swift", file: "02-tip-with-message.swift")
+            }
+            
+            @Step {
+                **SF Symbol 아이콘 추가**
+                
+                `image` 속성으로 SF Symbol을 추가합니다.
+                아이콘은 팁의 목적을 시각적으로 전달합니다.
+                
+                @Code(name: "FavoriteTip.swift", file: "02-tip-with-image.swift")
+            }
+            
+            @Step {
+                **Asset 이미지 사용**
+                
+                SF Symbol 대신 커스텀 에셋 이미지를 사용할 수도 있습니다.
+                
+                @Code(name: "CustomImageTip.swift", file: "02-tip-asset-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Tip 액션 버튼") {
+        @ContentAndMedia {
+            팁에 액션 버튼을 추가하여 사용자가 
+            특정 동작을 바로 실행할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **단일 액션 버튼**
+                
+                `actions` 속성에 `Tips.Action`을 추가합니다.
+                버튼을 탭하면 해당 기능으로 이동하거나 동작을 실행할 수 있습니다.
+                
+                @Code(name: "ActionTip.swift", file: "02-tip-single-action.swift")
+            }
+            
+            @Step {
+                **복수 액션 버튼**
+                
+                여러 개의 액션을 배열로 제공할 수 있습니다.
+                "자세히 알아보기"와 "설정으로 이동" 같은 옵션을 함께 제공하세요.
+                
+                @Code(name: "MultiActionTip.swift", file: "02-tip-multi-action.swift")
+            }
+            
+            @Step {
+                **액션 핸들링**
+                
+                TipView에서 `actionHandler`를 통해 
+                버튼 탭 이벤트를 처리합니다.
+                
+                @Code(name: "ContentView.swift", file: "02-action-handler.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Tip 프로토콜에서 유일한 필수 속성은?
+            
+            @Choice(isCorrect: true) {
+                title
+                
+                @Justification(reaction: "정답!") {
+                    title만 필수이고, message, image, actions는 모두 선택 사항입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                message
+                
+                @Justification(reaction: "아쉽네요") {
+                    message는 선택 사항입니다. title만 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                image
+                
+                @Justification(reaction: "아쉽네요") {
+                    image는 선택 사항입니다. title만 필수입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Tip에 SF Symbol 아이콘을 추가하는 올바른 방법은?
+            
+            @Choice(isCorrect: true) {
+                var image: Image? { Image(systemName: "star.fill") }
+                
+                @Justification(reaction: "정확합니다!") {
+                    image 프로퍼티에 Image(systemName:)으로 SF Symbol을 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                var icon: String { "star.fill" }
+                
+                @Justification(reaction: "아쉽네요") {
+                    Tip 프로토콜에는 icon 속성이 없습니다. image를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                let symbolName = "star.fill"
+                
+                @Justification(reaction: "아쉽네요") {
+                    image 프로퍼티를 사용하여 Image 객체를 반환해야 합니다.
+                }
+            }
+        }
+    }
+}

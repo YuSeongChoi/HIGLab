@@ -1,0 +1,174 @@
+@Tutorial(time: 15) {
+    @Intro(title: "파라미터 기반 팁") {
+        Tip.Parameter를 활용하여
+        앱 상태에 따라 동적으로 팁을 표시합니다.
+    }
+    
+    @Section(title: "파라미터 기반 팁이란?") {
+        @ContentAndMedia {
+            **파라미터 기반 팁**은 앱의 현재 상태를 기준으로
+            팁 표시 여부를 결정합니다.
+            
+            예시:
+            - 사용자가 로그인했을 때만 "프로필 설정" 팁 표시
+            - 프리미엄 구독자에게만 "고급 기능" 팁 표시
+            - 특정 설정이 꺼져있을 때만 "설정 안내" 팁 표시
+        }
+        
+        @Steps {
+            @Step {
+                **@Parameter 정의**
+                
+                `@Parameter` 속성 래퍼로 상태를 정의합니다.
+                UserDefaults에 자동으로 저장됩니다.
+                
+                @Code(name: "ProfileSetupTip.swift", file: "07-define-parameter.swift")
+            }
+            
+            @Step {
+                **rules 조건 설정**
+                
+                `#Rule` 매크로로 파라미터 값을 검사합니다.
+                `$parameter`로 파라미터에 접근합니다.
+                
+                @Code(name: "ProfileSetupTip.swift", file: "07-parameter-rule.swift")
+            }
+            
+            @Step {
+                **파라미터 값 업데이트**
+                
+                앱 상태 변경 시 파라미터 값을 업데이트합니다.
+                TipKit이 자동으로 팁 표시 조건을 재평가합니다.
+                
+                @Code(name: "LoginService.swift", file: "07-update-parameter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "복합 파라미터 조건") {
+        @ContentAndMedia {
+            여러 파라미터를 조합하여 정교한 조건을 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                **복수 파라미터 정의**
+                
+                여러 상태를 각각의 파라미터로 추적합니다.
+                
+                @Code(name: "PremiumFeatureTip.swift", file: "07-multiple-parameters.swift")
+            }
+            
+            @Step {
+                **AND/OR 조건 조합**
+                
+                복수 규칙은 AND로 적용됩니다.
+                OR 조건은 하나의 규칙 내에서 `||`를 사용합니다.
+                
+                @Code(name: "ComplexConditionTip.swift", file: "07-complex-conditions.swift")
+            }
+            
+            @Step {
+                **이벤트와 파라미터 혼합**
+                
+                Event와 Parameter를 함께 사용하여
+                "상태 + 행동" 조건을 만듭니다.
+                
+                @Code(name: "HybridTip.swift", file: "07-hybrid-conditions.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파라미터 활용 패턴") {
+        @ContentAndMedia {
+            실제 앱에서 파라미터 기반 팁을 활용하는 패턴입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **온보딩 진행 상태 추적**
+                
+                사용자가 완료한 온보딩 단계를 파라미터로 저장하고,
+                다음 단계 팁을 순차적으로 표시합니다.
+                
+                @Code(name: "OnboardingTips.swift", file: "07-onboarding-progress.swift")
+            }
+            
+            @Step {
+                **기능 사용 빈도 기반 팁**
+                
+                파라미터로 사용 횟수를 저장하고,
+                숙련도에 따라 다른 팁을 표시합니다.
+                
+                @Code(name: "SkillBasedTip.swift", file: "07-skill-based-tips.swift")
+            }
+            
+            @Step {
+                **설정 안내 팁**
+                
+                특정 설정이 비활성화되어 있을 때
+                활성화를 권장하는 팁을 표시합니다.
+                
+                @Code(name: "SettingsTip.swift", file: "07-settings-tip.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Tip 내에서 파라미터를 정의하는 올바른 방법은?
+            
+            @Choice(isCorrect: true) {
+                @Parameter static var isLoggedIn: Bool = false
+                
+                @Justification(reaction: "정답!") {
+                    @Parameter 속성 래퍼와 함께 static 변수로 정의합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                var isLoggedIn: Bool = false
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Parameter 속성 래퍼와 static 키워드가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                let parameter = TipParameter<Bool>("isLoggedIn")
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Parameter 속성 래퍼를 사용해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            파라미터 값을 규칙에서 참조하는 올바른 방법은?
+            
+            @Choice(isCorrect: true) {
+                #Rule(Self.$isLoggedIn) { $0 == true }
+                
+                @Justification(reaction: "정확합니다!") {
+                    $접두사로 파라미터에 접근하고, 클로저로 값을 검사합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                #Rule(Self.isLoggedIn == true)
+                
+                @Justification(reaction: "아쉽네요") {
+                    파라미터 접근 시 $ 접두사가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                #Rule { isLoggedIn }
+                
+                @Justification(reaction: "아쉽네요") {
+                    Self.$파라미터명 형식으로 접근해야 합니다.
+                }
+            }
+        }
+    }
+}

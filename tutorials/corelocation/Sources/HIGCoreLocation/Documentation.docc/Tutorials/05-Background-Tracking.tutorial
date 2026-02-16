@@ -1,0 +1,229 @@
+@Tutorial(time: 18) {
+    @Intro(title: "백그라운드 위치 추적") {
+        앱이 백그라운드에 있어도 러닝 경로를 계속 기록하는
+        백그라운드 위치 추적을 구현합니다.
+    }
+    
+    @Section(title: "백그라운드 권한 설정") {
+        @ContentAndMedia {
+            백그라운드에서 위치를 추적하려면 
+            "Always" 권한과 함께 추가 설정이 필요합니다.
+            
+            Xcode 프로젝트 설정에서 Background Modes를 활성화해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Background Modes 활성화**
+                
+                프로젝트 Target → Signing & Capabilities에서
+                "+ Capability"를 클릭하고 "Background Modes"를 추가합니다.
+                
+                "Location updates"를 체크합니다.
+                
+                @Code(name: "Info.plist", file: "05-background-modes.swift")
+            }
+            
+            @Step {
+                **Info.plist 확인**
+                
+                Background Modes를 활성화하면 Info.plist에
+                `UIBackgroundModes` 키가 자동으로 추가됩니다.
+                
+                `location` 값이 포함되어 있는지 확인합니다.
+                
+                @Code(name: "BackgroundConfig.swift", file: "05-info-plist.swift")
+            }
+            
+            @Step {
+                **Always 권한 요청 타이밍**
+                
+                백그라운드 추적 전에 "Always" 권한이 있는지 확인하고,
+                없다면 권한 업그레이드를 요청합니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-always-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "백그라운드 위치 추적 구현") {
+        @ContentAndMedia {
+            `allowsBackgroundLocationUpdates`를 true로 설정하면
+            앱이 백그라운드로 전환되어도 위치 업데이트가 계속됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **allowsBackgroundLocationUpdates 설정**
+                
+                위치 업데이트를 시작할 때 이 프로퍼티를 true로 설정합니다.
+                **반드시** Background Modes가 활성화된 상태여야 합니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-allows-background.swift")
+            }
+            
+            @Step {
+                **showsBackgroundLocationIndicator**
+                
+                이 프로퍼티를 true로 설정하면 상태바에 
+                파란색 위치 표시기가 나타나 사용자에게 
+                백그라운드 추적 중임을 알립니다.
+                
+                Apple은 투명성을 위해 이를 권장합니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-indicator.swift")
+            }
+            
+            @Step {
+                **pausesLocationUpdatesAutomatically**
+                
+                시스템이 사용자가 정지한 것으로 판단하면
+                자동으로 위치 업데이트를 일시 중지할 수 있습니다.
+                
+                러닝 앱에서는 이를 비활성화하는 것이 좋습니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-pauses.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배터리 효율과 앱 생명주기") {
+        @ContentAndMedia {
+            백그라운드 위치 추적은 배터리를 많이 소모합니다.
+            앱 생명주기에 따라 적절히 추적을 관리해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 상태 모니터링**
+                
+                NotificationCenter를 사용하여 앱이 
+                백그라운드/포그라운드로 전환되는 시점을 감지합니다.
+                
+                @Code(name: "AppLifecycle.swift", file: "05-app-lifecycle.swift")
+            }
+            
+            @Step {
+                **백그라운드 전환 시 정확도 조절**
+                
+                백그라운드에서는 정확도를 약간 낮춰
+                배터리 소모를 줄일 수 있습니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-bg-accuracy.swift")
+            }
+            
+            @Step {
+                **러닝 종료 시 정리**
+                
+                러닝이 종료되면 반드시 백그라운드 추적을 비활성화하고
+                위치 업데이트를 중지합니다.
+                
+                @Code(name: "LocationManager.swift", file: "05-cleanup.swift")
+            }
+            
+            @Step {
+                **백그라운드 추적 상태 표시**
+                
+                사용자에게 현재 백그라운드 추적이 활성화되어 있는지
+                명확하게 표시합니다.
+                
+                @Code(name: "TrackingStatusView.swift", file: "05-status-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            백그라운드 위치 추적을 위해 필요한 Background Mode는?
+            
+            @Choice(isCorrect: true) {
+                Location updates
+                
+                @Justification(reaction: "정답!") {
+                    "Location updates" Background Mode를 활성화해야
+                    앱이 백그라운드에서 위치 업데이트를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Background fetch
+                
+                @Justification(reaction: "아쉽네요") {
+                    Background fetch는 주기적으로 콘텐츠를 다운로드하는 용도입니다.
+                    위치 추적에는 "Location updates"가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Remote notifications
+                
+                @Justification(reaction: "아쉽네요") {
+                    Remote notifications는 푸시 알림 처리용입니다.
+                    위치 추적과는 관련이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            showsBackgroundLocationIndicator의 역할은?
+            
+            @Choice(isCorrect: true) {
+                상태바에 파란색 위치 표시기를 표시
+                
+                @Justification(reaction: "정확합니다!") {
+                    이 표시기는 사용자에게 앱이 백그라운드에서
+                    위치를 추적 중임을 알려주어 투명성을 높입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                위치 정확도를 높임
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 프로퍼티는 UI 표시에만 관여합니다.
+                    정확도와는 관련이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리 소모를 줄임
+                
+                @Justification(reaction: "아쉽네요") {
+                    표시기는 사용자 인터페이스 요소일 뿐,
+                    배터리 소모에 영향을 주지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            pausesLocationUpdatesAutomatically를 false로 설정하는 이유는?
+            
+            @Choice(isCorrect: true) {
+                사용자가 잠시 멈춰도 추적이 중단되지 않게 하려고
+                
+                @Justification(reaction: "정답!") {
+                    러닝 중 신호대기 등으로 잠시 멈출 수 있습니다.
+                    이때 추적이 중단되면 경로가 끊어질 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리를 더 절약하려고
+                
+                @Justification(reaction: "아쉽네요") {
+                    false로 설정하면 계속 추적하므로 배터리 소모가 더 많습니다.
+                    하지만 정확한 경로 기록을 위해 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                정확도를 높이려고
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 설정은 정확도와 직접적 관련이 없습니다.
+                    추적의 연속성에 영향을 줍니다.
+                }
+            }
+        }
+    }
+}

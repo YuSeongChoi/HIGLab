@@ -1,0 +1,252 @@
+@Tutorial(time: 15) {
+    @Intro(title: "가사 표시") {
+        MusicKit의 가사 API를 사용해
+        현재 재생 중인 곡의 가사를 표시합니다.
+    }
+    
+    @Section(title: "가사 데이터 가져오기") {
+        @ContentAndMedia {
+            MusicKit은 Apple Music의 가사 데이터에 접근할 수 있습니다.
+            일반 가사와 시간 동기화 가사(Timed Lyrics)를 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Song의 가사 속성**
+                
+                Song 객체에서 가사 정보를 가져옵니다.
+                가사는 Relationship으로 별도 로딩이 필요합니다.
+                
+                @Code(name: "SongLyrics.swift", file: "07-song-lyrics.swift")
+            }
+            
+            @Step {
+                **with(.lyrics) 로딩**
+                
+                `song.with(.lyrics)`로 가사 데이터를 로드합니다.
+                모든 곡에 가사가 있는 것은 아닙니다.
+                
+                @Code(name: "LoadLyrics.swift", file: "07-load-lyrics.swift")
+            }
+            
+            @Step {
+                **가사 텍스트 추출**
+                
+                로드된 가사에서 전체 텍스트를 추출합니다.
+                줄 단위로 파싱해 표시할 준비를 합니다.
+                
+                @Code(name: "ExtractLyrics.swift", file: "07-extract-lyrics.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시간 동기화 가사") {
+        @ContentAndMedia {
+            Timed Lyrics를 사용하면 현재 재생 시간에 맞춰
+            해당 가사 줄을 하이라이트할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Timed Lyrics 구조**
+                
+                시간 동기화 가사는 각 줄마다 타임스탬프를 포함합니다.
+                재생 시간과 비교해 현재 줄을 결정합니다.
+                
+                @Code(name: "TimedLyrics.swift", file: "07-timed-lyrics.swift")
+            }
+            
+            @Step {
+                **현재 가사 줄 찾기**
+                
+                playbackTime을 기준으로 현재 재생 중인
+                가사 줄을 찾는 로직을 구현합니다.
+                
+                @Code(name: "CurrentLine.swift", file: "07-current-line.swift")
+            }
+            
+            @Step {
+                **자동 스크롤**
+                
+                현재 가사 줄이 변경되면
+                자동으로 해당 위치로 스크롤합니다.
+                
+                @Code(name: "AutoScroll.swift", file: "07-auto-scroll.swift")
+            }
+        }
+    }
+    
+    @Section(title: "가사 UI 구현") {
+        @ContentAndMedia {
+            전체 화면 가사 뷰를 구현합니다.
+            현재 줄 하이라이트, 애니메이션, 배경 블러 효과를 포함합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **LyricsView 기본 구조**
+                
+                스크롤 가능한 가사 목록을 만듭니다.
+                각 줄을 탭하면 해당 시간으로 이동합니다.
+                
+                @Code(name: "LyricsView.swift", file: "07-lyrics-view.swift")
+            }
+            
+            @Step {
+                **현재 줄 하이라이트**
+                
+                현재 재생 중인 줄을 크게, 밝게 표시합니다.
+                이전/다음 줄은 흐리게 표시합니다.
+                
+                @Code(name: "LineHighlight.swift", file: "07-line-highlight.swift")
+            }
+            
+            @Step {
+                **부드러운 전환 애니메이션**
+                
+                줄이 변경될 때 부드러운 애니메이션을 적용합니다.
+                `.animation()` modifier를 활용합니다.
+                
+                @Code(name: "LyricsAnimation.swift", file: "07-lyrics-animation.swift")
+            }
+            
+            @Step {
+                **아트워크 배경**
+                
+                앨범 아트워크를 블러 처리해 배경으로 사용합니다.
+                가사와 어울리는 분위기를 연출합니다.
+                
+                @Code(name: "ArtworkBackground.swift", file: "07-artwork-background.swift")
+            }
+        }
+    }
+    
+    @Section(title: "가사 없는 경우 처리") {
+        @ContentAndMedia {
+            모든 곡에 가사가 있는 것은 아닙니다.
+            가사가 없는 경우 적절한 대체 UI를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **가사 유무 확인**
+                
+                가사 로딩 후 nil 체크로 가사 유무를 판단합니다.
+                @Code(name: "CheckLyrics.swift", file: "07-check-lyrics.swift")
+            }
+            
+            @Step {
+                **대체 UI**
+                
+                가사가 없을 때 앨범 아트워크와
+                곡 정보를 크게 표시합니다.
+                
+                @Code(name: "NoLyricsView.swift", file: "07-no-lyrics-view.swift")
+            }
+            
+            @Step {
+                **최종 LyricsScreen**
+                
+                가사 유무에 따라 적절한 뷰를 표시하는
+                컨테이너 뷰를 만듭니다.
+                
+                @Code(name: "LyricsScreen.swift", file: "07-lyrics-screen.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Song에서 가사를 가져오려면?
+            
+            @Choice(isCorrect: false) {
+                song.lyrics 직접 접근
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    가사는 기본 로딩에 포함되지 않습니다.
+                    별도의 Relationship 로딩이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                song.with(.lyrics)로 Relationship 로딩
+                
+                @Justification(reaction: "정답입니다!") {
+                    with(.lyrics)로 가사 데이터를 
+                    추가로 로드해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicLyricsRequest 사용
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    별도의 LyricsRequest는 없습니다.
+                    Song의 Relationship으로 로드합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            시간 동기화 가사(Timed Lyrics)의 특징은?
+            
+            @Choice(isCorrect: true) {
+                각 가사 줄에 타임스탬프가 있어 재생 시간과 동기화 가능
+                
+                @Justification(reaction: "정답입니다!") {
+                    Timed Lyrics는 각 줄의 시작 시간을 포함해
+                    재생 위치에 맞는 줄을 하이라이트할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동으로 노래방처럼 글자 단위로 하이라이트
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    MusicKit의 Timed Lyrics는 줄 단위 타임스탬프입니다.
+                    글자 단위 동기화는 제공되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 Apple Music 곡에서 지원
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    모든 곡에 Timed Lyrics가 있는 것은 아닙니다.
+                    일부 곡만 지원합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            가사가 없는 곡에서 권장되는 UI는?
+            
+            @Choice(isCorrect: false) {
+                에러 메시지 표시
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    가사가 없는 것은 에러가 아닙니다.
+                    사용자 경험을 해치지 않는 대체 UI가 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                앨범 아트워크와 곡 정보를 크게 표시
+                
+                @Justification(reaction: "정답입니다!") {
+                    가사 대신 시각적으로 매력적인 앨범 아트와
+                    곡 정보를 표시하는 것이 좋은 UX입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가사 화면 접근 자체를 막음
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    접근을 막으면 사용자가 혼란스러울 수 있습니다.
+                    부드럽게 대체 콘텐츠를 보여주세요.
+                }
+            }
+        }
+    }
+}

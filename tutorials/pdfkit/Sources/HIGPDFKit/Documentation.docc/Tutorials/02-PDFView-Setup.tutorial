@@ -1,0 +1,228 @@
+@Tutorial(time: 20) {
+    @Intro(title: "PDFView 설정") {
+        PDFView를 앱에 통합하고 다양한 표시 옵션을 구성하여
+        최적의 PDF 읽기 경험을 제공합니다.
+        
+        @Image(source: "pdfview-setup.png", alt: "PDFView 설정")
+    }
+    
+    @Section(title: "UIKit에서 PDFView 사용하기") {
+        @ContentAndMedia {
+            PDFView는 UIView의 서브클래스로,
+            UIKit 앱에서 직접 사용할 수 있습니다.
+            
+            Auto Layout이나 프레임 기반으로 배치하고,
+            document 속성에 PDFDocument를 할당하면 바로 표시됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                ViewController에 PDFView를 추가합니다.
+                전체 화면을 채우도록 제약 조건을 설정합니다.
+                
+                @Code(name: "PDFViewController.swift", file: "02-01-uikit-setup.swift")
+            }
+            
+            @Step {
+                PDFView의 기본 속성을 구성합니다.
+                autoScales, displayMode, displayDirection 등을 설정합니다.
+                
+                @Code(name: "ConfigurePDFView.swift", file: "02-02-configure.swift")
+            }
+            
+            @Step {
+                backgroundColor와 pageShadowsEnabled로 외관을 꾸밉니다.
+                다크 모드 지원을 위해 시스템 색상을 사용합니다.
+                
+                @Code(name: "PDFViewAppearance.swift", file: "02-03-appearance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI에서 PDFView 통합") {
+        @ContentAndMedia {
+            SwiftUI에서 PDFView를 사용하려면 
+            UIViewRepresentable로 래핑해야 합니다.
+            
+            Coordinator 패턴으로 PDFView의 델리게이트 이벤트도 처리할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                UIViewRepresentable을 구현하여 
+                PDFView를 SwiftUI에서 사용합니다.
+                
+                @Code(name: "PDFKitView.swift", file: "02-04-swiftui-wrapper.swift")
+            }
+            
+            @Step {
+                @Binding을 사용해 SwiftUI 상태와 동기화합니다.
+                현재 페이지 번호를 양방향으로 바인딩합니다.
+                
+                @Code(name: "PDFKitViewBinding.swift", file: "02-05-binding.swift")
+            }
+            
+            @Step {
+                Coordinator로 PDFViewDelegate를 구현합니다.
+                페이지 변경, 스케일 변경 등의 이벤트를 처리합니다.
+                
+                @Code(name: "PDFViewCoordinator.swift", file: "02-06-coordinator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "표시 모드 설정") {
+        @ContentAndMedia {
+            PDFView는 다양한 표시 모드를 지원합니다.
+            
+            - **singlePage**: 한 번에 한 페이지만 표시
+            - **singlePageContinuous**: 세로로 연속 스크롤
+            - **twoUp**: 두 페이지를 나란히 표시
+            - **twoUpContinuous**: 두 페이지씩 연속 스크롤
+        }
+        
+        @Steps {
+            @Step {
+                displayMode를 설정하여 페이지 배치를 결정합니다.
+                책 읽기 앱에는 singlePage, 문서 뷰어에는 continuous가 적합합니다.
+                
+                @Code(name: "DisplayMode.swift", file: "02-07-display-mode.swift")
+            }
+            
+            @Step {
+                displayDirection으로 스크롤 방향을 설정합니다.
+                vertical(기본값) 또는 horizontal을 선택합니다.
+                
+                @Code(name: "DisplayDirection.swift", file: "02-08-direction.swift")
+            }
+            
+            @Step {
+                autoScales를 활성화하면 뷰 크기에 맞게 자동 확대/축소됩니다.
+                minScaleFactor와 maxScaleFactor로 범위를 제한합니다.
+                
+                @Code(name: "ScaleSettings.swift", file: "02-09-scale.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사용자 상호작용 설정") {
+        @ContentAndMedia {
+            PDFView는 핀치 줌, 텍스트 선택, 링크 클릭 등 
+            다양한 사용자 상호작용을 지원합니다.
+            
+            각 기능을 개별적으로 활성화/비활성화할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                enableDataDetectors로 전화번호, URL 등을 
+                자동으로 감지하고 탭 가능하게 만듭니다.
+                
+                @Code(name: "DataDetectors.swift", file: "02-10-data-detectors.swift")
+            }
+            
+            @Step {
+                인터랙션 커스터마이징을 위해 제스처를 추가합니다.
+                더블 탭으로 확대/축소, 길게 누르기로 메뉴 표시 등.
+                
+                @Code(name: "CustomGestures.swift", file: "02-11-gestures.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftUI에서 PDFView를 사용하기 위해 필요한 프로토콜은?
+            
+            @Choice(isCorrect: true) {
+                UIViewRepresentable
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    UIViewRepresentable을 구현하여 
+                    UIKit 뷰를 SwiftUI에서 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                View
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    View 프로토콜은 SwiftUI 네이티브 뷰에 사용됩니다.
+                    UIKit 뷰 래핑에는 다른 프로토콜이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ObservableObject
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    ObservableObject는 데이터 모델에 사용되며,
+                    뷰 래핑과는 관련이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            두 페이지를 나란히 표시하면서 연속 스크롤하려면 
+            어떤 displayMode를 사용해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                twoUp
+                
+                @Justification(reaction: "가깝지만 아닙니다.") {
+                    twoUp은 두 페이지를 나란히 표시하지만
+                    연속 스크롤은 지원하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                twoUpContinuous
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    twoUpContinuous는 두 페이지를 나란히 표시하면서
+                    연속적으로 스크롤할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                singlePageContinuous
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    singlePageContinuous는 한 번에 한 페이지만 표시하며
+                    연속 스크롤합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PDFView에서 자동으로 전화번호나 URL을 감지하여 
+            탭 가능하게 만드는 속성은?
+            
+            @Choice(isCorrect: false) {
+                autoDetectLinks
+                
+                @Justification(reaction: "그런 속성은 없습니다.") {
+                    정확한 속성명을 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                enableDataDetectors
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    enableDataDetectors를 true로 설정하면
+                    전화번호, URL 등을 자동으로 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isUserInteractionEnabled
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    이것은 UIView의 기본 속성으로,
+                    데이터 감지와는 다른 기능입니다.
+                }
+            }
+        }
+    }
+}

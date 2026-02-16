@@ -1,0 +1,200 @@
+@Tutorial(time: 20) {
+    @Intro(title: "멀티패스 TCP") {
+        Wi-Fi와 셀룰러를 동시에 활용하는 
+        멀티패스 TCP를 구현합니다.
+        
+        @Image(source: "multipath-tcp.png", alt: "멀티패스 TCP 다이어그램")
+    }
+    
+    @Section(title: "멀티패스 TCP란?") {
+        @ContentAndMedia {
+            Multipath TCP(MPTCP)는 하나의 연결에서 
+            여러 네트워크 경로를 동시에 사용합니다.
+            
+            - **끊김 없는 전환**: Wi-Fi ↔ 셀룰러 자연스럽게 전환
+            - **대역폭 합산**: 두 경로를 동시에 사용해 속도 향상
+            - **신뢰성 향상**: 한 경로가 끊겨도 다른 경로로 유지
+            
+            @Image(source: "mptcp-benefit.png", alt: "MPTCP 장점")
+        }
+        
+        @Steps {
+            @Step {
+                멀티패스 TCP가 유용한 상황을 이해합니다.
+                
+                - 이동 중 영상 통화
+                - 큰 파일 다운로드
+                - 실시간 게임
+                
+                @Code(name: "MPTCPUseCases.swift", file: "08-01-mptcp-usecases.swift")
+            }
+            
+            @Step {
+                Apple의 MPTCP 지원 현황을 확인합니다.
+                iOS 7부터 Siri에, iOS 11부터 개발자 API가 제공됩니다.
+                
+                @Code(name: "MPTCPSupport.swift", file: "08-02-mptcp-support.swift")
+            }
+        }
+    }
+    
+    @Section(title: "멀티패스 모드 설정") {
+        @ContentAndMedia {
+            NWParameters에서 multipathServiceType을 
+            설정하여 멀티패스를 활성화합니다.
+            
+            세 가지 모드가 있습니다:
+            - `.disabled`: 비활성화
+            - `.handover`: 끊김 없는 전환
+            - `.interactive`: 저지연 중심
+            - `.aggregate`: 대역폭 합산
+        }
+        
+        @Steps {
+            @Step {
+                handover 모드를 설정합니다.
+                Wi-Fi가 끊겨도 셀룰러로 자동 전환됩니다.
+                
+                @Code(name: "HandoverMode.swift", file: "08-03-handover-mode.swift")
+            }
+            
+            @Step {
+                interactive 모드는 지연을 최소화합니다.
+                실시간 앱에 적합합니다.
+                
+                @Code(name: "InteractiveMode.swift", file: "08-04-interactive-mode.swift")
+            }
+            
+            @Step {
+                aggregate 모드는 두 경로를 동시에 사용합니다.
+                대용량 다운로드 시 속도가 향상됩니다.
+                
+                @Code(name: "AggregateMode.swift", file: "08-05-aggregate-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "멀티패스 연결 관리") {
+        @ContentAndMedia {
+            멀티패스 연결은 일반 TCP와 동일하게 사용하지만,
+            내부적으로 여러 경로를 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                멀티패스 연결을 생성합니다.
+                서버도 MPTCP를 지원해야 합니다.
+                
+                @Code(name: "MPTCPConnection.swift", file: "08-06-mptcp-connection.swift")
+            }
+            
+            @Step {
+                현재 경로 정보를 확인합니다.
+                연결이 어떤 인터페이스를 사용 중인지 알 수 있습니다.
+                
+                @Code(name: "PathInfo.swift", file: "08-07-path-info.swift")
+            }
+            
+            @Step {
+                경로 변경을 감지합니다.
+                viabilityUpdateHandler로 상태 변화를 모니터링합니다.
+                
+                @Code(name: "PathChange.swift", file: "08-08-path-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "P2P 채팅에 멀티패스 적용") {
+        @ContentAndMedia {
+            채팅 앱에 멀티패스를 적용하면 
+            이동 중에도 연결이 끊기지 않습니다.
+        }
+        
+        @Steps {
+            @Step {
+                ChatClient에 멀티패스 옵션을 추가합니다.
+                handover 모드가 채팅에 적합합니다.
+                
+                @Code(name: "MPTCPChatClient.swift", file: "08-09-mptcp-chat.swift")
+            }
+            
+            @Step {
+                연결 경로 변경 시 사용자에게 알립니다.
+                Wi-Fi에서 셀룰러로 전환되면 표시합니다.
+                
+                @Code(name: "PathNotification.swift", file: "08-10-path-notification.swift")
+            }
+            
+            @Step {
+                Fallback 로직을 구현합니다.
+                서버가 MPTCP를 지원하지 않으면 일반 TCP로 연결합니다.
+                
+                @Code(name: "MPTCPFallback.swift", file: "08-11-mptcp-fallback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            멀티패스 TCP의 handover 모드의 주요 목적은?
+            
+            @Choice(isCorrect: true) {
+                네트워크 전환 시 연결 끊김 방지
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    handover 모드는 Wi-Fi와 셀룰러 간 
+                    끊김 없는 전환을 목표로 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                다운로드 속도 극대화
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    속도 향상은 aggregate 모드의 목적입니다.
+                    handover는 연결 유지에 집중합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리 절약
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    멀티패스는 오히려 여러 인터페이스를 사용해
+                    배터리 소모가 증가할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            멀티패스 TCP 사용 시 주의할 점은?
+            
+            @Choice(isCorrect: false) {
+                특별한 라이브러리가 필요하다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Network 프레임워크에 내장되어 있어
+                    추가 라이브러리가 필요 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                서버도 MPTCP를 지원해야 한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    MPTCP는 클라이언트와 서버 모두 
+                    지원해야 사용 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 시뮬레이터에서만 테스트 가능하다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    실제 기기에서 테스트해야 하며,
+                    Wi-Fi와 셀룰러를 모두 활성화해야 합니다.
+                }
+            }
+        }
+    }
+}

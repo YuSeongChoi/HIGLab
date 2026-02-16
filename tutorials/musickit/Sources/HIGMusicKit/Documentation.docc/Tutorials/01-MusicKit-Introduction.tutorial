@@ -1,0 +1,241 @@
+@Tutorial(time: 15) {
+    @Intro(title: "MusicKit 소개 & 권한") {
+        MusicKit 프레임워크의 핵심 개념과
+        Apple Music 권한 시스템을 이해합니다.
+    }
+    
+    @Section(title: "MusicKit이란?") {
+        @ContentAndMedia {
+            MusicKit은 Apple Music과 연동하는 앱을 만들기 위한 프레임워크입니다.
+            iOS 15+에서 사용 가능하며, Swift의 async/await와 완벽하게 통합됩니다.
+            
+            음악 플레이어에서는 이를 활용해 음악을 검색하고,
+            재생 목록을 관리하며, Apple Music 라이브러리에 접근합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicKit의 핵심 기능**
+                
+                - Apple Music 카탈로그 검색
+                - 사용자 라이브러리 접근
+                - 음악 재생 및 큐 관리
+                - 가사 표시
+                - 개인화된 추천
+                - Apple Music 구독 상태 확인
+                
+                @Code(name: "MusicKitFeatures.swift", file: "01-features.swift")
+            }
+            
+            @Step {
+                **MusicKit vs AVFoundation**
+                
+                MusicKit은 Apple Music 콘텐츠에 특화되어 있습니다.
+                로컬 오디오 파일은 AVFoundation을 사용하세요.
+                
+                - **MusicKit**: Apple Music 스트리밍, 라이브러리
+                - **AVFoundation**: 로컬 오디오 파일 재생
+                - **MediaPlayer**: 시스템 음악 앱 연동 (레거시)
+                
+                @Code(name: "FrameworkComparison.swift", file: "01-comparison.swift")
+            }
+            
+            @Step {
+                **필수 조건**
+                
+                MusicKit을 사용하려면 다음이 필요합니다:
+                
+                1. Apple Developer Program 멤버십
+                2. MusicKit 서비스 활성화 (App ID 설정)
+                3. 디바이스에서 Apple Music 구독 (재생 기능)
+                
+                시뮬레이터에서는 카탈로그 검색은 가능하지만,
+                재생은 실제 디바이스가 필요합니다.
+                
+                @Code(name: "Requirements.swift", file: "01-requirements.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 시스템 이해하기") {
+        @ContentAndMedia {
+            MusicKit은 사용자의 Apple Music 라이브러리에 접근하기 위해
+            권한을 요청해야 합니다. 이는 프라이버시 보호를 위한 것입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **권한 상태**
+                
+                MusicAuthorization.Status는 4가지 상태가 있습니다:
+                
+                - `.notDetermined`: 아직 요청하지 않음
+                - `.authorized`: 승인됨
+                - `.denied`: 거부됨
+                - `.restricted`: 제한됨 (자녀 보호 등)
+                
+                @Code(name: "AuthorizationStatus.swift", file: "01-auth-status.swift")
+            }
+            
+            @Step {
+                **Info.plist 설정**
+                
+                음악 라이브러리 접근을 위해 Info.plist에
+                사용 목적을 명시해야 합니다.
+                
+                `NSAppleMusicUsageDescription` 키를 추가하고
+                왜 음악 접근이 필요한지 설명합니다.
+                
+                @Code(name: "InfoPlist.swift", file: "01-info-plist.swift")
+            }
+            
+            @Step {
+                **Capability 설정**
+                
+                Xcode 프로젝트의 Signing & Capabilities에서
+                "MusicKit" capability를 추가해야 합니다.
+                
+                이를 통해 앱이 Apple Music API에 접근할 수 있습니다.
+                
+                @Code(name: "Capabilities.swift", file: "01-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "음악 플레이어 프로젝트 생성") {
+        @ContentAndMedia {
+            이제 실제 Xcode 프로젝트를 생성하고
+            MusicKit을 사용할 준비를 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 새 프로젝트를 생성합니다.
+                템플릿은 **App**을 선택하고, Interface는 **SwiftUI**를 선택합니다.
+                프로젝트 이름은 `MusicPlayer`로 합니다.
+                
+                @Code(name: "MusicPlayerApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                Signing & Capabilities에서 **MusicKit**을 추가합니다.
+                
+                이것이 없으면 Apple Music API 호출 시
+                `MusicKit.MusicKitError.notConfigured` 에러가 발생합니다.
+                
+                @Code(name: "AddCapability.swift", file: "01-add-capability.swift")
+            }
+            
+            @Step {
+                Info.plist에 `NSAppleMusicUsageDescription`을 추가합니다.
+                
+                "음악을 검색하고 재생하기 위해 Apple Music에 접근합니다."
+                와 같이 명확하게 설명합니다.
+                
+                @Code(name: "UsageDescription.swift", file: "01-usage-description.swift")
+            }
+            
+            @Step {
+                앱의 기본 구조를 만듭니다.
+                `ContentView`에서 MusicKit 권한 상태를 확인하고
+                권한 요청 버튼을 배치합니다.
+                
+                @Code(name: "ContentView.swift", file: "01-content-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MusicKit을 사용하기 위해 Xcode에서 반드시 추가해야 하는 Capability는?
+            
+            @Choice(isCorrect: false) {
+                Media Library
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Media Library는 사진 라이브러리 접근에 사용됩니다.
+                    MusicKit은 별도의 capability가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                MusicKit
+                
+                @Justification(reaction: "정답입니다!") {
+                    MusicKit capability를 추가해야 
+                    Apple Music API에 접근할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Background Modes
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Background Modes는 백그라운드 오디오 재생에 필요하지만,
+                    MusicKit API 접근에는 MusicKit capability가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MusicAuthorization.Status에서 사용자가 권한을 거부한 상태는?
+            
+            @Choice(isCorrect: false) {
+                .notDetermined
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    .notDetermined는 아직 권한을 요청하지 않은 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .denied
+                
+                @Justification(reaction: "정답입니다!") {
+                    .denied는 사용자가 권한 요청을 명시적으로 거부한 상태입니다.
+                    설정 앱에서 변경할 수 있도록 안내해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .restricted
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    .restricted는 자녀 보호 등으로 시스템 수준에서 
+                    제한된 상태입니다. 사용자 거부와는 다릅니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            시뮬레이터에서 MusicKit으로 가능한 것은?
+            
+            @Choice(isCorrect: true) {
+                Apple Music 카탈로그 검색
+                
+                @Justification(reaction: "정답입니다!") {
+                    시뮬레이터에서도 카탈로그 검색 API는 정상 작동합니다.
+                    실제 음악 재생만 실제 디바이스가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Music 스트리밍 재생
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    시뮬레이터에서는 실제 음악 재생이 불가능합니다.
+                    재생 테스트는 실제 디바이스에서 해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 MusicKit 기능
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    시뮬레이터에서는 검색 등 일부 기능만 가능합니다.
+                    재생과 구독 관련 기능은 실제 디바이스가 필요합니다.
+                }
+            }
+        }
+    }
+}

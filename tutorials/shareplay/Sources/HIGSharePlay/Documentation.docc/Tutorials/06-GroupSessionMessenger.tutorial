@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "GroupSessionMessenger") {
+        GroupSessionMessenger를 활용해 참가자 간에 
+        실시간 메시지를 주고받는 방법을 학습합니다.
+    }
+    
+    @Section(title: "GroupSessionMessenger 소개") {
+        @ContentAndMedia {
+            `GroupSessionMessenger`는 참가자 간 양방향 통신을 제공합니다.
+            실시간 채팅, 게임 입력, 협업 명령 등에 활용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                GroupSessionMessenger와 Journal의 차이를 이해합니다.
+                
+                - **Journal**: 영구 저장, 새 참가자도 과거 기록 확인 가능
+                - **Messenger**: 실시간 전송, 수신 당시 참가자에게만 전달
+                
+                @Code(name: "MessengerVsJournal.swift", file: "06-messenger-vs-journal.swift")
+            }
+            
+            @Step {
+                GroupSessionMessenger를 생성합니다.
+                
+                GroupSession을 인자로 받아 Messenger를 생성합니다.
+                세션당 하나의 Messenger만 필요합니다.
+                
+                @Code(name: "CreateMessenger.swift", file: "06-create-messenger.swift")
+            }
+            
+            @Step {
+                전송할 메시지 타입을 정의합니다.
+                
+                Codable을 채택한 struct로 메시지를 정의합니다.
+                여러 종류의 메시지를 enum으로 관리할 수 있습니다.
+                
+                @Code(name: "MessageTypes.swift", file: "06-message-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "메시지 송수신") {
+        @ContentAndMedia {
+            `send()`와 `messages(of:)` 메서드로
+            메시지를 보내고 받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                메시지를 전송합니다.
+                
+                `send()` 메서드는 async이며,
+                모든 참가자에게 메시지를 브로드캐스트합니다.
+                
+                @Code(name: "SendMessage.swift", file: "06-send-message.swift")
+            }
+            
+            @Step {
+                메시지를 수신합니다.
+                
+                `messages(of:)` AsyncSequence로
+                특정 타입의 메시지를 수신합니다.
+                
+                @Code(name: "ReceiveMessage.swift", file: "06-receive-message.swift")
+            }
+            
+            @Step {
+                특정 참가자에게만 메시지를 보냅니다.
+                
+                `send(_:to:)` 메서드로 특정 Participant에게만
+                메시지를 전송할 수 있습니다.
+                
+                @Code(name: "DirectMessage.swift", file: "06-direct-message.swift")
+            }
+        }
+    }
+    
+    @Section(title: "채팅 기능 구현") {
+        @ContentAndMedia {
+            실제로 SharePlay 세션 중 채팅 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                채팅 메시지 모델을 정의합니다.
+                
+                보낸 사람, 내용, 시간 정보를 포함합니다.
+                
+                @Code(name: "ChatMessage.swift", file: "06-chat-message.swift")
+            }
+            
+            @Step {
+                채팅 매니저를 구현합니다.
+                
+                메시지 송수신과 채팅 기록을 관리하는
+                ObservableObject입니다.
+                
+                @Code(name: "ChatManager.swift", file: "06-chat-manager.swift")
+            }
+            
+            @Step {
+                채팅 UI를 구현합니다.
+                
+                메시지 목록과 입력창을 포함하는
+                SwiftUI View입니다.
+                
+                @Code(name: "ChatView.swift", file: "06-chat-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            GroupSessionMessenger와 GroupSessionJournal의 주요 차이점은?
+            
+            @Choice(isCorrect: true) {
+                Messenger는 실시간 전송, Journal은 영구 저장
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Messenger는 현재 참가자에게만 전달되고,
+                    Journal은 나중에 참여한 사람도 볼 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기능적으로 동일함
+                
+                @Justification(reaction: "아쉽네요") {
+                    두 API는 용도가 다릅니다.
+                    실시간 통신 vs 상태 저장의 차이가 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Messenger는 텍스트만, Journal은 바이너리 지원
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 Codable 타입을 지원합니다.
+                    데이터 형식 제한은 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            특정 참가자에게만 메시지를 보내는 방법은?
+            
+            @Choice(isCorrect: true) {
+                send(_:to:) 메서드에 Participant를 지정
+                
+                @Justification(reaction: "정답! 🎉") {
+                    to 파라미터에 특정 Participant를 지정하면
+                    해당 참가자에게만 메시지가 전달됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                불가능, 모든 참가자에게만 전송 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    send(_:to:) 메서드로 특정 참가자에게
+                    직접 메시지를 보낼 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메시지 내용에 수신자 ID를 포함
+                
+                @Justification(reaction: "비효율적인 방법입니다") {
+                    그런 방식도 가능하지만,
+                    to 파라미터를 사용하는 것이 올바른 방법입니다.
+                }
+            }
+        }
+    }
+}

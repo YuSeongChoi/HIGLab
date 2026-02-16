@@ -1,0 +1,171 @@
+@Tutorial(time: 12) {
+    @Intro(title: "@Bindable로 양방향 바인딩") {
+        SwiftUI에서 @Observable 객체의 프로퍼티를 
+        양방향 바인딩하는 방법을 배웁니다.
+        @Bindable의 역할과 사용법을 완벽히 이해합니다.
+    }
+    
+    @Section(title: "@Bindable이 필요한 이유") {
+        @ContentAndMedia {
+            SwiftUI의 많은 컨트롤들(TextField, Toggle, Slider 등)은
+            `Binding<Value>` 타입을 필요로 합니다.
+            @Observable 객체의 프로퍼티를 바인딩하려면 
+            @Bindable이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ObservableObject에서는 `$` 접두사로 바로 바인딩이 가능했습니다.
+                @Published가 projectedValue로 Binding을 제공했기 때문입니다.
+                
+                @Code(name: "OldBinding.swift", file: "03-old-binding.swift")
+            }
+            
+            @Step {
+                @Observable에서는 `@Bindable`을 사용해야 합니다.
+                @Bindable이 객체를 감싸서 `$` 문법을 가능하게 합니다.
+                
+                @Code(name: "NewBinding.swift", file: "03-new-binding.swift")
+            }
+            
+            @Step {
+                왜 @Bindable이 필요한가요?
+                @Observable은 프로퍼티별 추적을 위해 구조가 다릅니다.
+                @Bindable이 그 차이를 메꿔주는 어댑터 역할을 합니다.
+                
+                @Code(name: "WhyBindable.swift", file: "03-why-bindable.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Bindable 사용 패턴") {
+        @ContentAndMedia {
+            @Bindable을 사용하는 세 가지 주요 패턴을 알아봅니다.
+            상황에 따라 적절한 패턴을 선택하세요.
+        }
+        
+        @Steps {
+            @Step {
+                **패턴 1: 프로퍼티에서 @Bindable 사용**
+                
+                뷰의 프로퍼티로 받을 때 @Bindable을 붙입니다.
+                가장 일반적인 패턴입니다.
+                
+                @Code(name: "BindableProperty.swift", file: "03-bindable-property.swift")
+            }
+            
+            @Step {
+                **패턴 2: body 내에서 @Bindable 사용**
+                
+                프로퍼티를 수정할 수 없을 때 (예: @Environment)
+                body 내에서 지역 변수로 @Bindable을 만듭니다.
+                
+                @Code(name: "BindableLocal.swift", file: "03-bindable-local.swift")
+            }
+            
+            @Step {
+                **패턴 3: @State와 함께**
+                
+                @State로 @Observable 객체를 소유할 때는
+                자동으로 Bindable처럼 동작합니다.
+                
+                @Code(name: "BindableState.swift", file: "03-bindable-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 상품 수량 편집") {
+        @ContentAndMedia {
+            CartFlow 앱에 상품 수량을 편집하는 기능을 추가합니다.
+            @Bindable을 사용해 Stepper와 TextField를 연결합니다.
+        }
+        
+        @Steps {
+            @Step {
+                장바구니 아이템 행 뷰를 만듭니다.
+                Product 객체를 @Bindable로 받아서 
+                수량을 직접 편집할 수 있게 합니다.
+                
+                @Code(name: "CartItemRow.swift", file: "03-cart-item-row.swift")
+            }
+            
+            @Step {
+                수량 조절 스테퍼를 추가합니다.
+                @Bindable 덕분에 `$product.quantity`로 바인딩 가능!
+                
+                @Code(name: "QuantityStepper.swift", file: "03-quantity-stepper.swift")
+            }
+            
+            @Step {
+                장바구니 뷰를 업데이트합니다.
+                새로운 CartItemRow를 사용하고, 
+                총 금액이 자동으로 업데이트되는지 확인합니다.
+                
+                @Code(name: "UpdatedCartView.swift", file: "03-updated-cart-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @Bindable은 언제 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                @Observable 객체의 프로퍼티를 양방향 바인딩할 때
+                
+                @Justification(reaction: "정답!") {
+                    @Bindable은 @Observable 객체를 감싸서 
+                    $ 접두사로 Binding을 생성할 수 있게 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 @Observable 객체에 필수
+                
+                @Justification(reaction: "아쉽네요") {
+                    읽기 전용 접근에는 @Bindable이 필요 없습니다.
+                    양방향 바인딩이 필요할 때만 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State 대신 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Bindable과 @State는 역할이 다릅니다.
+                    @State는 소유권, @Bindable은 바인딩 생성을 위한 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            @Environment로 받은 @Observable 객체를 바인딩하려면?
+            
+            @Choice(isCorrect: true) {
+                body 내에서 @Bindable 지역 변수로 감싼다
+                
+                @Justification(reaction: "완벽합니다!") {
+                    @Environment 프로퍼티에는 직접 @Bindable을 붙일 수 없으므로,
+                    body 내에서 @Bindable var bindable = environmentObject로 감쌉니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Environment에 직접 @Bindable을 붙인다
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Environment와 @Bindable을 동시에 붙일 수 없습니다.
+                    body 내에서 지역 변수로 감싸야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                바인딩이 불가능하다
+                
+                @Justification(reaction: "아쉽네요") {
+                    가능합니다! body 내에서 @Bindable 지역 변수를 사용하면 됩니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,199 @@
+@Tutorial(time: 20) {
+    @Intro(title: "PKPaymentRequest 설정") {
+        결제 요청을 구성하고 지원 카드 네트워크, 
+        상품 정보 등을 설정합니다.
+        
+        @Image(source: "payment-request.png", alt: "결제 요청 설정")
+    }
+    
+    @Section(title: "PKPaymentRequest 기본 구성") {
+        @ContentAndMedia {
+            PKPaymentRequest는 결제에 필요한 모든 정보를 담습니다.
+            
+            **필수 설정:**
+            - merchantIdentifier: 등록한 Merchant ID
+            - supportedNetworks: 지원하는 카드 네트워크
+            - merchantCapabilities: 지원하는 결제 기능
+            - countryCode: 가맹점 국가 코드
+            - currencyCode: 결제 통화 코드
+            - paymentSummaryItems: 결제 항목 목록
+        }
+        
+        @Steps {
+            @Step {
+                기본적인 PKPaymentRequest를 생성합니다.
+                한국에서 운영하는 가맹점 설정 예시입니다.
+                
+                @Code(name: "BasicRequest.swift", file: "07-01-basic-request.swift")
+            }
+            
+            @Step {
+                지원하는 카드 네트워크를 설정합니다.
+                한국에서는 주로 Visa, Mastercard, AMEX를 지원합니다.
+                
+                @Code(name: "Networks.swift", file: "07-02-networks.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 항목 구성") {
+        @ContentAndMedia {
+            paymentSummaryItems는 결제 시트에 표시되는 항목들입니다.
+            마지막 항목이 총 결제 금액으로 표시됩니다.
+            
+            항목별로 label(상품명)과 amount(금액)을 지정합니다.
+            할인, 배송비 등을 별도 항목으로 추가할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                단일 상품 결제를 위한 항목을 구성합니다.
+                마지막 항목의 label이 결제 버튼에 표시됩니다.
+                
+                @Code(name: "SingleItem.swift", file: "07-03-single-item.swift")
+            }
+            
+            @Step {
+                여러 상품과 배송비를 포함한 결제를 구성합니다.
+                각 항목을 명확히 분리하여 사용자에게 보여줍니다.
+                
+                @Code(name: "MultipleItems.swift", file: "07-04-multiple-items.swift")
+            }
+            
+            @Step {
+                할인을 적용하는 경우 음수 금액을 사용합니다.
+                쿠폰, 멤버십 할인 등을 표시할 수 있습니다.
+                
+                @Code(name: "Discount.swift", file: "07-05-discount.swift")
+            }
+            
+            @Step {
+                pending 항목은 아직 확정되지 않은 금액을 나타냅니다.
+                배송비 계산 전이나 세금 미확정 시 사용합니다.
+                
+                @Code(name: "PendingAmount.swift", file: "07-06-pending-amount.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Merchant Capabilities") {
+        @ContentAndMedia {
+            merchantCapabilities는 가맹점이 지원하는 결제 기능을 명시합니다.
+            
+            **옵션:**
+            - `.threeDSecure`: 3D Secure 인증 지원
+            - `.credit`: 신용카드 결제
+            - `.debit`: 직불카드 결제
+            - `.emv`: EMV 표준 지원
+        }
+        
+        @Steps {
+            @Step {
+                대부분의 가맹점은 3DS와 EMV를 모두 지원합니다.
+                PG사의 지원 여부를 확인하고 설정합니다.
+                
+                @Code(name: "Capabilities.swift", file: "07-07-capabilities.swift")
+            }
+            
+            @Step {
+                신용/직불 카드 제한이 필요한 경우 설정합니다.
+                일반적으로 둘 다 허용하는 것이 좋습니다.
+                
+                @Code(name: "CardTypes.swift", file: "07-08-card-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 요청 유효성 검사") {
+        @ContentAndMedia {
+            잘못 구성된 결제 요청은 결제 실패의 원인이 됩니다.
+            요청을 제출하기 전에 유효성을 검사합니다.
+        }
+        
+        @Steps {
+            @Step {
+                필수 필드가 모두 설정되었는지 확인합니다.
+                누락된 필드가 있으면 결제가 시작되지 않습니다.
+                
+                @Code(name: "Validation.swift", file: "07-09-validation.swift")
+            }
+            
+            @Step {
+                결제 금액이 0보다 큰지 확인합니다.
+                총액이 0 이하면 결제 요청이 거부됩니다.
+                
+                @Code(name: "AmountValidation.swift", file: "07-10-amount-validation.swift")
+            }
+            
+            @Step {
+                완성된 결제 요청 생성 헬퍼를 만듭니다.
+                재사용 가능한 구조로 구현합니다.
+                
+                @Code(name: "RequestBuilder.swift", file: "07-11-request-builder.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKPaymentRequest에서 마지막 paymentSummaryItem의 역할은?
+            
+            @Choice(isCorrect: true) {
+                총 결제 금액과 가맹점 이름 표시
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    마지막 항목의 label은 결제 버튼에 표시되고,
+                    amount는 총 결제 금액으로 인식됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                세금 항목 자동 계산
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    세금은 자동 계산되지 않으며 
+                    별도 항목으로 추가해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                결제 완료 후 영수증 생성
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    영수증은 PKPaymentRequest와 별개로 
+                    가맹점에서 처리합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            할인 금액을 표시하기 위해 사용하는 방법은?
+            
+            @Choice(isCorrect: false) {
+                discountAmount 속성 설정
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    discountAmount라는 별도 속성은 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                음수 금액의 PKPaymentSummaryItem 추가
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    할인은 음수 금액(-10000 등)의 항목으로 추가하여
+                    결제 시트에 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                각 상품 금액에서 할인 적용 후 표시
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    할인을 명확히 보여주려면 
+                    별도 항목으로 분리하는 것이 좋습니다.
+                }
+            }
+        }
+    }
+}

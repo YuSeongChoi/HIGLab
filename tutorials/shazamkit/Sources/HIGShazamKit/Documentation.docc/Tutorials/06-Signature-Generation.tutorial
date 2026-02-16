@@ -1,0 +1,243 @@
+@Tutorial(time: 20) {
+    @Intro(title: "시그니처 생성") {
+        SHSignatureGenerator로 오디오 시그니처를 생성합니다.
+        다양한 오디오 소스에서 시그니처를 추출하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "SHSignatureGenerator 이해하기") {
+        @ContentAndMedia {
+            SHSignatureGenerator는 오디오 데이터에서 
+            **고유한 시그니처(핑거프린트)**를 생성합니다.
+            
+            시그니처는 원본 오디오를 복원할 수 없는 
+            단방향 해시와 비슷한 특성을 가집니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHSignatureGenerator 기본 사용법**
+                
+                오디오 버퍼를 받아 시그니처를 생성합니다.
+                append(_:at:)로 데이터를 추가하고
+                signature()로 최종 시그니처를 얻습니다.
+                
+                @Code(name: "GeneratorBasics.swift", file: "06-generator-basics.swift")
+            }
+            
+            @Step {
+                **지원 오디오 포맷**
+                
+                SHSignatureGenerator는 특정 포맷을 요구합니다:
+                - PCM Float32
+                - 샘플 레이트: 기기 기본값 권장
+                - 채널: Mono 또는 Stereo
+                
+                @Code(name: "AudioFormat.swift", file: "06-audio-format.swift")
+            }
+        }
+    }
+    
+    @Section(title: "오디오 파일에서 시그니처 생성") {
+        @ContentAndMedia {
+            AVAudioFile을 사용해 오디오 파일을 읽고
+            시그니처를 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AVAudioFile 열기**
+                
+                먼저 오디오 파일을 AVAudioFile로 엽니다.
+                mp3, m4a, wav 등 다양한 포맷을 지원합니다.
+                
+                @Code(name: "OpenAudioFile.swift", file: "06-open-file.swift")
+            }
+            
+            @Step {
+                **오디오 포맷 변환**
+                
+                SHSignatureGenerator가 요구하는 포맷으로 변환합니다.
+                AVAudioConverter를 사용합니다.
+                
+                @Code(name: "ConvertFormat.swift", file: "06-convert-format.swift")
+            }
+            
+            @Step {
+                **청크 단위로 시그니처 생성**
+                
+                대용량 파일은 청크 단위로 처리합니다.
+                메모리 효율을 위해 버퍼를 재사용합니다.
+                
+                @Code(name: "ChunkProcessing.swift", file: "06-chunk-processing.swift")
+            }
+            
+            @Step {
+                **파일 시그니처 유틸리티 함수**
+                
+                파일 경로를 받아 시그니처를 반환하는 
+                헬퍼 함수를 만듭니다.
+                
+                @Code(name: "FileSignatureUtil.swift", file: "06-file-signature-util.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 오디오에서 시그니처 생성") {
+        @ContentAndMedia {
+            AVAudioEngine을 사용해 마이크 입력에서 
+            실시간으로 시그니처를 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AVAudioEngine 설정**
+                
+                마이크 입력을 캡처하기 위한 
+                AVAudioEngine을 구성합니다.
+                
+                @Code(name: "AudioEngineSetup.swift", file: "06-engine-setup.swift")
+            }
+            
+            @Step {
+                **입력 노드에 탭 설치**
+                
+                installTap으로 오디오 버퍼를 캡처합니다.
+                캡처된 버퍼를 SHSignatureGenerator에 전달합니다.
+                
+                @Code(name: "InstallTap.swift", file: "06-install-tap.swift")
+            }
+            
+            @Step {
+                **시그니처 생성 통합**
+                
+                AVAudioEngine과 SHSignatureGenerator를 
+                연결해 실시간 시그니처를 생성합니다.
+                
+                @Code(name: "RealtimeSignature.swift", file: "06-realtime-signature.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시그니처 활용") {
+        @ContentAndMedia {
+            생성한 시그니처를 저장하고 활용하는 방법을 배웁니다.
+        }
+        
+        @Steps {
+            @Step {
+                **시그니처 파일 저장**
+                
+                SHSignature는 Data로 변환해 저장할 수 있습니다.
+                .shazamsignature 확장자를 사용합니다.
+                
+                @Code(name: "SaveSignature.swift", file: "06-save-signature.swift")
+            }
+            
+            @Step {
+                **시그니처 파일 로드**
+                
+                저장된 시그니처를 다시 로드합니다.
+                SHSignature(dataRepresentation:)을 사용합니다.
+                
+                @Code(name: "LoadSignature.swift", file: "06-load-signature.swift")
+            }
+            
+            @Step {
+                **SignatureBuilder 클래스**
+                
+                시그니처 생성을 캡슐화한 유틸리티 클래스입니다.
+                파일과 실시간 오디오 모두 지원합니다.
+                
+                @Code(name: "SignatureBuilder.swift", file: "06-signature-builder.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SHSignatureGenerator가 요구하는 오디오 포맷은?
+            
+            @Choice(isCorrect: true) {
+                PCM Float32
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    SHSignatureGenerator는 PCM Float32 포맷의 
+                    오디오 데이터를 요구합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MP3
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    압축 포맷이 아닌 PCM Float32 포맷이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AAC
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    압축 포맷이 아닌 PCM Float32 포맷이 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            시그니처 파일의 확장자는?
+            
+            @Choice(isCorrect: true) {
+                .shazamsignature
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    시그니처는 .shazamsignature 확장자로 저장됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .signature
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    .shazamsignature가 정확한 확장자입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .shazam
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    .shazamsignature가 정확한 확장자입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SHSignatureGenerator에 오디오 버퍼를 추가하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                append(_:at:)
+                
+                @Justification(reaction: "정답! 🎉") {
+                    append(_:at:)로 AVAudioPCMBuffer와 
+                    AVAudioTime을 전달합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                add(buffer:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    append(_:at:)가 정확한 메서드 이름입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                process(buffer:)
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    append(_:at:)를 사용합니다.
+                }
+            }
+        }
+    }
+}

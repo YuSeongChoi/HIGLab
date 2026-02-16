@@ -1,0 +1,153 @@
+@Tutorial(time: 20) {
+    @Intro(title: "과거 날씨 데이터") {
+        과거 날씨 데이터를 조회하는 방법을 학습합니다.
+        날씨 앱의 기록 기능을 구현할 수 있습니다.
+        
+        @Image(source: "historical-weather.png", alt: "과거 날씨 데이터 UI")
+    }
+    
+    @Section(title: "과거 날씨 데이터 요청") {
+        @ContentAndMedia {
+            WeatherKit은 과거 날씨 데이터도 제공합니다.
+            특정 날짜 범위의 시간별/일별 기록을 조회할 수 있습니다.
+            
+            ⚠️ 과거 데이터 요청은 추가 API 호출로 계산됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                특정 날짜의 과거 날씨를 요청합니다.
+                startDate와 endDate로 범위를 지정합니다.
+                
+                @Code(name: "HistoricalWeather.swift", file: "08-01-request.swift")
+            }
+            
+            @Step {
+                일별 과거 데이터를 요청합니다.
+                dailyForecast와 동일한 DayWeather 타입을 반환합니다.
+                
+                @Code(name: "HistoricalWeather.swift", file: "08-02-daily.swift")
+            }
+            
+            @Step {
+                시간별 과거 데이터를 요청합니다.
+                더 상세한 기록이 필요할 때 사용합니다.
+                
+                @Code(name: "HistoricalWeather.swift", file: "08-03-hourly.swift")
+            }
+        }
+    }
+    
+    @Section(title: "과거 데이터 활용 사례") {
+        @ContentAndMedia {
+            과거 날씨 데이터는 다양한 용도로 활용할 수 있습니다.
+            
+            - 날씨 기록 분석
+            - 작년 같은 날 비교
+            - 평균 온도 계산
+            - 기후 패턴 시각화
+        }
+        
+        @Steps {
+            @Step {
+                작년 같은 날의 날씨를 비교합니다.
+                
+                @Code(name: "HistoricalComparison.swift", file: "08-04-compare.swift")
+            }
+            
+            @Step {
+                월별 평균 온도를 계산합니다.
+                
+                @Code(name: "HistoricalComparison.swift", file: "08-05-average.swift")
+            }
+            
+            @Step {
+                특정 기간의 강수일수를 계산합니다.
+                
+                @Code(name: "HistoricalComparison.swift", file: "08-06-rain-days.swift")
+            }
+        }
+    }
+    
+    @Section(title: "과거 데이터 UI 구현") {
+        @ContentAndMedia {
+            과거 날씨를 비교할 수 있는 UI를 구현합니다.
+            차트로 온도 변화를 시각화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                과거 날씨 비교 View를 만듭니다.
+                
+                @Code(name: "HistoricalWeatherView.swift", file: "08-07-view.swift")
+            }
+            
+            @Step {
+                Swift Charts로 온도 변화를 시각화합니다.
+                
+                @Code(name: "HistoricalWeatherView.swift", file: "08-08-chart.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            과거 날씨 데이터를 요청할 때 필요한 파라미터는?
+            
+            @Choice(isCorrect: false) {
+                location만 필요
+                
+                @Justification(reaction: "아닙니다.") {
+                    과거 데이터는 어떤 기간인지 지정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                location과 날짜 범위 (startDate, endDate)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    과거 데이터 요청에는 위치와 함께 
+                    조회할 날짜 범위를 지정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                location과 DataSet
+                
+                @Justification(reaction: "부분적으로 맞습니다.") {
+                    DataSet도 선택할 수 있지만, 날짜 범위가 반드시 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            과거 날씨 데이터 요청 시 주의할 점은?
+            
+            @Choice(isCorrect: true) {
+                추가 API 호출로 계산되어 사용량이 증가한다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    과거 데이터 요청도 API 호출로 카운트됩니다.
+                    많은 기간을 조회하면 사용량이 빠르게 증가할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실시간 데이터보다 정확도가 낮다
+                
+                @Justification(reaction: "아닙니다.") {
+                    과거 데이터는 실제 관측 데이터로, 
+                    예보보다 더 정확할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크 속도가 느려진다
+                
+                @Justification(reaction: "관계없습니다.") {
+                    과거 데이터 요청의 속도는 일반 요청과 유사합니다.
+                }
+            }
+        }
+    }
+}

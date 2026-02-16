@@ -1,0 +1,216 @@
+@Tutorial(time: 25) {
+    @Intro(title: "TLS/DTLS 보안") {
+        암호화된 안전한 통신을 위한 
+        TLS와 DTLS를 구현합니다.
+        
+        @Image(source: "tls-security.png", alt: "TLS 보안 레이어")
+    }
+    
+    @Section(title: "TLS의 필요성") {
+        @ContentAndMedia {
+            TLS(Transport Layer Security)는 
+            네트워크 통신을 암호화하는 프로토콜입니다.
+            
+            - **기밀성**: 데이터 도청 방지
+            - **무결성**: 데이터 변조 감지
+            - **인증**: 상대방 신원 확인
+            
+            @Image(source: "tls-handshake.png", alt: "TLS 핸드셰이크")
+        }
+        
+        @Steps {
+            @Step {
+                평문 통신의 위험성을 이해합니다.
+                암호화 없이는 중간자 공격에 취약합니다.
+                
+                @Code(name: "InsecureConnection.swift", file: "04-01-insecure.swift")
+            }
+            
+            @Step {
+                TLS를 적용한 TCP 연결을 만듭니다.
+                `.tls`는 기본 TLS 설정을 제공합니다.
+                
+                @Code(name: "TLSConnection.swift", file: "04-02-tls-connection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TLS 옵션 설정") {
+        @ContentAndMedia {
+            Network 프레임워크는 세밀한 TLS 설정을 지원합니다.
+            
+            - TLS 버전 지정
+            - 인증서 검증 커스터마이징
+            - 클라이언트 인증서 설정
+        }
+        
+        @Steps {
+            @Step {
+                NWProtocolTLS.Options로 TLS를 설정합니다.
+                Security 프레임워크의 sec_protocol_options를 사용합니다.
+                
+                @Code(name: "TLSOptions.swift", file: "04-03-tls-options.swift")
+            }
+            
+            @Step {
+                최소 TLS 버전을 지정합니다.
+                TLS 1.2 이상을 권장합니다.
+                
+                @Code(name: "TLSVersion.swift", file: "04-04-tls-version.swift")
+            }
+            
+            @Step {
+                인증서 검증 커스터마이징이 필요한 경우
+                verify block을 설정합니다.
+                
+                @Code(name: "TLSVerify.swift", file: "04-05-tls-verify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "자체 서명 인증서 처리") {
+        @ContentAndMedia {
+            개발 환경이나 내부 네트워크에서는 
+            자체 서명(Self-signed) 인증서를 사용할 수 있습니다.
+            
+            **주의**: 프로덕션에서는 신뢰할 수 있는 CA 인증서를 사용하세요.
+        }
+        
+        @Steps {
+            @Step {
+                자체 서명 인증서를 허용하는 설정입니다.
+                개발 목적으로만 사용해야 합니다.
+                
+                @Code(name: "SelfSigned.swift", file: "04-06-self-signed.swift")
+            }
+            
+            @Step {
+                특정 인증서를 신뢰하도록 고정(Pinning)합니다.
+                앱 번들에 포함된 인증서와 비교합니다.
+                
+                @Code(name: "CertificatePinning.swift", file: "04-07-cert-pinning.swift")
+            }
+        }
+    }
+    
+    @Section(title: "DTLS (UDP용 TLS)") {
+        @ContentAndMedia {
+            DTLS(Datagram TLS)는 UDP 통신을 위한 TLS입니다.
+            UDP의 특성에 맞게 설계되었습니다.
+            
+            - 패킷 순서 독립적
+            - 패킷 손실 허용
+            - 실시간 애플리케이션에 적합
+        }
+        
+        @Steps {
+            @Step {
+                DTLS를 적용한 UDP 연결을 만듭니다.
+                암호화된 실시간 통신이 가능합니다.
+                
+                @Code(name: "DTLSConnection.swift", file: "04-08-dtls-connection.swift")
+            }
+            
+            @Step {
+                DTLS 옵션을 설정합니다.
+                TLS와 유사하지만 UDP 특성을 고려합니다.
+                
+                @Code(name: "DTLSOptions.swift", file: "04-09-dtls-options.swift")
+            }
+            
+            @Step {
+                암호화된 게임 데이터를 전송합니다.
+                UDP의 속도와 TLS의 보안을 동시에 활용합니다.
+                
+                @Code(name: "SecureGameData.swift", file: "04-10-secure-game.swift")
+            }
+        }
+    }
+    
+    @Section(title: "P2P 채팅 보안 적용") {
+        @ContentAndMedia {
+            앞서 만든 채팅 클라이언트에 TLS를 적용합니다.
+            모든 메시지가 암호화되어 전송됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                보안 채팅 클라이언트를 구현합니다.
+                TLS 파라미터를 적용한 연결을 생성합니다.
+                
+                @Code(name: "SecureChatClient.swift", file: "04-11-secure-chat.swift")
+            }
+            
+            @Step {
+                연결 상태에서 TLS 정보를 확인합니다.
+                사용된 암호화 알고리즘을 로깅할 수 있습니다.
+                
+                @Code(name: "TLSInfo.swift", file: "04-12-tls-info.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            DTLS가 UDP에 적합한 이유는?
+            
+            @Choice(isCorrect: true) {
+                패킷 순서나 손실에 독립적으로 동작하기 때문
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    DTLS는 UDP의 비연결성 특성을 유지하면서
+                    암호화를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                TLS보다 더 강력한 암호화를 제공하기 때문
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    DTLS와 TLS는 동일한 암호화 알고리즘을 사용합니다.
+                    차이점은 프로토콜 특성입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                핸드셰이크가 필요 없기 때문
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    DTLS도 핸드셰이크가 필요합니다.
+                    다만 UDP의 특성에 맞게 설계되었습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            인증서 피닝(Certificate Pinning)의 목적은?
+            
+            @Choice(isCorrect: false) {
+                TLS 연결 속도를 높이기 위해
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    피닝은 보안을 위한 것이며,
+                    속도와는 관련이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                특정 인증서만 신뢰하여 중간자 공격을 방지하기 위해
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    피닝은 알려진 인증서만 허용하여
+                    위조된 인증서를 사용한 공격을 방지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자체 서명 인증서를 사용하기 위해
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    자체 서명 인증서 허용과 피닝은 다른 개념입니다.
+                    피닝은 특정 인증서를 신뢰 목록에 고정하는 것입니다.
+                }
+            }
+        }
+    }
+}

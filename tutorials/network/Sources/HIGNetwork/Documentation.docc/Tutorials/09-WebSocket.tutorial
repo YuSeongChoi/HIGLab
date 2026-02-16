@@ -1,0 +1,227 @@
+@Tutorial(time: 25) {
+    @Intro(title: "WebSocket 연결") {
+        Network 프레임워크로 WebSocket 
+        양방향 통신을 구현합니다.
+        
+        @Image(source: "websocket.png", alt: "WebSocket 통신")
+    }
+    
+    @Section(title: "WebSocket 프로토콜") {
+        @ContentAndMedia {
+            WebSocket은 HTTP를 통해 시작되지만,
+            이후 전이중(full-duplex) 통신을 제공합니다.
+            
+            - **실시간 양방향**: 서버와 클라이언트 모두 능동적 전송
+            - **낮은 오버헤드**: HTTP 헤더 반복 없음
+            - **연결 유지**: 지속적인 연결 상태
+            
+            @Image(source: "websocket-vs-http.png", alt: "WebSocket vs HTTP")
+        }
+        
+        @Steps {
+            @Step {
+                WebSocket이 적합한 사용 사례를 이해합니다.
+                
+                - 실시간 채팅
+                - 주식 시세
+                - 협업 도구
+                - 게임 서버
+                
+                @Code(name: "WebSocketUseCases.swift", file: "09-01-ws-usecases.swift")
+            }
+            
+            @Step {
+                Network 프레임워크의 WebSocket 지원을 확인합니다.
+                NWProtocolWebSocket으로 접근합니다.
+                
+                @Code(name: "WebSocketSupport.swift", file: "09-02-ws-support.swift")
+            }
+        }
+    }
+    
+    @Section(title: "WebSocket 연결 생성") {
+        @ContentAndMedia {
+            NWParameters에 WebSocket 프로토콜을 추가하여 
+            WebSocket 연결을 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                WebSocket 옵션을 설정합니다.
+                autoReplyPing을 활성화하면 핑에 자동 응답합니다.
+                
+                @Code(name: "WebSocketOptions.swift", file: "09-03-ws-options.swift")
+            }
+            
+            @Step {
+                NWParameters에 WebSocket을 추가합니다.
+                TLS 위에 WebSocket을 올릴 수 있습니다.
+                
+                @Code(name: "WebSocketParams.swift", file: "09-04-ws-params.swift")
+            }
+            
+            @Step {
+                URL endpoint로 연결을 생성합니다.
+                ws:// 또는 wss:// URL을 사용합니다.
+                
+                @Code(name: "WebSocketConnect.swift", file: "09-05-ws-connect.swift")
+            }
+        }
+    }
+    
+    @Section(title: "WebSocket 메시지 송수신") {
+        @ContentAndMedia {
+            WebSocket은 텍스트와 바이너리 메시지를 지원합니다.
+            NWProtocolWebSocket.Metadata로 메시지 타입을 지정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                텍스트 메시지를 전송합니다.
+                opcode를 .text로 설정합니다.
+                
+                @Code(name: "SendText.swift", file: "09-06-send-text.swift")
+            }
+            
+            @Step {
+                바이너리 데이터를 전송합니다.
+                이미지나 파일 전송에 사용합니다.
+                
+                @Code(name: "SendBinary.swift", file: "09-07-send-binary.swift")
+            }
+            
+            @Step {
+                메시지를 수신합니다.
+                metadata에서 메시지 타입을 확인합니다.
+                
+                @Code(name: "ReceiveMessage.swift", file: "09-08-receive-message.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연결 유지 관리") {
+        @ContentAndMedia {
+            WebSocket 연결은 핑/퐁 프레임으로 
+            유지 상태를 확인합니다.
+            
+            Network 프레임워크는 자동 핑 응답을 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                핑 프레임을 전송합니다.
+                서버의 응답으로 연결 상태를 확인합니다.
+                
+                @Code(name: "PingPong.swift", file: "09-09-ping-pong.swift")
+            }
+            
+            @Step {
+                Close 프레임으로 연결을 종료합니다.
+                적절한 종료 코드를 전달합니다.
+                
+                @Code(name: "CloseFrame.swift", file: "09-10-close-frame.swift")
+            }
+            
+            @Step {
+                재연결 로직을 구현합니다.
+                연결이 끊어지면 자동으로 재시도합니다.
+                
+                @Code(name: "Reconnect.swift", file: "09-11-reconnect.swift")
+            }
+        }
+    }
+    
+    @Section(title: "WebSocket 채팅 클라이언트") {
+        @ContentAndMedia {
+            WebSocket을 사용한 채팅 클라이언트를 구현합니다.
+            JSON 형식으로 메시지를 주고받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                채팅 메시지 모델을 정의합니다.
+                Codable로 JSON 직렬화를 지원합니다.
+                
+                @Code(name: "ChatMessage.swift", file: "09-12-chat-message.swift")
+            }
+            
+            @Step {
+                WebSocketChatClient를 구현합니다.
+                연결, 송신, 수신을 관리합니다.
+                
+                @Code(name: "WebSocketChatClient.swift", file: "09-13-ws-chat-client.swift")
+            }
+            
+            @Step {
+                SwiftUI와 연동합니다.
+                @Published로 메시지 목록을 발행합니다.
+                
+                @Code(name: "WebSocketChatView.swift", file: "09-14-ws-chat-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            WebSocket이 HTTP보다 실시간 통신에 적합한 이유는?
+            
+            @Choice(isCorrect: false) {
+                더 강력한 암호화를 제공하기 때문
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    암호화는 TLS 레이어에서 처리되며,
+                    HTTPS와 WSS 모두 TLS를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                연결을 유지하며 양방향 통신이 가능하기 때문
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    WebSocket은 한 번 연결되면 
+                    서버와 클라이언트가 자유롭게 메시지를 보낼 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 많은 브라우저에서 지원하기 때문
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    HTTP가 더 오래되었고 보편적입니다.
+                    WebSocket의 장점은 양방향 실시간 통신입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            WebSocket에서 opcode .text와 .binary의 차이는?
+            
+            @Choice(isCorrect: true) {
+                .text는 UTF-8 문자열, .binary는 임의의 바이트
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    .text는 UTF-8 인코딩된 텍스트를,
+                    .binary는 바이너리 데이터를 전송합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .binary가 더 빠르다
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    속도 차이는 없습니다.
+                    데이터 해석 방식의 차이입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .text만 암호화된다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    암호화는 WSS(TLS)에서 처리하며,
+                    두 타입 모두 동일하게 암호화됩니다.
+                }
+            }
+        }
+    }
+}

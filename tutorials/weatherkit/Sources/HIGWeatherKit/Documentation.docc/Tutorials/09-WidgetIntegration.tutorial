@@ -1,0 +1,167 @@
+@Tutorial(time: 25) {
+    @Intro(title: "위젯 통합") {
+        WeatherKit을 WidgetKit과 통합해 
+        날씨 위젯을 만드는 방법을 학습합니다.
+        
+        @Image(source: "weather-widget.png", alt: "날씨 위젯")
+    }
+    
+    @Section(title: "위젯 프로젝트 설정") {
+        @ContentAndMedia {
+            위젯에서 WeatherKit을 사용하려면 
+            위젯 Extension에도 capability를 설정해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Widget Extension 타겟을 추가합니다.
+                File > New > Target > Widget Extension을 선택합니다.
+                
+                @Image(source: "add-widget-target.png", alt: "위젯 타겟 추가")
+            }
+            
+            @Step {
+                위젯 Extension의 Signing & Capabilities에서 
+                WeatherKit capability를 추가합니다.
+                
+                @Code(name: "WeatherWidget.swift", file: "09-01-setup.swift")
+            }
+            
+            @Step {
+                App Group을 설정해 앱과 위젯 간 데이터를 공유합니다.
+                캐시된 날씨 데이터를 위젯에서 재사용할 수 있습니다.
+                
+                @Code(name: "WeatherWidget.swift", file: "09-02-appgroup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TimelineProvider 구현") {
+        @ContentAndMedia {
+            TimelineProvider는 위젯의 데이터를 제공합니다.
+            WeatherKit 데이터를 가져와 Timeline을 구성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                TimelineEntry를 정의합니다.
+                날씨 데이터를 담을 구조체를 만듭니다.
+                
+                @Code(name: "WeatherTimelineProvider.swift", file: "09-03-entry.swift")
+            }
+            
+            @Step {
+                placeholder 메서드를 구현합니다.
+                위젯 갤러리에서 표시될 미리보기 데이터입니다.
+                
+                @Code(name: "WeatherTimelineProvider.swift", file: "09-04-placeholder.swift")
+            }
+            
+            @Step {
+                getTimeline 메서드에서 WeatherKit 데이터를 요청합니다.
+                
+                @Code(name: "WeatherTimelineProvider.swift", file: "09-05-timeline.swift")
+            }
+            
+            @Step {
+                적절한 새로고침 정책을 설정합니다.
+                날씨 데이터의 특성에 맞게 업데이트 주기를 결정합니다.
+                
+                @Code(name: "WeatherTimelineProvider.swift", file: "09-06-refresh.swift")
+            }
+        }
+    }
+    
+    @Section(title: "위젯 View 구현") {
+        @ContentAndMedia {
+            다양한 위젯 크기에 맞는 레이아웃을 구현합니다.
+            systemSmall, systemMedium, systemLarge를 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Small 위젯 View를 만듭니다.
+                현재 온도와 상태 아이콘을 표시합니다.
+                
+                @Code(name: "WeatherWidgetView.swift", file: "09-07-small.swift")
+            }
+            
+            @Step {
+                Medium 위젯 View를 만듭니다.
+                시간별 예보를 추가로 표시합니다.
+                
+                @Code(name: "WeatherWidgetView.swift", file: "09-08-medium.swift")
+            }
+            
+            @Step {
+                위젯 Configuration을 완성합니다.
+                
+                @Code(name: "WeatherWidgetView.swift", file: "09-09-widget.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            위젯에서 WeatherKit을 사용하려면?
+            
+            @Choice(isCorrect: true) {
+                위젯 Extension에도 WeatherKit capability를 추가해야 한다
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    위젯은 별도의 프로세스로 실행되므로 
+                    Extension 타겟에도 capability 설정이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메인 앱의 capability만 있으면 된다
+                
+                @Justification(reaction: "아닙니다.") {
+                    위젯 Extension은 별도의 타겟이므로 
+                    각각 capability를 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                위젯에서는 WeatherKit을 사용할 수 없다
+                
+                @Justification(reaction: "사용할 수 있습니다.") {
+                    위젯에서도 WeatherKit을 정상적으로 사용할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            날씨 위젯의 적절한 새로고침 주기는?
+            
+            @Choice(isCorrect: false) {
+                1분마다
+                
+                @Justification(reaction: "너무 자주입니다.") {
+                    WidgetKit은 시스템이 새로고침을 관리하며,
+                    너무 잦은 업데이트는 배터리를 소모합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                15분~1시간 간격
+                
+                @Justification(reaction: "적절합니다! ✨") {
+                    날씨 데이터는 급격히 변하지 않으므로 
+                    15분~1시간 간격이 적절합니다. 
+                    시스템이 최적화할 수 있는 여유를 둡니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                하루에 한 번
+                
+                @Justification(reaction: "너무 뜸합니다.") {
+                    날씨는 하루 동안 여러 번 변할 수 있으므로 
+                    더 자주 업데이트하는 것이 좋습니다.
+                }
+            }
+        }
+    }
+}

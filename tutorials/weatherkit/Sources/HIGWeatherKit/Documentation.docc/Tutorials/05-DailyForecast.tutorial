@@ -1,0 +1,172 @@
+@Tutorial(time: 20) {
+    @Intro(title: "일별 예보") {
+        DayWeather 데이터를 활용해 일주일 날씨 예보를 
+        구현하는 방법을 학습합니다.
+        
+        @Image(source: "daily-forecast.png", alt: "일별 예보 UI")
+    }
+    
+    @Section(title: "DailyForecast 데이터 요청") {
+        @ContentAndMedia {
+            DailyForecast는 최대 10일의 일별 예보를 제공합니다.
+            각 날의 최고/최저 온도, 강수 확률, 일출/일몰 시간을 확인할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                일별 예보를 요청합니다.
+                Forecast<DayWeather> 타입으로 반환됩니다.
+                
+                @Code(name: "DailyForecast.swift", file: "05-01-request.swift")
+            }
+            
+            @Step {
+                Forecast 컬렉션을 순회하며 각 날의 데이터에 접근합니다.
+                
+                @Code(name: "DailyForecast.swift", file: "05-02-iterate.swift")
+            }
+            
+            @Step {
+                특정 날짜의 예보를 찾습니다.
+                Calendar를 사용해 날짜를 비교합니다.
+                
+                @Code(name: "DailyForecast.swift", file: "05-03-find-day.swift")
+            }
+        }
+    }
+    
+    @Section(title: "DayWeather 속성 활용") {
+        @ContentAndMedia {
+            DayWeather는 하루 전체의 날씨 요약 정보를 담고 있습니다.
+            최고/최저 온도, 일출/일몰, UV 지수 등을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                DayWeather의 온도 관련 속성을 확인합니다.
+                
+                - `highTemperature`: 최고 온도
+                - `lowTemperature`: 최저 온도
+                
+                @Code(name: "DayWeather.swift", file: "05-04-temperature.swift")
+            }
+            
+            @Step {
+                일출/일몰 시간을 가져옵니다.
+                일부 극지방에서는 nil일 수 있습니다.
+                
+                - `sun.sunrise`: 일출 시간
+                - `sun.sunset`: 일몰 시간
+                - `sun.civilDawn`: 시민박명 시작
+                - `sun.civilDusk`: 시민박명 종료
+                
+                @Code(name: "DayWeather.swift", file: "05-05-sun.swift")
+            }
+            
+            @Step {
+                달 정보에 접근합니다.
+                
+                - `moon.phase`: 달의 위상
+                - `moon.moonrise`: 월출 시간
+                - `moon.moonset`: 월몰 시간
+                
+                @Code(name: "DayWeather.swift", file: "05-06-moon.swift")
+            }
+            
+            @Step {
+                하루 전체의 강수 정보를 확인합니다.
+                
+                @Code(name: "DayWeather.swift", file: "05-07-precipitation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "일별 예보 UI 구현") {
+        @ContentAndMedia {
+            리스트 형태로 일별 예보를 표시합니다.
+            요일, 아이콘, 최저/최고 온도 막대를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                일별 예보 행 UI를 만듭니다.
+                
+                @Code(name: "DailyForecastView.swift", file: "05-08-row.swift")
+            }
+            
+            @Step {
+                온도 범위를 시각적 막대로 표시합니다.
+                전체 기간의 최저/최고 온도 대비 당일 범위를 나타냅니다.
+                
+                @Code(name: "DailyForecastView.swift", file: "05-09-bar.swift")
+            }
+            
+            @Step {
+                전체 일별 예보 리스트 View를 완성합니다.
+                
+                @Code(name: "DailyForecastView.swift", file: "05-10-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            DayWeather의 sun.sunrise가 nil인 경우는?
+            
+            @Choice(isCorrect: false) {
+                API 에러가 발생했을 때
+                
+                @Justification(reaction: "아닙니다.") {
+                    API 에러 시 전체 요청이 실패합니다.
+                    nil은 유효한 데이터 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                극지방에서 해가 뜨지 않는 날
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    백야나 극야 현상이 있는 극지방에서는 
+                    sunrise나 sunset이 없을 수 있어 nil로 표현됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                흐린 날씨일 때
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    날씨 상태와 상관없이 일출 시간은 존재합니다.
+                    구름이 있어도 천문학적 일출 시간은 동일합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            DailyForecast가 제공하는 최대 예보 기간은?
+            
+            @Choice(isCorrect: false) {
+                7일
+                
+                @Justification(reaction: "조금 더 길게 제공합니다.") {
+                    DailyForecast는 7일보다 긴 예보를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                10일
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    DailyForecast는 최대 10일의 일별 예보를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                14일
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    WeatherKit의 일별 예보는 최대 10일까지입니다.
+                }
+            }
+        }
+    }
+}

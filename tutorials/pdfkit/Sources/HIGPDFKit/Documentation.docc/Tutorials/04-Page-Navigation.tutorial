@@ -1,0 +1,230 @@
+@Tutorial(time: 20) {
+    @Intro(title: "페이지 네비게이션") {
+        PDF 문서의 페이지 간 이동, 특정 페이지로 점프,
+        네비게이션 히스토리 관리를 구현합니다.
+        
+        @Image(source: "page-navigation.png", alt: "페이지 네비게이션")
+    }
+    
+    @Section(title: "기본 페이지 이동") {
+        @ContentAndMedia {
+            PDFView는 프로그래밍 방식으로 페이지를 이동할 수 있는 
+            다양한 메서드를 제공합니다.
+            
+            - `goToFirstPage()` / `goToLastPage()`
+            - `goToNextPage()` / `goToPreviousPage()`
+            - `go(to:)` - 특정 페이지로 이동
+        }
+        
+        @Steps {
+            @Step {
+                이전/다음 페이지로 이동하는 버튼을 구현합니다.
+                canGoToNextPage, canGoToPreviousPage로 상태를 확인합니다.
+                
+                @Code(name: "BasicNavigation.swift", file: "04-01-basic-nav.swift")
+            }
+            
+            @Step {
+                특정 페이지 번호로 직접 이동합니다.
+                PDFDocument에서 page(at:)로 페이지를 얻어 go(to:)를 호출합니다.
+                
+                @Code(name: "GoToPage.swift", file: "04-02-go-to-page.swift")
+            }
+            
+            @Step {
+                현재 페이지 정보를 가져옵니다.
+                currentPage와 document.index(for:)를 사용합니다.
+                
+                @Code(name: "CurrentPageInfo.swift", file: "04-03-current-page.swift")
+            }
+        }
+    }
+    
+    @Section(title: "페이지 번호 입력 UI") {
+        @ContentAndMedia {
+            사용자가 직접 페이지 번호를 입력하여 
+            원하는 페이지로 이동할 수 있게 합니다.
+            
+            TextField와 유효성 검사를 조합하여 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                페이지 번호 입력 필드와 이동 버튼을 만듭니다.
+                입력값이 유효한 범위인지 검증합니다.
+                
+                @Code(name: "PageNumberInput.swift", file: "04-04-page-input.swift")
+            }
+            
+            @Step {
+                키보드 Return 키로 바로 이동하게 합니다.
+                onSubmit 또는 textFieldShouldReturn을 활용합니다.
+                
+                @Code(name: "KeyboardSubmit.swift", file: "04-05-keyboard-submit.swift")
+            }
+            
+            @Step {
+                슬라이더로 페이지를 빠르게 탐색합니다.
+                실시간 미리보기와 함께 구현합니다.
+                
+                @Code(name: "PageSlider.swift", file: "04-06-slider.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PDFDestination 활용") {
+        @ContentAndMedia {
+            PDFDestination은 문서 내 특정 위치를 나타냅니다.
+            페이지뿐만 아니라 페이지 내 좌표와 줌 레벨도 포함합니다.
+            
+            북마크나 목차 링크에서 주로 사용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                PDFDestination으로 페이지의 특정 위치로 이동합니다.
+                
+                @Code(name: "PDFDestination.swift", file: "04-07-destination.swift")
+            }
+            
+            @Step {
+                현재 위치를 PDFDestination으로 저장합니다.
+                북마크 기능 구현의 기초가 됩니다.
+                
+                @Code(name: "SaveDestination.swift", file: "04-08-save-destination.swift")
+            }
+            
+            @Step {
+                PDF 문서의 아웃라인(목차)에서 destination을 추출합니다.
+                PDFOutline을 탐색하여 네비게이션 메뉴를 만듭니다.
+                
+                @Code(name: "OutlineNavigation.swift", file: "04-09-outline.swift")
+            }
+        }
+    }
+    
+    @Section(title: "네비게이션 히스토리") {
+        @ContentAndMedia {
+            웹 브라우저처럼 "뒤로/앞으로" 이동 기능을 구현합니다.
+            
+            PDFView는 canGoBack, canGoForward 속성과
+            goBack(), goForward() 메서드를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                뒤로/앞으로 버튼을 구현합니다.
+                사용자가 이동한 페이지 기록을 따라 이동합니다.
+                
+                @Code(name: "BackForward.swift", file: "04-10-back-forward.swift")
+            }
+            
+            @Step {
+                Notification으로 페이지 변경을 감지합니다.
+                PDFViewPageChanged 알림을 구독합니다.
+                
+                @Code(name: "PageChangeNotification.swift", file: "04-11-notification.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 Combine을 사용해 페이지 변경을 관찰합니다.
+                Publisher로 변환하여 상태를 업데이트합니다.
+                
+                @Code(name: "CombinePageChange.swift", file: "04-12-combine.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PDFView에서 다음 페이지로 이동 가능한지 확인하는 속성은?
+            
+            @Choice(isCorrect: true) {
+                canGoToNextPage
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    canGoToNextPage가 true이면 goToNextPage()를 
+                    호출할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                hasNextPage
+                
+                @Justification(reaction: "그런 속성은 없습니다.") {
+                    PDFView의 정확한 API를 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isLastPage
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    마지막 페이지 여부와 다음 이동 가능 여부는 
+                    다른 개념입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PDF 문서 내 특정 위치(페이지 + 좌표 + 줌)를 나타내는 클래스는?
+            
+            @Choice(isCorrect: false) {
+                PDFLocation
+                
+                @Justification(reaction: "그런 클래스는 없습니다.") {
+                    PDFKit의 위치 관련 클래스명을 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFDestination
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    PDFDestination은 페이지, 좌표, 줌 레벨을 
+                    포함한 문서 내 위치를 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFBookmark
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    북마크는 별도로 구현해야 하며,
+                    위치 정보는 다른 클래스가 담당합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            페이지 변경을 감지하기 위해 구독하는 Notification 이름은?
+            
+            @Choice(isCorrect: true) {
+                PDFViewPageChanged
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Notification.Name.PDFViewPageChanged를 구독하면
+                    페이지 변경 이벤트를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFDocumentPageChanged
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    알림은 PDFView에서 발생하며,
+                    정확한 이름을 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                pageDidChange
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    이것은 Notification 이름의 형식이 아닙니다.
+                    PDFKit의 알림 명명 규칙을 확인하세요.
+                }
+            }
+        }
+    }
+}

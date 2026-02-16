@@ -1,0 +1,267 @@
+@Tutorial(time: 18) {
+    @Intro(title: "매칭 결과 처리") {
+        SHMatch와 SHMatchedMediaItem의 풍부한 메타데이터를 활용합니다.
+        앨범 아트, 아티스트 정보, Apple Music 링크 등을 표시합니다.
+    }
+    
+    @Section(title: "SHMatchedMediaItem 분석") {
+        @ContentAndMedia {
+            SHMatchedMediaItem은 인식된 곡의 모든 정보를 담고 있습니다.
+            수십 가지 프로퍼티가 제공됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 곡 정보**
+                
+                가장 많이 사용하는 기본 프로퍼티들입니다.
+                - `title`: 곡 제목
+                - `artist`: 아티스트 이름
+                - `subtitle`: 부제목 (있는 경우)
+                
+                @Code(name: "BasicInfo.swift", file: "04-basic-info.swift")
+            }
+            
+            @Step {
+                **앨범 정보**
+                
+                앨범 관련 메타데이터입니다.
+                - `albumTitle`: 앨범 제목
+                - `artworkURL`: 앨범 아트 URL
+                - `genres`: 장르 배열
+                
+                @Code(name: "AlbumInfo.swift", file: "04-album-info.swift")
+            }
+            
+            @Step {
+                **Apple Music 연동 정보**
+                
+                Apple Music과 연동하기 위한 정보입니다.
+                - `appleMusicID`: Apple Music 곡 ID
+                - `appleMusicURL`: Apple Music에서 듣기 URL
+                - `webURL`: 웹에서 열기 URL
+                
+                @Code(name: "AppleMusicInfo.swift", file: "04-applemusic-info.swift")
+            }
+            
+            @Step {
+                **Shazam 정보**
+                
+                Shazam 서비스 관련 정보입니다.
+                - `shazamID`: Shazam 내부 ID
+                - `isrc`: 국제표준녹음코드
+                - `frequencySkew`: 재생 속도 차이
+                
+                @Code(name: "ShazamInfo.swift", file: "04-shazam-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Song 모델 만들기") {
+        @ContentAndMedia {
+            SHMatchedMediaItem을 앱에서 사용하기 좋은 
+            커스텀 모델로 변환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Song 구조체 정의**
+                
+                필요한 정보만 담은 깔끔한 모델을 만듭니다.
+                Identifiable, Codable을 채택합니다.
+                
+                @Code(name: "SongModel.swift", file: "04-song-model.swift")
+            }
+            
+            @Step {
+                **SHMatchedMediaItem에서 Song 생성**
+                
+                init(from:) 이니셜라이저로 변환합니다.
+                옵셔널 값을 안전하게 처리합니다.
+                
+                @Code(name: "SongFromMedia.swift", file: "04-song-from-media.swift")
+            }
+            
+            @Step {
+                **매칭 히스토리 관리**
+                
+                인식된 곡들의 히스토리를 저장합니다.
+                중복 제거와 정렬 로직을 포함합니다.
+                
+                @Code(name: "SongHistory.swift", file: "04-song-history.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앨범 아트 표시") {
+        @ContentAndMedia {
+            artworkURL을 사용해 앨범 아트를 로딩하고 표시합니다.
+            AsyncImage와 캐싱 전략을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **artworkURL 이해하기**
+                
+                artworkURL은 다양한 크기의 이미지를 지원합니다.
+                URL의 {w}와 {h}를 원하는 크기로 교체합니다.
+                
+                @Code(name: "ArtworkURL.swift", file: "04-artwork-url.swift")
+            }
+            
+            @Step {
+                **AsyncImage로 표시**
+                
+                SwiftUI의 AsyncImage로 간단히 표시합니다.
+                placeholder와 에러 상태를 처리합니다.
+                
+                @Code(name: "AsyncImageArtwork.swift", file: "04-async-image.swift")
+            }
+            
+            @Step {
+                **커스텀 ArtworkView**
+                
+                재사용 가능한 앨범 아트 컴포넌트를 만듭니다.
+                크기 옵션과 그림자, 라운드 코너를 지원합니다.
+                
+                @Code(name: "ArtworkView.swift", file: "04-artwork-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "매칭 결과 UI") {
+        @ContentAndMedia {
+            인식된 곡 정보를 보여주는 아름다운 UI를 만듭니다.
+            애니메이션과 인터랙션을 추가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SongDetailView 기본 구조**
+                
+                인식된 곡의 상세 정보를 표시하는 뷰입니다.
+                앨범 아트, 제목, 아티스트를 배치합니다.
+                
+                @Code(name: "SongDetailView.swift", file: "04-song-detail.swift")
+            }
+            
+            @Step {
+                **액션 버튼 추가**
+                
+                Apple Music에서 듣기, 공유하기 등 
+                액션 버튼을 추가합니다.
+                
+                @Code(name: "ActionButtons.swift", file: "04-action-buttons.swift")
+            }
+            
+            @Step {
+                **인식 애니메이션**
+                
+                곡이 인식되었을 때 시각적 피드백을 제공합니다.
+                페이드인, 스케일, 바운스 효과를 적용합니다.
+                
+                @Code(name: "MatchAnimation.swift", file: "04-match-animation.swift")
+            }
+            
+            @Step {
+                **Shazam 히스토리와 연동**
+                
+                SHLibrary.default.items로 사용자의 Shazam 히스토리에 
+                접근합니다. 앱에서 인식한 곡을 저장할 수도 있습니다.
+                
+                @Code(name: "ShazamLibrary.swift", file: "04-shazam-library.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SHMatchedMediaItem에서 Apple Music URL을 얻는 프로퍼티는?
+            
+            @Choice(isCorrect: true) {
+                appleMusicURL
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    appleMusicURL은 Apple Music에서 해당 곡을 
+                    직접 열 수 있는 URL을 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                musicURL
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    appleMusicURL이 정확한 프로퍼티 이름입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                streamURL
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    스트리밍 URL이 아니라 appleMusicURL입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            앨범 아트 이미지 URL에서 크기를 지정하는 방법은?
+            
+            @Choice(isCorrect: true) {
+                URL의 {w}와 {h}를 원하는 크기로 교체
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    artworkURL에는 {w}와 {h} 플레이스홀더가 있어
+                    원하는 크기로 교체하면 해당 크기의 이미지를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 크기 파라미터를 URL에 추가
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    URL에 이미 포함된 {w}와 {h}를 교체하는 방식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                smallArtworkURL, largeArtworkURL 등 별도 프로퍼티 사용
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    artworkURL 하나에서 {w}와 {h}를 교체해 
+                    다양한 크기를 지원합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사용자의 Shazam 히스토리에 접근하는 방법은?
+            
+            @Choice(isCorrect: true) {
+                SHLibrary.default.items
+                
+                @Justification(reaction: "정답! 🎉") {
+                    SHLibrary.default.items로 사용자가 Shazam 앱에서 
+                    인식한 곡들의 히스토리에 접근할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHMatchHistory.shared
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHLibrary.default.items가 정확한 방법입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHSession.history
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHSession에는 history 프로퍼티가 없습니다.
+                    SHLibrary.default.items를 사용하세요.
+                }
+            }
+        }
+    }
+}

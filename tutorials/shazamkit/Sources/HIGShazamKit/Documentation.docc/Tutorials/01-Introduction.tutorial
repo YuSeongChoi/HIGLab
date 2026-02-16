@@ -1,0 +1,228 @@
+@Tutorial(time: 15) {
+    @Intro(title: "ShazamKit 소개") {
+        Shazam의 강력한 음악 인식 기술을 앱에 통합하는 방법을 알아봅니다.
+        ShazamKit의 핵심 개념과 아키텍처를 이해하고,
+        음악 인식 앱 개발의 첫 걸음을 내딛습니다.
+    }
+    
+    @Section(title: "ShazamKit이란?") {
+        @ContentAndMedia {
+            ShazamKit은 Apple이 2021년 WWDC에서 공개한 프레임워크로,
+            **Shazam의 음악 인식 기술**을 개발자에게 제공합니다.
+            
+            전 세계에서 가장 많이 사용되는 음악 인식 서비스인 Shazam의
+            수십억 곡 데이터베이스에 접근할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                ShazamKit의 주요 기능을 살펴봅니다.
+                
+                - **음악 인식**: Shazam 카탈로그에서 곡 매칭
+                - **커스텀 카탈로그**: 자신만의 오디오 카탈로그 생성
+                - **동기화 경험**: 라이브 이벤트와 앱 동기화
+                
+                @Code(name: "ShazamKitOverview.swift", file: "01-overview.swift")
+            }
+            
+            @Step {
+                ShazamKit은 **오디오 핑거프린팅** 기술을 사용합니다.
+                
+                오디오에서 고유한 음향 특성(시그니처)을 추출하고,
+                이를 데이터베이스와 비교해 곡을 식별합니다.
+                
+                배경 소음이 있어도 정확하게 인식합니다.
+                
+                @Code(name: "AudioFingerprinting.swift", file: "01-fingerprinting.swift")
+            }
+            
+            @Step {
+                **개인정보 보호**가 핵심입니다.
+                
+                - 오디오 자체가 서버로 전송되지 않음
+                - 시그니처만 전송 (원본 복원 불가)
+                - 디바이스에서 시그니처 생성
+                
+                사용자의 대화나 주변 소리가 유출되지 않습니다.
+                
+                @Code(name: "PrivacyFirst.swift", file: "01-privacy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ShazamKit 아키텍처") {
+        @ContentAndMedia {
+            ShazamKit의 핵심 컴포넌트를 이해합니다.
+            각 클래스의 역할과 데이터 흐름을 파악합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHSession**: 매칭 세션 관리
+                
+                SHSession은 매칭 작업의 핵심입니다.
+                시그니처를 받아 카탈로그와 매칭하고 결과를 반환합니다.
+                
+                @Code(name: "SHSession.swift", file: "01-session.swift")
+            }
+            
+            @Step {
+                **SHManagedSession**: 간편한 매칭 (iOS 17+)
+                
+                iOS 17에서 추가된 SHManagedSession은
+                마이크 접근과 시그니처 생성을 자동으로 처리합니다.
+                
+                가장 쉬운 방법으로 음악 인식을 구현할 수 있습니다.
+                
+                @Code(name: "SHManagedSession.swift", file: "01-managed-session.swift")
+            }
+            
+            @Step {
+                **SHSignature**: 오디오 핑거프린트
+                
+                오디오 데이터에서 추출한 고유한 시그니처입니다.
+                SHSignatureGenerator로 생성하거나
+                SHManagedSession이 자동으로 생성합니다.
+                
+                @Code(name: "SHSignature.swift", file: "01-signature.swift")
+            }
+            
+            @Step {
+                **SHCatalog**: 매칭 대상 데이터베이스
+                
+                - **SHLibrary.default**: Shazam의 공식 카탈로그 (수십억 곡)
+                - **SHCustomCatalog**: 직접 만든 커스텀 카탈로그
+                
+                @Code(name: "SHCatalog.swift", file: "01-catalog.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로젝트 설정") {
+        @ContentAndMedia {
+            ShazamKit을 사용하기 위한 프로젝트 설정을 진행합니다.
+            권한 요청과 기본 구조를 잡습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ShazamKit import**
+                
+                프로젝트에 ShazamKit을 import합니다.
+                iOS 15.0+, macOS 12.0+에서 사용 가능합니다.
+                
+                @Code(name: "Import.swift", file: "01-import.swift")
+            }
+            
+            @Step {
+                **마이크 권한 설정**
+                
+                Info.plist에 마이크 사용 목적을 추가합니다.
+                `NSMicrophoneUsageDescription` 키가 필요합니다.
+                
+                @Code(name: "Info.plist", file: "01-info-plist.swift")
+            }
+            
+            @Step {
+                **MusicRecognizer 앱 구조**
+                
+                이번 튜토리얼에서 만들 앱의 기본 구조입니다.
+                SwiftUI와 @Observable을 활용합니다.
+                
+                @Code(name: "MusicRecognizerApp.swift", file: "01-app-structure.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ShazamKit에서 오디오를 인식할 때 서버로 전송되는 데이터는?
+            
+            @Choice(isCorrect: false) {
+                원본 오디오 데이터
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    ShazamKit은 개인정보 보호를 위해 원본 오디오를 전송하지 않습니다.
+                    시그니처만 전송됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                오디오 시그니처 (핑거프린트)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    맞습니다! 디바이스에서 생성된 시그니처만 전송됩니다.
+                    시그니처로는 원본 오디오를 복원할 수 없어 안전합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                압축된 오디오 파일
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    오디오 파일이 아닌 시그니처(핑거프린트)만 전송됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iOS 17에서 추가된 가장 간편한 음악 인식 방법은?
+            
+            @Choice(isCorrect: false) {
+                SHSession
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHSession은 기본 세션 클래스입니다.
+                    iOS 17에서는 더 간편한 방법이 추가되었습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                SHManagedSession
+                
+                @Justification(reaction: "정답! 🎉") {
+                    SHManagedSession은 마이크 접근과 시그니처 생성을 
+                    자동으로 처리해 가장 간편하게 음악 인식을 구현할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHSignatureGenerator
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHSignatureGenerator는 시그니처를 생성하는 클래스입니다.
+                    세션 관리 기능은 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ShazamKit이 지원하는 최소 iOS 버전은?
+            
+            @Choice(isCorrect: true) {
+                iOS 15
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    ShazamKit은 WWDC 2021에서 발표되었고 iOS 15부터 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 14
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    ShazamKit은 iOS 15부터 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 17
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    iOS 17에서 SHManagedSession이 추가되었지만,
+                    ShazamKit 자체는 iOS 15부터 지원됩니다.
+                }
+            }
+        }
+    }
+}

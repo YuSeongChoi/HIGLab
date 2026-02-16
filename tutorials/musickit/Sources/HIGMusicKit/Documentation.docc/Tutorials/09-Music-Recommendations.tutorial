@@ -1,0 +1,256 @@
+@Tutorial(time: 15) {
+    @Intro(title: "음악 추천") {
+        Apple Music의 개인화된 추천 기능을 활용해
+        사용자 취향에 맞는 음악을 제안합니다.
+    }
+    
+    @Section(title: "개인화 추천 API") {
+        @ContentAndMedia {
+            MusicKit은 사용자의 청취 기록과 좋아요를 분석해
+            개인화된 음악을 추천합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicPersonalRecommendationsRequest**
+                
+                개인화된 추천을 가져오는 전용 request입니다.
+                앨범, 플레이리스트, 스테이션 추천을 포함합니다.
+                
+                @Code(name: "PersonalRecommendations.swift", file: "09-personal-recommendations.swift")
+            }
+            
+            @Step {
+                **추천 타입별 접근**
+                
+                응답에서 다양한 추천 타입에 접근합니다:
+                
+                - `recommendations`: 추천 컬렉션들
+                - 각 컬렉션의 `items`: 앨범, 플레이리스트 등
+                
+                @Code(name: "RecommendationTypes.swift", file: "09-recommendation-types.swift")
+            }
+            
+            @Step {
+                **추천 새로고침**
+                
+                추천은 사용자 활동에 따라 변합니다.
+                pull-to-refresh로 최신 추천을 가져옵니다.
+                
+                @Code(name: "RefreshRecommendations.swift", file: "09-refresh-recommendations.swift")
+            }
+        }
+    }
+    
+    @Section(title: "관련 콘텐츠") {
+        @ContentAndMedia {
+            특정 아티스트나 앨범과 관련된 콘텐츠를 찾습니다.
+            "이 아티스트를 좋아하면..." 같은 기능에 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **아티스트의 관련 앨범**
+                
+                Artist 객체에서 관련 앨범, 싱글,
+                컴필레이션 등을 가져옵니다.
+                
+                @Code(name: "ArtistAlbums.swift", file: "09-artist-albums.swift")
+            }
+            
+            @Step {
+                **유사 아티스트**
+                
+                `artist.with(.similarArtists)`로
+                비슷한 아티스트 목록을 가져옵니다.
+                
+                @Code(name: "SimilarArtists.swift", file: "09-similar-artists.swift")
+            }
+            
+            @Step {
+                **앨범의 관련 콘텐츠**
+                
+                Album에서 관련 앨범, 같은 아티스트의 다른 작품,
+                편집 앨범 등을 찾습니다.
+                
+                @Code(name: "RelatedAlbums.swift", file: "09-related-albums.swift")
+            }
+        }
+    }
+    
+    @Section(title: "차트 & 인기 음악") {
+        @ContentAndMedia {
+            Apple Music의 차트와 인기 음악을 가져옵니다.
+            국가/지역별 차트를 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicCatalogChartsRequest**
+                
+                Top 100, 인기 앨범, 인기 플레이리스트 등
+                차트 데이터를 가져옵니다.
+                
+                @Code(name: "ChartsRequest.swift", file: "09-charts-request.swift")
+            }
+            
+            @Step {
+                **차트 타입**
+                
+                - `songs`: Top 100 노래
+                - `albums`: 인기 앨범
+                - `playlists`: 에디터 추천 플레이리스트
+                
+                @Code(name: "ChartTypes.swift", file: "09-chart-types.swift")
+            }
+            
+            @Step {
+                **지역별 차트**
+                
+                storefront 파라미터로 국가별 차트를 가져옵니다.
+                한국(kr), 미국(us), 일본(jp) 등을 지원합니다.
+                
+                @Code(name: "RegionalCharts.swift", file: "09-regional-charts.swift")
+            }
+        }
+    }
+    
+    @Section(title: "추천 UI 구현") {
+        @ContentAndMedia {
+            추천 콘텐츠를 매력적으로 표시하는 UI를 만듭니다.
+            가로 스크롤 섹션으로 구성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **추천 섹션 뷰**
+                
+                각 추천 카테고리를 섹션으로 표시합니다.
+                제목과 가로 스크롤 콘텐츠로 구성합니다.
+                
+                @Code(name: "RecommendationSection.swift", file: "09-recommendation-section.swift")
+            }
+            
+            @Step {
+                **앨범 카드 디자인**
+                
+                앨범 아트워크와 제목을 보여주는
+                카드 형태의 컴포넌트를 만듭니다.
+                
+                @Code(name: "AlbumCard.swift", file: "09-album-card.swift")
+            }
+            
+            @Step {
+                **For You 화면**
+                
+                개인화 추천, 최근 재생, 차트를 조합한
+                메인 탐색 화면을 구성합니다.
+                
+                @Code(name: "ForYouView.swift", file: "09-for-you-view.swift")
+            }
+            
+            @Step {
+                **로딩 스켈레톤**
+                
+                추천 데이터 로딩 중 스켈레톤 UI를 표시합니다.
+                사용자 경험을 개선합니다.
+                
+                @Code(name: "SkeletonLoading.swift", file: "09-skeleton-loading.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            개인화된 음악 추천을 가져오는 request는?
+            
+            @Choice(isCorrect: false) {
+                MusicCatalogSearchRequest
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    CatalogSearchRequest는 텍스트 검색용입니다.
+                    개인화 추천 전용 request가 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                MusicPersonalRecommendationsRequest
+                
+                @Justification(reaction: "정답입니다!") {
+                    MusicPersonalRecommendationsRequest로
+                    사용자 맞춤 추천을 가져옵니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicRecommendationRequest
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    정확한 이름은 MusicPersonalRecommendationsRequest입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            유사 아티스트를 가져오는 방법은?
+            
+            @Choice(isCorrect: true) {
+                artist.with(.similarArtists)
+                
+                @Justification(reaction: "정답입니다!") {
+                    Artist의 similarArtists Relationship을 로드하면
+                    비슷한 아티스트 목록을 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicSimilarArtistsRequest(artist:)
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    별도의 request가 아닌 Artist 객체의
+                    Relationship으로 로드합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                artist.relatedArtists 직접 접근
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    Relationship은 with()로 명시적으로 로드해야 합니다.
+                    직접 접근은 nil이거나 비어있을 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Apple Music 차트 데이터를 가져오는 request는?
+            
+            @Choice(isCorrect: true) {
+                MusicCatalogChartsRequest
+                
+                @Justification(reaction: "정답입니다!") {
+                    MusicCatalogChartsRequest로 Top 100 등
+                    차트 데이터를 가져옵니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicTopChartsRequest
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    TopChartsRequest가 아닌
+                    MusicCatalogChartsRequest입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MusicRankingRequest
+                
+                @Justification(reaction: "다시 생각해보세요") {
+                    RankingRequest는 없습니다.
+                    MusicCatalogChartsRequest를 사용합니다.
+                }
+            }
+        }
+    }
+}

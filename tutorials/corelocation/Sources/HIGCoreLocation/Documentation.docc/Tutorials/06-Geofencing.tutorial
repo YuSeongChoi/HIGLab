@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "지오펜싱 (CLCircularRegion)") {
+        특정 지역에 진입하거나 벗어날 때 알림을 받는
+        지오펜싱 기능을 구현합니다.
+        
+        러닝 트래커에서는 출발/도착 지점 알림에 활용합니다.
+    }
+    
+    @Section(title: "CLCircularRegion 이해하기") {
+        @ContentAndMedia {
+            `CLCircularRegion`은 중심점과 반경으로 정의되는 원형 영역입니다.
+            이 영역에 진입(enter) 또는 이탈(exit)할 때 알림을 받을 수 있습니다.
+            
+            최대 20개의 영역을 동시에 모니터링할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CLCircularRegion 생성**
+                
+                중심 좌표, 반경(미터), 고유 식별자로 영역을 생성합니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-region-create.swift")
+            }
+            
+            @Step {
+                **진입/이탈 알림 설정**
+                
+                `notifyOnEntry`와 `notifyOnExit` 프로퍼티로
+                어떤 이벤트에 알림을 받을지 설정합니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-notify-settings.swift")
+            }
+            
+            @Step {
+                **영역 모니터링 시작**
+                
+                `startMonitoring(for:)` 메서드로 모니터링을 시작합니다.
+                시스템이 해당 영역 진입/이탈을 감지합니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-start-monitoring.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지오펜스 이벤트 처리") {
+        @ContentAndMedia {
+            영역 진입/이탈 이벤트는 delegate 메서드로 전달됩니다.
+            러닝 트래커에서는 이를 활용해 랩 타임을 기록하거나
+            음성 안내를 제공할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **진입 이벤트 처리**
+                
+                `locationManager(_:didEnterRegion:)` 메서드가
+                영역 진입 시 호출됩니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-did-enter.swift")
+            }
+            
+            @Step {
+                **이탈 이벤트 처리**
+                
+                `locationManager(_:didExitRegion:)` 메서드가
+                영역 이탈 시 호출됩니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-did-exit.swift")
+            }
+            
+            @Step {
+                **에러 처리**
+                
+                모니터링 시작 실패나 영역 상태 확인 실패를 처리합니다.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "러닝 코스 체크포인트") {
+        @ContentAndMedia {
+            지오펜싱을 활용해 러닝 코스에 체크포인트를 설정하고,
+            각 체크포인트 통과 시 랩 타임을 기록합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **체크포인트 모델 생성**
+                
+                체크포인트 정보를 저장할 모델을 만듭니다.
+                이름, 좌표, 반경, 통과 시간 등을 포함합니다.
+                
+                @Code(name: "Checkpoint.swift", file: "06-checkpoint-model.swift")
+            }
+            
+            @Step {
+                **체크포인트 지오펜스 설정**
+                
+                러닝 코스의 체크포인트마다 CLCircularRegion을 생성하고
+                모니터링을 시작합니다.
+                
+                @Code(name: "CourseManager.swift", file: "06-course-setup.swift")
+            }
+            
+            @Step {
+                **랩 타임 기록**
+                
+                체크포인트 진입 시 현재 시간을 기록하여
+                구간별 소요 시간을 계산합니다.
+                
+                @Code(name: "CourseManager.swift", file: "06-lap-time.swift")
+            }
+            
+            @Step {
+                **체크포인트 지도 표시**
+                
+                MapKit을 사용해 체크포인트를 지도에 시각화합니다.
+                
+                @Code(name: "CourseMapView.swift", file: "06-course-map.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CLCircularRegion의 최대 모니터링 개수는?
+            
+            @Choice(isCorrect: true) {
+                20개
+                
+                @Justification(reaction: "정답!") {
+                    iOS에서는 최대 20개의 지역을 동시에 모니터링할 수 있습니다.
+                    그 이상 필요하면 동적으로 추가/제거해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제한 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    시스템 리소스 제한으로 최대 20개로 제한됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                100개
+                
+                @Justification(reaction: "아쉽네요") {
+                    실제 제한은 20개입니다.
+                    더 많은 영역이 필요하면 동적 관리가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            지오펜싱이 앱이 종료되어도 동작하나요?
+            
+            @Choice(isCorrect: true) {
+                예, 시스템이 앱을 깨워서 이벤트를 전달함
+                
+                @Justification(reaction: "정확합니다!") {
+                    지오펜싱은 시스템 레벨에서 동작하며,
+                    앱이 종료되어도 영역 진입/이탈 시 앱을 다시 실행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아니오, 앱이 실행 중이어야 함
+                
+                @Justification(reaction: "아쉽네요") {
+                    지오펜싱은 앱 종료 후에도 동작합니다.
+                    이것이 지오펜싱의 큰 장점입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드에서만 동작함
+                
+                @Justification(reaction: "아쉽네요") {
+                    지오펜싱은 포그라운드, 백그라운드, 종료 상태 모두에서 동작합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CLCircularRegion의 최소 반경은?
+            
+            @Choice(isCorrect: true) {
+                약 100미터 (디바이스와 환경에 따라 다름)
+                
+                @Justification(reaction: "정답!") {
+                    매우 작은 반경은 정확도 문제로 제대로 동작하지 않을 수 있습니다.
+                    Apple은 실내에서 약 50m, 실외에서 약 100m 이상을 권장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1미터
+                
+                @Justification(reaction: "아쉽네요") {
+                    기술적으로 설정은 가능하지만, GPS 정확도 한계로
+                    이렇게 작은 반경은 신뢰성이 매우 낮습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제한 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    너무 작은 반경은 GPS 오차로 인해
+                    거짓 양성/음성이 빈번하게 발생합니다.
+                }
+            }
+        }
+    }
+}

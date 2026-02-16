@@ -1,0 +1,251 @@
+@Tutorial(time: 18) {
+    @Intro(title: "SHManagedSession 설정") {
+        iOS 17에서 추가된 SHManagedSession을 사용해
+        간편하게 음악 인식 기능을 구현합니다.
+        
+        마이크 권한 처리와 세션 상태 관리를 배웁니다.
+    }
+    
+    @Section(title: "SHManagedSession 이해하기") {
+        @ContentAndMedia {
+            SHManagedSession은 iOS 17에서 추가된 **올인원 솔루션**입니다.
+            
+            기존에는 AVAudioEngine으로 마이크 입력을 받고,
+            SHSignatureGenerator로 시그니처를 만들고,
+            SHSession에 전달해야 했습니다.
+            
+            SHManagedSession은 이 모든 것을 **자동으로** 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SHManagedSession의 핵심 특징을 살펴봅니다.
+                
+                - 마이크 접근 자동 관리
+                - 시그니처 생성 자동화
+                - 상태 기반 제어 (prepare, result, cancel)
+                - Swift Concurrency 완벽 지원
+                
+                @Code(name: "ManagedSessionIntro.swift", file: "02-intro.swift")
+            }
+            
+            @Step {
+                **SHSession vs SHManagedSession** 비교
+                
+                SHSession은 세밀한 제어가 필요할 때,
+                SHManagedSession은 빠른 구현이 필요할 때 사용합니다.
+                
+                @Code(name: "SessionComparison.swift", file: "02-comparison.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MusicRecognizer 클래스 구현") {
+        @ContentAndMedia {
+            SHManagedSession을 활용한 음악 인식 매니저를 구현합니다.
+            @Observable 매크로를 사용해 SwiftUI와 연동합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MusicRecognizer 기본 구조**
+                
+                @Observable을 사용해 상태 변경을 UI에 자동 반영합니다.
+                SHManagedSession 인스턴스를 생성합니다.
+                
+                @Code(name: "MusicRecognizer.swift", file: "02-recognizer-basic.swift")
+            }
+            
+            @Step {
+                **인식 상태 enum 정의**
+                
+                음악 인식의 다양한 상태를 표현하는 enum을 만듭니다.
+                UI에서 각 상태에 맞는 화면을 보여줄 수 있습니다.
+                
+                @Code(name: "RecognitionState.swift", file: "02-state-enum.swift")
+            }
+            
+            @Step {
+                **startRecognition() 구현**
+                
+                `session.result()` 메서드로 인식을 시작합니다.
+                async/await로 결과를 기다립니다.
+                
+                @Code(name: "StartRecognition.swift", file: "02-start-recognition.swift")
+            }
+            
+            @Step {
+                **cancelRecognition() 구현**
+                
+                `session.cancel()` 메서드로 진행 중인 인식을 취소합니다.
+                사용자가 중단 버튼을 누르거나 화면을 벗어날 때 호출합니다.
+                
+                @Code(name: "CancelRecognition.swift", file: "02-cancel-recognition.swift")
+            }
+        }
+    }
+    
+    @Section(title: "마이크 권한 처리") {
+        @ContentAndMedia {
+            음악 인식을 위해서는 마이크 접근 권한이 필요합니다.
+            사용자 경험을 고려한 권한 요청 플로우를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AVAudioApplication으로 권한 확인**
+                
+                iOS 17+에서는 AVAudioApplication을 사용합니다.
+                현재 권한 상태를 확인하고 적절히 대응합니다.
+                
+                @Code(name: "PermissionCheck.swift", file: "02-permission-check.swift")
+            }
+            
+            @Step {
+                **권한 요청 플로우**
+                
+                권한이 없으면 요청하고, 거부되면 설정 앱으로 안내합니다.
+                사용자가 왜 마이크가 필요한지 이해할 수 있도록 설명합니다.
+                
+                @Code(name: "PermissionFlow.swift", file: "02-permission-flow.swift")
+            }
+            
+            @Step {
+                **설정 앱으로 이동**
+                
+                권한이 거부된 경우 설정 앱으로 이동하는 버튼을 제공합니다.
+                UIApplication.openSettingsURLString을 활용합니다.
+                
+                @Code(name: "OpenSettings.swift", file: "02-open-settings.swift")
+            }
+        }
+    }
+    
+    @Section(title: "세션 상태 모니터링") {
+        @ContentAndMedia {
+            SHManagedSession의 상태 변화를 모니터링하고
+            적절한 UI 피드백을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SHManagedSession.State 이해하기**
+                
+                - `.idle`: 대기 상태
+                - `.prerecording`: 녹음 준비 중
+                - `.matching`: 매칭 진행 중
+                
+                @Code(name: "SessionState.swift", file: "02-session-state.swift")
+            }
+            
+            @Step {
+                **상태 변화 observe**
+                
+                AsyncStream으로 상태 변화를 관찰합니다.
+                Task로 감싸서 비동기로 처리합니다.
+                
+                @Code(name: "StateObserve.swift", file: "02-state-observe.swift")
+            }
+            
+            @Step {
+                **전체 MusicRecognizer 완성**
+                
+                지금까지 구현한 기능을 통합합니다.
+                권한 처리, 인식 시작/취소, 상태 관리가 모두 포함됩니다.
+                
+                @Code(name: "MusicRecognizerFull.swift", file: "02-recognizer-full.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SHManagedSession이 자동으로 처리하지 않는 것은?
+            
+            @Choice(isCorrect: false) {
+                마이크 오디오 입력
+                
+                @Justification(reaction: "이건 자동 처리됩니다") {
+                    SHManagedSession은 마이크 오디오 입력을 자동으로 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                오디오 시그니처 생성
+                
+                @Justification(reaction: "이건 자동 처리됩니다") {
+                    SHManagedSession은 시그니처 생성을 자동으로 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                마이크 권한 요청 UI
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    맞습니다! 마이크 권한 요청은 개발자가 직접 구현해야 합니다.
+                    AVAudioApplication.requestRecordPermission()을 사용하세요.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SHManagedSession의 상태가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                .idle
+                
+                @Justification(reaction: "이건 유효한 상태입니다") {
+                    .idle은 세션이 대기 중인 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .matching
+                
+                @Justification(reaction: "이건 유효한 상태입니다") {
+                    .matching은 매칭이 진행 중인 상태입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .completed
+                
+                @Justification(reaction: "정답! 🎉") {
+                    .completed는 SHManagedSession.State에 없습니다.
+                    매칭 완료는 result() 메서드의 반환값으로 확인합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SHManagedSession에서 음악 인식을 시작하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                result()
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    result()를 호출하면 인식이 시작되고,
+                    async로 SHSession.Result를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                start()
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHManagedSession에는 start() 메서드가 없습니다.
+                    result()를 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                match()
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    match() 메서드는 SHSession에서 사용됩니다.
+                    SHManagedSession은 result()를 사용합니다.
+                }
+            }
+        }
+    }
+}

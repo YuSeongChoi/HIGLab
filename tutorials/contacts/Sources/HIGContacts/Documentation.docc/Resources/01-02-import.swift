@@ -1,0 +1,5 @@
+import Contacts
+
+class ContactManager {
+    
+}

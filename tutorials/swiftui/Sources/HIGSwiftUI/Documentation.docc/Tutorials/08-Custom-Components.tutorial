@@ -1,0 +1,273 @@
+@Tutorial(time: 25) {
+    @Intro(title: "커스텀 뷰 컴포넌트 만들기") {
+        재사용 가능한 컴포넌트를 설계하고 구현합니다.
+        RatingView, IngredientRow, BadgeView 등
+        ChefBook의 공통 컴포넌트를 추출합니다.
+    }
+    
+    @Section(title: "좋은 컴포넌트의 조건") {
+        @ContentAndMedia {
+            좋은 컴포넌트는 다음 조건을 만족합니다:
+            
+            1. **단일 책임**: 한 가지 일만 잘 한다
+            2. **재사용성**: 여러 곳에서 사용 가능하다
+            3. **커스터마이징**: 외부에서 스타일을 조절할 수 있다
+            4. **독립성**: 외부 상태에 의존하지 않는다
+        }
+        
+        @Steps {
+            @Step {
+                **컴포넌트 추출 신호**
+                
+                코드에서 이런 패턴이 보이면 컴포넌트로 추출하세요:
+                
+                - 같은 구조가 여러 번 반복됨
+                - 뷰 하나가 100줄 이상
+                - 특정 부분만 수정이 잦음
+                
+                @Code(name: "BeforeExtract.swift", file: "08-before-extract.swift")
+            }
+            
+            @Step {
+                **추출 후 구조**
+                
+                반복되는 부분을 별도 컴포넌트로 만들면
+                코드가 깔끔해지고 유지보수가 쉬워집니다.
+                
+                @Code(name: "AfterExtract.swift", file: "08-after-extract.swift")
+            }
+        }
+    }
+    
+    @Section(title: "RatingView 만들기") {
+        @ContentAndMedia {
+            별점을 표시하고 입력받는 RatingView를 만듭니다.
+            
+            - 읽기 전용: 별점만 표시
+            - 편집 가능: 탭으로 별점 변경
+            - 반개 별: 0.5 단위 지원
+        }
+        
+        @Steps {
+            @Step {
+                **기본 별점 표시**
+                
+                숫자(0~5)를 받아 별 아이콘으로 표시합니다.
+                채워진 별, 반 별, 빈 별을 구분합니다.
+                
+                @Code(name: "RatingViewBasic.swift", file: "08-rating-basic.swift")
+            }
+            
+            @Step {
+                **탭으로 별점 변경**
+                
+                @Binding으로 별점을 받아
+                탭하면 해당 값으로 변경되도록 합니다.
+                
+                @Code(name: "RatingViewInteractive.swift", file: "08-rating-interactive.swift")
+            }
+            
+            @Step {
+                **커스터마이징 지원**
+                
+                색상, 크기, 간격을 외부에서 지정할 수 있게 합니다.
+                기본값을 제공하여 간단하게 사용할 수도 있습니다.
+                
+                @Code(name: "RatingViewCustom.swift", file: "08-rating-custom.swift")
+            }
+        }
+    }
+    
+    @Section(title: "IngredientRowView 만들기") {
+        @ContentAndMedia {
+            재료 하나를 표시하는 행 컴포넌트입니다.
+            
+            - 체크박스로 준비 완료 표시
+            - 재료명과 양 표시
+            - 애니메이션 적용
+        }
+        
+        @Steps {
+            @Step {
+                **기본 레이아웃**
+                
+                체크박스 | 재료명 | Spacer | 양
+                이 구조로 HStack을 구성합니다.
+                
+                @Code(name: "IngredientRowBasic.swift", file: "08-ingredient-basic.swift")
+            }
+            
+            @Step {
+                **체크 상태 연결**
+                
+                @Binding으로 isChecked를 받아
+                토글 동작을 구현합니다.
+                
+                체크되면 텍스트에 취소선을 추가합니다.
+                
+                @Code(name: "IngredientRowChecked.swift", file: "08-ingredient-checked.swift")
+            }
+            
+            @Step {
+                **애니메이션 추가**
+                
+                체크 상태 변경에 애니메이션을 추가합니다.
+                부드러운 전환으로 사용자 경험을 향상시킵니다.
+                
+                @Code(name: "IngredientRowAnimated.swift", file: "08-ingredient-animated.swift")
+            }
+        }
+    }
+    
+    @Section(title: "BadgeView 만들기") {
+        @ContentAndMedia {
+            다양한 정보를 태그 형태로 표시하는 BadgeView입니다.
+            
+            - 난이도: 쉬움(녹색), 보통(주황), 어려움(빨강)
+            - 카테고리: 아이콘 + 텍스트
+            - 커스텀: 자유로운 색상과 아이콘
+        }
+        
+        @Steps {
+            @Step {
+                **Badge 기본 스타일**
+                
+                둥근 모서리의 작은 태그 형태입니다.
+                배경색과 텍스트 색상을 대비시킵니다.
+                
+                @Code(name: "BadgeViewBasic.swift", file: "08-badge-basic.swift")
+            }
+            
+            @Step {
+                **난이도별 자동 스타일**
+                
+                Difficulty enum을 받으면 
+                자동으로 적절한 색상이 적용되도록 합니다.
+                
+                @Code(name: "BadgeDifficulty.swift", file: "08-badge-difficulty.swift")
+            }
+            
+            @Step {
+                **아이콘 지원**
+                
+                텍스트 앞에 SF Symbol 아이콘을 추가할 수 있습니다.
+                카테고리 배지에 유용합니다.
+                
+                @Code(name: "BadgeIcon.swift", file: "08-badge-icon.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ViewModifier로 스타일 재사용") {
+        @ContentAndMedia {
+            **ViewModifier**를 사용하면 
+            여러 modifier 조합을 재사용할 수 있습니다.
+            
+            "카드 스타일", "강조 텍스트" 등 앱 전체에서
+            일관된 스타일을 적용할 때 유용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ViewModifier 정의**
+                
+                ViewModifier 프로토콜을 채택하고
+                body(content:)를 구현합니다.
+                
+                @Code(name: "CardModifier.swift", file: "08-modifier-define.swift")
+            }
+            
+            @Step {
+                **View 확장으로 간편하게 사용**
+                
+                View에 extension을 추가하여
+                .cardStyle()처럼 간편하게 사용합니다.
+                
+                @Code(name: "CardModifierExtension.swift", file: "08-modifier-extension.swift")
+            }
+            
+            @Step {
+                **ChefBook 스타일 시스템**
+                
+                앱 전체에서 사용할 스타일 모디파이어를 정의합니다.
+                - .chefCardStyle()
+                - .chefTitleStyle()
+                - .chefAccentButton()
+                
+                @Code(name: "ChefBookStyles.swift", file: "08-chefbook-styles.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            컴포넌트를 추출해야 하는 신호가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                같은 구조가 3번 이상 반복됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    반복되는 코드는 추출의 좋은 신호입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                하나의 뷰가 200줄 이상
+                
+                @Justification(reaction: "아쉽네요") {
+                    긴 뷰는 작은 컴포넌트로 분리하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                한 화면에서만 사용되는 간단한 뷰
+                
+                @Justification(reaction: "정답! 🎯") {
+                    재사용되지 않고 간단한 뷰까지 모두 추출하면
+                    오히려 코드가 복잡해질 수 있습니다.
+                    적절한 균형이 중요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                특정 부분만 자주 수정됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    자주 수정되는 부분은 별도 컴포넌트로 분리하면
+                    수정이 더 쉬워집니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ViewModifier의 장점은?
+            
+            @Choice(isCorrect: true) {
+                여러 modifier 조합을 재사용하여 일관된 스타일 적용
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    .shadow().cornerRadius().padding() 같은 조합을
+                    .cardStyle() 하나로 적용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능이 더 좋다
+                
+                @Justification(reaction: "아쉽네요") {
+                    성능 차이는 없습니다.
+                    코드 재사용과 일관성이 주된 장점입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                애니메이션이 자동으로 적용된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    애니메이션은 별도로 추가해야 합니다.
+                    ViewModifier 안에 애니메이션을 포함시킬 수는 있습니다.
+                }
+            }
+        }
+    }
+}

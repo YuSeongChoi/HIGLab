@@ -1,0 +1,189 @@
+@Tutorial(time: 20) {
+    @Intro(title: "메타데이터 캡처 (바코드)") {
+        AVCaptureMetadataOutput으로 바코드와 QR코드를 스캔합니다.
+        실시간으로 메타데이터를 인식하고 처리합니다.
+    }
+    
+    @Section(title: "Metadata Output 설정") {
+        @ContentAndMedia {
+            AVCaptureMetadataOutput은 비디오 프레임에서 메타데이터를 추출합니다.
+            바코드, QR코드, 얼굴 등 다양한 타입을 지원합니다.
+            
+            **지원되는 바코드 타입:**
+            - QR코드 (.qr)
+            - EAN-13 (.ean13)
+            - Code 128 (.code128)
+            - 그 외 다수
+        }
+        
+        @Steps {
+            @Step {
+                metadataOutput 프로퍼티를 추가합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-output-property.swift")
+            }
+            
+            @Step {
+                세션에 metadataOutput을 추가합니다.
+                메타데이터 처리를 위한 델리게이트 큐를 설정합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-add-metadata-output.swift")
+            }
+            
+            @Step {
+                인식할 메타데이터 타입을 설정합니다.
+                필요한 바코드 타입만 선택적으로 활성화합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "바코드 인식 처리") {
+        @ContentAndMedia {
+            AVCaptureMetadataOutputObjectsDelegate를 구현하여
+            인식된 바코드 정보를 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                AVCaptureMetadataOutputObjectsDelegate를 채택합니다.
+                메타데이터가 감지되면 콜백이 호출됩니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-delegate.swift")
+            }
+            
+            @Step {
+                인식된 메타데이터를 파싱합니다.
+                AVMetadataMachineReadableCodeObject에서 값을 추출합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-parse-metadata.swift")
+            }
+            
+            @Step {
+                바코드 위치 정보를 가져옵니다.
+                corners 프로퍼티로 바코드의 꼭짓점 좌표를 얻습니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-barcode-corners.swift")
+            }
+        }
+    }
+    
+    @Section(title: "스캔 영역 표시") {
+        @ContentAndMedia {
+            인식된 바코드 위치에 하이라이트를 표시합니다.
+            사용자에게 시각적 피드백을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                바코드 경계 박스를 계산합니다.
+                PreviewLayer의 좌표계로 변환합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-bounding-box.swift")
+            }
+            
+            @Step {
+                하이라이트 뷰를 그립니다.
+                SwiftUI로 바코드 위치에 사각형을 오버레이합니다.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-highlight-view.swift")
+            }
+            
+            @Step {
+                스캔 성공 시 진동 피드백을 추가합니다.
+                UINotificationFeedbackGenerator로 햅틱 피드백을 제공합니다.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-haptic-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "완성된 바코드 스캐너") {
+        @ContentAndMedia {
+            전체 바코드 스캐너 UI를 완성합니다.
+            스캔 결과를 표시하고 복사 기능을 추가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                스캐너 뷰의 전체 레이아웃을 구성합니다.
+                프리뷰, 하이라이트, 결과 표시 영역을 배치합니다.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-scanner-layout.swift")
+            }
+            
+            @Step {
+                스캔 결과 시트를 추가합니다.
+                바코드 값과 타입을 표시합니다.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-result-sheet.swift")
+            }
+            
+            @Step {
+                URL 자동 열기 기능을 추가합니다.
+                QR코드가 URL이면 Safari로 열 수 있게 합니다.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-open-url.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            QR코드를 인식하기 위해 설정하는 metadataObjectTypes 값은?
+            
+            @Choice(isCorrect: false) {
+                `.barcode`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .barcode라는 타입은 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.qr`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    QR코드는 AVMetadataObject.ObjectType.qr로 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.qrCode`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    올바른 타입명은 .qr입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            바코드 인식 시 호출되는 델리게이트 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `metadataOutput(_:didOutput:from:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이 메서드에서 인식된 메타데이터 객체 배열을 받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `metadataOutput(_:didDetect:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    올바른 메서드 시그니처가 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `captureOutput(_:didOutput:from:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 AVCaptureVideoDataOutput의 델리게이트 메서드입니다.
+                }
+            }
+        }
+    }
+}

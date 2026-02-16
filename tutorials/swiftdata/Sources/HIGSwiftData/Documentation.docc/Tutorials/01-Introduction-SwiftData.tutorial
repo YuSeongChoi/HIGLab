@@ -1,0 +1,190 @@
+@Tutorial(time: 12) {
+    @Intro(title: "SwiftData 소개: 게임 체인저의 등장") {
+        WWDC23에서 Apple이 공개한 SwiftData는 Core Data를 완전히 대체하는 
+        차세대 데이터 영속성 프레임워크입니다.
+        
+        Swift 매크로의 힘으로 보일러플레이트를 없애고, 
+        SwiftUI와 네이티브하게 통합됩니다.
+    }
+    
+    @Section(title: "왜 SwiftData인가?") {
+        @ContentAndMedia {
+            Core Data는 2005년 Mac OS X Tiger와 함께 등장했습니다.
+            20년이 넘은 프레임워크죠. Objective-C 시대의 유산을 담고 있습니다.
+            
+            SwiftData는 처음부터 Swift를 위해 설계되었습니다.
+            매크로, 프로퍼티 래퍼, async/await — 현대 Swift의 모든 장점을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Core Data의 고통**
+                
+                XML 기반 .xcdatamodeld 파일을 관리해야 합니다.
+                NSManagedObject를 상속하고, 코드젠을 신경 써야 합니다.
+                NSFetchRequest와 문자열 기반 NSPredicate는 타입 안전하지 않습니다.
+                
+                @Code(name: "CoreDataPain.swift", file: "01-coredata-pain.swift")
+            }
+            
+            @Step {
+                **SwiftData의 혁신**
+                
+                @Model 매크로 하나로 끝납니다.
+                순수 Swift 클래스가 곧 데이터 모델입니다.
+                별도의 스키마 파일이 필요 없습니다.
+                
+                @Code(name: "SwiftDataJoy.swift", file: "01-swiftdata-joy.swift")
+            }
+            
+            @Step {
+                **핵심 비교표**
+                
+                두 프레임워크의 차이를 한눈에 정리합니다.
+                SwiftData는 더 적은 코드로 더 많은 것을 합니다.
+                
+                @Code(name: "Comparison.swift", file: "01-comparison.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftData 아키텍처") {
+        @ContentAndMedia {
+            SwiftData는 3가지 핵심 컴포넌트로 구성됩니다:
+            
+            - **@Model**: 데이터 모델 정의
+            - **ModelContainer**: 데이터 저장소
+            - **ModelContext**: 데이터 조작 컨텍스트
+        }
+        
+        @Steps {
+            @Step {
+                **@Model 매크로**
+                
+                클래스에 @Model을 붙이면 SwiftData가 모든 것을 처리합니다.
+                프로퍼티 변경 추적, 영속성, 관계 관리까지 자동입니다.
+                
+                @Code(name: "ModelBasics.swift", file: "01-model-basics.swift")
+            }
+            
+            @Step {
+                **ModelContainer**
+                
+                데이터가 실제로 저장되는 곳입니다.
+                SQLite 파일, 메모리, CloudKit 등 다양한 백엔드를 지원합니다.
+                
+                앱 전체에서 하나의 컨테이너를 공유하는 것이 일반적입니다.
+                
+                @Code(name: "ContainerBasics.swift", file: "01-container-basics.swift")
+            }
+            
+            @Step {
+                **ModelContext**
+                
+                실제 CRUD 연산이 일어나는 곳입니다.
+                SwiftUI 환경에서 자동으로 주입됩니다.
+                변경사항은 자동으로 추적되고 저장됩니다.
+                
+                @Code(name: "ContextBasics.swift", file: "01-context-basics.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TaskMaster 프로젝트 시작") {
+        @ContentAndMedia {
+            이번 튜토리얼에서 만들 앱을 소개합니다.
+            
+            **TaskMaster**는 카테고리별 할 일 관리 앱입니다.
+            우선순위, 마감일, 완료 상태를 관리하고
+            iCloud로 모든 기기에서 동기화됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **새 프로젝트 생성**
+                
+                Xcode에서 새 iOS App 프로젝트를 만듭니다.
+                - Product Name: `TaskMaster`
+                - Interface: `SwiftUI`
+                - Storage: `None` (우리가 직접 SwiftData를 추가합니다)
+                
+                @Code(name: "TaskMasterApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                **시스템 요구사항 확인**
+                
+                SwiftData는 iOS 17, macOS 14 이상에서 사용 가능합니다.
+                프로젝트의 Deployment Target을 확인하세요.
+                
+                - iOS 17.0+
+                - macOS 14.0+
+                - watchOS 10.0+
+                - tvOS 17.0+
+                
+                @Code(name: "Requirements.swift", file: "01-requirements.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftData에서 데이터 모델을 정의할 때 사용하는 매크로는?
+            
+            @Choice(isCorrect: true) {
+                @Model
+                
+                @Justification(reaction: "정답!") {
+                    @Model 매크로를 클래스에 붙이면 SwiftData가 
+                    영속성, 변경 추적, 관계 관리를 자동으로 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Entity
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Entity는 Core Data의 개념입니다. 
+                    SwiftData에서는 @Model을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Persistent
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData에서는 @Model 매크로를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftData가 지원하는 최소 iOS 버전은?
+            
+            @Choice(isCorrect: true) {
+                iOS 17
+                
+                @Justification(reaction: "정확합니다!") {
+                    SwiftData는 WWDC23에서 발표되었고, iOS 17부터 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 15
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData는 iOS 17부터 지원됩니다. 
+                    이전 버전은 Core Data를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 16
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData는 iOS 17부터 지원됩니다.
+                }
+            }
+        }
+    }
+}

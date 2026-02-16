@@ -1,0 +1,236 @@
+@Tutorial(time: 20) {
+    @Intro(title: "심박수 & 수면 데이터") {
+        심박수(HKQuantityType)와 수면(HKCategoryType) 데이터를 조회합니다.
+        카테고리 타입의 특성과 수면 분석 데이터 구조를 이해합니다.
+    }
+    
+    @Section(title: "심박수 데이터 조회") {
+        @ContentAndMedia {
+            심박수는 **HKQuantityType**으로, Apple Watch에서 자동 측정됩니다.
+            분당 박동 수(BPM) 단위로 기록됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **심박수 타입 정의**
+                
+                .heartRate 식별자를 사용합니다.
+                단위는 .count()/.minute() (BPM)입니다.
+                
+                @Code(name: "HeartRateType.swift", file: "05-heartrate-type.swift")
+            }
+            
+            @Step {
+                **최근 심박수 쿼리**
+                
+                가장 최근에 측정된 심박수 1개를 가져옵니다.
+                sortDescriptors로 정렬하고 limit을 1로 설정합니다.
+                
+                @Code(name: "LatestHeartRate.swift", file: "05-latest-heartrate.swift")
+            }
+            
+            @Step {
+                **심박수 범위 분석**
+                
+                지정된 기간의 최소/최대/평균 심박수를 계산합니다.
+                HKStatisticsQuery를 활용하면 더 효율적입니다.
+                
+                @Code(name: "HeartRateRange.swift", file: "05-heartrate-range.swift")
+            }
+            
+            @Step {
+                **심박수 UI 컴포넌트**
+                
+                현재 심박수와 범위를 표시하는 카드를 만듭니다.
+                심박 아이콘에 펄스 애니메이션을 추가합니다.
+                
+                @Code(name: "HeartRateView.swift", file: "05-heartrate-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HKCategoryType 이해하기") {
+        @ContentAndMedia {
+            **HKCategoryType**은 숫자가 아닌 카테고리 값을 저장합니다.
+            수면 분석, 생리 주기, 마음 챙김 등이 여기에 속합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Category vs Quantity**
+                
+                Quantity는 "얼마나" (예: 72 BPM)
+                Category는 "어떤 상태" (예: 깊은 수면, REM 수면)
+                
+                @Code(name: "CategoryVsQuantity.swift", file: "05-category-vs-quantity.swift")
+            }
+            
+            @Step {
+                **수면 분석 카테고리**
+                
+                iOS 16+에서 수면은 다양한 단계로 세분화됩니다:
+                - .asleepUnspecified: 수면 (미분류)
+                - .asleepCore: 코어 수면
+                - .asleepDeep: 깊은 수면
+                - .asleepREM: REM 수면
+                - .awake: 깨어있음
+                - .inBed: 침대에 있음
+                
+                @Code(name: "SleepCategories.swift", file: "05-sleep-categories.swift")
+            }
+        }
+    }
+    
+    @Section(title: "수면 데이터 조회") {
+        @ContentAndMedia {
+            수면 데이터는 연속된 시간 구간으로 기록됩니다.
+            각 샘플은 시작/종료 시간과 수면 단계를 포함합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **어젯밤 수면 쿼리**
+                
+                어제 저녁부터 오늘 아침까지의 수면 데이터를 조회합니다.
+                
+                @Code(name: "LastNightSleep.swift", file: "05-last-night-sleep.swift")
+            }
+            
+            @Step {
+                **수면 단계별 시간 계산**
+                
+                각 샘플의 duration을 계산하고 단계별로 집계합니다.
+                
+                @Code(name: "SleepAnalysis.swift", file: "05-sleep-analysis.swift")
+            }
+            
+            @Step {
+                **총 수면 시간 계산**
+                
+                .inBed를 제외하고 실제 수면 단계만 합산합니다.
+                
+                @Code(name: "TotalSleep.swift", file: "05-total-sleep.swift")
+            }
+            
+            @Step {
+                **수면 UI 컴포넌트**
+                
+                수면 시간과 단계별 비율을 차트로 표시합니다.
+                Swift Charts를 활용하면 아름다운 시각화가 가능합니다.
+                
+                @Code(name: "SleepView.swift", file: "05-sleep-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "대시보드 통합") {
+        @ContentAndMedia {
+            심박수와 수면 데이터를 메인 대시보드에 통합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **HealthManager 확장**
+                
+                심박수와 수면 조회 메서드를 HealthManager에 추가합니다.
+                
+                @Code(name: "HealthManager.swift", file: "05-health-manager-extended.swift")
+            }
+            
+            @Step {
+                **대시보드 레이아웃**
+                
+                걸음 수, 심박수, 수면을 그리드 형태로 배치합니다.
+                
+                @Code(name: "DashboardView.swift", file: "05-dashboard-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            심박수의 HKUnit은?
+            
+            @Choice(isCorrect: true) {
+                .count().per(.minute()) — BPM
+                
+                @Justification(reaction: "정답!") {
+                    심박수는 분당 박동 수이므로 count/minute 단위를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .count()
+                
+                @Justification(reaction: "아쉽네요") {
+                    .count()는 걸음 수 같은 총 횟수에 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .second()
+                
+                @Justification(reaction: "아쉽네요") {
+                    .second()는 시간 단위입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iOS 16+에서 수면 데이터의 타입은?
+            
+            @Choice(isCorrect: true) {
+                HKCategoryType — 여러 수면 단계로 분류됨
+                
+                @Justification(reaction: "정답!") {
+                    수면은 코어, 깊은 수면, REM 등의 카테고리로 분류됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKQuantityType — 수면 시간(분)
+                
+                @Justification(reaction: "아쉽네요") {
+                    수면은 시간이 아닌 "상태"이므로 CategoryType입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKWorkoutType — 수면 운동
+                
+                @Justification(reaction: "아쉽네요") {
+                    WorkoutType은 달리기, 수영 같은 운동 세션에 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            수면 샘플에서 duration을 계산하려면?
+            
+            @Choice(isCorrect: true) {
+                endDate - startDate
+                
+                @Justification(reaction: "정답!") {
+                    각 HKSample은 startDate와 endDate를 가지며, 
+                    차이가 해당 구간의 duration입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                quantity.doubleValue(for: .second())
+                
+                @Justification(reaction: "아쉽네요") {
+                    HKCategorySample은 quantity가 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                value 프로퍼티
+                
+                @Justification(reaction: "아쉽네요") {
+                    value는 수면 단계를 나타내는 정수입니다.
+                }
+            }
+        }
+    }
+}

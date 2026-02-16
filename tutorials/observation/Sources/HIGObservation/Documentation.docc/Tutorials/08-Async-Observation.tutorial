@@ -1,0 +1,159 @@
+@Tutorial(time: 15) {
+    @Intro(title: "비동기 작업과 Observation") {
+        async/await, Task와 함께 Observation을 사용하는 방법을 배웁니다.
+        네트워크 요청, 데이터 로딩 등 비동기 상태 관리를 마스터합니다.
+    }
+    
+    @Section(title: "비동기 상태 관리 기본") {
+        @ContentAndMedia {
+            Observable 객체에서 비동기 작업을 수행하고
+            결과를 상태에 반영하는 기본 패턴을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                비동기 작업의 기본 구조입니다.
+                Task를 사용하여 비동기 작업을 수행하고 결과를 저장합니다.
+                
+                @Code(name: "AsyncBasic.swift", file: "08-async-basic.swift")
+            }
+            
+            @Step {
+                로딩 상태 관리 패턴입니다.
+                isLoading, error 등의 상태를 함께 관리합니다.
+                
+                @Code(name: "LoadingState.swift", file: "08-loading-state.swift")
+            }
+            
+            @Step {
+                더 나은 패턴: enum을 활용한 상태 관리
+                모든 가능한 상태를 명시적으로 표현합니다.
+                
+                @Code(name: "EnumState.swift", file: "08-enum-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MainActor와 Observation") {
+        @ContentAndMedia {
+            @MainActor를 사용하여 UI 업데이트를 안전하게 처리합니다.
+            스레드 안전성과 성능의 균형을 잡는 방법을 배웁니다.
+        }
+        
+        @Steps {
+            @Step {
+                @MainActor를 클래스 전체에 적용합니다.
+                모든 프로퍼티 접근이 메인 스레드에서 이루어집니다.
+                
+                @Code(name: "MainActorClass.swift", file: "08-main-actor-class.swift")
+            }
+            
+            @Step {
+                메서드 단위 @MainActor 사용.
+                백그라운드 작업과 UI 업데이트를 분리합니다.
+                
+                @Code(name: "MainActorMethod.swift", file: "08-main-actor-method.swift")
+            }
+            
+            @Step {
+                Task 취소 처리.
+                뷰가 사라질 때 진행 중인 작업을 취소합니다.
+                
+                @Code(name: "TaskCancellation.swift", file: "08-task-cancellation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 상품 목록 로딩") {
+        @ContentAndMedia {
+            CartFlow 앱에 네트워크에서 상품 목록을 불러오는
+            기능을 추가합니다. 비동기 상태 관리를 실전에 적용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                상품 로딩 상태를 관리하는 ProductLoader를 만듭니다.
+                
+                @Code(name: "ProductLoader.swift", file: "08-product-loader.swift")
+            }
+            
+            @Step {
+                로딩 상태에 따른 UI를 구현합니다.
+                스켈레톤, 에러, 결과 화면을 전환합니다.
+                
+                @Code(name: "ProductListAsync.swift", file: "08-product-list-async.swift")
+            }
+            
+            @Step {
+                풀다운 새로고침과 페이지네이션을 추가합니다.
+                사용자 경험을 개선하는 추가 기능입니다.
+                
+                @Code(name: "PullToRefresh.swift", file: "08-pull-to-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @Observable 클래스에서 비동기 작업 후 프로퍼티를 업데이트할 때 권장되는 방법은?
+            
+            @Choice(isCorrect: true) {
+                @MainActor를 사용하여 메인 스레드에서 업데이트
+                
+                @Justification(reaction: "정답!") {
+                    @MainActor는 프로퍼티 업데이트가 메인 스레드에서
+                    이루어지도록 보장하여 UI 업데이트가 안전하게 처리됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                DispatchQueue.main.async로 감싸기
+                
+                @Justification(reaction: "아쉽네요") {
+                    GCD도 동작하지만, Swift Concurrency에서는
+                    @MainActor가 더 현대적이고 안전한 방법입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도 처리 없이 바로 업데이트
+                
+                @Justification(reaction: "아쉽네요") {
+                    백그라운드 스레드에서 UI 관련 상태를 변경하면
+                    경고나 예상치 못한 동작이 발생할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            로딩 상태를 관리하는 가장 좋은 패턴은?
+            
+            @Choice(isCorrect: true) {
+                enum으로 idle/loading/loaded/error 상태를 명시적으로 표현
+                
+                @Justification(reaction: "완벽합니다!") {
+                    enum을 사용하면 불가능한 상태 조합을 컴파일 타임에
+                    방지하고, 모든 경우를 exhaustive하게 처리할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bool isLoading과 optional error를 별도로 관리
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 방식은 불가능한 상태 조합(isLoading=true, error=있음)을
+                    허용하게 되어 버그의 원인이 될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                로딩 상태 관리 없이 결과만 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    사용자에게 로딩 피드백을 주지 않으면
+                    앱이 멈춘 것처럼 보일 수 있습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,233 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Vision 프레임워크 소개") {
+        Apple Vision 프레임워크의 핵심 아키텍처와
+        VNRequest 패턴을 이해합니다.
+        모든 Vision 작업의 기초가 되는 개념을 학습합니다.
+    }
+    
+    @Section(title: "Vision 프레임워크란?") {
+        @ContentAndMedia {
+            Vision은 Apple이 제공하는 **고성능 컴퓨터 비전 프레임워크**입니다.
+            
+            이미지와 비디오에서 얼굴, 텍스트, 바코드, 사각형 등을 
+            감지하고 분석하는 작업을 쉽게 수행할 수 있습니다.
+            
+            Neural Engine 가속을 통해 뛰어난 성능을 제공하며,
+            CoreML과 완벽하게 통합됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Vision의 핵심 개념**
+                
+                Vision 프레임워크는 3가지 핵심 요소로 구성됩니다:
+                - **VNRequest**: 수행할 작업 정의
+                - **VNImageRequestHandler**: 이미지 분석 실행
+                - **VNObservation**: 분석 결과 반환
+                
+                @Code(name: "VisionBasics.swift", file: "01-vision-overview.swift")
+            }
+            
+            @Step {
+                **VNRequest 패턴**
+                
+                모든 Vision 작업은 동일한 패턴을 따릅니다:
+                1. Request 객체 생성
+                2. Handler에 이미지 전달
+                3. Request 실행
+                4. Observation 결과 처리
+                
+                @Code(name: "VisionBasics.swift", file: "01-request-pattern.swift")
+            }
+            
+            @Step {
+                **지원하는 Request 종류**
+                
+                Vision은 다양한 분석 Request를 제공합니다:
+                - `VNRecognizeTextRequest`: 텍스트 인식
+                - `VNDetectFaceRectanglesRequest`: 얼굴 감지
+                - `VNDetectBarcodesRequest`: 바코드/QR 인식
+                - `VNDetectRectanglesRequest`: 사각형 감지
+                - `VNTrackObjectRequest`: 객체 추적
+                
+                @Code(name: "RequestTypes.swift", file: "01-request-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로젝트 설정") {
+        @ContentAndMedia {
+            문서 스캐너 앱 프로젝트를 생성하고
+            Vision 프레임워크 사용을 위한 기본 구조를 잡습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 새 프로젝트를 생성합니다.
+                템플릿은 **App**을 선택하고, Interface는 **SwiftUI**를 선택합니다.
+                프로젝트 이름은 `DocumentScanner`로 합니다.
+                
+                @Code(name: "DocumentScannerApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                **Vision Manager 클래스 생성**
+                
+                Vision 작업을 관리할 매니저 클래스를 만듭니다.
+                `@Observable` 매크로를 사용해 SwiftUI와 쉽게 연동합니다.
+                
+                @Code(name: "VisionManager.swift", file: "01-vision-manager.swift")
+            }
+            
+            @Step {
+                **기본 이미지 분석 메서드**
+                
+                UIImage를 받아 Vision Request를 실행하는
+                기본 메서드를 구현합니다.
+                
+                @Code(name: "VisionManager.swift", file: "01-analyze-image.swift")
+            }
+            
+            @Step {
+                **에러 처리**
+                
+                Vision 작업 중 발생할 수 있는 에러를 정의하고
+                적절히 처리하는 구조를 만듭니다.
+                
+                @Code(name: "VisionError.swift", file: "01-vision-error.swift")
+            }
+        }
+    }
+    
+    @Section(title: "좌표계 이해하기") {
+        @ContentAndMedia {
+            Vision은 **정규화된 좌표계**를 사용합니다.
+            UIKit/SwiftUI 좌표계와 변환하는 방법을 이해해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **정규화 좌표계 (Normalized Coordinates)**
+                
+                Vision의 모든 결과는 0.0~1.0 범위의 정규화된 좌표로 반환됩니다.
+                원점은 **좌하단**이며, UIKit의 좌상단 원점과 다릅니다.
+                
+                @Code(name: "CoordinateSystem.swift", file: "01-normalized-coords.swift")
+            }
+            
+            @Step {
+                **좌표 변환 유틸리티**
+                
+                Vision 좌표를 UIKit/SwiftUI 좌표로 변환하는
+                헬퍼 함수를 만듭니다.
+                
+                @Code(name: "CoordinateSystem.swift", file: "01-coord-transform.swift")
+            }
+            
+            @Step {
+                **CGRect 확장**
+                
+                CGRect에 Vision 좌표 변환 편의 메서드를 추가합니다.
+                
+                @Code(name: "CGRect+Vision.swift", file: "01-cgrect-extension.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Vision 프레임워크에서 이미지 분석을 실행하는 핸들러는?
+            
+            @Choice(isCorrect: true) {
+                VNImageRequestHandler
+                
+                @Justification(reaction: "정답!") {
+                    VNImageRequestHandler는 정적 이미지를 분석할 때 사용하며,
+                    perform() 메서드로 Request를 실행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNRequest
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNRequest는 수행할 작업을 정의하는 객체입니다.
+                    실행은 Handler가 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNObservation
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNObservation은 분석 결과를 담는 객체입니다.
+                    실행은 Handler가 담당합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Vision의 좌표계 원점은 어디에 위치하나요?
+            
+            @Choice(isCorrect: true) {
+                좌하단 (Lower-Left)
+                
+                @Justification(reaction: "정확합니다!") {
+                    Vision은 수학적 좌표계를 사용하며, 
+                    원점이 좌하단에 있습니다.
+                    UIKit의 좌상단 원점과 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                좌상단 (Upper-Left)
+                
+                @Justification(reaction: "아쉽네요") {
+                    좌상단은 UIKit의 좌표계입니다.
+                    Vision은 좌하단 원점을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                중앙 (Center)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 좌하단을 원점으로 사용하며,
+                    좌표 범위는 0.0~1.0입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Vision 분석 결과의 좌표 범위는?
+            
+            @Choice(isCorrect: true) {
+                0.0 ~ 1.0 (정규화)
+                
+                @Justification(reaction: "정확합니다!") {
+                    Vision은 이미지 크기에 무관하게 
+                    0.0~1.0 범위의 정규화된 좌표를 반환합니다.
+                    실제 픽셀 좌표로 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지 픽셀 크기
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision은 정규화된 좌표(0.0~1.0)를 사용합니다.
+                    픽셀 좌표로 직접 사용하려면 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                -1.0 ~ 1.0
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision의 정규화 좌표 범위는 0.0~1.0입니다.
+                    음수 값은 사용되지 않습니다.
+                }
+            }
+        }
+    }
+}

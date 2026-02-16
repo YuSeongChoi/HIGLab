@@ -1,0 +1,292 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Vision + CoreML 커스텀 감지") {
+        Vision과 CoreML을 결합해 커스텀 객체 감지 모델을 적용합니다.
+        Create ML로 학습한 모델을 Vision 파이프라인에 통합합니다.
+    }
+    
+    @Section(title: "CoreML 모델 준비") {
+        @ContentAndMedia {
+            Vision과 함께 사용할 CoreML 모델을 준비합니다.
+            Apple의 사전 학습 모델이나 커스텀 모델을 사용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CoreML 모델 유형**
+                
+                Vision과 호환되는 CoreML 모델 유형을 이해합니다:
+                - Image Classifier: 이미지 분류
+                - Object Detector: 객체 감지 + 위치
+                - Image Segmentation: 픽셀 단위 분류
+                
+                @Code(name: "ModelTypes.swift", file: "10-model-types.swift")
+            }
+            
+            @Step {
+                **모델 파일 추가**
+                
+                .mlmodel 또는 .mlpackage 파일을 프로젝트에 추가합니다.
+                Xcode가 자동으로 Swift 클래스를 생성합니다.
+                
+                @Code(name: "AddModel.swift", file: "10-add-model.swift")
+            }
+            
+            @Step {
+                **VNCoreMLModel 생성**
+                
+                CoreML 모델을 VNCoreMLModel로 래핑합니다.
+                
+                @Code(name: "CoreMLVision.swift", file: "10-vncore-model.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 분류") {
+        @ContentAndMedia {
+            **VNCoreMLRequest**를 사용해 
+            CoreML 이미지 분류 모델을 실행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **VNCoreMLRequest 생성**
+                
+                VNCoreMLModel을 사용해 VNCoreMLRequest를 생성합니다.
+                
+                @Code(name: "ImageClassifier.swift", file: "10-coreml-request.swift")
+            }
+            
+            @Step {
+                **분류 결과 처리**
+                
+                VNClassificationObservation에서 
+                분류 결과와 신뢰도를 추출합니다.
+                
+                @Code(name: "ImageClassifier.swift", file: "10-classification-result.swift")
+            }
+            
+            @Step {
+                **상위 N개 결과**
+                
+                신뢰도 순으로 정렬된 상위 결과들을 가져옵니다.
+                
+                @Code(name: "ImageClassifier.swift", file: "10-top-results.swift")
+            }
+        }
+    }
+    
+    @Section(title: "객체 감지") {
+        @ContentAndMedia {
+            Object Detection 모델을 사용해 
+            이미지에서 객체의 위치와 종류를 감지합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **객체 감지 Request**
+                
+                Object Detector 모델용 VNCoreMLRequest를 설정합니다.
+                
+                @Code(name: "ObjectDetector.swift", file: "10-object-detect-request.swift")
+            }
+            
+            @Step {
+                **VNRecognizedObjectObservation 처리**
+                
+                감지된 객체의 바운딩 박스와 라벨을 추출합니다.
+                
+                @Code(name: "ObjectDetector.swift", file: "10-object-observation.swift")
+            }
+            
+            @Step {
+                **다중 객체 처리**
+                
+                이미지에서 여러 객체가 감지된 경우 처리합니다.
+                
+                @Code(name: "ObjectDetector.swift", file: "10-multi-object.swift")
+            }
+            
+            @Step {
+                **신뢰도 임계값**
+                
+                낮은 신뢰도의 결과를 필터링합니다.
+                
+                @Code(name: "ObjectDetector.swift", file: "10-confidence-threshold.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Create ML로 커스텀 모델 만들기") {
+        @ContentAndMedia {
+            Create ML을 사용해 자신만의 객체 감지 모델을 학습합니다.
+            문서 종류 분류나 특정 객체 감지에 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **학습 데이터 준비**
+                
+                이미지와 어노테이션 데이터를 준비합니다.
+                Create ML이 지원하는 형식으로 구성합니다.
+                
+                @Code(name: "TrainingData.swift", file: "10-training-data.swift")
+            }
+            
+            @Step {
+                **Create ML App으로 학습**
+                
+                Create ML 앱에서 Object Detection 템플릿으로 
+                모델을 학습합니다.
+                
+                @Code(name: "CreateMLTraining.swift", file: "10-createml-training.swift")
+            }
+            
+            @Step {
+                **학습된 모델 내보내기**
+                
+                학습된 모델을 .mlmodel 파일로 내보내고 
+                프로젝트에 추가합니다.
+                
+                @Code(name: "ExportModel.swift", file: "10-export-model.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI 통합") {
+        @ContentAndMedia {
+            CoreML 기반 객체 감지 결과를 UI에 표시합니다.
+            실시간 카메라와도 연동합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **감지 결과 모델**
+                
+                CoreML 감지 결과를 UI에서 사용할 모델로 변환합니다.
+                
+                @Code(name: "DetectionResult.swift", file: "10-detection-model.swift")
+            }
+            
+            @Step {
+                **바운딩 박스 오버레이**
+                
+                감지된 객체에 라벨과 함께 바운딩 박스를 표시합니다.
+                
+                @Code(name: "DetectionOverlay.swift", file: "10-detection-overlay.swift")
+            }
+            
+            @Step {
+                **실시간 CoreML 감지**
+                
+                카메라 프리뷰와 CoreML 감지를 결합한 
+                완전한 실시간 감지 뷰를 구현합니다.
+                
+                @Code(name: "RealtimeDetectionView.swift", file: "10-realtime-detection.swift")
+            }
+            
+            @Step {
+                **문서 스캐너 앱 완성**
+                
+                지금까지 배운 모든 Vision 기능을 통합한 
+                완전한 문서 스캐너 앱을 완성합니다.
+                
+                @Code(name: "DocumentScannerApp.swift", file: "10-final-app.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CoreML 모델을 Vision에서 사용하려면 어떻게 래핑해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                VNCoreMLModel로 래핑한다
+                
+                @Justification(reaction: "정답!") {
+                    VNCoreMLModel(for:)로 MLModel을 래핑하면
+                    VNCoreMLRequest에서 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                래핑 없이 직접 사용한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Vision 파이프라인에서 사용하려면
+                    VNCoreMLModel로 래핑해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNImageRequestHandler로 래핑한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNImageRequestHandler는 Request를 실행하는 핸들러입니다.
+                    모델은 VNCoreMLModel로 래핑합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            이미지 분류 모델의 결과 타입은?
+            
+            @Choice(isCorrect: true) {
+                VNClassificationObservation
+                
+                @Justification(reaction: "정확합니다!") {
+                    분류 모델은 VNClassificationObservation을 반환하며,
+                    identifier(라벨)와 confidence(신뢰도)를 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNRecognizedObjectObservation
+                
+                @Justification(reaction: "아쉽네요") {
+                    VNRecognizedObjectObservation은 객체 감지 모델의 결과입니다.
+                    분류는 VNClassificationObservation입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MLFeatureValue
+                
+                @Justification(reaction: "아쉽네요") {
+                    MLFeatureValue는 CoreML의 직접 출력입니다.
+                    Vision에서는 VNClassificationObservation으로 변환됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Object Detection 모델이 반환하는 정보는?
+            
+            @Choice(isCorrect: true) {
+                객체의 바운딩 박스와 분류 라벨
+                
+                @Justification(reaction: "정답!") {
+                    Object Detector는 객체의 위치(boundingBox)와 
+                    종류(labels)를 함께 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                분류 라벨만
+                
+                @Justification(reaction: "아쉽네요") {
+                    라벨만 반환하는 것은 Image Classifier입니다.
+                    Object Detector는 위치도 함께 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                바운딩 박스만
+                
+                @Justification(reaction: "아쉽네요") {
+                    Object Detector는 위치와 라벨을 모두 반환합니다.
+                    바운딩 박스만 반환하는 것은 VNDetectRectanglesRequest입니다.
+                }
+            }
+        }
+    }
+}

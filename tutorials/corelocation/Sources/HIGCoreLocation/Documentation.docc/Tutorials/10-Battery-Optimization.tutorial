@@ -1,0 +1,261 @@
+@Tutorial(time: 15) {
+    @Intro(title: "배터리 최적화 전략") {
+        위치 추적 앱의 가장 큰 과제인 배터리 소모를 최소화하는
+        다양한 최적화 전략을 학습합니다.
+    }
+    
+    @Section(title: "정확도와 배터리의 트레이드오프") {
+        @ContentAndMedia {
+            높은 정확도는 더 많은 배터리를 소모합니다.
+            상황에 맞게 정확도를 조절하는 것이 핵심입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **정확도별 배터리 영향**
+                
+                각 정확도 옵션의 대략적인 배터리 소모:
+                - `bestForNavigation`: 가장 높음 (GPS + 센서 융합)
+                - `best`: 높음 (GPS 최대 활용)
+                - `nearestTenMeters`: 중간
+                - `hundredMeters`: 낮음 (Wi-Fi/셀룰러 중심)
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-accuracy-impact.swift")
+            }
+            
+            @Step {
+                **동적 정확도 조절**
+                
+                러닝 중에는 높은 정확도, 일시정지 시에는 낮은 정확도,
+                정지 상태가 길어지면 추적 일시 중단.
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-dynamic-accuracy.swift")
+            }
+            
+            @Step {
+                **significantLocationChanges 활용**
+                
+                대략적인 위치만 필요할 때는 
+                `startMonitoringSignificantLocationChanges()`를 사용합니다.
+                배터리 소모가 매우 적습니다.
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-significant-changes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "업데이트 빈도 최적화") {
+        @ContentAndMedia {
+            불필요한 위치 업데이트를 줄이는 것이
+            배터리 절약의 핵심입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **distanceFilter 최적화**
+                
+                러닝 속도에 따라 distanceFilter를 동적으로 조절합니다.
+                빠르게 달릴 때는 더 큰 값을 사용해도 됩니다.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-distance-filter.swift")
+            }
+            
+            @Step {
+                **불필요한 업데이트 건너뛰기**
+                
+                정확도가 낮은 위치나 이전 위치와 거의 같은 경우
+                무시하여 처리 부하를 줄입니다.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-skip-updates.swift")
+            }
+            
+            @Step {
+                **배치 처리**
+                
+                위치 데이터를 즉시 처리하지 않고 모아서 처리합니다.
+                UI 업데이트와 저장 빈도를 줄여 효율을 높입니다.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-batch-processing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "백그라운드 효율성") {
+        @ContentAndMedia {
+            백그라운드에서의 위치 추적은 특히 배터리에 민감합니다.
+            불필요한 작업을 최소화해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **백그라운드에서 정확도 낮추기**
+                
+                백그라운드로 전환 시 정확도를 한 단계 낮춥니다.
+                사용자에게 눈에 띄지 않으면서 배터리를 절약합니다.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-bg-accuracy.swift")
+            }
+            
+            @Step {
+                **Deferred Updates 활용**
+                
+                iOS가 위치 업데이트를 모아서 한 번에 전달하게 하여
+                CPU 깨우기 횟수를 줄입니다.
+                
+                주의: 최신 iOS에서는 시스템이 자동으로 최적화합니다.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-deferred.swift")
+            }
+            
+            @Step {
+                **activityType 올바르게 설정**
+                
+                activityType을 정확히 설정하면 
+                시스템이 해당 활동에 맞게 위치 추적을 최적화합니다.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-activity-type.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사용자 경험 고려") {
+        @ContentAndMedia {
+            배터리 최적화와 함께 사용자에게 배터리 사용량을
+            투명하게 알리고 제어할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **배터리 상태 모니터링**
+                
+                디바이스 배터리 잔량에 따라 추적 전략을 조절합니다.
+                배터리가 적으면 절전 모드를 제안합니다.
+                
+                @Code(name: "BatteryMonitor.swift", file: "10-battery-level.swift")
+            }
+            
+            @Step {
+                **절전 모드 옵션 제공**
+                
+                사용자가 선택할 수 있는 절전 모드를 제공합니다:
+                - 고성능: 최고 정확도
+                - 균형: 적절한 정확도와 배터리
+                - 절전: 배터리 우선
+                
+                @Code(name: "PowerModeSettings.swift", file: "10-power-modes.swift")
+            }
+            
+            @Step {
+                **배터리 사용량 통계**
+                
+                러닝별 대략적인 배터리 소모량을 계산하고 표시합니다.
+                사용자가 인지하고 계획할 수 있게 합니다.
+                
+                @Code(name: "BatteryStatsView.swift", file: "10-battery-stats.swift")
+            }
+            
+            @Step {
+                **최종 러닝 트래커 완성**
+                
+                지금까지 배운 모든 기능을 통합한
+                완전한 러닝 트래커 앱을 완성합니다.
+                
+                @Code(name: "RunningTrackerApp.swift", file: "10-final-app.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            가장 배터리 효율적인 위치 추적 방법은?
+            
+            @Choice(isCorrect: true) {
+                startMonitoringSignificantLocationChanges()
+                
+                @Justification(reaction: "정답!") {
+                    Significant location changes는 셀룰러 기지국 변경 시에만
+                    알림을 받으므로 배터리 소모가 매우 적습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                startUpdatingLocation() with kCLLocationAccuracyBest
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 방법은 가장 정확하지만 배터리 소모도 가장 큽니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                distanceFilter를 1로 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    1미터마다 업데이트를 받으면 
+                    매우 빈번한 처리로 배터리가 빨리 소모됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            activityType을 올바르게 설정하면 어떤 이점이 있나요?
+            
+            @Choice(isCorrect: true) {
+                시스템이 해당 활동에 맞게 위치 추적을 최적화
+                
+                @Justification(reaction: "정확합니다!") {
+                    .fitness로 설정하면 걷기/러닝 패턴에 맞게,
+                    .automotive로 설정하면 운전 패턴에 맞게 최적화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                정확도가 자동으로 최대로 설정됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    activityType은 최적화 힌트이지, 
+                    정확도를 강제하지는 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드 추적이 자동 활성화됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    백그라운드 추적은 별도 설정이 필요합니다.
+                    activityType과는 관련이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            배터리가 20% 미만일 때 추천되는 전략은?
+            
+            @Choice(isCorrect: true) {
+                정확도를 낮추고 업데이트 빈도를 줄임
+                
+                @Justification(reaction: "정답!") {
+                    러닝을 계속할 수 있도록 하면서 배터리를 아끼기 위해
+                    절전 모드로 전환하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                위치 추적을 완전히 중단
+                
+                @Justification(reaction: "아쉽네요") {
+                    갑자기 중단하면 경로 기록이 끊어집니다.
+                    정확도를 낮춰서라도 계속 기록하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아무 변화 없이 계속
+                
+                @Justification(reaction: "아쉽네요") {
+                    배터리가 부족할 때 같은 설정을 유지하면
+                    러닝 도중 배터리가 방전될 수 있습니다.
+                }
+            }
+        }
+    }
+}

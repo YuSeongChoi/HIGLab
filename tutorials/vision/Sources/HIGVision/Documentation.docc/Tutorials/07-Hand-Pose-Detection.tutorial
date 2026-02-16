@@ -1,0 +1,258 @@
+@Tutorial(time: 20) {
+    @Intro(title: "손 & 포즈 감지") {
+        VNDetectHumanHandPoseRequest와 VNDetectHumanBodyPoseRequest로
+        손 제스처와 신체 포즈를 인식합니다.
+    }
+    
+    @Section(title: "손 포즈 감지") {
+        @ContentAndMedia {
+            **VNDetectHumanHandPoseRequest**는 이미지에서 
+            손의 21개 관절 포인트를 감지합니다.
+            
+            손가락 끝, 관절, 손목 등의 위치를 추적해
+            제스처 인식에 활용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 손 포즈 감지 구현**
+                
+                VNDetectHumanHandPoseRequest를 생성하고 
+                손 관절 포인트를 감지합니다.
+                
+                @Code(name: "HandPoseDetector.swift", file: "07-basic-hand-pose.swift")
+            }
+            
+            @Step {
+                **관절 포인트 추출**
+                
+                VNHumanHandPoseObservation에서 
+                각 관절의 위치를 추출합니다.
+                
+                @Code(name: "HandPoseDetector.swift", file: "07-joint-points.swift")
+            }
+            
+            @Step {
+                **손가락별 포인트 접근**
+                
+                thumb, index, middle, ring, little 
+                각 손가락의 관절에 접근합니다.
+                
+                @Code(name: "HandPoseDetector.swift", file: "07-finger-joints.swift")
+            }
+            
+            @Step {
+                **양손 감지**
+                
+                maximumHandCount로 양손을 동시에 감지합니다.
+                
+                @Code(name: "HandPoseDetector.swift", file: "07-both-hands.swift")
+            }
+        }
+    }
+    
+    @Section(title: "제스처 인식") {
+        @ContentAndMedia {
+            감지된 손 포즈를 분석해
+            다양한 제스처를 인식합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **손가락 펴짐 감지**
+                
+                각 손가락이 펴져 있는지 접혀 있는지 판단합니다.
+                
+                @Code(name: "GestureRecognizer.swift", file: "07-finger-extended.swift")
+            }
+            
+            @Step {
+                **기본 제스처 인식**
+                
+                주먹, V사인, 엄지척 등 기본 제스처를 인식합니다.
+                
+                @Code(name: "GestureRecognizer.swift", file: "07-basic-gestures.swift")
+            }
+            
+            @Step {
+                **핀치 제스처**
+                
+                엄지와 검지 사이 거리로 핀치 제스처를 감지합니다.
+                
+                @Code(name: "GestureRecognizer.swift", file: "07-pinch-gesture.swift")
+            }
+            
+            @Step {
+                **손가락 카운팅**
+                
+                펴진 손가락 개수를 세어 숫자를 인식합니다.
+                
+                @Code(name: "GestureRecognizer.swift", file: "07-finger-counting.swift")
+            }
+        }
+    }
+    
+    @Section(title: "신체 포즈 감지") {
+        @ContentAndMedia {
+            **VNDetectHumanBodyPoseRequest**는 
+            전신의 관절 포인트를 감지합니다.
+            
+            운동 자세 분석, 모션 캡처 등에 활용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 신체 포즈 감지**
+                
+                VNDetectHumanBodyPoseRequest를 생성하고 
+                신체 관절을 감지합니다.
+                
+                @Code(name: "BodyPoseDetector.swift", file: "07-basic-body-pose.swift")
+            }
+            
+            @Step {
+                **관절 그룹별 접근**
+                
+                머리, 상체, 하체 등 관절 그룹별로 접근합니다.
+                
+                @Code(name: "BodyPoseDetector.swift", file: "07-body-joint-groups.swift")
+            }
+            
+            @Step {
+                **포즈 시각화**
+                
+                감지된 관절을 선으로 연결해 스켈레톤을 그립니다.
+                
+                @Code(name: "BodyPoseDetector.swift", file: "07-skeleton-drawing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI 구현") {
+        @ContentAndMedia {
+            손과 신체 포즈를 시각적으로 표시하는 UI를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **손 포즈 오버레이**
+                
+                감지된 손 관절을 점과 선으로 표시합니다.
+                
+                @Code(name: "HandPoseOverlay.swift", file: "07-hand-overlay.swift")
+            }
+            
+            @Step {
+                **제스처 상태 표시**
+                
+                인식된 제스처를 텍스트나 이모지로 표시합니다.
+                
+                @Code(name: "GestureDisplayView.swift", file: "07-gesture-display.swift")
+            }
+            
+            @Step {
+                **포즈 감지 뷰 완성**
+                
+                실시간 카메라와 연동할 준비가 된 
+                완전한 포즈 감지 뷰를 구현합니다.
+                
+                @Code(name: "PoseDetectionView.swift", file: "07-pose-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            VNDetectHumanHandPoseRequest가 감지하는 관절 포인트 개수는?
+            
+            @Choice(isCorrect: true) {
+                21개
+                
+                @Justification(reaction: "정답!") {
+                    손바닥 1개 + 손목 1개 + 각 손가락 4개씩(19개) = 21개의
+                    관절 포인트를 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                5개
+                
+                @Justification(reaction: "아쉽네요") {
+                    5개는 손가락 개수입니다.
+                    각 손가락의 여러 관절을 포함해 21개입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                10개
+                
+                @Justification(reaction: "아쉽네요") {
+                    손의 관절 포인트는 21개입니다.
+                    손가락 끝, 관절들, 손목까지 포함합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            핀치 제스처를 감지하려면 어떤 포인트 사이의 거리를 측정해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                엄지 끝(thumbTip)과 검지 끝(indexTip)
+                
+                @Justification(reaction: "정확합니다!") {
+                    핀치 제스처는 엄지와 검지를 모으는 동작이므로,
+                    두 손가락 끝 사이의 거리를 측정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                손목(wrist)과 손바닥(palm)
+                
+                @Justification(reaction: "아쉽네요") {
+                    핀치는 손가락 동작이므로
+                    엄지와 검지 끝 사이 거리를 측정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 손가락 끝 사이
+                
+                @Justification(reaction: "아쉽네요") {
+                    핀치는 엄지와 검지만 사용합니다.
+                    두 손가락 끝 거리만 측정하면 됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            VNDetectHumanBodyPoseRequest로 감지할 수 있는 것은?
+            
+            @Choice(isCorrect: true) {
+                전신 관절 포인트 (머리, 어깨, 팔꿈치, 손목, 엉덩이, 무릎, 발목 등)
+                
+                @Justification(reaction: "정답!") {
+                    Body Pose Request는 머리부터 발목까지
+                    전신의 주요 관절 포인트를 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                얼굴 표정
+                
+                @Justification(reaction: "아쉽네요") {
+                    얼굴 표정은 ARKit의 Face Tracking이 담당합니다.
+                    Body Pose는 신체 관절만 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                손가락 세부 관절
+                
+                @Justification(reaction: "아쉽네요") {
+                    손가락 세부 관절은 VNDetectHumanHandPoseRequest가 담당합니다.
+                    Body Pose는 손목까지만 감지합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,211 @@
+@Tutorial(time: 25) {
+    @Intro(title: "패스 디자인 (pass.json)") {
+        pass.json 파일을 작성하여 멤버십 카드의 
+        외관과 데이터를 정의합니다.
+        
+        @Image(source: "pass-design.png", alt: "패스 디자인")
+    }
+    
+    @Section(title: "pass.json 기본 구조") {
+        @ContentAndMedia {
+            pass.json은 패스의 모든 정보를 담고 있습니다.
+            필수 키와 선택적 키를 올바르게 구성해야 합니다.
+            
+            **필수 키:**
+            - `formatVersion`: 항상 1
+            - `passTypeIdentifier`: 개발자 포털에서 등록한 ID
+            - `serialNumber`: 패스 고유 식별자
+            - `teamIdentifier`: 개발자 팀 ID
+            - `organizationName`: 조직 이름
+            - `description`: 패스 설명 (접근성용)
+        }
+        
+        @Steps {
+            @Step {
+                멤버십 카드의 기본 pass.json 구조를 작성합니다.
+                storeCard 키 아래에 필드들을 정의합니다.
+                
+                @Code(name: "BasicPassJson.swift", file: "03-01-basic-pass.swift")
+            }
+            
+            @Step {
+                패스의 색상 테마를 설정합니다.
+                브랜드 아이덴티티에 맞는 색상을 사용합니다.
+                
+                @Code(name: "PassColors.swift", file: "03-02-colors.swift")
+            }
+        }
+    }
+    
+    @Section(title: "멤버십 카드 필드 구성") {
+        @ContentAndMedia {
+            멤버십 카드에 필요한 정보를 필드로 구성합니다.
+            
+            - **회원 번호**: 바코드로도 표시
+            - **등급**: Gold, Silver, Bronze 등
+            - **포인트**: 누적 포인트 잔액
+            - **가입일**: 회원 가입 날짜
+        }
+        
+        @Steps {
+            @Step {
+                primaryFields에 회원 이름을 배치합니다.
+                가장 눈에 띄는 위치에 표시됩니다.
+                
+                @Code(name: "PrimaryFields.swift", file: "03-03-primary-fields.swift")
+            }
+            
+            @Step {
+                secondaryFields에 포인트와 등급을 표시합니다.
+                업데이트 가능한 동적 정보에 적합합니다.
+                
+                @Code(name: "SecondaryFields.swift", file: "03-04-secondary-fields.swift")
+            }
+            
+            @Step {
+                auxiliaryFields에 가입일과 유효기간을 추가합니다.
+                날짜 형식을 자동으로 현지화합니다.
+                
+                @Code(name: "AuxiliaryFields.swift", file: "03-05-auxiliary-fields.swift")
+            }
+            
+            @Step {
+                backFields에 약관, 고객센터 정보 등을 포함합니다.
+                패스 뒷면에 표시되며, 길이 제한이 없습니다.
+                
+                @Code(name: "BackFields.swift", file: "03-06-back-fields.swift")
+            }
+        }
+    }
+    
+    @Section(title: "바코드 설정") {
+        @ContentAndMedia {
+            바코드는 매장에서 패스를 스캔하는 데 사용됩니다.
+            회원 번호를 인코딩하여 빠른 조회가 가능합니다.
+            
+            QR 코드가 가장 널리 지원되며,
+            fallback으로 PDF417이나 Code128을 추가할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                barcodes 배열에 바코드 정보를 정의합니다.
+                첫 번째 항목이 기본 바코드로 사용됩니다.
+                
+                @Code(name: "BarcodeConfig.swift", file: "03-07-barcode-config.swift")
+            }
+            
+            @Step {
+                바코드 아래에 표시될 텍스트를 설정합니다.
+                회원 번호를 사람이 읽을 수 있도록 표시합니다.
+                
+                @Code(name: "AltText.swift", file: "03-08-alt-text.swift")
+            }
+        }
+    }
+    
+    @Section(title: "위치 및 시간 기반 알림") {
+        @ContentAndMedia {
+            패스는 특정 위치나 시간에 알림을 표시할 수 있습니다.
+            매장 근처에 도착하면 자동으로 패스가 나타납니다.
+            
+            - **locations**: 최대 10개 위치 좌표
+            - **relevantDate**: 유효 날짜/시간
+            - **maxDistance**: 알림 반경 (미터)
+        }
+        
+        @Steps {
+            @Step {
+                매장 위치를 locations 배열에 추가합니다.
+                위도, 경도, relevantText를 포함합니다.
+                
+                @Code(name: "LocationSetup.swift", file: "03-09-locations.swift")
+            }
+            
+            @Step {
+                유효 날짜를 설정해 적절한 시점에 알림을 제공합니다.
+                ISO 8601 형식으로 날짜를 지정합니다.
+                
+                @Code(name: "RelevantDate.swift", file: "03-10-relevant-date.swift")
+            }
+        }
+    }
+    
+    @Section(title: "완성된 pass.json") {
+        @ContentAndMedia {
+            지금까지 배운 모든 요소를 조합하여 
+            완전한 멤버십 카드 pass.json을 작성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                모든 필드와 설정을 포함한 최종 pass.json입니다.
+                이 파일을 기반으로 실제 패스를 생성합니다.
+                
+                @Code(name: "CompletePassJson.swift", file: "03-11-complete-pass.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            pass.json에서 반드시 포함해야 하는 필수 키가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                passTypeIdentifier
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    passTypeIdentifier는 패스를 식별하는 필수 키입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                teamIdentifier
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    teamIdentifier는 개발자를 식별하는 필수 키입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                locations
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    locations는 위치 기반 알림을 위한 
+                    선택적 키입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            패스에서 가장 눈에 띄는 위치에 표시되는 필드 그룹은?
+            
+            @Choice(isCorrect: true) {
+                primaryFields
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    primaryFields는 패스의 메인 영역에 
+                    크게 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                headerFields
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    headerFields는 상단 우측에 작게 표시되며,
+                    주로 잔액이나 포인트에 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                backFields
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    backFields는 패스 뒷면에 표시되어 
+                    기본적으로 보이지 않습니다.
+                }
+            }
+        }
+    }
+}

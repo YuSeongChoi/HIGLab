@@ -1,0 +1,164 @@
+@Tutorial(time: 12) {
+    @Intro(title: "뷰 업데이트 최적화") {
+        세밀한 관찰(Granular Observation)의 장점을 극대화하는 방법을 배웁니다.
+        불필요한 뷰 업데이트를 줄이고 앱 성능을 향상시킵니다.
+    }
+    
+    @Section(title: "세밀한 관찰의 원리") {
+        @ContentAndMedia {
+            Observation의 가장 강력한 기능은 **세밀한 관찰**입니다.
+            뷰는 실제로 읽은 프로퍼티만 관찰하므로,
+            불필요한 업데이트가 자연스럽게 제거됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                Self._printChanges()를 사용해 뷰 업데이트를 추적합니다.
+                어떤 뷰가 언제 다시 그려지는지 확인할 수 있습니다.
+                
+                @Code(name: "PrintChanges.swift", file: "05-print-changes.swift")
+            }
+            
+            @Step {
+                ObservableObject와 @Observable의 업데이트 차이를 비교합니다.
+                동일한 UI에서 업데이트 횟수가 크게 줄어듭니다.
+                
+                @Code(name: "UpdateComparison.swift", file: "05-update-comparison.swift")
+            }
+            
+            @Step {
+                조건부 읽기를 활용한 최적화입니다.
+                프로퍼티를 읽지 않으면 추적되지 않습니다!
+                
+                @Code(name: "ConditionalReading.swift", file: "05-conditional-reading.swift")
+            }
+        }
+    }
+    
+    @Section(title: "뷰 분리 전략") {
+        @ContentAndMedia {
+            최적화의 핵심은 **작은 뷰로 분리**하는 것입니다.
+            각 뷰가 필요한 프로퍼티만 읽도록 설계합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **안티패턴**: 하나의 큰 뷰에서 모든 것을 처리
+                
+                어떤 프로퍼티가 바뀌어도 전체 뷰가 다시 그려집니다.
+                
+                @Code(name: "BadMonolithicView.swift", file: "05-bad-monolithic.swift")
+            }
+            
+            @Step {
+                **권장 패턴**: 작은 뷰로 분리
+                
+                각 뷰가 관련 프로퍼티만 읽어 독립적으로 업데이트됩니다.
+                
+                @Code(name: "GoodSeparatedViews.swift", file: "05-good-separated.swift")
+            }
+            
+            @Step {
+                성능 측정: Instruments의 SwiftUI 프로파일러 사용법
+                
+                실제 앱에서 뷰 업데이트 횟수와 시간을 측정합니다.
+                
+                @Code(name: "PerformanceTips.swift", file: "05-performance-tips.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 성능 최적화 적용") {
+        @ContentAndMedia {
+            CartFlow 앱에 뷰 분리 전략을 적용하여
+            장바구니 화면의 성능을 개선합니다.
+        }
+        
+        @Steps {
+            @Step {
+                장바구니 요약 영역을 별도 뷰로 분리합니다.
+                수량 변경 시 전체 리스트가 아닌 요약만 업데이트됩니다.
+                
+                @Code(name: "CartSummary.swift", file: "05-cart-summary.swift")
+            }
+            
+            @Step {
+                상품 행도 최적화합니다.
+                이미지, 정보, 수량 조절을 각각 분리합니다.
+                
+                @Code(name: "OptimizedItemRow.swift", file: "05-optimized-row.swift")
+            }
+            
+            @Step {
+                최종 최적화된 장바구니 뷰입니다.
+                각 영역이 독립적으로 업데이트됩니다.
+                
+                @Code(name: "OptimizedCartView.swift", file: "05-optimized-cart.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            뷰 업데이트를 최소화하는 가장 효과적인 방법은?
+            
+            @Choice(isCorrect: true) {
+                각 뷰가 필요한 프로퍼티만 읽도록 작은 뷰로 분리
+                
+                @Justification(reaction: "정답!") {
+                    작은 뷰로 분리하면 각 뷰가 관련 프로퍼티만 추적하므로
+                    불필요한 업데이트가 자연스럽게 제거됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @ObservationIgnored를 최대한 많이 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    @ObservationIgnored는 추적을 완전히 끄므로,
+                    필요한 업데이트까지 막을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 상태를 하나의 큰 객체에 모음
+                
+                @Justification(reaction: "아쉽네요") {
+                    하나의 큰 객체보다 적절히 분리된 작은 객체들이
+                    더 세밀한 업데이트를 가능하게 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Self._printChanges()의 용도는?
+            
+            @Choice(isCorrect: true) {
+                디버깅 - 뷰가 언제 왜 업데이트되는지 확인
+                
+                @Justification(reaction: "완벽합니다!") {
+                    _printChanges()는 뷰 업데이트 시 콘솔에 정보를 출력하여
+                    불필요한 업데이트를 찾는 데 도움을 줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능 최적화 - 뷰 업데이트 속도 향상
+                
+                @Justification(reaction: "아쉽네요") {
+                    _printChanges()는 디버깅 도구이며,
+                    성능을 직접 개선하지는 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                필수 설정 - 모든 뷰에 반드시 추가
+                
+                @Justification(reaction: "아쉽네요") {
+                    _printChanges()는 선택적 디버깅 도구입니다.
+                    프로덕션에서는 제거하는 것이 좋습니다.
+                }
+            }
+        }
+    }
+}

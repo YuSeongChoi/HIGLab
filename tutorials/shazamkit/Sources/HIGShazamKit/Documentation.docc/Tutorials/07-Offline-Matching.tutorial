@@ -1,0 +1,239 @@
+@Tutorial(time: 15) {
+    @Intro(title: "오프라인 매칭") {
+        네트워크 없이 로컬 카탈로그로 매칭하는 방법을 구현합니다.
+        커스텀 카탈로그를 활용한 오프라인 경험을 제공합니다.
+    }
+    
+    @Section(title: "오프라인 매칭의 필요성") {
+        @ContentAndMedia {
+            인터넷 연결 없이도 오디오 인식이 필요한 경우가 있습니다:
+            
+            - 비행기 모드에서의 사용
+            - 지하철, 엘리베이터 등 연결이 불안정한 환경
+            - 개인정보 보호가 중요한 경우
+            - 박물관, 전시관 등 폐쇄된 환경
+        }
+        
+        @Steps {
+            @Step {
+                **Shazam 카탈로그 vs 커스텀 카탈로그**
+                
+                Shazam 공식 카탈로그는 네트워크가 필요합니다.
+                커스텀 카탈로그는 완전히 오프라인으로 동작합니다.
+                
+                @Code(name: "CatalogComparison.swift", file: "07-catalog-comparison.swift")
+            }
+            
+            @Step {
+                **오프라인 아키텍처 설계**
+                
+                오프라인 우선 아키텍처를 설계합니다.
+                네트워크 상태에 따라 카탈로그를 선택합니다.
+                
+                @Code(name: "OfflineArchitecture.swift", file: "07-offline-architecture.swift")
+            }
+        }
+    }
+    
+    @Section(title: "로컬 카탈로그 준비") {
+        @ContentAndMedia {
+            앱에 번들할 오프라인 카탈로그를 준비합니다.
+            빌드 시 카탈로그를 미리 생성해 포함합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **카탈로그 빌드 스크립트**
+                
+                오디오 파일들에서 카탈로그를 생성하는 
+                커맨드라인 도구를 만듭니다.
+                
+                @Code(name: "CatalogBuilder.swift", file: "07-catalog-builder.swift")
+            }
+            
+            @Step {
+                **앱 번들에 카탈로그 포함**
+                
+                생성된 .shazamcatalog 파일을 
+                Xcode 프로젝트에 추가합니다.
+                
+                @Code(name: "BundleInclude.swift", file: "07-bundle-include.swift")
+            }
+            
+            @Step {
+                **번들 카탈로그 로드**
+                
+                앱 시작 시 번들에서 카탈로그를 로드합니다.
+                로드 실패 시 폴백 처리를 합니다.
+                
+                @Code(name: "LoadBundleCatalog.swift", file: "07-load-bundle-catalog.swift")
+            }
+        }
+    }
+    
+    @Section(title: "오프라인 매칭 구현") {
+        @ContentAndMedia {
+            SHSession과 커스텀 카탈로그를 사용해 
+            오프라인 매칭을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **OfflineMatcher 클래스**
+                
+                오프라인 전용 매칭 클래스를 만듭니다.
+                커스텀 카탈로그와 SHSession을 사용합니다.
+                
+                @Code(name: "OfflineMatcher.swift", file: "07-offline-matcher.swift")
+            }
+            
+            @Step {
+                **AVAudioEngine 통합**
+                
+                SHManagedSession 없이 AVAudioEngine으로 
+                직접 오디오를 캡처합니다.
+                
+                @Code(name: "AudioEngineIntegration.swift", file: "07-audio-engine.swift")
+            }
+            
+            @Step {
+                **매칭 델리게이트 구현**
+                
+                SHSessionDelegate로 매칭 결과를 받습니다.
+                session(_:didFind:)와 session(_:didNotFindMatchFor:)를 구현합니다.
+                
+                @Code(name: "SessionDelegate.swift", file: "07-session-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "하이브리드 매칭 전략") {
+        @ContentAndMedia {
+            온라인과 오프라인을 조합한 하이브리드 전략을 구현합니다.
+            네트워크 상태에 따라 자동으로 전환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **네트워크 상태 감지**
+                
+                NWPathMonitor로 네트워크 상태를 실시간 감지합니다.
+                연결 상태에 따라 매칭 전략을 변경합니다.
+                
+                @Code(name: "NetworkMonitor.swift", file: "07-network-monitor.swift")
+            }
+            
+            @Step {
+                **HybridMatcher 구현**
+                
+                온라인/오프라인 매칭을 통합하는 클래스입니다.
+                오프라인 우선으로 시도하고 실패 시 온라인으로 전환합니다.
+                
+                @Code(name: "HybridMatcher.swift", file: "07-hybrid-matcher.swift")
+            }
+            
+            @Step {
+                **캐싱 전략**
+                
+                온라인에서 인식한 결과를 로컬에 캐싱합니다.
+                다음 번 같은 곡은 오프라인으로 인식됩니다.
+                
+                @Code(name: "CachingStrategy.swift", file: "07-caching-strategy.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            오프라인 매칭에 반드시 필요한 것은?
+            
+            @Choice(isCorrect: true) {
+                커스텀 카탈로그 (SHCustomCatalog)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    Shazam 공식 카탈로그는 네트워크가 필요하므로,
+                    오프라인에서는 커스텀 카탈로그를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHManagedSession
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHManagedSession은 Shazam 카탈로그를 기본으로 사용합니다.
+                    오프라인에는 SHSession + 커스텀 카탈로그가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SHLibrary
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHLibrary는 히스토리 관리용입니다.
+                    오프라인 매칭에는 커스텀 카탈로그가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SHSession에서 매칭 결과를 받는 방법은?
+            
+            @Choice(isCorrect: true) {
+                SHSessionDelegate 프로토콜 구현
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    SHSessionDelegate의 session(_:didFind:)와 
+                    session(_:didNotFindMatchFor:)로 결과를 받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                result() async 메서드 호출
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    result()는 SHManagedSession의 메서드입니다.
+                    SHSession은 델리게이트 패턴을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                클로저 콜백 등록
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    SHSession은 델리게이트 패턴을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            네트워크 상태를 실시간으로 감지하는 클래스는?
+            
+            @Choice(isCorrect: true) {
+                NWPathMonitor
+                
+                @Justification(reaction: "정답! 🎉") {
+                    Network 프레임워크의 NWPathMonitor로 
+                    네트워크 상태 변화를 실시간으로 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Reachability
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    Reachability는 서드파티 라이브러리입니다.
+                    Apple 공식 API는 NWPathMonitor입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                URLSession.shared.networkStatus
+                
+                @Justification(reaction: "아쉽네요 😅") {
+                    URLSession에는 networkStatus가 없습니다.
+                    NWPathMonitor를 사용하세요.
+                }
+            }
+        }
+    }
+}

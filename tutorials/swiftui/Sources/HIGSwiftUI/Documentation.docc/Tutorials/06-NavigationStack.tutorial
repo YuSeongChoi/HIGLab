@@ -1,0 +1,248 @@
+@Tutorial(time: 20) {
+    @Intro(title: "NavigationStack으로 화면 전환") {
+        앱 내 화면 이동을 구현하는 방법을 배웁니다.
+        NavigationStack, NavigationLink, navigationDestination을 
+        마스터하고, 레시피 상세 화면으로의 이동을 구현합니다.
+    }
+    
+    @Section(title: "NavigationStack 기초") {
+        @ContentAndMedia {
+            **NavigationStack**은 iOS 16에서 도입된 
+            새로운 네비게이션 컨테이너입니다.
+            
+            기존 NavigationView를 대체하며,
+            더 강력한 프로그래매틱 네비게이션을 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **NavigationStack 기본 구조**
+                
+                NavigationStack으로 뷰를 감싸면
+                네비게이션 바가 자동으로 추가됩니다.
+                
+                @Code(name: "NavigationBasic.swift", file: "06-nav-basic.swift")
+            }
+            
+            @Step {
+                **네비게이션 타이틀 설정**
+                
+                `.navigationTitle()`로 제목을 설정합니다.
+                `.navigationBarTitleDisplayMode()`로 크기를 조절합니다.
+                
+                - `.large`: 큰 제목 (기본)
+                - `.inline`: 작은 제목
+                - `.automatic`: 시스템 결정
+                
+                @Code(name: "NavigationTitle.swift", file: "06-nav-title.swift")
+            }
+            
+            @Step {
+                **툴바 버튼 추가**
+                
+                `.toolbar`로 네비게이션 바에 버튼을 추가합니다.
+                
+                - `placement: .topBarTrailing`: 우상단
+                - `placement: .topBarLeading`: 좌상단
+                - `placement: .bottomBar`: 하단
+                
+                @Code(name: "NavigationToolbar.swift", file: "06-nav-toolbar.swift")
+            }
+        }
+    }
+    
+    @Section(title: "NavigationLink로 화면 이동") {
+        @ContentAndMedia {
+            **NavigationLink**는 탭하면 다음 화면으로 이동하는 뷰입니다.
+            
+            두 가지 방식으로 사용합니다:
+            1. 값 기반: destination을 나중에 정의
+            2. 직접 정의: destination을 즉시 정의
+        }
+        
+        @Steps {
+            @Step {
+                **기본 NavigationLink**
+                
+                가장 간단한 형태입니다.
+                탭하면 destination 뷰로 이동합니다.
+                
+                @Code(name: "NavigationLinkBasic.swift", file: "06-link-basic.swift")
+            }
+            
+            @Step {
+                **값 기반 NavigationLink (권장)**
+                
+                iOS 16+ 권장 방식입니다.
+                `NavigationLink(value:)`로 값을 전달하고,
+                `.navigationDestination(for:)`에서 화면을 정의합니다.
+                
+                이 방식이 코드 재사용과 딥링크에 유리합니다.
+                
+                @Code(name: "NavigationLinkValue.swift", file: "06-link-value.swift")
+            }
+            
+            @Step {
+                **여러 타입의 destination 처리**
+                
+                여러 타입의 navigationDestination을 정의할 수 있습니다.
+                각 타입에 맞는 화면으로 이동합니다.
+                
+                @Code(name: "NavigationMultiDestination.swift", file: "06-link-multi.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로그래매틱 네비게이션") {
+        @ContentAndMedia {
+            코드로 네비게이션을 제어하는 방법입니다.
+            
+            버튼 탭, 특정 조건 충족 등
+            사용자 탭 외의 상황에서 화면을 전환할 때 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Navigation Path 사용**
+                
+                `NavigationPath`를 @State로 관리하면
+                push, pop을 코드로 제어할 수 있습니다.
+                
+                @Code(name: "NavigationPath.swift", file: "06-nav-path.swift")
+            }
+            
+            @Step {
+                **특정 화면으로 즉시 이동**
+                
+                path에 값을 append하면 해당 화면으로 이동합니다.
+                여러 값을 한번에 추가하면 스택이 쌓입니다.
+                
+                @Code(name: "ProgrammaticPush.swift", file: "06-nav-push.swift")
+            }
+            
+            @Step {
+                **루트로 돌아가기**
+                
+                path를 초기화하면 루트 화면으로 돌아갑니다.
+                popLast()로 한 단계씩 뒤로 갈 수도 있습니다.
+                
+                @Code(name: "NavigationPop.swift", file: "06-nav-pop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: 네비게이션 구현") {
+        @ContentAndMedia {
+            ChefBook의 화면 전환을 구현합니다!
+            
+            - 목록 → 레시피 상세
+            - 상세 → 요리 시작 (단계별 가이드)
+            - 어디서든 홈으로 돌아가기
+        }
+        
+        @Steps {
+            @Step {
+                **앱 루트에 NavigationStack 추가**
+                
+                앱 전체를 NavigationStack으로 감쌉니다.
+                NavigationPath를 상태로 관리합니다.
+                
+                @Code(name: "ChefBookApp.swift", file: "06-chefbook-root.swift")
+            }
+            
+            @Step {
+                **목록에서 상세로 이동**
+                
+                레시피 카드를 NavigationLink로 감쌉니다.
+                Recipe를 value로 전달합니다.
+                
+                @Code(name: "RecipeListView.swift", file: "06-chefbook-list.swift")
+            }
+            
+            @Step {
+                **레시피 상세 화면**
+                
+                .navigationDestination(for: Recipe.self)로
+                상세 화면을 정의합니다.
+                
+                @Code(name: "RecipeDetailView.swift", file: "06-chefbook-detail.swift")
+            }
+            
+            @Step {
+                **요리 시작 버튼**
+                
+                상세 화면에서 "요리 시작" 버튼을 탭하면
+                단계별 가이드 화면으로 이동합니다.
+                
+                프로그래매틱 네비게이션을 활용합니다.
+                
+                @Code(name: "CookingView.swift", file: "06-chefbook-cooking.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            NavigationStack과 NavigationView의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                NavigationStack은 프로그래매틱 네비게이션과 딥링크를 더 잘 지원
+                
+                @Justification(reaction: "정답! 🎯") {
+                    NavigationPath를 통한 프로그래매틱 제어와
+                    값 기반 navigationDestination이 핵심 차이점입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기능은 같고 이름만 바뀌었다
+                
+                @Justification(reaction: "아쉽네요") {
+                    NavigationStack은 새로운 기능을 많이 추가했습니다.
+                    특히 프로그래매틱 네비게이션이 크게 개선되었습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NavigationView가 더 많은 기능을 제공
+                
+                @Justification(reaction: "아쉽네요") {
+                    반대입니다. NavigationStack이 더 현대적이고
+                    강력한 기능을 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            값 기반 NavigationLink의 장점은?
+            
+            @Choice(isCorrect: true) {
+                destination을 중앙에서 관리하여 코드 재사용과 딥링크에 유리
+                
+                @Justification(reaction: "완벽해요! ⭐") {
+                    navigationDestination(for:)에서 
+                    모든 destination을 한 곳에서 정의하므로
+                    일관성 있는 네비게이션 관리가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성능이 더 좋다
+                
+                @Justification(reaction: "아쉽네요") {
+                    성능 차이보다는 코드 구조와
+                    유지보수성에서 장점이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                애니메이션이 더 부드럽다
+                
+                @Justification(reaction: "아쉽네요") {
+                    애니메이션은 동일합니다.
+                    장점은 코드 구조에 있습니다.
+                }
+            }
+        }
+    }
+}

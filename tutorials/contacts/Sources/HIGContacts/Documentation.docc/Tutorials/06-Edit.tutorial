@@ -1,0 +1,152 @@
+@Tutorial(time: 12) {
+    @Intro(title: "연락처 수정 & 삭제") {
+        기존 연락처를 수정하고 
+        삭제하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "연락처 수정") {
+        @ContentAndMedia {
+            기존 `CNContact`를 `CNMutableContact`로 변환하여 
+            정보를 수정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                수정할 연락처를 가져옵니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-01-fetch.swift")
+            }
+            
+            @Step {
+                CNMutableContact로 변환합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-02-mutable.swift")
+            }
+            
+            @Step {
+                정보를 수정합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-03-modify.swift")
+            }
+            
+            @Step {
+                CNSaveRequest로 변경사항을 저장합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-04-update.swift")
+            }
+        }
+    }
+    
+    @Section(title: "전화번호/이메일 수정") {
+        @ContentAndMedia {
+            `CNLabeledValue`는 불변이므로 
+            새로운 배열을 만들어 교체합니다.
+        }
+        
+        @Steps {
+            @Step {
+                전화번호를 추가합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-05-add-phone.swift")
+            }
+            
+            @Step {
+                특정 전화번호를 수정합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-06-edit-phone.swift")
+            }
+            
+            @Step {
+                전화번호를 삭제합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-07-remove-phone.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연락처 삭제") {
+        @ContentAndMedia {
+            연락처를 영구적으로 삭제하는 방법을 배웁니다.
+        }
+        
+        @Steps {
+            @Step {
+                삭제할 연락처를 CNSaveRequest에 추가합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-08-delete.swift")
+            }
+            
+            @Step {
+                삭제 전 확인 대화상자를 표시합니다.
+                
+                @Code(name: "ContactManager.swift", file: "06-09-confirm.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 편집 화면을 구현합니다.
+                
+                @Code(name: "EditContactView.swift", file: "06-10-edit-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CNContact를 수정하기 위해 가장 먼저 해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                `mutableCopy()`로 CNMutableContact 생성
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    CNContact는 불변이므로 mutableCopy()로 
+                    수정 가능한 복사본을 만들어야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                직접 프로퍼티 수정
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CNContact의 프로퍼티는 읽기 전용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                새 CNContact 생성 후 교체
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    기존 연락처를 수정하려면 mutableCopy()를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            연락처를 삭제할 때 사용하는 메서드는?
+            
+            @Choice(isCorrect: false) {
+                `CNContactStore.delete(_:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CNContactStore에는 직접 삭제 메서드가 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `CNSaveRequest.delete(_:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    CNSaveRequest에 삭제할 연락처를 추가한 후 
+                    execute로 실행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CNMutableContact.delete()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    연락처 자체에는 delete 메서드가 없습니다.
+                }
+            }
+        }
+    }
+}

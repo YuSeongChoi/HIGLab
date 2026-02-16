@@ -1,0 +1,162 @@
+@Tutorial(time: 10) {
+    @Intro(title: "TipKit 소개 & 온보딩 UX 철학") {
+        Apple TipKit의 핵심 철학과 효과적인 온보딩 UX 원칙을 학습합니다.
+        언제, 어디서, 어떻게 팁을 보여줘야 하는지 이해합니다.
+    }
+    
+    @Section(title: "TipKit이란?") {
+        @ContentAndMedia {
+            TipKit은 iOS 17, macOS 14에서 도입된 프레임워크로,
+            **앱 기능을 사용자에게 자연스럽게 안내**하는 시스템입니다.
+            
+            기존 온보딩 방식의 문제점:
+            - 앱 첫 실행 시 모든 기능을 한꺼번에 설명
+            - 사용자가 실제로 필요할 때는 이미 잊어버림
+            - 강제적인 튜토리얼로 사용자 이탈 유발
+        }
+        
+        @Steps {
+            @Step {
+                **TipKit의 핵심 가치: 적시적소(Just-in-time)**
+                
+                TipKit은 사용자가 **기능을 사용하려는 순간**에 
+                맥락에 맞는 팁을 보여줍니다.
+                
+                예: 사진 편집 버튼 옆에 "더블탭으로 원본 비교" 팁 표시
+                
+                @Code(name: "JustInTimeExample.swift", file: "01-just-in-time.swift")
+            }
+            
+            @Step {
+                **비침습적(Non-intrusive) 디자인**
+                
+                팁은 화면을 차지하지 않고, 사용자 작업을 방해하지 않습니다.
+                언제든 무시하거나 닫을 수 있으며, 
+                시스템이 자동으로 표시 빈도를 조절합니다.
+                
+                @Code(name: "NonIntrusiveExample.swift", file: "01-non-intrusive.swift")
+            }
+            
+            @Step {
+                **스마트한 표시 로직**
+                
+                TipKit은 자동으로 다음을 처리합니다:
+                - 한 번에 하나의 팁만 표시
+                - 이미 본 팁 다시 표시 안 함
+                - 기기 간 팁 상태 동기화 (iCloud)
+                
+                @Code(name: "SmartDisplayExample.swift", file: "01-smart-display.swift")
+            }
+        }
+    }
+    
+    @Section(title: "온보딩 UX 원칙") {
+        @ContentAndMedia {
+            Apple HIG가 권장하는 온보딩 팁의 4가지 원칙을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **1. 발견 가능성 (Discoverability)**
+                
+                숨겨진 기능, 제스처, 단축키를 사용자가 발견하도록 도와줍니다.
+                "몰랐던 기능"을 알려주는 것이 팁의 핵심 역할입니다.
+                
+                @Code(name: "Discoverability.swift", file: "01-discoverability.swift")
+            }
+            
+            @Step {
+                **2. 맥락 적합성 (Contextual Relevance)**
+                
+                팁은 해당 기능이 **화면에 보일 때** 표시되어야 합니다.
+                설정 화면에서 편집 기능 팁을 보여주면 안 됩니다.
+                
+                @Code(name: "Contextual.swift", file: "01-contextual.swift")
+            }
+            
+            @Step {
+                **3. 점진적 공개 (Progressive Disclosure)**
+                
+                모든 팁을 한꺼번에 보여주지 마세요.
+                사용자의 숙련도에 따라 **단계별로** 팁을 공개합니다.
+                
+                - 초보자: 기본 기능 팁
+                - 중급자: 효율성 팁  
+                - 고급자: 파워 유저 팁
+                
+                @Code(name: "Progressive.swift", file: "01-progressive.swift")
+            }
+            
+            @Step {
+                **4. 존중 (Respect)**
+                
+                사용자가 팁을 닫으면, 존중하세요.
+                같은 팁을 반복해서 보여주면 짜증을 유발합니다.
+                
+                TipKit은 기본적으로 닫힌 팁을 다시 표시하지 않습니다.
+                
+                @Code(name: "Respect.swift", file: "01-respect.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            TipKit의 핵심 철학은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                적시적소(Just-in-time) — 기능을 사용하려는 순간에 팁 표시
+                
+                @Justification(reaction: "정답!") {
+                    TipKit은 사용자가 실제로 기능을 사용하려는 맥락에서 
+                    팁을 보여주어 학습 효과를 극대화합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 첫 실행 시 모든 기능을 한꺼번에 설명
+                
+                @Justification(reaction: "아쉽네요") {
+                    이것은 전통적인 온보딩 방식으로, TipKit이 해결하려는 문제입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사용자가 요청할 때만 도움말 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    TipKit은 사용자가 요청하지 않아도 
+                    적절한 시점에 프로액티브하게 팁을 보여줍니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            다음 중 좋은 팁 표시 시점은?
+            
+            @Choice(isCorrect: true) {
+                사진 편집 화면에서 편집 기능 팁 표시
+                
+                @Justification(reaction: "정확합니다!") {
+                    맥락 적합성 원칙에 따라, 해당 기능이 화면에 보일 때 팁을 표시해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 설정 화면에서 편집 기능 팁 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    팁은 해당 기능과 관련 있는 맥락에서 표시되어야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 시작 직후 모든 팁을 순서대로 표시
+                
+                @Justification(reaction: "아쉽네요") {
+                    점진적 공개 원칙에 따라, 팁은 맥락에 맞게 단계별로 표시해야 합니다.
+                }
+            }
+        }
+    }
+}

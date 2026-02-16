@@ -1,0 +1,204 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Tips.configure() 설정") {
+        Tips.configure()의 다양한 옵션을 이해하고
+        앱에 최적화된 TipKit 설정을 구성합니다.
+    }
+    
+    @Section(title: "기본 설정") {
+        @ContentAndMedia {
+            앱 시작 시 `Tips.configure()`를 호출하여
+            TipKit을 초기화합니다.
+            
+            이 설정 없이는 팁이 표시되지 않습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 configure 호출**
+                
+                App의 `init()` 또는 첫 번째 Scene에서 호출합니다.
+                async/await 또는 Task로 감싸야 합니다.
+                
+                @Code(name: "TipKitDemoApp.swift", file: "09-basic-configure.swift")
+            }
+            
+            @Step {
+                **Scene에서 task로 호출**
+                
+                `.task` 모디파이어를 활용하여 
+                앱 시작 시 한 번만 호출합니다.
+                
+                @Code(name: "ContentView.swift", file: "09-task-configure.swift")
+            }
+        }
+    }
+    
+    @Section(title: "DatastoreLocation 설정") {
+        @ContentAndMedia {
+            팁 데이터의 저장 위치를 설정합니다.
+            iCloud 동기화, App Group 공유 등을 구성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 저장소**
+                
+                기본적으로 앱의 Documents 디렉토리에 저장됩니다.
+                단일 앱에서만 팁을 사용한다면 이대로 충분합니다.
+                
+                @Code(name: "DefaultDatastore.swift", file: "09-default-datastore.swift")
+            }
+            
+            @Step {
+                **App Group 공유**
+                
+                메인 앱과 Extension이 팁 상태를 공유하려면
+                App Group 경로를 지정합니다.
+                
+                @Code(name: "SharedDatastore.swift", file: "09-appgroup-datastore.swift")
+            }
+            
+            @Step {
+                **CloudKit 동기화**
+                
+                `.cloudKitContainer()`로 iCloud를 통해
+                사용자의 모든 기기에서 팁 상태를 동기화합니다.
+                
+                @Code(name: "CloudDatastore.swift", file: "09-cloudkit-datastore.swift")
+            }
+        }
+    }
+    
+    @Section(title: "표시 빈도 설정") {
+        @ContentAndMedia {
+            displayFrequency로 팁 표시 빈도를 제어합니다.
+            사용자가 팁에 압도되지 않도록 조절합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **displayFrequency 옵션**
+                
+                - `.immediate`: 조건 충족 즉시 표시 (기본값)
+                - `.hourly`: 1시간에 하나의 팁만
+                - `.daily`: 하루에 하나의 팁만
+                - `.weekly`: 일주일에 하나의 팁만
+                - `.monthly`: 한 달에 하나의 팁만
+                
+                @Code(name: "FrequencyConfig.swift", file: "09-display-frequency.swift")
+            }
+            
+            @Step {
+                **커스텀 간격**
+                
+                TimeInterval로 원하는 간격을 직접 지정합니다.
+                
+                @Code(name: "CustomFrequency.swift", file: "09-custom-frequency.swift")
+            }
+            
+            @Step {
+                **팁별 빈도 오버라이드**
+                
+                특정 팁에 `IgnoresDisplayFrequency`를 설정하면
+                전역 빈도 제한을 무시합니다.
+                
+                @Code(name: "IgnoreFrequency.swift", file: "09-ignore-global-frequency.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실전 설정 패턴") {
+        @ContentAndMedia {
+            다양한 앱 유형에 적합한 설정 패턴입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **생산성 앱 설정**
+                
+                신규 사용자는 빈번하게, 기존 사용자는 드물게 팁 표시.
+                CloudKit으로 기기 간 동기화.
+                
+                @Code(name: "ProductivityAppConfig.swift", file: "09-productivity-config.swift")
+            }
+            
+            @Step {
+                **게임 앱 설정**
+                
+                레벨업 등 특정 이벤트에만 팁 표시.
+                빈도 제한 없이 즉시 표시.
+                
+                @Code(name: "GameAppConfig.swift", file: "09-game-config.swift")
+            }
+            
+            @Step {
+                **위젯 포함 앱 설정**
+                
+                App Group으로 앱과 위젯이 상태 공유.
+                위젯에서 본 팁은 앱에서 다시 표시 안 함.
+                
+                @Code(name: "WidgetAppConfig.swift", file: "09-widget-config.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Tips.configure()를 호출해야 하는 시점은?
+            
+            @Choice(isCorrect: true) {
+                앱 시작 시 (App init 또는 첫 Scene의 task)
+                
+                @Justification(reaction: "정답!") {
+                    TipKit을 사용하기 전에 반드시 configure를 호출해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                팁을 표시하기 직전
+                
+                @Justification(reaction: "아쉽네요") {
+                    앱 시작 시 한 번만 호출해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                호출할 필요 없음 (자동 초기화)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Tips.configure() 없이는 팁이 표시되지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            하루에 하나의 팁만 표시하도록 설정하는 방법은?
+            
+            @Choice(isCorrect: true) {
+                Tips.configure { configuration in
+                    configuration.displayFrequency = .daily
+                }
+                
+                @Justification(reaction: "정확합니다!") {
+                    displayFrequency를 .daily로 설정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Tips.configure(maxTipsPerDay: 1)
+                
+                @Justification(reaction: "아쉽네요") {
+                    maxTipsPerDay가 아닌 displayFrequency를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Tips.dailyLimit = 1
+                
+                @Justification(reaction: "아쉽네요") {
+                    configure 클로저 내에서 displayFrequency를 설정합니다.
+                }
+            }
+        }
+    }
+}

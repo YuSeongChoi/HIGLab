@@ -1,0 +1,217 @@
+@Tutorial(time: 25) {
+    @Intro(title: "결제 처리") {
+        결제 인증 후 토큰을 처리하고 
+        서버에서 거래를 완료하는 방법을 배웁니다.
+        
+        @Image(source: "payment-processing.png", alt: "결제 처리")
+    }
+    
+    @Section(title: "결제 시트 표시") {
+        @ContentAndMedia {
+            PKPaymentAuthorizationController를 사용해 
+            Apple Pay 결제 시트를 표시합니다.
+            
+            SwiftUI에서는 `.payWithApplePayButton` 또는
+            직접 UIViewControllerRepresentable을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKPaymentAuthorizationController를 생성하고 표시합니다.
+                결제 요청의 유효성 검사가 자동으로 수행됩니다.
+                
+                @Code(name: "ShowSheet.swift", file: "08-01-show-sheet.swift")
+            }
+            
+            @Step {
+                delegate를 구현해 결제 이벤트를 처리합니다.
+                필수 메서드 두 가지를 구현해야 합니다.
+                
+                @Code(name: "Delegate.swift", file: "08-02-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 토큰 처리") {
+        @ContentAndMedia {
+            사용자가 Face ID/Touch ID로 인증하면 
+            PKPayment 객체가 전달됩니다.
+            
+            **PKPayment 포함 정보:**
+            - token: 암호화된 결제 정보
+            - billingContact: 청구 주소 (요청 시)
+            - shippingContact: 배송 주소 (요청 시)
+            - shippingMethod: 선택된 배송 방법
+        }
+        
+        @Steps {
+            @Step {
+                didAuthorizePayment에서 결제 정보를 받습니다.
+                이 시점에서 서버로 토큰을 전송합니다.
+                
+                @Code(name: "ReceivePayment.swift", file: "08-03-receive-payment.swift")
+            }
+            
+            @Step {
+                PKPaymentToken의 paymentData를 서버로 전송합니다.
+                Base64 인코딩된 JSON 형식입니다.
+                
+                @Code(name: "SendToken.swift", file: "08-04-send-token.swift")
+            }
+            
+            @Step {
+                서버에서 PG사를 통해 실제 결제를 처리합니다.
+                처리 결과에 따라 completion handler를 호출합니다.
+                
+                @Code(name: "ProcessPayment.swift", file: "08-05-process-payment.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 결과 처리") {
+        @ContentAndMedia {
+            서버 응답에 따라 적절한 결과를 반환해야 합니다.
+            
+            **PKPaymentAuthorizationResult:**
+            - `.success`: 결제 성공
+            - `.failure`: 결제 실패
+            
+            실패 시 사유를 errors 배열로 제공할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                성공 시 .success 상태를 반환합니다.
+                결제 시트가 체크마크 애니메이션과 함께 닫힙니다.
+                
+                @Code(name: "SuccessResult.swift", file: "08-06-success-result.swift")
+            }
+            
+            @Step {
+                실패 시 에러 정보와 함께 .failure를 반환합니다.
+                사용자에게 실패 사유가 표시됩니다.
+                
+                @Code(name: "FailureResult.swift", file: "08-07-failure-result.swift")
+            }
+            
+            @Step {
+                특정 필드의 오류를 상세히 표시합니다.
+                주소, 연락처 등의 문제를 정확히 알려줍니다.
+                
+                @Code(name: "FieldErrors.swift", file: "08-08-field-errors.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결제 완료 후 처리") {
+        @ContentAndMedia {
+            didFinish 메서드에서 결제 시트 닫힘을 처리합니다.
+            성공/실패 여부와 관계없이 항상 호출됩니다.
+            
+            이 시점에서 UI 갱신, 주문 확인 화면 이동 등을 수행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                paymentAuthorizationControllerDidFinish에서 
+                결제 시트를 명시적으로 닫습니다.
+                
+                @Code(name: "DidFinish.swift", file: "08-09-did-finish.swift")
+            }
+            
+            @Step {
+                결제 성공 시 주문 확인 화면으로 이동합니다.
+                저장된 결제 정보를 기반으로 주문 내역을 표시합니다.
+                
+                @Code(name: "OrderConfirmation.swift", file: "08-10-order-confirmation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI 통합") {
+        @ContentAndMedia {
+            SwiftUI에서 Apple Pay 결제를 깔끔하게 통합하는 방법입니다.
+            ObservableObject로 결제 상태를 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PaymentHandler를 ObservableObject로 구현합니다.
+                결제 상태를 @Published 프로퍼티로 관리합니다.
+                
+                @Code(name: "PaymentHandler.swift", file: "08-11-payment-handler.swift")
+            }
+            
+            @Step {
+                SwiftUI View에서 PaymentHandler를 사용합니다.
+                결제 상태에 따라 적절한 UI를 표시합니다.
+                
+                @Code(name: "PaymentView.swift", file: "08-12-payment-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            didAuthorizePayment에서 받는 PKPayment에 포함된 것은?
+            
+            @Choice(isCorrect: true) {
+                암호화된 결제 토큰
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    PKPayment.token.paymentData에 암호화된 
+                    결제 정보가 포함되어 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실제 카드 번호
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    Apple Pay는 실제 카드 번호를 절대 
+                    앱에 전달하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                결제 완료 영수증
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    영수증은 결제 완료 후 
+                    가맹점에서 생성합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            결제 실패 시 사용자에게 에러를 표시하는 방법은?
+            
+            @Choice(isCorrect: false) {
+                Alert을 직접 표시
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    결제 시트가 열린 상태에서 Alert을 
+                    표시할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PKPaymentAuthorizationResult에 errors 전달
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    result에 errors 배열을 포함하면 
+                    결제 시트에서 에러 메시지가 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                didFinish에서 처리
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    didFinish는 시트가 닫힌 후 호출되며,
+                    에러 표시 시점이 아닙니다.
+                }
+            }
+        }
+    }
+}

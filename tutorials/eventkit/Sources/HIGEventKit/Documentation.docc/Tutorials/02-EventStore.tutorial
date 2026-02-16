@@ -1,0 +1,142 @@
+@Tutorial(time: 12) {
+    @Intro(title: "EKEventStore 설정") {
+        앱 전체에서 사용할 EKEventStore를 올바르게 
+        설정하고 관리하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "EKEventStore 생성") {
+        @ContentAndMedia {
+            `EKEventStore`는 캘린더 데이터베이스에 대한 연결을 
+            나타내며, 앱에서 하나의 인스턴스만 유지하는 것이 좋습니다.
+        }
+        
+        @Steps {
+            @Step {
+                싱글톤 패턴으로 CalendarManager 클래스를 만듭니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-01-singleton.swift")
+            }
+            
+            @Step {
+                `EKEventStore` 인스턴스를 프로퍼티로 선언합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-02-store.swift")
+            }
+        }
+    }
+    
+    @Section(title: "데이터베이스 변경 감지") {
+        @ContentAndMedia {
+            다른 앱이나 시스템에서 캘린더 데이터가 변경되면 
+            알림을 받아 UI를 업데이트해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `EKEventStoreChanged` 알림을 구독합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-03-notification.swift")
+            }
+            
+            @Step {
+                Combine을 사용하여 더 현대적인 방식으로 구현합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-04-combine.swift")
+            }
+            
+            @Step {
+                변경 알림을 받으면 데이터를 새로고침합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-05-refresh.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI와 통합") {
+        @ContentAndMedia {
+            SwiftUI 앱에서 CalendarManager를 
+            Environment로 주입하여 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `ObservableObject`를 준수하도록 수정합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "02-06-observable.swift")
+            }
+            
+            @Step {
+                앱 진입점에서 Environment로 주입합니다.
+                
+                @Code(name: "CalendarApp.swift", file: "02-07-app.swift")
+            }
+            
+            @Step {
+                View에서 CalendarManager를 사용합니다.
+                
+                @Code(name: "ContentView.swift", file: "02-08-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            EKEventStore 인스턴스는 앱에서 몇 개를 유지하는 것이 권장되나요?
+            
+            @Choice(isCorrect: true) {
+                하나 (싱글톤)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    EKEventStore는 리소스를 많이 사용하므로 
+                    앱에서 하나만 유지하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                각 View마다 하나씩
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    여러 개의 EKEventStore를 만들면 
+                    메모리 사용량이 불필요하게 증가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                필요할 때마다 새로 생성
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    EKEventStore 생성은 비용이 높은 작업입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            캘린더 데이터 변경을 감지하기 위해 구독하는 알림은?
+            
+            @Choice(isCorrect: false) {
+                `EKCalendarChanged`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 알림 이름은 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `EKEventStoreChanged`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `EKEventStoreChanged` 알림으로 
+                    캘린더 데이터 변경을 감지할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `NSCalendarDayChanged`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 알림은 날짜가 바뀔 때 발생합니다.
+                }
+            }
+        }
+    }
+}

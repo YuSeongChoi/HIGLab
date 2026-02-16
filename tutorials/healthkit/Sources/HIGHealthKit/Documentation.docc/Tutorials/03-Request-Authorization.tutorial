@@ -1,0 +1,204 @@
+@Tutorial(time: 15) {
+    @Intro(title: "권한 요청 (requestAuthorization)") {
+        사용자에게 건강 데이터 접근 권한을 요청하는 방법을 배웁니다.
+        읽기와 쓰기 권한의 차이를 이해하고 올바르게 처리합니다.
+    }
+    
+    @Section(title: "권한 요청 기본") {
+        @ContentAndMedia {
+            **requestAuthorization** 메서드는 사용자에게
+            HealthKit 권한 UI를 표시합니다. 
+            읽기(toShare)와 쓰기(read) 권한을 각각 지정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **요청할 데이터 타입 정의**
+                
+                먼저 앱에서 필요한 데이터 타입을 Set으로 정의합니다.
+                HKQuantityType, HKCategoryType 등을 사용합니다.
+                
+                @Code(name: "DataTypes.swift", file: "03-data-types.swift")
+            }
+            
+            @Step {
+                **requestAuthorization 호출**
+                
+                toShare에는 쓰기 권한, read에는 읽기 권한을 전달합니다.
+                async/await 또는 completion handler 방식을 선택할 수 있습니다.
+                
+                @Code(name: "RequestAuth.swift", file: "03-request-auth.swift")
+            }
+            
+            @Step {
+                **권한 요청 결과 처리**
+                
+                success가 true여도 모든 권한이 승인된 것은 아닙니다!
+                단지 시스템 UI가 정상적으로 표시되었다는 의미입니다.
+                
+                @Code(name: "HandleResult.swift", file: "03-handle-result.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 상태 확인") {
+        @ContentAndMedia {
+            쓰기 권한 상태는 확인할 수 있지만,
+            읽기 권한 상태는 **확인할 수 없습니다**.
+            이는 Apple의 프라이버시 정책입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **쓰기 권한 상태 확인**
+                
+                authorizationStatus(for:) 메서드로 쓰기 권한 상태를 확인합니다.
+                .notDetermined, .sharingAuthorized, .sharingDenied 중 하나를 반환합니다.
+                
+                @Code(name: "WriteStatus.swift", file: "03-write-status.swift")
+            }
+            
+            @Step {
+                **읽기 권한은 확인 불가**
+                
+                읽기 권한 거부 여부는 알 수 없습니다.
+                쿼리 결과가 비어있으면 "데이터 없음" 또는 "권한 거부" 둘 다 가능합니다.
+                
+                @Code(name: "ReadStatus.swift", file: "03-read-status.swift")
+            }
+            
+            @Step {
+                **적절한 UI 피드백**
+                
+                권한 상태에 따라 사용자에게 적절한 안내를 제공합니다.
+                설정 앱으로 이동하는 버튼을 제공하는 것도 좋은 방법입니다.
+                
+                @Code(name: "UIFeedback.swift", file: "03-ui-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 요청 타이밍") {
+        @ContentAndMedia {
+            권한 요청은 **필요한 시점에** 하는 것이 좋습니다.
+            앱 시작 즉시 요청하면 사용자 경험이 나빠질 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Just-in-time 권한 요청**
+                
+                사용자가 해당 기능을 처음 사용할 때 권한을 요청합니다.
+                예: "걸음 수 보기" 버튼을 탭했을 때 요청
+                
+                @Code(name: "JustInTime.swift", file: "03-just-in-time.swift")
+            }
+            
+            @Step {
+                **온보딩에서 설명 후 요청**
+                
+                권한이 왜 필요한지 먼저 설명하고,
+                사용자가 준비되면 요청하는 것이 승인율을 높입니다.
+                
+                @Code(name: "Onboarding.swift", file: "03-onboarding.swift")
+            }
+            
+            @Step {
+                **HealthManager에 통합**
+                
+                권한 요청 로직을 HealthManager에 통합합니다.
+                권한 상태를 @Published 프로퍼티로 관리합니다.
+                
+                @Code(name: "HealthManager.swift", file: "03-health-manager-auth.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            requestAuthorization의 success가 true일 때 의미하는 것은?
+            
+            @Choice(isCorrect: true) {
+                권한 UI가 정상적으로 표시되었다
+                
+                @Justification(reaction: "정답!") {
+                    success는 UI 표시 여부를 나타내며, 
+                    실제 권한 승인 여부는 알 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 권한이 승인되었다
+                
+                @Justification(reaction: "아쉽네요") {
+                    사용자가 어떤 권한을 승인했는지는 success 값으로 알 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                읽기 권한이 승인되었다
+                
+                @Justification(reaction: "아쉽네요") {
+                    읽기 권한 승인 여부는 API로 확인할 수 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            읽기 권한 거부 여부를 확인하려면?
+            
+            @Choice(isCorrect: true) {
+                확인할 수 없다 — 이것이 Apple의 프라이버시 정책이다
+                
+                @Justification(reaction: "정답!") {
+                    Apple은 사용자의 프라이버시를 보호하기 위해 
+                    읽기 권한 거부 여부를 앱에서 알 수 없도록 설계했습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                authorizationStatus(for:)로 확인한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 메서드는 쓰기 권한 상태만 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                getRequestStatusForAuthorization으로 확인한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    이 메서드도 읽기 권한 거부 여부를 알려주지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            권한 요청의 Best Practice는?
+            
+            @Choice(isCorrect: true) {
+                필요한 시점에 요청하고, 미리 설명을 제공한다
+                
+                @Justification(reaction: "훌륭합니다!") {
+                    Just-in-time 요청과 사전 설명이 승인율을 높입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 시작 시 모든 권한을 한번에 요청한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    사용자가 왜 권한이 필요한지 이해하지 못하면 거부할 확률이 높습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                권한 거부 시 앱을 종료한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    권한 없이도 사용 가능한 기능을 제공하는 것이 좋습니다.
+                }
+            }
+        }
+    }
+}

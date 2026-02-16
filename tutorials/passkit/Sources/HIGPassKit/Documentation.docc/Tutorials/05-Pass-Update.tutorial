@@ -1,0 +1,218 @@
+@Tutorial(time: 25) {
+    @Intro(title: "패스 업데이트 (Push)") {
+        서버에서 패스를 실시간으로 업데이트하는 
+        Web Service API를 구현합니다.
+        
+        @Image(source: "pass-update.png", alt: "패스 업데이트")
+    }
+    
+    @Section(title: "패스 업데이트 개요") {
+        @ContentAndMedia {
+            패스가 Wallet에 추가되면 자동 업데이트가 가능합니다.
+            포인트 적립, 등급 변경 등을 실시간으로 반영합니다.
+            
+            **업데이트 흐름:**
+            1. 디바이스가 서버에 등록 (deviceLibraryIdentifier)
+            2. 서버에서 업데이트 발생 시 APNs로 push
+            3. 디바이스가 서버에 최신 패스 요청
+            4. 새 패스 다운로드 및 자동 교체
+        }
+        
+        @Steps {
+            @Step {
+                pass.json에 webServiceURL과 authenticationToken을 추가합니다.
+                이 정보로 디바이스가 서버와 통신합니다.
+                
+                @Code(name: "WebServiceConfig.swift", file: "05-01-web-service-config.swift")
+            }
+            
+            @Step {
+                업데이트 가능한 패스의 요구사항을 확인합니다.
+                serialNumber는 고유해야 하며, 인증 토큰은 안전하게 생성합니다.
+                
+                @Code(name: "UpdatablePass.swift", file: "05-02-updatable-pass.swift")
+            }
+        }
+    }
+    
+    @Section(title: "디바이스 등록 API") {
+        @ContentAndMedia {
+            사용자가 패스를 추가하면 디바이스가 자동으로 
+            서버에 등록을 요청합니다.
+            
+            **엔드포인트:**
+            `POST /v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}`
+            
+            서버는 디바이스-패스 매핑을 저장하고 201을 반환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                등록 요청을 처리하는 API를 구현합니다.
+                pushToken을 저장해 나중에 알림을 보냅니다.
+                
+                @Code(name: "RegisterDevice.swift", file: "05-03-register-device.swift")
+            }
+            
+            @Step {
+                Authorization 헤더로 요청을 검증합니다.
+                `ApplePass {authenticationToken}` 형식입니다.
+                
+                @Code(name: "AuthValidation.swift", file: "05-04-auth-validation.swift")
+            }
+            
+            @Step {
+                디바이스 등록 해제도 처리해야 합니다.
+                사용자가 패스를 삭제하면 DELETE 요청이 옵니다.
+                
+                @Code(name: "UnregisterDevice.swift", file: "05-05-unregister.swift")
+            }
+        }
+    }
+    
+    @Section(title: "업데이트 알림 (APNs)") {
+        @ContentAndMedia {
+            패스 데이터가 변경되면 APNs를 통해 
+            디바이스에 알림을 보냅니다.
+            
+            **중요**: 패스 업데이트용 APNs는 일반 푸시와 다릅니다.
+            - Topic: `pass.com.yourapp.membership` (Pass Type ID)
+            - 페이로드: 빈 객체 `{}`
+        }
+        
+        @Steps {
+            @Step {
+                APNs 연결을 위한 인증 설정입니다.
+                Pass Type ID 인증서나 토큰 기반 인증을 사용합니다.
+                
+                @Code(name: "APNsSetup.swift", file: "05-06-apns-setup.swift")
+            }
+            
+            @Step {
+                등록된 디바이스들에 업데이트 알림을 전송합니다.
+                빈 페이로드로 보내면 디바이스가 서버에 요청합니다.
+                
+                @Code(name: "SendPush.swift", file: "05-07-send-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패스 제공 API") {
+        @ContentAndMedia {
+            디바이스가 알림을 받으면 최신 패스를 요청합니다.
+            
+            **엔드포인트들:**
+            1. `GET /v1/devices/.../registrations/...` - 업데이트된 패스 목록
+            2. `GET /v1/passes/{passTypeIdentifier}/{serialNumber}` - 패스 다운로드
+        }
+        
+        @Steps {
+            @Step {
+                업데이트된 패스 목록을 반환하는 API입니다.
+                lastUpdated 파라미터로 변경된 것만 필터링합니다.
+                
+                @Code(name: "GetSerials.swift", file: "05-08-get-serials.swift")
+            }
+            
+            @Step {
+                특정 패스의 최신 버전을 제공합니다.
+                서명된 .pkpass 파일을 응답으로 반환합니다.
+                
+                @Code(name: "GetPass.swift", file: "05-09-get-pass.swift")
+            }
+            
+            @Step {
+                If-Modified-Since 헤더를 지원해 불필요한 다운로드를 방지합니다.
+                변경이 없으면 304 Not Modified를 반환합니다.
+                
+                @Code(name: "ConditionalGet.swift", file: "05-10-conditional-get.swift")
+            }
+        }
+    }
+    
+    @Section(title: "iOS 앱에서 업데이트 감지") {
+        @ContentAndMedia {
+            앱 내에서 패스 업데이트를 감지하고 UI를 갱신할 수 있습니다.
+            PKPassLibrary의 notification을 구독합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKPassLibraryDidChange notification을 관찰합니다.
+                패스가 추가, 삭제, 업데이트될 때 발생합니다.
+                
+                @Code(name: "PassNotification.swift", file: "05-11-pass-notification.swift")
+            }
+            
+            @Step {
+                userInfo에서 변경 타입을 확인합니다.
+                added, removed, replaced 키로 구분됩니다.
+                
+                @Code(name: "ChangeType.swift", file: "05-12-change-type.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            패스 업데이트 알림을 보낼 때 APNs 페이로드는?
+            
+            @Choice(isCorrect: true) {
+                빈 객체 {}
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    패스 업데이트 알림은 빈 페이로드로 보냅니다.
+                    디바이스가 알림을 받으면 서버에 직접 요청합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                새 패스 데이터 전체
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    패스 데이터는 APNs가 아닌 Web Service API를 통해 
+                    디바이스가 직접 다운로드합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                변경된 필드만 담은 JSON
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    APNs는 알림 신호만 보내고, 
+                    실제 데이터는 별도 API로 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            디바이스가 패스 서버에 인증할 때 사용하는 헤더 형식은?
+            
+            @Choice(isCorrect: false) {
+                Bearer {token}
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    Bearer는 OAuth 등에서 사용하는 형식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ApplePass {authenticationToken}
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Apple Pass 웹 서비스는 ApplePass 접두사를 
+                    사용하는 고유한 인증 형식을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Basic {base64}
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Basic 인증은 사용자명:비밀번호의 
+                    Base64 인코딩을 사용합니다.
+                }
+            }
+        }
+    }
+}

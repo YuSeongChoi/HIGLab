@@ -1,0 +1,127 @@
+@Tutorial(time: 25) {
+    @Intro(title: "충돌 해결") {
+        동시 편집 시 발생하는 충돌을 감지하고 해결합니다.
+        다양한 병합 전략을 구현합니다.
+    }
+    
+    @Section(title: "충돌 이해하기") {
+        @ContentAndMedia {
+            CloudKit은 낙관적 잠금(Optimistic Locking)을 사용합니다.
+            레코드의 changeTag가 서버와 다르면 충돌이 발생합니다.
+        }
+        @Steps {
+            @Step {
+                충돌이 발생하는 시나리오를 이해합니다.
+                @Code(name: "ConflictScenario.swift", file: "09-01-scenario.swift")
+            }
+            @Step {
+                CKError.serverRecordChanged를 감지합니다.
+                @Code(name: "CloudKitManager.swift", file: "09-02-detectconflict.swift")
+            }
+            @Step {
+                충돌 정보에서 세 가지 레코드를 추출합니다.
+                ancestor, client, server 버전입니다.
+                @Code(name: "CloudKitManager.swift", file: "09-03-extractrecords.swift")
+            }
+        }
+    }
+    
+    @Section(title: "병합 전략") {
+        @ContentAndMedia {
+            충돌 해결을 위한 다양한 전략을 구현합니다.
+        }
+        @Steps {
+            @Step {
+                서버 우선 전략을 구현합니다.
+                가장 간단하지만 로컬 변경을 잃을 수 있습니다.
+                @Code(name: "ConflictResolver.swift", file: "09-04-serverwins.swift")
+            }
+            @Step {
+                클라이언트 우선 전략을 구현합니다.
+                다른 사용자의 변경을 덮어씁니다.
+                @Code(name: "ConflictResolver.swift", file: "09-05-clientwins.swift")
+            }
+            @Step {
+                필드별 병합 전략을 구현합니다.
+                각 필드의 최신 값을 선택합니다.
+                @Code(name: "ConflictResolver.swift", file: "09-06-fieldmerge.swift")
+            }
+            @Step {
+                사용자 선택 전략을 구현합니다.
+                UI로 사용자에게 결정을 맡깁니다.
+                @Code(name: "ConflictResolver.swift", file: "09-07-userchoice.swift")
+            }
+        }
+    }
+    
+    @Section(title: "자동 재시도") {
+        @ContentAndMedia {
+            충돌 해결 후 자동으로 재시도하는 로직을 구현합니다.
+        }
+        @Steps {
+            @Step {
+                재시도 로직을 구현합니다.
+                @Code(name: "CloudKitManager.swift", file: "09-08-retry.swift")
+            }
+            @Step {
+                지수 백오프(Exponential Backoff)를 적용합니다.
+                @Code(name: "CloudKitManager.swift", file: "09-09-backoff.swift")
+            }
+            @Step {
+                전체 저장 플로우에 충돌 해결을 통합합니다.
+                @Code(name: "CloudKitManager.swift", file: "09-10-integrated.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CKError.serverRecordChanged 에러에서 얻을 수 있는 레코드가 아닌 것은?
+            @Choice(isCorrect: false) {
+                ancestorRecord
+                @Justification(reaction: "다시 생각해보세요.") {
+                    마지막으로 동기화된 원본 레코드입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                clientRecord
+                @Justification(reaction: "다시 생각해보세요.") {
+                    클라이언트에서 수정하려던 레코드입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                serverRecord
+                @Justification(reaction: "다시 생각해보세요.") {
+                    현재 서버에 있는 최신 레코드입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                mergedRecord
+                @Justification(reaction: "정답입니다!") {
+                    병합된 레코드는 개발자가 직접 만들어야 합니다. 자동 제공되지 않습니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            낙관적 잠금(Optimistic Locking)의 장점은?
+            @Choice(isCorrect: true) {
+                동시 읽기가 자유롭고 충돌 시에만 처리
+                @Justification(reaction: "정답입니다!") {
+                    락을 미리 잡지 않아 동시성이 높고, 충돌이 드문 경우 효율적입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                충돌이 절대 발생하지 않음
+                @Justification(reaction: "다시 생각해보세요.") {
+                    낙관적 잠금도 충돌이 발생할 수 있으며, 감지하여 해결해야 합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                오프라인에서 사용 불가
+                @Justification(reaction: "다시 생각해보세요.") {
+                    낙관적 잠금은 오프라인 작업 후 동기화 시 충돌을 감지합니다.
+                }
+            }
+        }
+    }
+}
