@@ -1,0 +1,258 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Metal 기반 필터") {
+        Metal Performance Shaders와 Metal을 활용해 
+        고성능 이미지 필터를 구현하는 방법을 학습합니다.
+        
+        @Image(source: "metal-filters.png", alt: "Metal 필터")
+    }
+    
+    @Section(title: "Metal과 CoreImage 통합") {
+        @ContentAndMedia {
+            Metal을 활용하면 CoreImage 필터의 성능을 극대화할 수 있습니다.
+            Metal 디바이스와 커맨드 큐를 CIContext와 공유합니다.
+            
+            장점:
+            - GPU 파이프라인 최적화
+            - Zero-copy 텍스처 공유
+            - 커스텀 Metal 셰이더 통합
+            - Metal Performance Shaders 활용
+            
+            @Image(source: "metal-coreimage-integration.png", alt: "Metal 통합")
+        }
+        
+        @Steps {
+            @Step {
+                Metal 디바이스를 사용하는 CIContext를 생성합니다.
+                MTLDevice를 명시적으로 지정합니다.
+                
+                @Code(name: "MetalCIContext.swift", file: "07-01-metal-context.swift")
+            }
+            
+            @Step {
+                MTLTexture와 CIImage 간 변환을 구현합니다.
+                텍스처에서 직접 CIImage를 생성할 수 있습니다.
+                
+                @Code(name: "TextureToCIImage.swift", file: "07-02-texture-to-ciimage.swift")
+            }
+            
+            @Step {
+                CIImage를 MTLTexture로 렌더링합니다.
+                Metal 파이프라인에서 CoreImage 결과를 활용합니다.
+                
+                @Code(name: "CIImageToTexture.swift", file: "07-03-ciimage-to-texture.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Metal Shading Language로 커널 작성") {
+        @ContentAndMedia {
+            iOS 11+에서는 Metal Shading Language(MSL)로 
+            CIKernel을 작성할 수 있습니다.
+            
+            MSL 장점:
+            - 기존 Metal 셰이더 재활용
+            - IDE 코드 완성 지원
+            - 컴파일 타임 에러 검출
+            - Metal 기능 전체 활용
+            
+            @Image(source: "msl-kernel.png", alt: "MSL 커널")
+        }
+        
+        @Steps {
+            @Step {
+                .ci.metal 파일을 프로젝트에 추가합니다.
+                Metal 커널 함수를 정의합니다.
+                
+                @Code(name: "MetalKernelFile.metal", file: "07-04-metal-kernel-file.metal")
+            }
+            
+            @Step {
+                Metal 커널을 로드하는 방법입니다.
+                CIKernel(functionName:fromMetalLibraryData:)를 사용합니다.
+                
+                @Code(name: "LoadMetalKernel.swift", file: "07-05-load-metal-kernel.swift")
+            }
+            
+            @Step {
+                커널에 파라미터를 전달하는 방법입니다.
+                Metal 셰이더의 인자와 Swift 값을 연결합니다.
+                
+                @Code(name: "KernelParameters.swift", file: "07-06-kernel-parameters.swift")
+            }
+            
+            @Step {
+                여러 입력 텍스처를 사용하는 커널을 작성합니다.
+                합성이나 마스킹에 활용할 수 있습니다.
+                
+                @Code(name: "MultiTextureKernel.swift", file: "07-07-multi-texture-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Metal Performance Shaders 활용") {
+        @ContentAndMedia {
+            Metal Performance Shaders(MPS)는 Apple이 
+            최적화한 GPU 알고리즘 라이브러리입니다.
+            
+            주요 이미지 필터:
+            - MPSImageGaussianBlur: 고성능 가우시안 블러
+            - MPSImageSobel: 엣지 감지
+            - MPSImageHistogram: 히스토그램 계산
+            - MPSImageConvolution: 컨볼루션 필터
+        }
+        
+        @Steps {
+            @Step {
+                MPS를 사용한 고속 가우시안 블러를 구현합니다.
+                CIGaussianBlur보다 특정 상황에서 더 빠를 수 있습니다.
+                
+                @Code(name: "MPSGaussianBlur.swift", file: "07-08-mps-gaussian.swift")
+            }
+            
+            @Step {
+                MPS 결과를 CIImage로 변환해 추가 필터를 적용합니다.
+                MPS와 CoreImage를 혼합 사용합니다.
+                
+                @Code(name: "MPSToCoreImage.swift", file: "07-09-mps-to-coreimage.swift")
+            }
+            
+            @Step {
+                히스토그램 계산과 평활화를 구현합니다.
+                이미지의 밝기 분포를 분석하고 보정합니다.
+                
+                @Code(name: "MPSHistogram.swift", file: "07-10-mps-histogram.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 Metal 필터 구현") {
+        @ContentAndMedia {
+            실제 앱에서 사용할 수 있는 고급 Metal 필터를 구현합니다.
+            컴퓨트 셰이더와 텍스처 샘플링을 활용합니다.
+            
+            구현할 효과:
+            1. HDR 톤 매핑
+            2. 빛줄기(God Rays) 효과
+            3. 뎁스 기반 블러
+        }
+        
+        @Steps {
+            @Step {
+                HDR 톤 매핑 셰이더를 구현합니다.
+                넓은 다이나믹 레인지를 SDR로 압축합니다.
+                
+                @Code(name: "HDRToneMapping.swift", file: "07-11-hdr-tone-mapping.swift")
+            }
+            
+            @Step {
+                빛줄기(God Rays) 효과를 구현합니다.
+                방사형 블러로 광원에서 뻗어나오는 빛을 표현합니다.
+                
+                @Code(name: "GodRays.swift", file: "07-12-god-rays.swift")
+            }
+            
+            @Step {
+                뎁스 맵을 활용한 보케 블러를 구현합니다.
+                인물 모드의 배경 블러 효과를 만듭니다.
+                
+                @Code(name: "DepthBlur.swift", file: "07-13-depth-blur.swift")
+            }
+            
+            @Step {
+                Metal 필터를 CIFilter로 래핑해 재사용합니다.
+                CoreImage 파이프라인에 통합합니다.
+                
+                @Code(name: "MetalFilterWrapper.swift", file: "07-14-metal-filter-wrapper.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Metal을 활용한 CIContext의 장점은?
+            
+            @Choice(isCorrect: true) {
+                GPU 파이프라인 최적화와 Zero-copy 텍스처 공유
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Metal 디바이스를 공유하면 텍스처 복사 없이 
+                    효율적인 파이프라인을 구성할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CPU만 사용해 배터리를 절약한다
+                
+                @Justification(reaction: "오히려 반대입니다.") {
+                    Metal은 GPU를 활용해 병렬 처리를 수행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                시뮬레이터에서만 동작한다
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    Metal은 실제 디바이스에서 최상의 성능을 발휘합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            .ci.metal 파일로 CIKernel을 작성할 때의 장점은?
+            
+            @Choice(isCorrect: true) {
+                컴파일 타임에 에러를 검출할 수 있다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    MSL 파일은 빌드 시 컴파일되어 
+                    런타임 에러를 방지할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                런타임에만 커널을 변경할 수 있다
+                
+                @Justification(reaction: "장점이 아닙니다.") {
+                    미리 컴파일하는 것이 더 안전하고 빠릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                문자열보다 파일 크기가 작다
+                
+                @Justification(reaction: "핵심 장점이 아닙니다.") {
+                    주요 장점은 타입 안전성과 IDE 지원입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Metal Performance Shaders(MPS)의 특징은?
+            
+            @Choice(isCorrect: true) {
+                Apple이 GPU별로 최적화한 고성능 알고리즘 라이브러리
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    MPS는 각 Apple GPU에 맞게 최적화되어 있어 
+                    직접 구현보다 빠를 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 전용으로 macOS에서는 사용 불가
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    MPS는 iOS, macOS, tvOS 모두에서 사용 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CoreImage 필터를 완전히 대체한다
+                
+                @Justification(reaction: "상호 보완적입니다.") {
+                    MPS와 CoreImage는 함께 사용할 수 있습니다.
+                }
+            }
+        }
+    }
+}

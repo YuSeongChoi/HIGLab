@@ -1,1 +1,1 @@
-public struct HIGCoreNFC { public init() {} }
+// HIGCoreNFC - NFC 태그 리더 튜토리얼

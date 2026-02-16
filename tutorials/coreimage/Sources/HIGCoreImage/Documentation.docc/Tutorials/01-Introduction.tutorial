@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CoreImage 소개") {
+        CoreImage 프레임워크의 핵심 개념과 
+        이미지 처리 파이프라인이 어떻게 동작하는지 이해합니다.
+        
+        @Image(source: "coreimage-intro.png", alt: "CoreImage 개요")
+    }
+    
+    @Section(title: "CoreImage란?") {
+        @ContentAndMedia {
+            CoreImage는 Apple이 제공하는 고성능 이미지 처리 프레임워크입니다.
+            GPU 가속을 활용해 실시간 필터링과 분석이 가능합니다.
+            
+            - **GPU 가속**: Metal과 OpenGL을 활용한 하드웨어 가속
+            - **지연 평가**: 최종 결과가 필요할 때까지 실제 처리를 미룸
+            - **200+ 필터**: 색상 조정, 블러, 왜곡 등 다양한 빌트인 필터
+            
+            @Image(source: "coreimage-architecture.png", alt: "CoreImage 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                CoreImage를 프로젝트에 import합니다.
+                iOS, macOS, tvOS에서 모두 사용 가능합니다.
+                
+                @Code(name: "ImportCoreImage.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                CoreImage의 핵심 구성요소를 살펴봅니다.
+                
+                - `CIImage`: 불변의 이미지 데이터 표현
+                - `CIFilter`: 이미지 처리 알고리즘
+                - `CIContext`: 렌더링을 수행하는 컨텍스트
+                
+                @Code(name: "CoreImageComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 처리 파이프라인") {
+        @ContentAndMedia {
+            CoreImage는 지연 평가(Lazy Evaluation)를 사용합니다.
+            필터를 적용해도 즉시 처리되지 않고, 
+            CIContext에서 렌더링할 때 최적화된 방식으로 처리됩니다.
+            
+            ```
+            원본 이미지 → 필터1 → 필터2 → 필터3 → CIContext → 최종 결과
+            (CIImage)   (체인)   (체인)   (체인)   (렌더링)   (CGImage/Data)
+            ```
+        }
+        
+        @Steps {
+            @Step {
+                CIImage는 픽셀 데이터가 아닌 "이미지 레시피"입니다.
+                실제 픽셀은 렌더링 시점에 생성됩니다.
+                
+                @Code(name: "LazyEvaluation.swift", file: "01-03-lazy.swift")
+            }
+            
+            @Step {
+                여러 필터를 연속 적용해도 중간 이미지를 생성하지 않습니다.
+                모든 필터가 하나의 연산으로 합쳐져 효율적으로 처리됩니다.
+                
+                @Code(name: "FilterPipeline.swift", file: "01-04-pipeline.swift")
+            }
+            
+            @Step {
+                최종 렌더링은 CIContext가 담당합니다.
+                GPU 또는 CPU 중 적합한 렌더러를 선택할 수 있습니다.
+                
+                @Code(name: "ContextRendering.swift", file: "01-05-rendering.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UIImage, CGImage와의 관계") {
+        @ContentAndMedia {
+            iOS 개발에서는 여러 이미지 타입을 다루게 됩니다.
+            각 타입의 역할과 변환 방법을 이해해야 합니다.
+            
+            | 타입 | 역할 | 변경 가능 |
+            |------|------|----------|
+            | UIImage | UI 표시용 | 불변 |
+            | CGImage | 비트맵 데이터 | 불변 |
+            | CIImage | 필터 파이프라인 | 불변 |
+        }
+        
+        @Steps {
+            @Step {
+                UIImage에서 CIImage로 변환하는 방법입니다.
+                항상 원본 데이터를 보존하며 변환됩니다.
+                
+                @Code(name: "UIImageToCIImage.swift", file: "01-06-uiimage-to-ciimage.swift")
+            }
+            
+            @Step {
+                CIImage에서 다시 UIImage로 변환합니다.
+                CIContext를 통해 CGImage를 먼저 생성해야 합니다.
+                
+                @Code(name: "CIImageToUIImage.swift", file: "01-07-ciimage-to-uiimage.swift")
+            }
+            
+            @Step {
+                전체 변환 흐름을 하나로 정리합니다.
+                Helper 메서드로 만들어두면 편리합니다.
+                
+                @Code(name: "ImageConversion.swift", file: "01-08-conversion.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CoreImage가 지연 평가(Lazy Evaluation)를 사용하는 이유는 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                메모리를 더 많이 사용하기 위해서
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    지연 평가는 오히려 중간 이미지 생성을 피해 
+                    메모리 사용을 줄입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                여러 필터를 하나의 최적화된 연산으로 합치기 위해서
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    지연 평가를 통해 여러 필터가 최종 렌더링 시점에 
+                    하나의 효율적인 연산으로 합쳐집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CPU만 사용하기 위해서
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    CoreImage는 GPU 가속을 적극 활용합니다.
+                    지연 평가는 GPU 연산을 최적화하는 데 도움이 됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIImage의 특징으로 올바른 것은?
+            
+            @Choice(isCorrect: true) {
+                픽셀 데이터가 아닌 이미지 처리 레시피를 저장한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    CIImage는 실제 픽셀을 저장하지 않고,
+                    이미지를 어떻게 생성할지에 대한 정보를 담고 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가변(mutable) 객체여서 직접 픽셀을 수정할 수 있다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    CIImage는 불변(immutable) 객체입니다.
+                    필터를 적용하면 새로운 CIImage가 생성됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UIImageView에 직접 표시할 수 있다.
+                
+                @Justification(reaction: "정확하지 않습니다.") {
+                    UIImageView에 표시하려면 먼저 UIImage로 변환해야 합니다.
+                    CIContext를 통해 렌더링이 필요합니다.
+                }
+            }
+        }
+    }
+}

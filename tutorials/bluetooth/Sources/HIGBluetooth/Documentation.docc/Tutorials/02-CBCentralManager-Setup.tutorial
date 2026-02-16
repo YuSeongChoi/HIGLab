@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CBCentralManager 설정") {
+        Central 역할의 핵심인 CBCentralManager를 생성하고
+        Bluetooth 상태를 모니터링하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "CBCentralManager 생성") {
+        @ContentAndMedia {
+            CBCentralManager는 BLE Central 역할의 진입점입니다.
+            기기 스캔, 연결, Bluetooth 상태 관리를 담당합니다.
+            
+            **생성 시 고려사항:**
+            - Delegate 설정 필수
+            - Queue 지정 (nil이면 메인 큐)
+            - 옵션으로 상태 복원 등 설정
+        }
+        
+        @Steps {
+            @Step {
+                BluetoothManager 클래스를 만들고
+                CBCentralManager 인스턴스를 생성합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-01-central-manager.swift")
+            }
+            
+            @Step {
+                CBCentralManagerDelegate를 구현하여
+                Bluetooth 상태 변화를 감지합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-02-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Bluetooth 상태 처리") {
+        @ContentAndMedia {
+            CBManagerState는 기기의 Bluetooth 상태를 나타냅니다.
+            상태에 따라 적절한 UI 피드백을 제공해야 합니다.
+            
+            | 상태 | 설명 |
+            |-----|------|
+            | .poweredOn | Bluetooth 사용 가능 |
+            | .poweredOff | Bluetooth 꺼짐 |
+            | .unauthorized | 권한 없음 |
+            | .unsupported | BLE 미지원 기기 |
+        }
+        
+        @Steps {
+            @Step {
+                각 Bluetooth 상태에 대한
+                사용자 친화적인 메시지를 제공합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-03-state-handling.swift")
+            }
+            
+            @Step {
+                SwiftUI 뷰에서 Bluetooth 상태를
+                바인딩하여 표시합니다.
+                
+                @Code(name: "BluetoothStatusView.swift", file: "02-04-status-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Observable 패턴 적용") {
+        @ContentAndMedia {
+            iOS 17+에서는 @Observable 매크로를 사용하여
+            더 간결한 상태 관리가 가능합니다.
+            
+            기존 ObservableObject보다 보일러플레이트가 적고
+            성능도 더 좋습니다.
+        }
+        
+        @Steps {
+            @Step {
+                @Observable을 적용한 현대적인
+                BluetoothManager를 구현합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-05-observable.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CBCentralManager 생성 시 queue 파라미터에 nil을 전달하면?
+            
+            @Choice(isCorrect: true) {
+                메인 큐에서 delegate 콜백이 호출된다
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    queue가 nil이면 메인 큐가 사용됩니다.
+                    UI 업데이트가 필요한 경우 편리하지만,
+                    복잡한 처리는 별도 큐를 권장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드 큐에서 콜백이 호출된다
+                
+                @Justification(reaction: "아닙니다.") {
+                    nil은 메인 큐를 의미합니다.
+                    백그라운드 처리가 필요하면 명시적으로 큐를 생성해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러가 발생한다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    nil은 유효한 값으로, 메인 큐가 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            BLE 스캔을 시작하기 전에 확인해야 하는 상태는?
+            
+            @Choice(isCorrect: false) {
+                .resetting
+                
+                @Justification(reaction: "아닙니다.") {
+                    resetting은 일시적 상태로, 스캔을 시작할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .poweredOn
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    .poweredOn 상태에서만 스캔, 연결 등의
+                    BLE 작업을 수행할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .unknown
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    unknown은 초기 상태로, 아직 준비되지 않았습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iOS에서 Bluetooth 권한이 거부되면 어떤 상태가 되나요?
+            
+            @Choice(isCorrect: false) {
+                .poweredOff
+                
+                @Justification(reaction: "다릅니다.") {
+                    poweredOff는 Bluetooth가 꺼진 상태입니다.
+                    권한 문제와는 다릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .unsupported
+                
+                @Justification(reaction: "아닙니다.") {
+                    unsupported는 하드웨어가 BLE를 지원하지 않는 경우입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .unauthorized
+                
+                @Justification(reaction: "정확합니다! 🔐") {
+                    사용자가 Bluetooth 권한을 거부하면
+                    .unauthorized 상태가 됩니다.
+                    설정에서 권한을 변경하도록 안내해야 합니다.
+                }
+            }
+        }
+    }
+}

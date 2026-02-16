@@ -1,0 +1,224 @@
+@Tutorial(time: 20) {
+    @Intro(title: "썸네일 그리드") {
+        PDF 페이지의 썸네일 미리보기 그리드를 구현하여
+        빠른 페이지 탐색 경험을 제공합니다.
+        
+        @Image(source: "thumbnails.png", alt: "썸네일 그리드")
+    }
+    
+    @Section(title: "PDFThumbnailView 사용하기") {
+        @ContentAndMedia {
+            PDFKit은 PDFThumbnailView 클래스를 제공하여
+            손쉽게 썸네일 UI를 구현할 수 있습니다.
+            
+            PDFView와 연동하면 현재 페이지 표시와 
+            탭으로 페이지 이동이 자동으로 처리됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                PDFThumbnailView를 추가하고 PDFView와 연결합니다.
+                pdfView 속성을 설정합니다.
+                
+                @Code(name: "SetupThumbnailView.swift", file: "08-01-setup.swift")
+            }
+            
+            @Step {
+                썸네일 크기와 방향을 설정합니다.
+                thumbnailSize와 layoutMode를 조정합니다.
+                
+                @Code(name: "ThumbnailSize.swift", file: "08-02-size.swift")
+            }
+            
+            @Step {
+                배경색과 현재 페이지 하이라이트를 커스터마이즈합니다.
+                
+                @Code(name: "ThumbnailAppearance.swift", file: "08-03-appearance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 썸네일 그리드") {
+        @ContentAndMedia {
+            더 많은 제어가 필요한 경우 
+            UICollectionView나 LazyVGrid로 직접 구현합니다.
+            
+            PDFPage.thumbnail(of:for:)로 
+            썸네일 이미지를 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PDFPage에서 썸네일 이미지를 생성합니다.
+                원하는 크기를 지정하여 최적화된 이미지를 얻습니다.
+                
+                @Code(name: "GenerateThumbnail.swift", file: "08-04-generate.swift")
+            }
+            
+            @Step {
+                UICollectionView로 썸네일 그리드를 구현합니다.
+                셀 재사용과 비동기 이미지 로딩을 적용합니다.
+                
+                @Code(name: "CollectionViewGrid.swift", file: "08-05-collection.swift")
+            }
+            
+            @Step {
+                SwiftUI의 LazyVGrid로 썸네일 그리드를 구현합니다.
+                더 선언적인 방식으로 같은 기능을 만듭니다.
+                
+                @Code(name: "LazyVGridThumbnails.swift", file: "08-06-lazygrid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "썸네일 캐싱") {
+        @ContentAndMedia {
+            썸네일 생성은 비용이 많이 드는 작업입니다.
+            캐싱으로 성능을 개선합니다.
+            
+            NSCache를 사용하여 메모리 효율적으로 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                NSCache로 썸네일 이미지를 캐싱합니다.
+                페이지 인덱스를 키로 사용합니다.
+                
+                @Code(name: "ThumbnailCache.swift", file: "08-07-cache.swift")
+            }
+            
+            @Step {
+                백그라운드에서 썸네일을 미리 생성합니다.
+                사용자 스크롤에 앞서 이미지를 준비합니다.
+                
+                @Code(name: "PrefetchThumbnails.swift", file: "08-08-prefetch.swift")
+            }
+            
+            @Step {
+                메모리 경고 시 캐시를 정리합니다.
+                didReceiveMemoryWarning에서 처리합니다.
+                
+                @Code(name: "CacheCleanup.swift", file: "08-09-cleanup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "상호작용 구현") {
+        @ContentAndMedia {
+            썸네일 탭으로 해당 페이지로 이동하고,
+            현재 페이지를 시각적으로 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                썸네일 탭 시 해당 페이지로 이동합니다.
+                PDFView.go(to:) 메서드를 호출합니다.
+                
+                @Code(name: "ThumbnailTap.swift", file: "08-10-tap.swift")
+            }
+            
+            @Step {
+                현재 페이지 썸네일에 테두리를 표시합니다.
+                페이지 변경 알림에 따라 업데이트합니다.
+                
+                @Code(name: "CurrentPageIndicator.swift", file: "08-11-indicator.swift")
+            }
+            
+            @Step {
+                드래그로 페이지 순서를 변경합니다.
+                UICollectionViewDragDelegate를 구현합니다.
+                
+                @Code(name: "DragReorder.swift", file: "08-12-drag.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PDFKit에서 제공하는 내장 썸네일 뷰 클래스는?
+            
+            @Choice(isCorrect: true) {
+                PDFThumbnailView
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    PDFThumbnailView를 PDFView와 연결하면 
+                    자동으로 썸네일 네비게이션이 구현됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPageThumbnail
+                
+                @Justification(reaction: "그런 클래스는 없습니다.") {
+                    PDFKit의 썸네일 관련 클래스를 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPreviewView
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    미리보기가 아닌 썸네일 전용 클래스가 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PDFPage에서 썸네일 이미지를 생성하는 메서드는?
+            
+            @Choice(isCorrect: false) {
+                createThumbnail(size:)
+                
+                @Justification(reaction: "그런 메서드는 없습니다.") {
+                    PDFPage의 이미지 생성 API를 확인해보세요.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                thumbnail(of:for:)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    thumbnail(of:for:) 메서드로 원하는 크기의 
+                    썸네일 이미지를 생성합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                image(size:)
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    정확한 메서드명과 매개변수를 확인해보세요.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PDFThumbnailView의 스크롤 방향을 설정하는 속성은?
+            
+            @Choice(isCorrect: true) {
+                layoutMode
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    layoutMode를 .horizontal 또는 .vertical로 
+                    설정하여 스크롤 방향을 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                scrollDirection
+                
+                @Justification(reaction: "그런 속성은 없습니다.") {
+                    PDFThumbnailView의 레이아웃 관련 속성을 확인하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                orientation
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    PDFKit에서 사용하는 용어를 확인해보세요.
+                }
+            }
+        }
+    }
+}

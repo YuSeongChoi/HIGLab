@@ -1,0 +1,178 @@
+@Tutorial(time: 15) {
+    @Intro(title: "SpriteKit 소개") {
+        Apple의 네이티브 2D 게임 프레임워크 SpriteKit의 개요와 
+        핵심 특징을 알아봅니다.
+        
+        @Image(source: "chapter1-intro.png", alt: "SpriteKit 프레임워크 소개")
+    }
+    
+    @Section(title: "SpriteKit이란?") {
+        @ContentAndMedia {
+            SpriteKit은 Apple이 제공하는 2D 게임 개발 프레임워크입니다.
+            iOS, macOS, tvOS, watchOS에서 고성능 2D 그래픽과 애니메이션을 
+            쉽게 구현할 수 있습니다.
+            
+            **주요 특징:**
+            - 하드웨어 가속 렌더링
+            - 내장 물리 엔진
+            - 파티클 시스템
+            - 사운드 재생 지원
+            - 장면 전환 효과
+            
+            @Image(source: "spritekit-architecture.png", alt: "SpriteKit 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                새로운 iOS 프로젝트를 생성합니다.
+                Xcode에서 **File > New > Project**를 선택하고 
+                **Game** 템플릿을 선택합니다.
+                
+                @Image(source: "step1-new-project.png", alt: "새 프로젝트 생성")
+            }
+            
+            @Step {
+                Game Technology로 **SpriteKit**을 선택합니다.
+                이렇게 하면 기본적인 SpriteKit 프로젝트 구조가 자동으로 생성됩니다.
+                
+                @Image(source: "step1-select-spritekit.png", alt: "SpriteKit 선택")
+            }
+            
+            @Step {
+                생성된 프로젝트 구조를 확인합니다.
+                `GameScene.swift`와 `GameScene.sks` 파일이 
+                핵심 파일입니다.
+                
+                @Code(name: "GameScene.swift", file: "01-introduction-01.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SpriteKit 노드 계층 구조") {
+        @ContentAndMedia {
+            SpriteKit은 노드(Node) 기반의 계층 구조를 사용합니다.
+            모든 시각적 요소는 `SKNode`의 하위 클래스이며,
+            트리 구조로 구성됩니다.
+            
+            **핵심 노드 타입:**
+            - `SKScene`: 게임의 루트 노드
+            - `SKSpriteNode`: 이미지 기반 스프라이트
+            - `SKLabelNode`: 텍스트 표시
+            - `SKShapeNode`: 도형 그리기
+            - `SKEmitterNode`: 파티클 효과
+            
+            @Image(source: "node-hierarchy.png", alt: "노드 계층 구조")
+        }
+        
+        @Steps {
+            @Step {
+                기본 노드 계층을 이해하기 위해 간단한 구조를 만들어 봅니다.
+                Scene 아래에 여러 노드를 추가할 수 있습니다.
+                
+                @Code(name: "GameScene.swift", file: "01-introduction-02.swift")
+            }
+            
+            @Step {
+                노드를 추가하고 위치를 설정합니다.
+                `addChild()` 메서드로 부모 노드에 자식을 추가합니다.
+                
+                @Code(name: "GameScene.swift", file: "01-introduction-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "좌표 시스템 이해하기") {
+        @ContentAndMedia {
+            SpriteKit은 UIKit과 다른 좌표 시스템을 사용합니다.
+            원점(0, 0)이 화면 **왼쪽 하단**에 위치하며,
+            y값이 증가할수록 위로 올라갑니다.
+            
+            이는 수학적 좌표계와 동일하여 
+            물리 시뮬레이션에 직관적입니다.
+            
+            @Image(source: "coordinate-system.png", alt: "SpriteKit 좌표 시스템")
+        }
+        
+        @Steps {
+            @Step {
+                화면 중앙에 노드를 배치해 봅니다.
+                `frame.midX`와 `frame.midY`를 사용하여 
+                Scene의 중앙 좌표를 얻을 수 있습니다.
+                
+                @Code(name: "GameScene.swift", file: "01-introduction-04.swift")
+            }
+            
+            @Step {
+                앵커 포인트(Anchor Point)를 이해합니다.
+                앵커 포인트는 노드의 기준점으로, 
+                기본값은 (0.5, 0.5) 즉 중앙입니다.
+                
+                @Code(name: "GameScene.swift", file: "01-introduction-05.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SpriteKit의 좌표 시스템에서 원점(0, 0)의 위치는 어디인가요?
+            
+            @Choice(isCorrect: false) {
+                화면 왼쪽 상단
+                
+                @Justification(reaction: "다시 생각해 보세요.") {
+                    UIKit에서는 왼쪽 상단이 원점이지만, 
+                    SpriteKit은 다른 좌표 시스템을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                화면 왼쪽 하단
+                
+                @Justification(reaction: "정확합니다! 🎮") {
+                    SpriteKit은 수학적 좌표계를 사용하여 
+                    왼쪽 하단이 원점(0, 0)입니다.
+                    y값이 증가하면 위로 올라갑니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                화면 중앙
+                
+                @Justification(reaction: "다시 생각해 보세요.") {
+                    Scene의 `anchorPoint`를 (0.5, 0.5)로 설정하면 
+                    중앙이 원점이 될 수 있지만, 기본값은 아닙니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            노드를 Scene에 추가할 때 사용하는 메서드는 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                `insertNode(_:)`
+                
+                @Justification(reaction: "다시 확인해 보세요.") {
+                    SpriteKit에서는 이 메서드를 사용하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `addChild(_:)`
+                
+                @Justification(reaction: "맞습니다! 👍") {
+                    `addChild(_:)` 메서드로 부모 노드에 
+                    자식 노드를 추가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `appendChild(_:)`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    이것은 JavaScript DOM API에서 사용하는 메서드입니다.
+                    SpriteKit에서는 `addChild(_:)`를 사용합니다.
+                }
+            }
+        }
+    }
+}

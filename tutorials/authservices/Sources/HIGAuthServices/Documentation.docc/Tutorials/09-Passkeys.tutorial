@@ -1,0 +1,217 @@
+@Tutorial(time: 22) {
+    @Intro(title: "패스키 (Passkeys)") {
+        차세대 인증 방식인 패스키를 Sign in with Apple과 
+        함께 구현하여 비밀번호 없는 인증을 제공합니다.
+        
+        @Image(source: "passkeys.png", alt: "Passkeys 인증")
+    }
+    
+    @Section(title: "패스키란?") {
+        @ContentAndMedia {
+            패스키(Passkeys)는 FIDO Alliance와 W3C가 개발한
+            비밀번호를 대체하는 차세대 인증 기술입니다.
+            
+            - **비밀번호 불필요**: Face ID/Touch ID로 인증
+            - **피싱 방지**: 도메인에 바인딩됨
+            - **크로스 플랫폼**: iCloud Keychain으로 동기화
+            - **WebAuthn 기반**: 업계 표준 프로토콜
+            
+            iOS 16+, macOS Ventura+에서 지원됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                패스키 기능을 사용하려면 
+                Associated Domains 설정이 필요합니다.
+                
+                @Code(name: "AssociatedDomains.swift", file: "09-01-associated-domains.swift")
+            }
+            
+            @Step {
+                서버에 apple-app-site-association 파일을 
+                구성합니다. webcredentials 서비스를 추가합니다.
+                
+                @Code(name: "AASA.swift", file: "09-02-aasa.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패스키 등록 (Registration)") {
+        @ContentAndMedia {
+            새 패스키를 생성하여 사용자 계정에 연결합니다.
+            
+            등록 흐름:
+            1. 서버에서 challenge 생성
+            2. 클라이언트에서 ASAuthorizationPlatformPublicKeyCredentialProvider 사용
+            3. 생성된 public key를 서버에 저장
+        }
+        
+        @Steps {
+            @Step {
+                ASAuthorizationPlatformPublicKeyCredentialProvider로
+                등록 요청을 생성합니다.
+                
+                @Code(name: "RegistrationProvider.swift", file: "09-03-registration-provider.swift")
+            }
+            
+            @Step {
+                서버에서 받은 challenge와 
+                userID로 요청을 구성합니다.
+                
+                @Code(name: "RegistrationRequest.swift", file: "09-04-registration-request.swift")
+            }
+            
+            @Step {
+                ASAuthorizationController로 등록을 실행합니다.
+                Face ID/Touch ID 인증 후 패스키가 생성됩니다.
+                
+                @Code(name: "PerformRegistration.swift", file: "09-05-perform-registration.swift")
+            }
+            
+            @Step {
+                ASAuthorizationPlatformPublicKeyCredentialRegistration에서
+                공개키와 attestation 데이터를 추출합니다.
+                
+                @Code(name: "ExtractRegistration.swift", file: "09-06-extract-registration.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패스키 인증 (Assertion)") {
+        @ContentAndMedia {
+            저장된 패스키로 사용자를 인증합니다.
+            
+            인증 흐름:
+            1. 서버에서 challenge 생성
+            2. 클라이언트에서 assertion 요청
+            3. 서명된 challenge를 서버에서 검증
+        }
+        
+        @Steps {
+            @Step {
+                인증(Assertion) 요청을 생성합니다.
+                등록과 다른 메서드를 사용합니다.
+                
+                @Code(name: "AssertionRequest.swift", file: "09-07-assertion-request.swift")
+            }
+            
+            @Step {
+                allowedCredentials로 특정 사용자의 
+                패스키만 허용할 수 있습니다.
+                
+                @Code(name: "AllowedCredentials.swift", file: "09-08-allowed-credentials.swift")
+            }
+            
+            @Step {
+                인증 결과에서 signature와 
+                authenticatorData를 추출합니다.
+                
+                @Code(name: "ExtractAssertion.swift", file: "09-09-extract-assertion.swift")
+            }
+            
+            @Step {
+                서버에서 signature를 검증하여 
+                인증을 완료합니다.
+                
+                @Code(name: "ServerVerifyAssertion.swift", file: "09-10-server-verify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sign in with Apple + 패스키") {
+        @ContentAndMedia {
+            Sign in with Apple과 패스키를 함께 제공하면
+            사용자에게 최대의 편의성을 제공할 수 있습니다.
+            
+            - 첫 로그인: Sign in with Apple
+            - 이후 로그인: 패스키 (더 빠름)
+            - 폴백: Sign in with Apple (다른 기기)
+        }
+        
+        @Steps {
+            @Step {
+                Sign in with Apple, 패스키, 비밀번호를 
+                모두 지원하는 통합 요청을 생성합니다.
+                
+                @Code(name: "UnifiedRequest.swift", file: "09-11-unified-request.swift")
+            }
+            
+            @Step {
+                Credential 타입에 따라 다르게 처리합니다.
+                세 가지 타입을 모두 고려합니다.
+                
+                @Code(name: "HandleAllTypes.swift", file: "09-12-handle-all-types.swift")
+            }
+            
+            @Step {
+                AutoFill 지원으로 빠른 로그인을 제공합니다.
+                텍스트 필드에서 패스키를 제안합니다.
+                
+                @Code(name: "AutoFill.swift", file: "09-13-autofill.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            패스키(Passkeys) 사용을 위해 필요한 설정은?
+            
+            @Choice(isCorrect: true) {
+                Associated Domains와 apple-app-site-association 파일.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    패스키는 도메인에 바인딩되므로
+                    앱-서버 연결 설정이 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Sign in with Apple capability만 있으면 된다.
+                
+                @Justification(reaction: "부족합니다.") {
+                    패스키는 별도의 Associated Domains 
+                    설정이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                특별한 설정 없이 바로 사용 가능하다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    도메인 검증을 위한 설정이 반드시 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            패스키 등록(Registration)과 인증(Assertion)의 차이는?
+            
+            @Choice(isCorrect: false) {
+                같은 메서드를 사용하며 파라미터만 다르다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    각각 다른 메서드를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Registration은 새 키 쌍을 생성하고, 
+                Assertion은 기존 키로 서명한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Registration은 공개키를 서버에 등록하고,
+                    Assertion은 개인키로 challenge에 서명합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Registration만 Face ID가 필요하다.
+                
+                @Justification(reaction: "둘 다 필요합니다.") {
+                    Assertion도 생체 인증으로 
+                    개인키 접근을 승인합니다.
+                }
+            }
+        }
+    }
+}

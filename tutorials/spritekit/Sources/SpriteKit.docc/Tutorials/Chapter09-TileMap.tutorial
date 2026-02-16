@@ -1,0 +1,248 @@
+@Tutorial(time: 25) {
+    @Intro(title: "타일맵 (SKTileMapNode)") {
+        SKTileMapNode를 사용하여 효율적인 
+        타일 기반 맵을 설계하고 구현합니다.
+        
+        @Image(source: "chapter9-tilemap.png", alt: "타일맵")
+    }
+    
+    @Section(title: "타일 세트 이해하기") {
+        @ContentAndMedia {
+            타일맵은 반복되는 타일 이미지로 
+            큰 맵을 효율적으로 구성하는 기법입니다.
+            
+            **타일맵 구성 요소:**
+            - `SKTileSet`: 타일 세트 (타일 그룹의 모음)
+            - `SKTileGroup`: 타일 그룹 (관련 타일 모음)
+            - `SKTileDefinition`: 개별 타일 정의
+            - `SKTileMapNode`: 타일맵 노드
+            
+            @Image(source: "tileset-structure.png", alt: "타일 세트 구조")
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 타일 세트를 생성합니다.
+                Assets 카탈로그에서 New Sprite Atlas를 선택합니다.
+                
+                @Image(source: "create-tileset.png", alt: "타일 세트 생성")
+            }
+            
+            @Step {
+                .sks 에디터에서 타일맵을 생성합니다.
+                Scene 에디터에서 타일맵 노드를 추가합니다.
+                
+                @Image(source: "tilemap-editor.png", alt: "타일맵 에디터")
+            }
+            
+            @Step {
+                코드로 타일 세트를 로드합니다.
+                `SKTileSet(named:)`로 타일 세트를 불러옵니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-01.swift")
+            }
+        }
+    }
+    
+    @Section(title: "타일맵 생성하기") {
+        @ContentAndMedia {
+            `SKTileMapNode`를 코드로 생성하고
+            타일을 배치하는 방법을 학습합니다.
+            
+            **타일맵 속성:**
+            - `numberOfColumns`: 열 개수
+            - `numberOfRows`: 행 개수
+            - `tileSize`: 타일 크기
+            
+            @Image(source: "tilemap-creation.png", alt: "타일맵 생성")
+        }
+        
+        @Steps {
+            @Step {
+                타일맵 노드를 생성합니다.
+                타일 세트, 열 수, 행 수, 타일 크기를 지정합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-02.swift")
+            }
+            
+            @Step {
+                타일 그룹을 가져옵니다.
+                타일 세트에서 사용할 타일 그룹을 선택합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-03.swift")
+            }
+            
+            @Step {
+                타일을 배치합니다.
+                `setTileGroup(_:forColumn:row:)`로 
+                특정 위치에 타일을 설정합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-04.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로시저럴 맵 생성") {
+        @ContentAndMedia {
+            알고리즘을 사용하여 자동으로 
+            맵을 생성하는 방법을 학습합니다.
+            노이즈 함수나 랜덤 배치로 
+            다양한 맵을 만들 수 있습니다.
+            
+            @Image(source: "procedural-map.png", alt: "프로시저럴 맵")
+        }
+        
+        @Steps {
+            @Step {
+                랜덤 지형을 생성합니다.
+                랜덤 값으로 바닥 타일을 배치합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-05.swift")
+            }
+            
+            @Step {
+                노이즈 기반 지형을 생성합니다.
+                GameplayKit의 노이즈 맵을 활용합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-06.swift")
+            }
+            
+            @Step {
+                오토타일링을 구현합니다.
+                인접 타일에 따라 적절한 타일을 자동 선택합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "타일맵과 물리") {
+        @ContentAndMedia {
+            타일맵에 물리 바디를 적용하여
+            충돌 가능한 지형을 만듭니다.
+            
+            개별 타일 또는 타일맵 전체에 
+            물리 바디를 설정할 수 있습니다.
+            
+            @Image(source: "tilemap-physics.png", alt: "타일맵 물리")
+        }
+        
+        @Steps {
+            @Step {
+                타일맵 전체에 물리 바디를 설정합니다.
+                엣지 루프로 경계를 만듭니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-08.swift")
+            }
+            
+            @Step {
+                개별 타일에 물리를 적용합니다.
+                특정 타일(벽, 장애물)에만 충돌을 설정합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-09.swift")
+            }
+            
+            @Step {
+                타일 좌표 변환을 구현합니다.
+                월드 좌표를 타일 좌표로, 타일 좌표를 월드 좌표로 변환합니다.
+                
+                @Code(name: "GameScene.swift", file: "09-tilemap-10.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            타일맵의 기본 구성 요소가 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                `SKTileSet`
+                
+                @Justification(reaction: "이것은 구성 요소입니다.") {
+                    `SKTileSet`은 타일 그룹의 모음으로,
+                    타일맵의 핵심 구성 요소입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `SKTileGroup`
+                
+                @Justification(reaction: "이것도 구성 요소입니다.") {
+                    `SKTileGroup`은 관련된 타일들의 모음입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `SKTileLayer`
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    `SKTileLayer`는 존재하지 않습니다.
+                    타일맵은 SKTileSet, SKTileGroup, 
+                    SKTileDefinition, SKTileMapNode로 구성됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            특정 위치에 타일을 설정하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `setTileGroup(_:forColumn:row:)`
+                
+                @Justification(reaction: "맞습니다! 🗺️") {
+                    이 메서드로 특정 열(column)과 행(row)에 
+                    타일 그룹을 설정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `placeTile(_:at:)`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    이 메서드는 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `addTile(_:column:row:)`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    정확한 메서드 이름은 
+                    `setTileGroup(_:forColumn:row:)`입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            타일맵을 사용하는 주된 이점은?
+            
+            @Choice(isCorrect: true) {
+                반복되는 타일로 큰 맵을 효율적으로 렌더링
+                
+                @Justification(reaction: "정확합니다! 🏗️") {
+                    타일맵은 같은 텍스처를 재사용하여
+                    메모리와 드로우 콜을 절약합니다.
+                    넓은 레벨을 효율적으로 구현할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 높은 해상도의 이미지 표시
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    타일맵은 해상도와 관련이 없습니다.
+                    효율성과 재사용성이 주요 장점입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동 물리 충돌 처리
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    타일맵의 물리는 별도로 설정해야 합니다.
+                    자동으로 적용되지 않습니다.
+                }
+            }
+        }
+    }
+}

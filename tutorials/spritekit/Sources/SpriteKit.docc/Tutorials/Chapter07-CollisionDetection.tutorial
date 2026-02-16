@@ -1,0 +1,252 @@
+@Tutorial(time: 25) {
+    @Intro(title: "충돌 감지") {
+        물리 바디 간의 충돌을 감지하고 
+        게임 로직에 활용하는 방법을 학습합니다.
+        
+        @Image(source: "chapter7-collision.png", alt: "충돌 감지")
+    }
+    
+    @Section(title: "카테고리 비트마스크") {
+        @ContentAndMedia {
+            충돌 감지를 위해 각 물리 바디에 
+            카테고리를 할당합니다.
+            비트마스크를 사용하여 효율적으로 
+            충돌 관계를 정의합니다.
+            
+            **비트마스크 종류:**
+            - `categoryBitMask`: 자신의 카테고리
+            - `collisionBitMask`: 물리적으로 충돌할 대상
+            - `contactTestBitMask`: 충돌 감지 알림을 받을 대상
+            
+            @Image(source: "bitmask.png", alt: "비트마스크")
+        }
+        
+        @Steps {
+            @Step {
+                물리 카테고리를 정의합니다.
+                2의 거듭제곱으로 비트마스크를 설정합니다.
+                
+                @Code(name: "PhysicsCategory.swift", file: "07-collision-01.swift")
+            }
+            
+            @Step {
+                노드에 카테고리를 할당합니다.
+                플레이어, 적, 아이템 등에 각각 카테고리를 지정합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-02.swift")
+            }
+            
+            @Step {
+                충돌과 접촉 비트마스크를 설정합니다.
+                어떤 객체와 충돌하고 어떤 충돌을 감지할지 정의합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "충돌 델리게이트 구현") {
+        @ContentAndMedia {
+            `SKPhysicsContactDelegate`를 구현하여
+            충돌 이벤트를 처리합니다.
+            충돌 시작과 종료 시점을 감지할 수 있습니다.
+            
+            **델리게이트 메서드:**
+            - `didBegin(_:)`: 충돌 시작
+            - `didEnd(_:)`: 충돌 종료
+            
+            @Image(source: "contact-delegate.png", alt: "충돌 델리게이트")
+        }
+        
+        @Steps {
+            @Step {
+                SKPhysicsContactDelegate를 채택합니다.
+                Scene이 물리 접촉 이벤트를 받을 수 있게 합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-04.swift")
+            }
+            
+            @Step {
+                physicsWorld의 델리게이트를 설정합니다.
+                Scene을 contactDelegate로 지정합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-05.swift")
+            }
+            
+            @Step {
+                didBegin 메서드를 구현합니다.
+                두 물체가 접촉했을 때 호출됩니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "충돌 처리 로직") {
+        @ContentAndMedia {
+            접촉 정보를 분석하여 게임 로직을 실행합니다.
+            점수 획득, 데미지, 아이템 수집 등을 구현합니다.
+            
+            `SKPhysicsContact`에서 충돌한 두 물체와
+            충돌 지점 정보를 얻을 수 있습니다.
+            
+            @Image(source: "collision-logic.png", alt: "충돌 처리 로직")
+        }
+        
+        @Steps {
+            @Step {
+                충돌한 물체를 식별합니다.
+                bodyA와 bodyB의 카테고리를 확인합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-07.swift")
+            }
+            
+            @Step {
+                플레이어-적 충돌을 처리합니다.
+                플레이어가 적과 충돌하면 데미지를 받습니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-08.swift")
+            }
+            
+            @Step {
+                아이템 수집을 구현합니다.
+                플레이어가 코인을 수집하면 점수가 증가합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 충돌 처리") {
+        @ContentAndMedia {
+            충돌 지점과 충돌력을 활용하여
+            더 정교한 게임 메카닉을 구현합니다.
+            
+            **활용 정보:**
+            - `contactPoint`: 충돌 지점
+            - `collisionImpulse`: 충돌 강도
+            - `contactNormal`: 충돌 방향
+            
+            @Image(source: "advanced-collision.png", alt: "고급 충돌 처리")
+        }
+        
+        @Steps {
+            @Step {
+                충돌 지점에 이펙트를 표시합니다.
+                파티클이나 스파크를 충돌 위치에 생성합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-10.swift")
+            }
+            
+            @Step {
+                충돌 강도에 따른 처리를 합니다.
+                강하게 부딪힐수록 큰 데미지를 줍니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-11.swift")
+            }
+            
+            @Step {
+                원샷 충돌과 지속 충돌을 구분합니다.
+                didEnd를 활용하여 접촉 종료를 감지합니다.
+                
+                @Code(name: "GameScene.swift", file: "07-collision-12.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            물리 바디의 카테고리를 정의할 때 사용하는 속성은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                `categoryBitMask`
+                
+                @Justification(reaction: "정확합니다! 🏷️") {
+                    `categoryBitMask`로 해당 물리 바디가 
+                    어떤 카테고리에 속하는지 정의합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `collisionBitMask`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    `collisionBitMask`는 물리적으로 
+                    충돌할 대상을 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `contactTestBitMask`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    `contactTestBitMask`는 충돌 감지 
+                    알림을 받을 대상을 지정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            두 물체의 충돌을 감지하려면 어떤 비트마스크를 설정해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                `collisionBitMask`만 설정
+                
+                @Justification(reaction: "부족합니다.") {
+                    `collisionBitMask`는 물리적 충돌만 처리합니다.
+                    감지 알림을 받으려면 다른 설정이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `contactTestBitMask` 설정
+                
+                @Justification(reaction: "맞습니다! 📡") {
+                    `contactTestBitMask`를 설정해야 
+                    `didBegin(_:)` 델리게이트 메서드가 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `categoryBitMask`만 설정
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    카테고리만으로는 충돌 감지가 되지 않습니다.
+                    `contactTestBitMask`도 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            충돌 이벤트를 받기 위해 Scene이 채택해야 하는 프로토콜은?
+            
+            @Choice(isCorrect: true) {
+                `SKPhysicsContactDelegate`
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    `SKPhysicsContactDelegate`를 채택하고
+                    `physicsWorld.contactDelegate`를 설정하면
+                    충돌 이벤트를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `SKPhysicsBodyDelegate`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    이런 프로토콜은 존재하지 않습니다.
+                    `SKPhysicsContactDelegate`를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `SKCollisionDelegate`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    올바른 프로토콜 이름은 
+                    `SKPhysicsContactDelegate`입니다.
+                }
+            }
+        }
+    }
+}

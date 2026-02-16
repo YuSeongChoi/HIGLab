@@ -1,0 +1,167 @@
+@Tutorial(time: 15) {
+    @Intro(title: "RealityKit 소개") {
+        RealityKit은 Apple의 증강현실(AR) 및 3D 렌더링 프레임워크입니다.
+        이 튜토리얼에서는 RealityKit의 핵심 개념과 아키텍처를 이해합니다.
+        
+        @Image(source: "chapter1-intro.png", alt: "RealityKit 프레임워크 개요")
+    }
+    
+    @Section(title: "RealityKit이란?") {
+        @ContentAndMedia {
+            RealityKit은 iOS 13에서 처음 도입된 Apple의 AR/3D 프레임워크입니다.
+            고성능 3D 렌더링, 물리 시뮬레이션, 애니메이션, 오디오를 제공합니다.
+            
+            ARKit과 함께 사용하여 현실 세계와 가상 콘텐츠를 자연스럽게 혼합할 수 있습니다.
+            
+            @Image(source: "realitykit-architecture.png", alt: "RealityKit 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                RealityKit의 주요 특징을 살펴봅니다.
+                
+                - **사진 같은 렌더링**: PBR(물리 기반 렌더링) 지원
+                - **물리 시뮬레이션**: 중력, 충돌, 힘 적용
+                - **애니메이션**: 스켈레탈, 트랜스폼, 커스텀 애니메이션
+                - **공간 오디오**: 3D 위치 기반 사운드
+                
+                @Code(name: "RealityKitOverview.swift", file: "01-introduction-01.swift")
+            }
+            
+            @Step {
+                RealityKit은 Entity-Component-System(ECS) 패턴을 사용합니다.
+                
+                - **Entity**: 장면의 기본 객체
+                - **Component**: Entity에 기능을 추가하는 데이터
+                - **System**: Component를 처리하는 로직
+                
+                @Code(name: "ECSPattern.swift", file: "01-introduction-02.swift")
+            }
+            
+            @Step {
+                RealityKit은 여러 Apple 플랫폼을 지원합니다.
+                
+                @Code(name: "PlatformSupport.swift", file: "01-introduction-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "RealityKit vs SceneKit") {
+        @ContentAndMedia {
+            SceneKit은 전통적인 3D 프레임워크이고, RealityKit은 AR에 최적화되어 있습니다.
+            
+            @Image(source: "realitykit-vs-scenekit.png", alt: "RealityKit과 SceneKit 비교")
+        }
+        
+        @Steps {
+            @Step {
+                RealityKit의 장점을 이해합니다.
+                
+                - AR 세션과의 긴밀한 통합
+                - 자동 조명 추정
+                - 사람 오클루전 지원
+                - 더 나은 성능과 배터리 효율
+                
+                @Code(name: "Comparison.swift", file: "01-introduction-04.swift")
+            }
+            
+            @Step {
+                프로젝트에 RealityKit을 추가하는 방법입니다.
+                
+                @Code(name: "Import.swift", file: "01-introduction-05.swift")
+            }
+        }
+    }
+    
+    @Section(title: "첫 번째 RealityKit 프로젝트") {
+        @ContentAndMedia {
+            Xcode에서 새 AR 프로젝트를 생성하고 기본 구조를 살펴봅니다.
+            
+            @Image(source: "xcode-ar-project.png", alt: "Xcode AR 프로젝트")
+        }
+        
+        @Steps {
+            @Step {
+                Xcode에서 "Augmented Reality App" 템플릿을 선택합니다.
+                Content Technology로 "RealityKit"을 선택합니다.
+                
+                @Image(source: "create-ar-project.png", alt: "AR 프로젝트 생성")
+            }
+            
+            @Step {
+                생성된 프로젝트의 기본 구조를 확인합니다.
+                
+                @Code(name: "ContentView.swift", file: "01-introduction-06.swift")
+            }
+            
+            @Step {
+                시뮬레이터나 실제 기기에서 앱을 실행합니다.
+                기본 박스 모델이 AR 공간에 표시됩니다.
+                
+                @Image(source: "first-ar-app.png", alt: "첫 AR 앱 실행")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            RealityKit이 사용하는 아키텍처 패턴은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                MVC (Model-View-Controller)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MVC는 UIKit에서 주로 사용하는 패턴입니다.
+                    RealityKit은 게임 엔진에서 흔히 사용하는 다른 패턴을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ECS (Entity-Component-System)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    RealityKit은 Entity-Component-System 패턴을 사용합니다.
+                    Entity는 컨테이너, Component는 데이터, System은 로직을 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MVVM (Model-View-ViewModel)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MVVM은 SwiftUI와 Combine에서 자주 사용하지만, 
+                    RealityKit의 내부 아키텍처는 아닙니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            RealityKit이 처음 도입된 iOS 버전은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                iOS 11
+                
+                @Justification(reaction: "아쉽네요.") {
+                    iOS 11에서는 ARKit이 처음 도입되었습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 12
+                
+                @Justification(reaction: "아쉽네요.") {
+                    iOS 12에서는 ARKit 2가 도입되었습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                iOS 13
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    RealityKit은 iOS 13(2019년)에 처음 도입되었습니다.
+                    같은 시기에 SwiftUI와 Combine도 함께 발표되었습니다.
+                }
+            }
+        }
+    }
+}

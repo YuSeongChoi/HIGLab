@@ -1,0 +1,201 @@
+@Tutorial(time: 20) {
+    @Intro(title: "연결 관리 & 재연결") {
+        연결 끊김 처리, 자동 재연결,
+        다중 기기 관리 패턴을 학습합니다.
+    }
+    
+    @Section(title: "연결 끊김 처리") {
+        @ContentAndMedia {
+            BLE 연결은 다양한 이유로 끊길 수 있습니다.
+            
+            **연결 끊김 원인:**
+            - 기기가 범위를 벗어남
+            - 기기 전원 꺼짐
+            - 앱에서 명시적 연결 해제
+            - BLE 간섭 또는 오류
+            
+            사용자에게 적절한 피드백을 제공해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                연결 해제 콜백을 구현합니다.
+                error 파라미터로 원인을 파악합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-01-disconnect-callback.swift")
+            }
+            
+            @Step {
+                연결 해제 사유를 사용자 친화적으로 표시합니다.
+                
+                @Code(name: "DisconnectReason.swift", file: "09-02-disconnect-reason.swift")
+            }
+        }
+    }
+    
+    @Section(title: "자동 재연결") {
+        @ContentAndMedia {
+            iOS 17+에서는 `enableAutoReconnect` 옵션이 추가되었습니다.
+            이전 버전에서는 수동으로 재연결 로직을 구현해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                iOS 17+ 자동 재연결 옵션을 사용합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-03-auto-reconnect-ios17.swift")
+            }
+            
+            @Step {
+                레거시 버전용 수동 재연결을 구현합니다.
+                지수 백오프로 재시도 간격을 조절합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-04-manual-reconnect.swift")
+            }
+            
+            @Step {
+                retrievePeripherals로 이전에 연결했던 기기를 찾습니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-05-retrieve-peripherals.swift")
+            }
+        }
+    }
+    
+    @Section(title: "다중 기기 관리") {
+        @ContentAndMedia {
+            여러 BLE 기기를 동시에 관리하는 패턴입니다.
+            
+            **고려사항:**
+            - iOS에서 최대 동시 연결 수 (기기마다 다름, 보통 7-8개)
+            - 각 기기별 상태 추적
+            - 연결 우선순위
+        }
+        
+        @Steps {
+            @Step {
+                연결된 기기 목록을 관리하는 구조를 만듭니다.
+                
+                @Code(name: "DeviceManager.swift", file: "09-06-device-manager.swift")
+            }
+            
+            @Step {
+                기기별 연결 상태를 추적합니다.
+                
+                @Code(name: "DeviceState.swift", file: "09-07-device-state.swift")
+            }
+            
+            @Step {
+                다중 기기 UI를 구현합니다.
+                
+                @Code(name: "DeviceListView.swift", file: "09-08-device-list-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연결 타임아웃") {
+        @ContentAndMedia {
+            connect()는 타임아웃이 없어 무한 대기할 수 있습니다.
+            적절한 타임아웃 처리가 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                연결 타임아웃 로직을 구현합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-09-connection-timeout.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            didDisconnectPeripheral의 error가 nil이면?
+            
+            @Choice(isCorrect: true) {
+                앱에서 명시적으로 연결을 해제했다
+                
+                @Justification(reaction: "정확합니다! ✅") {
+                    cancelPeripheralConnection 호출 등
+                    정상적인 연결 해제 시 error가 nil입니다.
+                    예상치 못한 끊김은 error가 제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기기가 범위를 벗어났다
+                
+                @Justification(reaction: "이 경우 error가 있습니다.") {
+                    예상치 못한 끊김은 error를 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러 정보를 알 수 없다
+                
+                @Justification(reaction: "nil도 의미가 있습니다.") {
+                    nil은 정상 해제를 의미합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            retrievePeripherals(withIdentifiers:)의 용도는?
+            
+            @Choice(isCorrect: false) {
+                스캔 없이 모든 기기 목록 가져오기
+                
+                @Justification(reaction: "UUID를 알아야 합니다.") {
+                    이전에 발견한 기기의 UUID가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                UUID로 이전에 발견한 기기 참조 가져오기
+                
+                @Justification(reaction: "맞습니다! 🔄") {
+                    저장해둔 Peripheral UUID로
+                    스캔 없이 직접 기기 참조를 가져올 수 있습니다.
+                    재연결에 유용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                연결된 기기 목록만 가져오기
+                
+                @Justification(reaction: "연결 상태와 무관합니다.") {
+                    UUID만 알면 연결 여부와 관계없이 가져옵니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            지수 백오프(exponential backoff) 재시도 전략의 장점은?
+            
+            @Choice(isCorrect: false) {
+                항상 빠르게 재연결된다
+                
+                @Justification(reaction: "속도가 목적은 아닙니다.") {
+                    재시도 간격이 점점 늘어납니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                불필요한 재시도를 줄여 배터리를 절약한다
+                
+                @Justification(reaction: "정확합니다! 🔋") {
+                    실패가 반복되면 간격을 늘려
+                    배터리 소모를 줄이고, 
+                    기기가 범위 내로 돌아올 시간을 줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 많은 기기에 연결할 수 있다
+                
+                @Justification(reaction: "연결 수와 관련 없습니다.") {
+                    재시도 간격 조절이 목적입니다.
+                }
+            }
+        }
+    }
+}

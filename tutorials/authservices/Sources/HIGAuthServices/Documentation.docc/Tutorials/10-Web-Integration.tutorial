@@ -1,0 +1,230 @@
+@Tutorial(time: 18) {
+    @Intro(title: "웹 연동 (Sign in with Apple JS)") {
+        웹사이트와 앱 간 일관된 Apple 로그인 경험을 제공하고
+        크로스 플랫폼 인증을 구현합니다.
+        
+        @Image(source: "web-integration.png", alt: "웹 연동")
+    }
+    
+    @Section(title: "Sign in with Apple JS 소개") {
+        @ContentAndMedia {
+            Sign in with Apple JS는 웹에서 
+            Apple 로그인을 구현하는 JavaScript SDK입니다.
+            
+            - 웹사이트에서 동일한 Apple ID로 로그인
+            - 앱과 동일한 User Identifier 공유
+            - REST API로 토큰 검증
+            
+            macOS Safari에서는 Touch ID도 지원됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                Apple Developer 포털에서 
+                Services ID를 생성합니다.
+                
+                웹 도메인과 리다이렉트 URL을 등록합니다.
+                
+                @Code(name: "ServicesID.swift", file: "10-01-services-id.swift")
+            }
+            
+            @Step {
+                웹페이지에 Apple JS SDK를 추가합니다.
+                
+                @Code(name: "AddSDK.swift", file: "10-02-add-sdk.swift")
+            }
+        }
+    }
+    
+    @Section(title: "웹 로그인 버튼 구현") {
+        @ContentAndMedia {
+            Apple이 제공하는 JavaScript로 
+            표준화된 로그인 버튼을 표시합니다.
+            
+            버튼 스타일과 크기를 커스터마이징할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                HTML에 로그인 버튼 컨테이너를 추가합니다.
+                data 속성으로 옵션을 설정합니다.
+                
+                @Code(name: "ButtonHTML.swift", file: "10-03-button-html.swift")
+            }
+            
+            @Step {
+                AppleID.auth.init()으로 SDK를 초기화합니다.
+                clientId, scope, redirectURI를 설정합니다.
+                
+                @Code(name: "InitSDK.swift", file: "10-04-init-sdk.swift")
+            }
+            
+            @Step {
+                로그인 성공/실패 이벤트를 처리합니다.
+                
+                @Code(name: "EventHandlers.swift", file: "10-05-event-handlers.swift")
+            }
+        }
+    }
+    
+    @Section(title: "서버 사이드 처리") {
+        @ContentAndMedia {
+            웹 로그인 결과는 리다이렉트 URL로 전달됩니다.
+            
+            POST 방식으로 전달되는 데이터:
+            - code: Authorization Code
+            - id_token: Identity Token (JWT)
+            - state: CSRF 방지용 상태값
+            - user: 사용자 정보 (첫 로그인 시)
+        }
+        
+        @Steps {
+            @Step {
+                리다이렉트 엔드포인트에서 
+                POST 데이터를 파싱합니다.
+                
+                @Code(name: "ParseRedirect.swift", file: "10-06-parse-redirect.swift")
+            }
+            
+            @Step {
+                state 값을 검증하여 
+                CSRF 공격을 방지합니다.
+                
+                @Code(name: "ValidateState.swift", file: "10-07-validate-state.swift")
+            }
+            
+            @Step {
+                앱과 동일한 방식으로 
+                Identity Token을 검증합니다.
+                
+                @Code(name: "ValidateWebToken.swift", file: "10-08-validate-web-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앱-웹 간 계정 동기화") {
+        @ContentAndMedia {
+            동일한 Apple ID로 로그인하면 
+            앱과 웹에서 같은 User Identifier를 받습니다.
+            
+            단, Services ID와 App ID가 
+            같은 Team에 속해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                App ID와 Services ID의 
+                Team ID가 일치하는지 확인합니다.
+                
+                @Code(name: "TeamID.swift", file: "10-09-team-id.swift")
+            }
+            
+            @Step {
+                sub 클레임(User Identifier)으로 
+                앱과 웹 사용자를 매칭합니다.
+                
+                @Code(name: "MatchUsers.swift", file: "10-10-match-users.swift")
+            }
+            
+            @Step {
+                세션을 공유하여 앱에서 로그인하면 
+                웹에서도 로그인 상태를 유지합니다.
+                
+                @Code(name: "SharedSession.swift", file: "10-11-shared-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Universal Links 연동") {
+        @ContentAndMedia {
+            Universal Links를 설정하면 
+            웹 로그인 후 앱으로 자연스럽게 이동합니다.
+            
+            - 웹에서 로그인 완료 시 앱 열기
+            - 앱이 없으면 웹에서 계속 진행
+            - 딥링크로 특정 화면으로 이동
+        }
+        
+        @Steps {
+            @Step {
+                apple-app-site-association에 
+                applinks를 추가합니다.
+                
+                @Code(name: "UniversalLinks.swift", file: "10-12-universal-links.swift")
+            }
+            
+            @Step {
+                앱에서 Universal Link를 처리합니다.
+                로그인 완료 후 적절한 화면으로 이동합니다.
+                
+                @Code(name: "HandleUniversalLink.swift", file: "10-13-handle-link.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            웹에서 Sign in with Apple을 구현하려면 
+            무엇이 필요한가요?
+            
+            @Choice(isCorrect: true) {
+                Apple Developer 포털에서 Services ID를 생성한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Services ID는 웹 클라이언트를 식별하며,
+                    도메인과 리다이렉트 URL을 등록합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                App ID만 있으면 웹에서도 사용 가능하다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    웹은 별도의 Services ID가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                웹에서는 Sign in with Apple을 사용할 수 없다.
+                
+                @Justification(reaction: "사용 가능합니다.") {
+                    JavaScript SDK로 웹에서도 
+                    동일하게 구현 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            앱과 웹에서 동일한 User Identifier를 
+            받으려면 어떤 조건이 필요한가요?
+            
+            @Choice(isCorrect: false) {
+                같은 Bundle ID를 사용해야 한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    웹은 Bundle ID가 아닌 
+                    Services ID를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                App ID와 Services ID가 같은 Team에 속해야 한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    같은 Team의 앱과 서비스는 
+                    동일한 User Identifier를 공유합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서로 다른 User Identifier가 반환되며 
+                연결할 수 없다.
+                
+                @Justification(reaction: "연결 가능합니다.") {
+                    같은 Team이면 동일한 
+                    User Identifier를 받습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,194 @@
+@Tutorial(time: 20) {
+    @Intro(title: "드로잉 편집 (선택, 삭제)") {
+        Lasso 도구로 드로잉을 선택하고 
+        편집하는 기능을 구현합니다.
+        
+        @Image(source: "editing.png", alt: "드로잉 편집")
+    }
+    
+    @Section(title: "Lasso 도구로 선택하기") {
+        @ContentAndMedia {
+            PKLassoTool은 자유 형태로 영역을 선택하는 도구입니다.
+            선택된 영역의 획(strokes)을 
+            이동, 복사, 삭제할 수 있습니다.
+            
+            - **자유 선택**: 원하는 모양으로 영역 지정
+            - **이동**: 선택 영역을 드래그
+            - **크기 조절**: 핸들로 확대/축소
+            - **삭제**: 선택 후 Delete
+        }
+        
+        @Steps {
+            @Step {
+                PKLassoTool을 현재 도구로 설정합니다.
+                손가락이나 Pencil로 선택 영역을 그립니다.
+                
+                @Code(name: "LassoTool.swift", file: "09-01-lasso-tool.swift")
+            }
+            
+            @Step {
+                선택 완료 후 나타나는 
+                편집 메뉴를 활용합니다.
+                
+                @Code(name: "SelectionMenu.swift", file: "09-02-selection-menu.swift")
+            }
+            
+            @Step {
+                프로그래밍 방식으로 특정 영역을 선택합니다.
+                CGRect 기반 선택을 구현합니다.
+                
+                @Code(name: "ProgrammaticSelection.swift", file: "09-03-programmatic.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Undo/Redo 구현") {
+        @ContentAndMedia {
+            드로잉 앱에서 실행취소/다시실행은 필수 기능입니다.
+            UndoManager를 활용하여 구현합니다.
+            
+            PKCanvasView는 기본적으로 
+            UndoManager를 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PKCanvasView의 undoManager를 활용하여
+                Undo/Redo를 구현합니다.
+                
+                @Code(name: "UndoRedo.swift", file: "09-04-undo-redo.swift")
+            }
+            
+            @Step {
+                Undo/Redo 버튼의 활성화 상태를 
+                자동으로 업데이트합니다.
+                
+                @Code(name: "UndoButtons.swift", file: "09-05-undo-buttons.swift")
+            }
+            
+            @Step {
+                키보드 단축키로 Undo/Redo를 트리거합니다.
+                Cmd+Z, Cmd+Shift+Z를 처리합니다.
+                
+                @Code(name: "KeyboardShortcuts.swift", file: "09-06-shortcuts.swift")
+            }
+        }
+    }
+    
+    @Section(title: "획 단위 편집") {
+        @ContentAndMedia {
+            PKDrawing의 strokes 배열을 직접 조작하여
+            세밀한 편집 기능을 구현할 수 있습니다.
+            
+            - **특정 획 삭제**: 인덱스로 제거
+            - **획 변환**: transform 수정
+            - **색상 변경**: ink 교체
+        }
+        
+        @Steps {
+            @Step {
+                특정 인덱스의 획을 삭제합니다.
+                strokes 배열을 수정하여 새 PKDrawing을 생성합니다.
+                
+                @Code(name: "DeleteStroke.swift", file: "09-07-delete-stroke.swift")
+            }
+            
+            @Step {
+                특정 획의 색상을 변경합니다.
+                새로운 ink로 stroke를 재생성합니다.
+                
+                @Code(name: "ChangeColor.swift", file: "09-08-change-color.swift")
+            }
+            
+            @Step {
+                획에 변환(이동, 회전, 크기)을 적용합니다.
+                CGAffineTransform을 사용합니다.
+                
+                @Code(name: "TransformStroke.swift", file: "09-09-transform.swift")
+            }
+        }
+    }
+    
+    @Section(title: "전체 지우기와 초기화") {
+        @ContentAndMedia {
+            캔버스 전체를 지우거나 
+            초기 상태로 되돌리는 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                전체 드로잉을 지우고 
+                빈 캔버스로 초기화합니다.
+                
+                @Code(name: "ClearAll.swift", file: "09-10-clear-all.swift")
+            }
+            
+            @Step {
+                지우기 전 확인 다이얼로그를 표시합니다.
+                실수로 지우는 것을 방지합니다.
+                
+                @Code(name: "ClearConfirm.swift", file: "09-11-clear-confirm.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKLassoTool로 선택한 영역을 편집하려면?
+            
+            @Choice(isCorrect: true) {
+                선택 완료 후 나타나는 핸들과 메뉴를 사용한다
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    선택이 완료되면 이동/크기 조절 핸들과
+                    컨텍스트 메뉴가 나타납니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                코드에서 직접 좌표를 수정해야 한다
+                
+                @Justification(reaction: "자동 UI가 제공됩니다.") {
+                    PencilKit이 선택 편집 UI를 자동 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 편집 모드로 전환해야 한다
+                
+                @Justification(reaction: "Lasso 자체가 편집 모드입니다.") {
+                    선택과 편집이 하나의 도구로 통합되어 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PKCanvasView에서 Undo 기능을 구현하려면?
+            
+            @Choice(isCorrect: true) {
+                canvasView.undoManager?.undo()를 호출한다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    PKCanvasView는 UndoManager를 내장하고 있어
+                    기본적인 Undo/Redo가 자동 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                드로잉 히스토리를 직접 구현해야 한다
+                
+                @Justification(reaction: "필요 없습니다.") {
+                    시스템 UndoManager가 이미 통합되어 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Undo는 지원되지 않는다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    PKCanvasView는 Undo/Redo를 완벽히 지원합니다.
+                }
+            }
+        }
+    }
+}

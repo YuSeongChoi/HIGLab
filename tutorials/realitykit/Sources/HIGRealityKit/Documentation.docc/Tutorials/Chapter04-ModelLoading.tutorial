@@ -1,0 +1,215 @@
+@Tutorial(time: 20) {
+    @Intro(title: "3D 모델 로딩 (USDZ)") {
+        USDZ 파일을 로드하여 AR 장면에 3D 모델을 추가하는 방법을 배웁니다.
+        비동기 로딩과 에러 처리도 함께 다룹니다.
+        
+        @Image(source: "chapter4-usdz.png", alt: "USDZ 모델 로딩")
+    }
+    
+    @Section(title: "USDZ 파일 형식") {
+        @ContentAndMedia {
+            USDZ는 Apple이 채택한 3D 파일 형식으로, 
+            메시, 텍스처, 애니메이션을 하나의 파일에 패키징합니다.
+            
+            @Image(source: "usdz-format.png", alt: "USDZ 파일 형식")
+        }
+        
+        @Steps {
+            @Step {
+                USDZ의 장점을 이해합니다.
+                
+                - 단일 파일에 모든 리소스 포함
+                - 빠른 로딩 속도
+                - iOS, iPadOS, macOS, visionOS 지원
+                - Reality Composer Pro와 호환
+                
+                @Code(name: "USDZOverview.swift", file: "04-model-01.swift")
+            }
+            
+            @Step {
+                Apple의 AR Quick Look에서 무료 USDZ 모델을 다운로드합니다.
+                
+                @Image(source: "ar-quicklook-gallery.png", alt: "AR Quick Look 갤러리")
+            }
+        }
+    }
+    
+    @Section(title: "동기 로딩") {
+        @ContentAndMedia {
+            작은 모델은 동기적으로 빠르게 로드할 수 있습니다.
+            
+            @Image(source: "sync-loading.png", alt: "동기 로딩")
+        }
+        
+        @Steps {
+            @Step {
+                번들에서 USDZ 파일을 동기적으로 로드합니다.
+                
+                @Code(name: "SyncLoading.swift", file: "04-model-02.swift")
+            }
+            
+            @Step {
+                로드된 모델의 크기와 위치를 조정합니다.
+                
+                @Code(name: "AdjustModel.swift", file: "04-model-03.swift")
+            }
+            
+            @Step {
+                do-catch로 로딩 에러를 처리합니다.
+                
+                @Code(name: "ErrorHandling.swift", file: "04-model-04.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비동기 로딩") {
+        @ContentAndMedia {
+            대용량 모델은 비동기로 로드하여 UI가 멈추지 않게 합니다.
+            Swift의 async/await를 활용합니다.
+            
+            @Image(source: "async-loading.png", alt: "비동기 로딩")
+        }
+        
+        @Steps {
+            @Step {
+                async/await로 모델을 비동기 로드합니다.
+                
+                @Code(name: "AsyncLoading.swift", file: "04-model-05.swift")
+            }
+            
+            @Step {
+                로딩 상태를 UI에 표시합니다.
+                
+                @Code(name: "LoadingState.swift", file: "04-model-06.swift")
+            }
+            
+            @Step {
+                여러 모델을 동시에 로드합니다.
+                
+                @Code(name: "ConcurrentLoading.swift", file: "04-model-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "원격 USDZ 로딩") {
+        @ContentAndMedia {
+            URL에서 USDZ 파일을 다운로드하여 로드하는 방법입니다.
+            
+            @Image(source: "remote-loading.png", alt: "원격 USDZ 로딩")
+        }
+        
+        @Steps {
+            @Step {
+                URL에서 USDZ 파일을 다운로드합니다.
+                
+                @Code(name: "DownloadUSDZ.swift", file: "04-model-08.swift")
+            }
+            
+            @Step {
+                다운로드한 파일을 캐싱합니다.
+                
+                @Code(name: "CachingModel.swift", file: "04-model-09.swift")
+            }
+            
+            @Step {
+                완전한 원격 로딩 구현입니다.
+                
+                @Code(name: "CompleteRemoteLoading.swift", file: "04-model-10.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            USDZ 파일의 가장 큰 장점은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                메시, 텍스처, 애니메이션을 하나의 파일에 포함
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    USDZ는 모든 3D 에셋을 단일 파일에 패키징하여
+                    배포와 로딩이 간편합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                파일 크기가 가장 작음
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    USDZ가 효율적이긴 하지만, 파일 크기 최소화가 
+                    주요 장점은 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 3D 소프트웨어에서 편집 가능
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    USDZ는 주로 배포용 형식이며, 편집에는 
+                    원본 USD 파일을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Entity.load(named:)를 사용할 때 에러를 처리하는 올바른 방법은?
+            
+            @Choice(isCorrect: false) {
+                if let 구문 사용
+                
+                @Justification(reaction: "아쉽네요.") {
+                    load(named:)는 throws 함수이므로 옵셔널 바인딩이 아닌
+                    do-catch가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                do-catch 구문 사용
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    Entity.load(named:)는 throws로 선언되어 있어
+                    do-catch로 에러를 처리해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러 처리 불필요
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    파일이 없거나 손상된 경우 에러가 발생할 수 있으므로
+                    반드시 에러 처리가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비동기로 3D 모델을 로드할 때 사용하는 Swift 키워드는?
+            
+            @Choice(isCorrect: false) {
+                @escaping
+                
+                @Justification(reaction: "아쉽네요.") {
+                    @escaping은 클로저가 함수를 벗어나 사용될 때 필요하지만,
+                    비동기 로딩과 직접적인 관련은 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                async/await
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Swift의 async/await를 사용하면 비동기 코드를 
+                    동기 코드처럼 깔끔하게 작성할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                defer
+                
+                @Justification(reaction: "아쉽네요.") {
+                    defer는 스코프 종료 시 실행할 코드를 정의하는 키워드입니다.
+                }
+            }
+        }
+    }
+}

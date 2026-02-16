@@ -1,0 +1,257 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CIImage & CIContext") {
+        CoreImage의 두 핵심 클래스인 CIImage와 CIContext의 
+        역할과 올바른 사용 방법을 깊이 있게 학습합니다.
+        
+        @Image(source: "ciimage-cicontext.png", alt: "CIImage와 CIContext")
+    }
+    
+    @Section(title: "CIImage 생성하기") {
+        @ContentAndMedia {
+            CIImage는 다양한 소스로부터 생성할 수 있습니다.
+            각 생성 방법의 특성을 이해하고 상황에 맞게 선택해야 합니다.
+            
+            - **UIImage/CGImage**: 기존 이미지에서 변환
+            - **Data**: JPEG, PNG 등 인코딩된 데이터
+            - **URL**: 파일 경로나 네트워크 URL
+            - **CVPixelBuffer**: 카메라나 비디오 프레임
+            
+            @Image(source: "ciimage-sources.png", alt: "CIImage 소스")
+        }
+        
+        @Steps {
+            @Step {
+                UIImage에서 CIImage를 생성합니다.
+                번들 리소스나 에셋 카탈로그의 이미지를 불러올 때 유용합니다.
+                
+                @Code(name: "CIImageFromUIImage.swift", file: "02-01-from-uiimage.swift")
+            }
+            
+            @Step {
+                Data에서 직접 CIImage를 생성합니다.
+                네트워크에서 다운로드한 이미지나 파일 시스템의 데이터를 처리할 때 적합합니다.
+                
+                @Code(name: "CIImageFromData.swift", file: "02-02-from-data.swift")
+            }
+            
+            @Step {
+                URL에서 CIImage를 생성하면 필요할 때까지 로딩을 지연시킬 수 있습니다.
+                대용량 이미지 처리 시 메모리 효율적입니다.
+                
+                @Code(name: "CIImageFromURL.swift", file: "02-03-from-url.swift")
+            }
+            
+            @Step {
+                CVPixelBuffer에서 CIImage를 생성합니다.
+                카메라 프레임이나 비디오 처리에 필수적인 방법입니다.
+                
+                @Code(name: "CIImageFromPixelBuffer.swift", file: "02-04-from-pixelbuffer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIImage 좌표계 이해하기") {
+        @ContentAndMedia {
+            CIImage는 UIKit과 다른 좌표계를 사용합니다.
+            이를 이해하지 못하면 이미지가 뒤집어지거나 잘못된 위치에 표시됩니다.
+            
+            - **UIKit**: 좌상단 원점 (y가 아래로 증가)
+            - **CoreImage**: 좌하단 원점 (y가 위로 증가)
+            - **extent**: 이미지의 경계 사각형
+            
+            @Image(source: "coordinate-system.png", alt: "좌표계 비교")
+        }
+        
+        @Steps {
+            @Step {
+                CIImage의 extent 속성으로 이미지 크기와 위치를 확인합니다.
+                필터 적용 후 extent가 변경될 수 있으므로 주의해야 합니다.
+                
+                @Code(name: "ImageExtent.swift", file: "02-05-extent.swift")
+            }
+            
+            @Step {
+                좌표계 변환이 필요한 경우 transform을 적용합니다.
+                UIKit에 표시할 때 이미지가 뒤집어지는 문제를 해결할 수 있습니다.
+                
+                @Code(name: "CoordinateTransform.swift", file: "02-06-transform.swift")
+            }
+            
+            @Step {
+                특정 영역만 잘라내는 cropping을 수행합니다.
+                좌표계를 고려해 올바른 영역을 지정해야 합니다.
+                
+                @Code(name: "ImageCropping.swift", file: "02-07-cropping.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIContext 생성과 옵션") {
+        @ContentAndMedia {
+            CIContext는 실제 이미지 렌더링을 수행하는 객체입니다.
+            생성 비용이 높으므로 재사용하는 것이 중요합니다.
+            
+            | 옵션 | 설명 | 기본값 |
+            |------|------|--------|
+            | useSoftwareRenderer | CPU 렌더링 강제 | false |
+            | workingColorSpace | 작업 색상 공간 | nil |
+            | outputColorSpace | 출력 색상 공간 | nil |
+            | cacheIntermediates | 중간 결과 캐싱 | true |
+        }
+        
+        @Steps {
+            @Step {
+                기본 CIContext를 생성합니다.
+                시스템이 자동으로 최적의 렌더러를 선택합니다.
+                
+                @Code(name: "BasicContext.swift", file: "02-08-basic-context.swift")
+            }
+            
+            @Step {
+                Metal 디바이스를 지정해 GPU 렌더링을 명시적으로 설정합니다.
+                최대 성능이 필요한 경우에 사용합니다.
+                
+                @Code(name: "MetalContext.swift", file: "02-09-metal-context.swift")
+            }
+            
+            @Step {
+                색상 관리가 중요한 앱에서는 색상 공간을 명시적으로 지정합니다.
+                Display P3나 sRGB 등을 선택할 수 있습니다.
+                
+                @Code(name: "ColorManagedContext.swift", file: "02-10-color-context.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIContext로 렌더링하기") {
+        @ContentAndMedia {
+            CIContext는 CIImage를 다양한 형태로 렌더링할 수 있습니다.
+            용도에 맞는 메서드를 선택해야 합니다.
+            
+            - `createCGImage`: CGImage 생성 (가장 일반적)
+            - `render(to:)`: CVPixelBuffer에 직접 렌더링
+            - `jpegRepresentation`: JPEG 데이터 생성
+            - `pngRepresentation`: PNG 데이터 생성
+        }
+        
+        @Steps {
+            @Step {
+                createCGImage로 UIImageView에 표시할 이미지를 생성합니다.
+                extent를 정확히 지정해야 올바른 결과를 얻습니다.
+                
+                @Code(name: "CreateCGImage.swift", file: "02-11-create-cgimage.swift")
+            }
+            
+            @Step {
+                JPEG 또는 PNG 데이터로 직접 렌더링합니다.
+                파일 저장이나 네트워크 전송에 적합합니다.
+                
+                @Code(name: "RenderToData.swift", file: "02-12-render-to-data.swift")
+            }
+            
+            @Step {
+                CVPixelBuffer에 직접 렌더링하여 비디오 프레임을 생성합니다.
+                실시간 카메라 필터나 비디오 처리에 필수입니다.
+                
+                @Code(name: "RenderToPixelBuffer.swift", file: "02-13-render-to-buffer.swift")
+            }
+            
+            @Step {
+                CIContext를 싱글톤으로 관리해 성능을 최적화합니다.
+                매번 새로 생성하면 심각한 성능 저하가 발생합니다.
+                
+                @Code(name: "ContextSingleton.swift", file: "02-14-singleton.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CIContext를 매번 새로 생성하면 어떤 문제가 발생하나요?
+            
+            @Choice(isCorrect: true) {
+                생성 비용이 높아 심각한 성능 저하가 발생한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    CIContext 생성은 GPU 리소스 할당을 포함하는 
+                    비용이 큰 작업입니다. 반드시 재사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메모리 누수가 자동으로 발생한다.
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    메모리 누수는 생성 자체의 문제가 아닙니다.
+                    성능 저하가 주요 문제입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                색상이 왜곡되어 표시된다.
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    색상 문제는 색상 공간 설정과 관련이 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIImage의 좌표계가 UIKit과 다른 점은?
+            
+            @Choice(isCorrect: false) {
+                CIImage는 x좌표가 오른쪽에서 시작한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    x좌표는 둘 다 왼쪽에서 시작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CIImage는 좌하단이 원점이고, UIKit은 좌상단이 원점이다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    이 차이로 인해 이미지가 뒤집어 보일 수 있으며,
+                    변환이 필요한 경우가 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIImage는 픽셀 단위를, UIKit은 포인트 단위를 사용한다.
+                
+                @Justification(reaction: "정확하지 않습니다.") {
+                    단위의 차이가 아니라 원점의 위치가 다릅니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CVPixelBuffer에서 CIImage를 생성하는 것이 유용한 상황은?
+            
+            @Choice(isCorrect: true) {
+                카메라 프레임이나 비디오를 실시간으로 처리할 때
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    AVFoundation은 카메라/비디오 프레임을 
+                    CVPixelBuffer로 제공하므로 직접 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                번들에 포함된 PNG 파일을 로드할 때
+                
+                @Justification(reaction: "더 쉬운 방법이 있습니다.") {
+                    번들 리소스는 UIImage나 URL을 통해 로드하는 것이 간편합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크에서 JPEG를 다운로드할 때
+                
+                @Justification(reaction: "적합하지 않습니다.") {
+                    네트워크 데이터는 Data에서 직접 CIImage를 생성하면 됩니다.
+                }
+            }
+        }
+    }
+}

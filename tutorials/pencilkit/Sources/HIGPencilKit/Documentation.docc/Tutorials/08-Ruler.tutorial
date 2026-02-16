@@ -1,0 +1,196 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Ruler 도구") {
+        PKCanvasView의 Ruler를 활용해 
+        정확한 직선을 그리는 방법을 배웁니다.
+        
+        @Image(source: "ruler.png", alt: "Ruler 도구")
+    }
+    
+    @Section(title: "Ruler 기본 사용") {
+        @ContentAndMedia {
+            PencilKit의 Ruler는 화면에 표시되는 
+            가상의 눈금자로, 직선을 그릴 때 가이드 역할을 합니다.
+            
+            - **이동**: 한 손가락으로 드래그
+            - **회전**: 두 손가락으로 회전
+            - **정확한 각도**: 0°, 45°, 90° 등에 스냅
+            
+            @Image(source: "ruler-gestures.png", alt: "Ruler 제스처")
+        }
+        
+        @Steps {
+            @Step {
+                PKCanvasView의 rulerActive 프로퍼티로
+                Ruler를 표시하거나 숨깁니다.
+                
+                @Code(name: "RulerBasic.swift", file: "08-01-ruler-basic.swift")
+            }
+            
+            @Step {
+                Ruler를 토글하는 버튼을 추가합니다.
+                PKToolPicker에도 Ruler 버튼이 있습니다.
+                
+                @Code(name: "RulerToggle.swift", file: "08-02-ruler-toggle.swift")
+            }
+            
+            @Step {
+                Ruler 상태를 저장하고 복원합니다.
+                마지막 위치와 각도를 기억합니다.
+                
+                @Code(name: "RulerState.swift", file: "08-03-ruler-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Ruler와 함께 그리기") {
+        @ContentAndMedia {
+            Ruler가 활성화되면 그 가장자리를 따라
+            직선을 그릴 수 있습니다.
+            
+            Pencil이 Ruler 근처에 오면 
+            자동으로 스냅됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                Ruler 활성화 후 가장자리를 따라 
+                직선을 그립니다. 펜이 자동으로 스냅됩니다.
+                
+                @Code(name: "DrawWithRuler.swift", file: "08-04-draw-ruler.swift")
+            }
+            
+            @Step {
+                Ruler를 회전하여 다양한 각도의 
+                직선을 그립니다. 스냅 각도를 확인합니다.
+                
+                @Code(name: "RulerRotation.swift", file: "08-05-rotation.swift")
+            }
+            
+            @Step {
+                프로그래밍 방식으로 Ruler 위치와 
+                각도를 설정합니다.
+                
+                @Code(name: "RulerPosition.swift", file: "08-06-position.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 직선 도구") {
+        @ContentAndMedia {
+            Ruler 외에도 직접 직선 그리기 기능을 
+            구현할 수 있습니다.
+            
+            터치 시작점과 끝점을 연결하는 
+            직선 PKStroke를 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                두 점 사이에 직선 PKStroke를 생성하는
+                함수를 구현합니다.
+                
+                @Code(name: "LineStroke.swift", file: "08-07-line-stroke.swift")
+            }
+            
+            @Step {
+                드래그 제스처로 직선의 시작점과 
+                끝점을 지정합니다.
+                
+                @Code(name: "LineDrag.swift", file: "08-08-line-drag.swift")
+            }
+            
+            @Step {
+                Shift 키를 누르면 45° 단위로 
+                스냅되는 기능을 추가합니다.
+                
+                @Code(name: "LineSnap.swift", file: "08-09-line-snap.swift")
+            }
+        }
+    }
+    
+    @Section(title: "도형 그리기") {
+        @ContentAndMedia {
+            직선을 응용하여 사각형, 삼각형 등
+            기본 도형을 그리는 기능을 구현합니다.
+            
+            PKStroke 배열을 조합하여 도형을 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                사각형을 그리는 함수를 구현합니다.
+                네 개의 직선을 연결합니다.
+                
+                @Code(name: "RectangleShape.swift", file: "08-10-rectangle.swift")
+            }
+            
+            @Step {
+                원을 그리는 함수를 구현합니다.
+                PKStrokePath로 부드러운 곡선을 생성합니다.
+                
+                @Code(name: "CircleShape.swift", file: "08-11-circle.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKCanvasView에서 Ruler를 표시하려면 어떤 프로퍼티를 설정해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                rulerActive = true
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    rulerActive 프로퍼티를 true로 설정하면
+                    화면에 눈금자가 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                showRuler = true
+                
+                @Justification(reaction: "프로퍼티 이름이 다릅니다.") {
+                    정확한 프로퍼티 이름은 rulerActive입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                tool = PKRulerTool()
+                
+                @Justification(reaction: "Ruler는 도구가 아닙니다.") {
+                    Ruler는 별도의 PKTool이 아니라
+                    캔버스의 오버레이 기능입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Ruler를 회전할 때 어떤 제스처를 사용하나요?
+            
+            @Choice(isCorrect: false) {
+                한 손가락 드래그
+                
+                @Justification(reaction: "이건 이동 제스처입니다.") {
+                    한 손가락 드래그는 Ruler를 이동시킵니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                두 손가락 회전
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    두 손가락으로 회전 제스처를 하면
+                    Ruler가 회전합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                길게 누르기
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    길게 누르기는 Ruler 조작과 관련이 없습니다.
+                }
+            }
+        }
+    }
+}

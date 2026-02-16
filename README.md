@@ -21,8 +21,8 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
 | 📝 블로그 | 50/50 | - | 완료! | 100% 🎉 |
-| 📚 DocC | 6/50 | - | 44개 | 12% |
-| 💻 샘플 | 1/50 | - | 49개 | 2% |
+| 📚 DocC | 33/50 | - | 17개 | 66% |
+| 💻 샘플 | 1/50 | 29개 | 20개 | 2% |
 
 > **블로그 상태**: ✅ 완성 50개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit, MusicKit, PhotosUI, CoreHaptics, ShazamKit, ImagePlayground, CoreBluetooth, CoreNFC, MultipeerConnectivity, Network, LocalAuthentication, CryptoKit, CallKit, EventKit, Contacts, WiFiAware, VisualIntelligence, AlarmKit, EnergyKit, PermissionKit, RelevanceKit, ExtensibleImage, AccessorySetupKit) 🎊
 
@@ -42,9 +42,9 @@ WidgetKit
 | 1 | **WidgetKit** | [✅](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/) | [✅](samples/WeatherWidget/) |
 | 2 | **ActivityKit** | [✅](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | ⬜ |
 | 3 | **App Intents** | [✅](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | ⬜ |
-| 4 | **SwiftUI** | [✅](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | ⬜ | ⬜ |
-| 5 | **SwiftData** | [✅](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | ⬜ | ⬜ |
-| 6 | **Observation** | [✅](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | ⬜ | ⬜ |
+| 4 | **SwiftUI** | [✅](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | [✅](tutorials/swiftui/) | ⬜ |
+| 5 | **SwiftData** | [✅](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | [✅](tutorials/swiftdata/) | ⬜ |
+| 6 | **Observation** | [✅](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | [✅](tutorials/observation/) | ⬜ |
 | 7 | 🆕 **Foundation Models** | [✅](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | ⬜ |
 
 ### 💳 Phase 2: App Services (서비스 통합)
@@ -52,50 +52,50 @@ WidgetKit
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
 | 8 | **StoreKit 2** | [✅](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ⬜ |
-| 9 | **PassKit** | [✅](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | ⬜ | ⬜ |
-| 10 | **CloudKit** | [✅](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
-| 11 | **Authentication Services** | [✅](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | ⬜ | ⬜ |
-| 12 | **HealthKit** | [✅](https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html) | ⬜ | ⬜ |
-| 13 | **WeatherKit** | [✅](https://m1zz.github.io/HIGLab/weatherkit/01-tutorial.html) | ⬜ | ⬜ |
-| 14 | **MapKit** | [✅](https://m1zz.github.io/HIGLab/mapkit/01-tutorial.html) | ⬜ | ⬜ |
-| 15 | **Core Location** | [✅](https://m1zz.github.io/HIGLab/corelocation/01-tutorial.html) | ⬜ | ⬜ |
-| 16 | **Core ML** | [✅](https://m1zz.github.io/HIGLab/coreml/01-tutorial.html) | ⬜ | ⬜ |
-| 17 | **Vision** | [✅](https://m1zz.github.io/HIGLab/vision/01-tutorial.html) | ⬜ | ⬜ |
-| 18 | **User Notifications** | [✅](https://m1zz.github.io/HIGLab/notifications/01-tutorial.html) | ⬜ | ⬜ |
-| 19 | **TipKit** | [✅](https://m1zz.github.io/HIGLab/tipkit/01-tutorial.html) | ⬜ | ⬜ |
-| 20 | **SharePlay** | [✅](https://m1zz.github.io/HIGLab/shareplay/01-tutorial.html) | ⬜ | ⬜ |
+| 9 | **PassKit** | [✅](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | [✅](tutorials/passkit/) | ⬜ |
+| 10 | **CloudKit** | [✅](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | [✅](tutorials/cloudkit/) | ⬜ |
+| 11 | **Authentication Services** | [✅](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | [✅](tutorials/authservices/) | ⬜ |
+| 12 | **HealthKit** | [✅](https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html) | [✅](tutorials/healthkit/) | ⬜ |
+| 13 | **WeatherKit** | [✅](https://m1zz.github.io/HIGLab/weatherkit/01-tutorial.html) | [✅](tutorials/weatherkit/) | ⬜ |
+| 14 | **MapKit** | [✅](https://m1zz.github.io/HIGLab/mapkit/01-tutorial.html) | [✅](tutorials/mapkit/) | ⬜ |
+| 15 | **Core Location** | [✅](https://m1zz.github.io/HIGLab/corelocation/01-tutorial.html) | [✅](tutorials/corelocation/) | ⬜ |
+| 16 | **Core ML** | [✅](https://m1zz.github.io/HIGLab/coreml/01-tutorial.html) | [✅](tutorials/coreml/) | ⬜ |
+| 17 | **Vision** | [✅](https://m1zz.github.io/HIGLab/vision/01-tutorial.html) | [✅](tutorials/vision/) | ⬜ |
+| 18 | **User Notifications** | [✅](https://m1zz.github.io/HIGLab/notifications/01-tutorial.html) | [✅](tutorials/notifications/) | ⬜ |
+| 19 | **TipKit** | [✅](https://m1zz.github.io/HIGLab/tipkit/01-tutorial.html) | [✅](tutorials/tipkit/) | ⬜ |
+| 20 | **SharePlay** | [✅](https://m1zz.github.io/HIGLab/shareplay/01-tutorial.html) | [✅](tutorials/shareplay/) | ⬜ |
 
 ### 🎮 Phase 3: Graphics & Media (그래픽/미디어)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
 | 21 | **ARKit** | [✅](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
-| 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
-| 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
-| 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
-| 25 | **PencilKit** | [✅](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
-| 26 | **PDFKit** | [✅](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
-| 27 | **AVFoundation** | [✅](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
-| 28 | **AVKit** | [✅](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
-| 29 | **MusicKit** | [✅](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
-| 30 | **PhotosUI** | [✅](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
-| 31 | **Core Haptics** | [✅](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
-| 32 | **ShazamKit** | [✅](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | ⬜ | ⬜ |
+| 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | [✅](tutorials/realitykit/) | ⬜ |
+| 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | [✅](tutorials/spritekit/) | ⬜ |
+| 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | [✅](tutorials/coreimage/) | ⬜ |
+| 25 | **PencilKit** | [✅](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | [✅](tutorials/pencilkit/) | ⬜ |
+| 26 | **PDFKit** | [✅](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | [✅](tutorials/pdfkit/) | ⬜ |
+| 27 | **AVFoundation** | [✅](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | [✅](tutorials/avfoundation/) | ⬜ |
+| 28 | **AVKit** | [✅](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | [✅](tutorials/avkit/) | ⬜ |
+| 29 | **MusicKit** | [✅](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | [✅](tutorials/musickit/) | ⬜ |
+| 30 | **PhotosUI** | [✅](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | [✅](tutorials/photosui/) | ⬜ |
+| 31 | **Core Haptics** | [✅](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | [✅](tutorials/corehaptics/) | ⬜ |
+| 32 | **ShazamKit** | [✅](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | [✅](tutorials/shazamkit/) | ⬜ |
 | 33 | 🆕 **Image Playground** | [✅](https://m1zz.github.io/HIGLab/imageplayground/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🔧 Phase 4: System (시스템/네트워크)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 34 | **Core Bluetooth** | [✅](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [⬜](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
+| 34 | **Core Bluetooth** | [✅](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](tutorials/bluetooth/) | ⬜ |
 | 35 | **Core NFC** | [✅](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | ⬜ | ⬜ |
 | 36 | **MultipeerConnectivity** | [✅](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | ⬜ | ⬜ |
-| 37 | **Network** | [✅](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | ⬜ | ⬜ |
-| 38 | **LocalAuthentication** | [✅](https://m1zz.github.io/HIGLab/localauth/01-tutorial.html) | ⬜ | ⬜ |
-| 39 | **CryptoKit** | [✅](https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html) | ⬜ | ⬜ |
+| 37 | **Network** | [✅](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | [✅](tutorials/network/) | ⬜ |
+| 38 | **LocalAuthentication** | [✅](https://m1zz.github.io/HIGLab/localauth/01-tutorial.html) | [✅](tutorials/localauth/) | ⬜ |
+| 39 | **CryptoKit** | [✅](https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html) | [✅](tutorials/cryptokit/) | ⬜ |
 | 40 | **CallKit** | [✅](https://m1zz.github.io/HIGLab/callkit/01-tutorial.html) | ⬜ | ⬜ |
-| 41 | **EventKit** | [✅](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html) | ⬜ | ⬜ |
-| 42 | **Contacts** | [✅](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | ⬜ | ⬜ |
+| 41 | **EventKit** | [✅](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html) | [✅](tutorials/eventkit/) | ⬜ |
+| 42 | **Contacts** | [✅](https://m1zz.github.io/HIGLab/contacts/01-tutorial.html) | [✅](tutorials/contacts/) | ⬜ |
 | 43 | 🆕 **Wi-Fi Aware** | [✅](https://m1zz.github.io/HIGLab/wifiaware/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🆕 Phase 5: iOS 26 신규 기술

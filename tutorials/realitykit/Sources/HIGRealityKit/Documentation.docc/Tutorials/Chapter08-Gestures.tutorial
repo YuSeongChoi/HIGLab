@@ -1,0 +1,244 @@
+@Tutorial(time: 20) {
+    @Intro(title: "제스처 상호작용") {
+        탭, 드래그, 회전 등의 제스처로 3D 객체와 상호작용하는 방법을 배웁니다.
+        사용자가 AR 콘텐츠를 직접 조작할 수 있게 합니다.
+        
+        @Image(source: "chapter8-gesture.png", alt: "제스처 상호작용")
+    }
+    
+    @Section(title: "Entity 제스처 활성화") {
+        @ContentAndMedia {
+            Entity가 제스처에 반응하려면 필요한 Component를 추가해야 합니다.
+            
+            @Image(source: "gesture-setup.png", alt: "제스처 설정")
+        }
+        
+        @Steps {
+            @Step {
+                제스처 상호작용에 필요한 Component를 이해합니다.
+                
+                - CollisionComponent: 탭 감지용
+                - InputTargetComponent: 제스처 입력 수신
+                
+                @Code(name: "GestureComponents.swift", file: "08-gesture-01.swift")
+            }
+            
+            @Step {
+                Entity를 제스처 가능하게 만듭니다.
+                
+                @Code(name: "EnableGestures.swift", file: "08-gesture-02.swift")
+            }
+            
+            @Step {
+                ARView에 제스처 인식기를 추가합니다.
+                
+                @Code(name: "AddGestureRecognizers.swift", file: "08-gesture-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "탭 제스처") {
+        @ContentAndMedia {
+            3D 객체를 탭하여 선택하거나 동작을 트리거합니다.
+            
+            @Image(source: "tap-gesture.png", alt: "탭 제스처")
+        }
+        
+        @Steps {
+            @Step {
+                UITapGestureRecognizer를 설정합니다.
+                
+                @Code(name: "TapGestureRecognizer.swift", file: "08-gesture-04.swift")
+            }
+            
+            @Step {
+                탭한 Entity를 식별합니다.
+                
+                @Code(name: "IdentifyTappedEntity.swift", file: "08-gesture-05.swift")
+            }
+            
+            @Step {
+                탭 시 Entity 색상을 변경합니다.
+                
+                @Code(name: "ChangeColorOnTap.swift", file: "08-gesture-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "드래그 제스처") {
+        @ContentAndMedia {
+            3D 객체를 드래그하여 이동시킵니다.
+            
+            @Image(source: "drag-gesture.png", alt: "드래그 제스처")
+        }
+        
+        @Steps {
+            @Step {
+                UIPanGestureRecognizer를 설정합니다.
+                
+                @Code(name: "PanGestureRecognizer.swift", file: "08-gesture-07.swift")
+            }
+            
+            @Step {
+                드래그 중 Entity를 실시간으로 이동합니다.
+                
+                @Code(name: "DragEntity.swift", file: "08-gesture-08.swift")
+            }
+            
+            @Step {
+                드래그 범위를 제한합니다.
+                
+                @Code(name: "LimitDragRange.swift", file: "08-gesture-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "회전과 확대 제스처") {
+        @ContentAndMedia {
+            두 손가락으로 3D 객체를 회전하거나 크기를 조절합니다.
+            
+            @Image(source: "rotate-scale-gesture.png", alt: "회전과 확대 제스처")
+        }
+        
+        @Steps {
+            @Step {
+                UIRotationGestureRecognizer를 설정합니다.
+                
+                @Code(name: "RotationGesture.swift", file: "08-gesture-10.swift")
+            }
+            
+            @Step {
+                UIPinchGestureRecognizer로 크기를 조절합니다.
+                
+                @Code(name: "PinchGesture.swift", file: "08-gesture-11.swift")
+            }
+            
+            @Step {
+                여러 제스처를 동시에 인식합니다.
+                
+                @Code(name: "SimultaneousGestures.swift", file: "08-gesture-12.swift")
+            }
+        }
+    }
+    
+    @Section(title: "RealityKit 내장 제스처 (iOS 18+)") {
+        @ContentAndMedia {
+            iOS 18부터 RealityKit은 내장 제스처 시스템을 제공합니다.
+            
+            @Image(source: "builtin-gestures.png", alt: "내장 제스처")
+        }
+        
+        @Steps {
+            @Step {
+                EntityTargetValue를 사용한 새로운 제스처 시스템입니다.
+                
+                @Code(name: "EntityTargetValue.swift", file: "08-gesture-13.swift")
+            }
+            
+            @Step {
+                SwiftUI와 통합된 제스처를 사용합니다.
+                
+                @Code(name: "SwiftUIGestures.swift", file: "08-gesture-14.swift")
+            }
+            
+            @Step {
+                완전한 상호작용 예제입니다.
+                
+                @Code(name: "CompleteInteraction.swift", file: "08-gesture-15.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Entity가 탭 제스처에 반응하려면 어떤 Component가 필요한가요?
+            
+            @Choice(isCorrect: false) {
+                ModelComponent만
+                
+                @Justification(reaction: "아쉽네요.") {
+                    ModelComponent는 시각적 렌더링용이며,
+                    제스처 감지에는 별도 Component가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CollisionComponent
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    CollisionComponent는 레이캐스트가 Entity와 교차하는지
+                    감지하여 탭 인식을 가능하게 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PhysicsBodyComponent
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    PhysicsBodyComponent는 물리 시뮬레이션용이며,
+                    제스처 인식에는 직접 관련이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            탭한 위치에서 3D Entity를 찾는 ARView 메서드는?
+            
+            @Choice(isCorrect: true) {
+                entity(at:)
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    entity(at:) 메서드는 화면 좌표에서 
+                    가장 가까운 Entity를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                hitTest()
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    hitTest는 AR 평면을 찾는 데 사용되며,
+                    Entity 검색에는 entity(at:)를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                findEntity(at:)
+                
+                @Justification(reaction: "아쉽네요.") {
+                    findEntity(at:)은 존재하지 않는 메서드입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            여러 제스처를 동시에 인식하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                불가능함
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    UIKit에서 여러 제스처를 동시에 인식하는 방법이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                UIGestureRecognizerDelegate 구현
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    gestureRecognizer(_:shouldRecognizeSimultaneouslyWith:) 
+                    메서드를 구현하여 동시 인식을 허용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 제스처를 하나로 합치기
+                
+                @Justification(reaction: "아쉽네요.") {
+                    각 제스처는 개별적으로 유지하면서
+                    delegate로 동시 인식을 허용합니다.
+                }
+            }
+        }
+    }
+}

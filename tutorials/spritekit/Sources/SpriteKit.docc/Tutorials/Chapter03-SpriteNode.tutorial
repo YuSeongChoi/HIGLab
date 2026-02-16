@@ -1,0 +1,257 @@
+@Tutorial(time: 25) {
+    @Intro(title: "SKSpriteNode 스프라이트") {
+        게임의 시각적 요소인 SKSpriteNode를 생성하고 
+        다양한 속성을 활용하는 방법을 학습합니다.
+        
+        @Image(source: "chapter3-sprite.png", alt: "스프라이트 노드")
+    }
+    
+    @Section(title: "스프라이트 생성하기") {
+        @ContentAndMedia {
+            `SKSpriteNode`는 이미지나 색상으로 채워진 
+            사각형 영역을 나타내는 노드입니다.
+            게임의 캐릭터, 배경, 아이템 등 
+            대부분의 시각적 요소에 사용됩니다.
+            
+            **생성 방법:**
+            - 이미지 파일로 생성
+            - 텍스처로 생성
+            - 색상과 크기로 생성
+            
+            @Image(source: "sprite-creation.png", alt: "스프라이트 생성 방법")
+        }
+        
+        @Steps {
+            @Step {
+                이미지로 스프라이트를 생성합니다.
+                Assets 카탈로그에 추가한 이미지를 사용합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-01.swift")
+            }
+            
+            @Step {
+                색상과 크기로 스프라이트를 생성합니다.
+                이미지 없이도 사각형 스프라이트를 만들 수 있습니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-02.swift")
+            }
+            
+            @Step {
+                스프라이트를 Scene에 추가하고 위치를 설정합니다.
+                `position` 속성으로 좌표를 지정합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "스프라이트 속성 다루기") {
+        @ContentAndMedia {
+            SKSpriteNode는 다양한 시각적 속성을 제공합니다.
+            이 속성들을 조합하여 풍부한 시각 효과를 
+            구현할 수 있습니다.
+            
+            **주요 속성:**
+            - `position`: 위치 (CGPoint)
+            - `zPosition`: 렌더링 순서
+            - `xScale`, `yScale`: 크기 조절
+            - `zRotation`: 회전 (라디안)
+            - `alpha`: 투명도
+            - `isHidden`: 표시 여부
+            
+            @Image(source: "sprite-properties.png", alt: "스프라이트 속성")
+        }
+        
+        @Steps {
+            @Step {
+                스프라이트의 크기와 회전을 조절합니다.
+                `setScale(_:)` 또는 개별 축 스케일을 사용합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-04.swift")
+            }
+            
+            @Step {
+                zPosition으로 렌더링 순서를 제어합니다.
+                값이 클수록 앞쪽(위)에 그려집니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-05.swift")
+            }
+            
+            @Step {
+                투명도와 색상 블렌드를 적용합니다.
+                `color`와 `colorBlendFactor`로 색조를 변경할 수 있습니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "텍스처 아틀라스 사용하기") {
+        @ContentAndMedia {
+            텍스처 아틀라스는 여러 이미지를 하나의 
+            큰 이미지로 합쳐 성능을 최적화합니다.
+            드로우 콜을 줄여 렌더링 효율이 향상됩니다.
+            
+            Xcode에서 `.spriteatlas` 폴더를 사용하여 
+            자동으로 아틀라스를 생성할 수 있습니다.
+            
+            @Image(source: "texture-atlas.png", alt: "텍스처 아틀라스")
+        }
+        
+        @Steps {
+            @Step {
+                텍스처 아틀라스를 로드합니다.
+                `SKTextureAtlas`를 사용하여 아틀라스에서 
+                텍스처를 가져옵니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-07.swift")
+            }
+            
+            @Step {
+                아틀라스에서 애니메이션 프레임을 추출합니다.
+                연속된 이미지로 걷기, 달리기 등의 
+                애니메이션을 구성합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-08.swift")
+            }
+            
+            @Step {
+                스프라이트 시트 애니메이션을 재생합니다.
+                `SKAction.animate(with:timePerFrame:)`을 사용합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앵커 포인트와 부모-자식 관계") {
+        @ContentAndMedia {
+            앵커 포인트는 노드의 기준점입니다.
+            회전, 스케일, 위치 지정 시 이 점을 기준으로 합니다.
+            
+            또한 노드의 부모-자식 관계를 활용하면
+            복잡한 구조의 게임 오브젝트를 효율적으로 관리할 수 있습니다.
+            
+            @Image(source: "anchor-point.png", alt: "앵커 포인트")
+        }
+        
+        @Steps {
+            @Step {
+                앵커 포인트를 변경합니다.
+                기본값 (0.5, 0.5)는 중앙, (0, 0)은 왼쪽 하단입니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-10.swift")
+            }
+            
+            @Step {
+                부모-자식 관계를 구성합니다.
+                캐릭터 몸체에 무기나 장신구를 자식으로 추가합니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-11.swift")
+            }
+            
+            @Step {
+                부모 노드의 변환이 자식에게 전파되는 것을 확인합니다.
+                부모가 이동하거나 회전하면 자식도 함께 변환됩니다.
+                
+                @Code(name: "GameScene.swift", file: "03-sprite-12.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SKSpriteNode의 앵커 포인트 기본값은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                (0, 0)
+                
+                @Justification(reaction: "다시 생각해 보세요.") {
+                    (0, 0)은 왼쪽 하단 모서리를 의미합니다.
+                    기본값은 스프라이트의 중앙입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                (0.5, 0.5)
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    앵커 포인트의 기본값은 (0.5, 0.5)로,
+                    스프라이트의 정중앙을 기준점으로 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                (1, 1)
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    (1, 1)은 오른쪽 상단 모서리입니다.
+                    기본 앵커 포인트는 중앙입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            텍스처 아틀라스를 사용하면 어떤 이점이 있나요?
+            
+            @Choice(isCorrect: true) {
+                드로우 콜이 줄어들어 렌더링 성능이 향상된다
+                
+                @Justification(reaction: "맞습니다! 🚀") {
+                    텍스처 아틀라스는 여러 이미지를 하나로 합쳐
+                    GPU의 텍스처 전환 횟수를 줄이고
+                    드로우 콜을 최소화합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지 파일 크기가 작아진다
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    아틀라스는 파일 크기를 줄이기 위한 것이 아닙니다.
+                    주된 목적은 렌더링 성능 최적화입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지 해상도가 자동으로 높아진다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    텍스처 아틀라스는 해상도와 관련이 없습니다.
+                    성능 최적화를 위한 기법입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            스프라이트가 다른 스프라이트 앞에 그려지도록 하려면 어떤 속성을 조정해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                `position.z`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    CGPoint에는 z 속성이 없습니다.
+                    2D에서는 별도의 속성을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `zPosition`
+                
+                @Justification(reaction: "정확합니다! 🎮") {
+                    `zPosition` 값이 높을수록 
+                    앞쪽(위)에 그려집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `layer`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    SKNode에는 `layer` 속성이 없습니다.
+                    렌더링 순서는 `zPosition`으로 제어합니다.
+                }
+            }
+        }
+    }
+}

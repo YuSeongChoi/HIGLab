@@ -1,0 +1,243 @@
+@Tutorial(time: 20) {
+    @Intro(title: "터치 입력 처리") {
+        사용자의 터치 이벤트를 감지하고 
+        게임에 반영하는 방법을 학습합니다.
+        
+        @Image(source: "chapter5-touch.png", alt: "터치 입력 처리")
+    }
+    
+    @Section(title: "기본 터치 이벤트") {
+        @ContentAndMedia {
+            SpriteKit에서는 UIResponder의 터치 메서드를 
+            오버라이드하여 입력을 처리합니다.
+            SKScene과 SKNode 모두 터치를 받을 수 있습니다.
+            
+            **터치 이벤트 메서드:**
+            - `touchesBegan`: 손가락이 화면에 닿을 때
+            - `touchesMoved`: 손가락이 이동할 때
+            - `touchesEnded`: 손가락이 떨어질 때
+            - `touchesCancelled`: 터치가 취소될 때
+            
+            @Image(source: "touch-events.png", alt: "터치 이벤트")
+        }
+        
+        @Steps {
+            @Step {
+                touchesBegan을 구현합니다.
+                터치가 시작되면 해당 위치를 가져옵니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-01.swift")
+            }
+            
+            @Step {
+                터치 위치를 Scene 좌표로 변환합니다.
+                `location(in:)` 메서드로 좌표를 얻습니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-02.swift")
+            }
+            
+            @Step {
+                터치 위치로 스프라이트를 이동시킵니다.
+                터치한 곳으로 플레이어가 이동하도록 합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "노드 터치 감지") {
+        @ContentAndMedia {
+            특정 노드가 터치되었는지 확인하려면
+            `nodes(at:)` 메서드나 `atPoint()` 메서드를 
+            사용합니다.
+            
+            이를 통해 버튼, 아이템 등 특정 요소에 대한
+            터치를 감지할 수 있습니다.
+            
+            @Image(source: "node-touch.png", alt: "노드 터치 감지")
+        }
+        
+        @Steps {
+            @Step {
+                터치된 노드를 찾습니다.
+                `nodes(at:)`으로 해당 위치의 모든 노드를 가져옵니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-04.swift")
+            }
+            
+            @Step {
+                노드의 이름으로 구분합니다.
+                `name` 속성을 활용하여 터치된 노드를 식별합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-05.swift")
+            }
+            
+            @Step {
+                버튼 노드를 구현합니다.
+                터치 시 시각적 피드백과 함께 액션을 실행합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "드래그와 스와이프") {
+        @ContentAndMedia {
+            touchesMoved를 활용하면 드래그 동작을 구현할 수 있습니다.
+            터치의 시작점과 현재 위치를 추적하여
+            방향과 거리를 계산합니다.
+            
+            @Image(source: "drag-swipe.png", alt: "드래그와 스와이프")
+        }
+        
+        @Steps {
+            @Step {
+                드래그로 노드를 이동시킵니다.
+                touchesMoved에서 노드 위치를 갱신합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-07.swift")
+            }
+            
+            @Step {
+                드래그 시작 위치를 저장합니다.
+                스와이프 방향 판단을 위해 시작점을 기록합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-08.swift")
+            }
+            
+            @Step {
+                스와이프 방향을 감지합니다.
+                터치 끝점과 시작점의 차이로 방향을 결정합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "멀티터치 처리") {
+        @ContentAndMedia {
+            여러 손가락의 터치를 동시에 처리하려면
+            멀티터치를 활성화해야 합니다.
+            핀치 줌이나 두 손가락 조작 등에 활용됩니다.
+            
+            @Image(source: "multitouch.png", alt: "멀티터치")
+        }
+        
+        @Steps {
+            @Step {
+                멀티터치를 활성화합니다.
+                SKView의 `isMultipleTouchEnabled`를 true로 설정합니다.
+                
+                @Code(name: "GameViewController.swift", file: "05-touch-10.swift")
+            }
+            
+            @Step {
+                모든 터치를 순회합니다.
+                touches 세트의 각 터치를 개별 처리합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-11.swift")
+            }
+            
+            @Step {
+                핀치 줌 제스처를 구현합니다.
+                두 터치 사이의 거리 변화를 감지합니다.
+                
+                @Code(name: "GameScene.swift", file: "05-touch-12.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            손가락이 화면에서 떨어질 때 호출되는 메서드는 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                `touchesBegan(_:with:)`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    `touchesBegan`은 손가락이 화면에 
+                    닿을 때 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `touchesMoved(_:with:)`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    `touchesMoved`는 손가락이 
+                    이동할 때 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `touchesEnded(_:with:)`
+                
+                @Justification(reaction: "정확합니다! 👆") {
+                    `touchesEnded`는 손가락이 화면에서 
+                    떨어질 때 호출됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            특정 위치에 있는 노드들을 찾으려면 어떤 메서드를 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                `nodes(at:)`
+                
+                @Justification(reaction: "맞습니다! 🎯") {
+                    `nodes(at:)` 메서드는 지정한 위치에 있는 
+                    모든 노드의 배열을 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `childNode(at:)`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    이런 메서드는 없습니다.
+                    `nodes(at:)` 또는 `atPoint()`를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `findNodes(at:)`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    SpriteKit에는 `findNodes` 메서드가 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            멀티터치를 활성화하려면 어떤 속성을 설정해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                `SKScene.isMultipleTouchEnabled = true`
+                
+                @Justification(reaction: "위치가 틀렸습니다.") {
+                    이 속성은 SKScene이 아닌 
+                    SKView에서 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `SKView.isMultipleTouchEnabled = true`
+                
+                @Justification(reaction: "정확합니다! 👐") {
+                    SKView의 `isMultipleTouchEnabled`를 
+                    true로 설정하면 멀티터치가 활성화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `UIApplication.shared.isMultipleTouchEnabled = true`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    멀티터치 설정은 앱 전체가 아닌 
+                    뷰 단위로 이루어집니다.
+                }
+            }
+        }
+    }
+}

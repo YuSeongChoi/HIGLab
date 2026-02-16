@@ -1,0 +1,216 @@
+@Tutorial(time: 20) {
+    @Intro(title: "AVPlayerViewController") {
+        AVPlayerViewController를 사용해 
+        기본적인 비디오 플레이어를 구현합니다.
+        
+        @Image(source: "player-vc.png", alt: "AVPlayerViewController")
+    }
+    
+    @Section(title: "기본 플레이어 설정") {
+        @ContentAndMedia {
+            AVPlayerViewController는 완전한 기능을 갖춘 
+            비디오 플레이어 UI를 제공합니다.
+            
+            - 재생/일시정지 버튼
+            - 타임라인 슬라이더
+            - 전체화면 전환
+            - 볼륨 조절
+            
+            @Image(source: "player-controls.png", alt: "플레이어 컨트롤")
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayerViewController 인스턴스를 생성하고
+                AVPlayer를 연결합니다.
+                
+                @Code(name: "BasicPlayer.swift", file: "02-01-basic-player.swift")
+            }
+            
+            @Step {
+                SwiftUI에서는 UIViewControllerRepresentable을 사용해
+                AVPlayerViewController를 래핑합니다.
+                
+                @Code(name: "VideoPlayerView.swift", file: "02-02-swiftui-wrapper.swift")
+            }
+            
+            @Step {
+                SwiftUI 14+ 에서는 VideoPlayer 뷰를 직접 사용할 수 있습니다.
+                간단한 재생에 적합한 네이티브 솔루션입니다.
+                
+                @Code(name: "NativeVideoPlayer.swift", file: "02-03-native-videoplayer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "플레이어 프레젠테이션") {
+        @ContentAndMedia {
+            AVPlayerViewController를 화면에 표시하는 
+            여러 가지 방법이 있습니다.
+            
+            - **Modal 프레젠테이션**: 전체화면 플레이어
+            - **Embedded**: 뷰 계층구조에 삽입
+            - **Inline**: 콘텐츠 내 인라인 재생
+        }
+        
+        @Steps {
+            @Step {
+                모달로 전체화면 플레이어를 표시합니다.
+                완전 몰입형 비디오 경험에 적합합니다.
+                
+                @Code(name: "ModalPresentation.swift", file: "02-04-modal.swift")
+            }
+            
+            @Step {
+                Child View Controller로 삽입하면 
+                다른 UI 요소와 함께 배치할 수 있습니다.
+                
+                @Code(name: "EmbeddedPlayer.swift", file: "02-05-embedded.swift")
+            }
+            
+            @Step {
+                entersFullScreenWhenPlaybackBegins 속성으로
+                재생 시작 시 자동 전체화면 전환을 설정합니다.
+                
+                @Code(name: "AutoFullscreen.swift", file: "02-06-auto-fullscreen.swift")
+            }
+        }
+    }
+    
+    @Section(title: "플레이어 커스터마이징") {
+        @ContentAndMedia {
+            AVPlayerViewController의 다양한 속성을 조정하여
+            앱에 맞는 플레이어 경험을 제공합니다.
+            
+            - 컨트롤 표시 여부
+            - 제스처 활성화
+            - 비디오 중력(gravity) 설정
+        }
+        
+        @Steps {
+            @Step {
+                showsPlaybackControls로 컨트롤 UI를 숨길 수 있습니다.
+                커스텀 오버레이를 만들 때 유용합니다.
+                
+                @Code(name: "HideControls.swift", file: "02-07-hide-controls.swift")
+            }
+            
+            @Step {
+                videoGravity로 비디오가 뷰에 맞춰지는 방식을 설정합니다.
+                
+                - `.resizeAspect`: 비율 유지 (레터박스)
+                - `.resizeAspectFill`: 비율 유지 (크롭)
+                - `.resize`: 늘려서 채움
+                
+                @Code(name: "VideoGravity.swift", file: "02-08-video-gravity.swift")
+            }
+            
+            @Step {
+                requiresLinearPlayback을 true로 설정하면
+                사용자가 탐색(seek)하지 못하게 막을 수 있습니다.
+                광고나 필수 시청 콘텐츠에 유용합니다.
+                
+                @Code(name: "LinearPlayback.swift", file: "02-09-linear-playback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재생 상태 관찰") {
+        @ContentAndMedia {
+            KVO(Key-Value Observing)를 사용해 
+            플레이어의 상태 변화를 감지합니다.
+            
+            - 로딩 상태
+            - 재생/일시정지 상태
+            - 버퍼링 진행률
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayer의 status 속성을 관찰하여
+                미디어 로딩 완료를 감지합니다.
+                
+                @Code(name: "ObserveStatus.swift", file: "02-10-observe-status.swift")
+            }
+            
+            @Step {
+                timeControlStatus로 현재 재생 상태를 확인합니다.
+                
+                - `.paused`: 일시정지됨
+                - `.playing`: 재생 중
+                - `.waitingToPlayAtSpecifiedRate`: 버퍼링 중
+                
+                @Code(name: "TimeControlStatus.swift", file: "02-11-time-control.swift")
+            }
+            
+            @Step {
+                Combine을 활용해 더 현대적인 방식으로
+                상태 변화를 구독할 수 있습니다.
+                
+                @Code(name: "CombineObserve.swift", file: "02-12-combine-observe.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftUI에서 AVPlayerViewController를 사용하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                UIViewControllerRepresentable로 래핑하거나 VideoPlayer 뷰를 사용한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    iOS 14+에서는 VideoPlayer 뷰를 직접 사용할 수 있고,
+                    더 많은 제어가 필요하면 UIViewControllerRepresentable을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SwiftUI에서는 AVPlayerViewController를 사용할 수 없다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    SwiftUI는 UIKit 컴포넌트를 래핑하여 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayerViewController를 직접 SwiftUI 뷰로 사용한다.
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    UIViewController는 직접 SwiftUI에서 사용할 수 없습니다.
+                    Representable 프로토콜을 구현해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            videoGravity를 .resizeAspectFill로 설정하면 어떻게 되나요?
+            
+            @Choice(isCorrect: false) {
+                비디오 비율이 뷰에 맞게 늘어난다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    비율을 유지하면서 채우는 것은 .resize가 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                비디오 비율을 유지하면서 뷰를 채우고 일부가 잘린다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    .resizeAspectFill은 비율을 유지하면서 뷰를 꽉 채우므로
+                    비디오의 일부가 크롭될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                레터박스(검은 바)가 나타난다.
+                
+                @Justification(reaction: "그것은 .resizeAspect입니다.") {
+                    레터박스는 비율을 유지하면서 전체를 보여주는
+                    .resizeAspect에서 나타납니다.
+                }
+            }
+        }
+    }
+}

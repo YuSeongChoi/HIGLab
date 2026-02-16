@@ -1,0 +1,246 @@
+@Tutorial(time: 30) {
+    @Intro(title: "커스텀 CIKernel") {
+        CIKernel을 작성하여 나만의 필터 알고리즘을 구현합니다.
+        Core Image Kernel Language를 배우고 활용합니다.
+        
+        @Image(source: "custom-cikernel.png", alt: "커스텀 CIKernel")
+    }
+    
+    @Section(title: "CIKernel 기초") {
+        @ContentAndMedia {
+            CIKernel은 GPU에서 실행되는 이미지 처리 프로그램입니다.
+            세 가지 타입의 커널이 있으며, 용도에 따라 선택합니다.
+            
+            커널 타입:
+            - **CIColorKernel**: 픽셀 단위 색상 변환 (가장 빠름)
+            - **CIWarpKernel**: 픽셀 위치 이동 (왜곡 효과)
+            - **CIKernel**: 주변 픽셀 참조 가능 (블러 등)
+            
+            @Image(source: "kernel-types.png", alt: "커널 타입")
+        }
+        
+        @Steps {
+            @Step {
+                CIColorKernel의 기본 구조를 이해합니다.
+                Metal Shading Language로 커널을 작성합니다.
+                
+                @Code(name: "ColorKernelBasic.swift", file: "06-01-color-kernel-basic.swift")
+            }
+            
+            @Step {
+                커널 소스 코드를 로드하고 컴파일합니다.
+                .ci.metal 파일 또는 문자열로 커널을 정의합니다.
+                
+                @Code(name: "LoadKernel.swift", file: "06-02-load-kernel.swift")
+            }
+            
+            @Step {
+                CIFilter 서브클래스로 커스텀 필터를 래핑합니다.
+                파라미터 관리와 입력 검증을 추가합니다.
+                
+                @Code(name: "WrapKernel.swift", file: "06-03-wrap-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIColorKernel 작성") {
+        @ContentAndMedia {
+            CIColorKernel은 각 픽셀의 색상만 변환합니다.
+            주변 픽셀을 참조할 수 없지만 가장 빠른 성능을 제공합니다.
+            
+            활용 예시:
+            - 색상 반전 (Invert)
+            - 채널 스왑 (RGB → BGR)
+            - 커스텀 색상 필터
+            - 임계값 (Threshold) 효과
+        }
+        
+        @Steps {
+            @Step {
+                색상 반전 커널을 작성합니다.
+                각 픽셀의 RGB 값을 1에서 뺍니다.
+                
+                @Code(name: "InvertKernel.swift", file: "06-04-invert-kernel.swift")
+            }
+            
+            @Step {
+                임계값(Threshold) 커널을 작성합니다.
+                밝기가 임계값 이상이면 흰색, 아니면 검은색으로 변환합니다.
+                
+                @Code(name: "ThresholdKernel.swift", file: "06-05-threshold-kernel.swift")
+            }
+            
+            @Step {
+                색상 매트릭스 변환 커널을 작성합니다.
+                행렬 곱셈으로 다양한 색상 효과를 구현합니다.
+                
+                @Code(name: "ColorMatrixKernel.swift", file: "06-06-color-matrix-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIWarpKernel 작성") {
+        @ContentAndMedia {
+            CIWarpKernel은 픽셀의 위치를 변환합니다.
+            왜곡, 소용돌이, 물결 효과 등을 구현할 수 있습니다.
+            
+            반환값:
+            - 원본 이미지에서 샘플링할 좌표를 반환
+            - 현재 픽셀 위치에 어떤 원본 픽셀을 가져올지 결정
+        }
+        
+        @Steps {
+            @Step {
+                소용돌이(Swirl) 효과 커널을 작성합니다.
+                중심에서 멀어질수록 회전 각도가 감소합니다.
+                
+                @Code(name: "SwirlKernel.swift", file: "06-07-swirl-kernel.swift")
+            }
+            
+            @Step {
+                파도(Wave) 효과 커널을 작성합니다.
+                사인 함수로 물결치는 왜곡을 만듭니다.
+                
+                @Code(name: "WaveKernel.swift", file: "06-08-wave-kernel.swift")
+            }
+            
+            @Step {
+                볼록/오목 렌즈 효과 커널을 작성합니다.
+                중심에서 멀어지는 방향으로 픽셀을 이동합니다.
+                
+                @Code(name: "BulgeKernel.swift", file: "06-09-bulge-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIKernel과 주변 픽셀") {
+        @ContentAndMedia {
+            CIKernel은 주변 픽셀을 참조할 수 있어 
+            블러, 엣지 감지 등의 효과를 구현할 수 있습니다.
+            
+            주요 함수:
+            - `sample()`: 지정 좌표의 픽셀 값 가져오기
+            - `samplerTransform()`: 좌표 변환
+            - `samplerExtent()`: 샘플러 범위 확인
+        }
+        
+        @Steps {
+            @Step {
+                엣지 감지(Edge Detection) 커널을 작성합니다.
+                소벨(Sobel) 연산자를 구현합니다.
+                
+                @Code(name: "EdgeDetectionKernel.swift", file: "06-10-edge-detection.swift")
+            }
+            
+            @Step {
+                커스텀 블러 커널을 작성합니다.
+                박스 블러 또는 가중치 블러를 구현합니다.
+                
+                @Code(name: "CustomBlurKernel.swift", file: "06-11-custom-blur.swift")
+            }
+            
+            @Step {
+                샤프닝 커널을 작성합니다.
+                언샤프 마스크 알고리즘을 직접 구현합니다.
+                
+                @Code(name: "SharpenKernel.swift", file: "06-12-sharpen-kernel.swift")
+            }
+            
+            @Step {
+                컨볼루션 기반 범용 커널을 작성합니다.
+                다양한 3x3 또는 5x5 커널 매트릭스를 적용할 수 있습니다.
+                
+                @Code(name: "ConvolutionKernel.swift", file: "06-13-convolution.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CIColorKernel의 특징으로 올바른 것은?
+            
+            @Choice(isCorrect: true) {
+                주변 픽셀을 참조할 수 없지만 가장 빠르다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    CIColorKernel은 현재 픽셀만 처리하므로 
+                    병렬 처리에 최적화되어 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                블러 효과를 구현할 수 있다.
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    블러는 주변 픽셀이 필요하므로 CIKernel을 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                픽셀 위치를 이동시킬 수 있다.
+                
+                @Justification(reaction: "그것은 CIWarpKernel입니다.") {
+                    위치 변환은 CIWarpKernel의 역할입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIWarpKernel의 반환값은 무엇을 의미하나요?
+            
+            @Choice(isCorrect: true) {
+                현재 픽셀 위치에 가져올 원본 이미지의 샘플링 좌표
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    왜곡 효과는 각 출력 픽셀에 대해 
+                    어떤 원본 픽셀을 사용할지를 결정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                현재 픽셀의 새로운 색상 값
+                
+                @Justification(reaction: "그것은 CIColorKernel입니다.") {
+                    CIWarpKernel은 좌표를 반환하고, 색상은 자동으로 샘플링됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                현재 픽셀을 표시할지 여부의 불린 값
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    반환값은 vec2 타입의 좌표입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            소벨(Sobel) 연산자로 구현할 수 있는 효과는?
+            
+            @Choice(isCorrect: true) {
+                엣지(윤곽선) 감지
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    소벨 연산자는 픽셀 값의 기울기를 계산해 
+                    엣지를 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가우시안 블러
+                
+                @Justification(reaction: "다른 알고리즘입니다.") {
+                    블러는 가우시안 가중치로 주변 픽셀을 평균화합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                색상 반전
+                
+                @Justification(reaction: "더 간단한 방법이 있습니다.") {
+                    색상 반전은 CIColorKernel로 간단히 구현할 수 있습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,220 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Entity와 Component") {
+        RealityKit의 핵심인 Entity-Component-System(ECS) 아키텍처를 깊이 있게 이해합니다.
+        Entity를 생성하고 Component를 추가하여 기능을 확장하는 방법을 배웁니다.
+        
+        @Image(source: "chapter3-entity.png", alt: "Entity와 Component 시스템")
+    }
+    
+    @Section(title: "Entity 이해하기") {
+        @ContentAndMedia {
+            Entity는 RealityKit 장면의 기본 빌딩 블록입니다.
+            모든 3D 객체, 앵커, 그룹이 Entity로 표현됩니다.
+            
+            @Image(source: "entity-hierarchy.png", alt: "Entity 계층 구조")
+        }
+        
+        @Steps {
+            @Step {
+                기본 Entity를 생성합니다.
+                Entity 자체는 빈 컨테이너로, Component를 통해 기능이 추가됩니다.
+                
+                @Code(name: "BasicEntity.swift", file: "03-entity-01.swift")
+            }
+            
+            @Step {
+                Entity는 계층 구조를 형성할 수 있습니다.
+                부모-자식 관계를 통해 복잡한 장면을 구성합니다.
+                
+                @Code(name: "EntityHierarchy.swift", file: "03-entity-02.swift")
+            }
+            
+            @Step {
+                Entity의 위치, 회전, 크기를 Transform으로 제어합니다.
+                
+                @Code(name: "EntityTransform.swift", file: "03-entity-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "기본 제공 Component") {
+        @ContentAndMedia {
+            RealityKit은 다양한 기본 Component를 제공합니다.
+            이를 조합하여 원하는 동작을 구현합니다.
+            
+            @Image(source: "components.png", alt: "RealityKit Components")
+        }
+        
+        @Steps {
+            @Step {
+                ModelComponent는 3D 메시와 머티리얼을 정의합니다.
+                
+                @Code(name: "ModelComponent.swift", file: "03-entity-04.swift")
+            }
+            
+            @Step {
+                CollisionComponent는 충돌 감지를 활성화합니다.
+                
+                @Code(name: "CollisionComponent.swift", file: "03-entity-05.swift")
+            }
+            
+            @Step {
+                PhysicsBodyComponent는 물리 시뮬레이션을 적용합니다.
+                
+                @Code(name: "PhysicsBodyComponent.swift", file: "03-entity-06.swift")
+            }
+            
+            @Step {
+                다양한 Component를 조합하여 완전한 Entity를 만듭니다.
+                
+                @Code(name: "CombinedComponents.swift", file: "03-entity-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 Component 만들기") {
+        @ContentAndMedia {
+            자신만의 Component를 정의하여 Entity에 커스텀 데이터를 추가할 수 있습니다.
+            
+            @Image(source: "custom-component.png", alt: "커스텀 Component")
+        }
+        
+        @Steps {
+            @Step {
+                Component 프로토콜을 채택하여 커스텀 Component를 정의합니다.
+                
+                @Code(name: "CustomComponent.swift", file: "03-entity-08.swift")
+            }
+            
+            @Step {
+                ComponentSystem을 만들어 커스텀 로직을 구현합니다.
+                
+                @Code(name: "CustomSystem.swift", file: "03-entity-09.swift")
+            }
+            
+            @Step {
+                System을 등록하고 사용합니다.
+                
+                @Code(name: "RegisterSystem.swift", file: "03-entity-10.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Entity 검색과 쿼리") {
+        @ContentAndMedia {
+            장면에서 특정 Entity를 찾거나 Component로 필터링하는 방법을 배웁니다.
+            
+            @Image(source: "entity-query.png", alt: "Entity 쿼리")
+        }
+        
+        @Steps {
+            @Step {
+                이름으로 Entity를 찾습니다.
+                
+                @Code(name: "FindByName.swift", file: "03-entity-11.swift")
+            }
+            
+            @Step {
+                EntityQuery를 사용하여 특정 Component를 가진 Entity들을 찾습니다.
+                
+                @Code(name: "EntityQuery.swift", file: "03-entity-12.swift")
+            }
+            
+            @Step {
+                Entity를 복제하고 재사용합니다.
+                
+                @Code(name: "CloneEntity.swift", file: "03-entity-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Entity에 3D 모양을 추가하려면 어떤 Component를 사용해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                ModelComponent
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    ModelComponent는 MeshResource와 Material을 포함하여
+                    Entity에 시각적인 3D 모양을 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CollisionComponent
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CollisionComponent는 충돌 감지용이며, 시각적 렌더링과는 관련 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                TransformComponent
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    TransformComponent는 위치, 회전, 크기를 정의하지만
+                    실제 3D 모양을 추가하지는 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Entity 계층에서 자식 Entity를 추가하는 메서드는 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                append()
+                
+                @Justification(reaction: "아쉽네요.") {
+                    append는 배열에서 사용하는 메서드입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                addChild()
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    addChild(_:)를 사용하여 Entity 계층에 자식을 추가합니다.
+                    자식의 Transform은 부모를 기준으로 적용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                insert()
+                
+                @Justification(reaction: "아쉽네요.") {
+                    insert는 컬렉션에서 사용하는 메서드입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            커스텀 Component를 만들 때 반드시 채택해야 하는 프로토콜은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                Component
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Component 프로토콜을 채택하면 RealityKit의 ECS 시스템에서
+                    해당 타입을 Component로 인식합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Entity
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Entity는 클래스이며, Component와는 다른 역할을 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Codable
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Codable은 직렬화를 위한 프로토콜이지, ECS와는 관련 없습니다.
+                }
+            }
+        }
+    }
+}

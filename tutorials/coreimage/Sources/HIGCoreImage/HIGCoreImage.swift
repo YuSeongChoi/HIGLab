@@ -1,1 +1,2 @@
-public struct HIGCoreImage { public init() {} }
+/// HIGCoreImage 튜토리얼 모듈
+public struct HIGCoreImage {}

@@ -1,0 +1,227 @@
+@Tutorial(time: 20) {
+    @Intro(title: "SKScene & SKView") {
+        게임의 무대가 되는 SKScene과 이를 표시하는 SKView의 
+        관계와 생명주기를 이해합니다.
+        
+        @Image(source: "chapter2-scene.png", alt: "SKScene과 SKView")
+    }
+    
+    @Section(title: "SKView 이해하기") {
+        @ContentAndMedia {
+            `SKView`는 SpriteKit 콘텐츠를 렌더링하는 뷰입니다.
+            UIView(iOS) 또는 NSView(macOS)의 하위 클래스로,
+            Scene을 화면에 표시하는 역할을 합니다.
+            
+            **SKView의 주요 속성:**
+            - `showsFPS`: 프레임 레이트 표시
+            - `showsNodeCount`: 노드 개수 표시
+            - `showsPhysics`: 물리 바디 시각화
+            - `ignoresSiblingOrder`: 렌더링 순서 최적화
+            
+            @Image(source: "skview-debug.png", alt: "SKView 디버그 정보")
+        }
+        
+        @Steps {
+            @Step {
+                GameViewController에서 SKView를 설정합니다.
+                스토리보드에서 View의 클래스를 SKView로 지정하거나
+                코드로 생성할 수 있습니다.
+                
+                @Code(name: "GameViewController.swift", file: "02-scene-01.swift")
+            }
+            
+            @Step {
+                디버그 정보를 활성화합니다.
+                개발 중에는 FPS와 노드 수를 확인하면 
+                성능 문제를 조기에 발견할 수 있습니다.
+                
+                @Code(name: "GameViewController.swift", file: "02-scene-02.swift")
+            }
+            
+            @Step {
+                Scene을 로드하고 표시합니다.
+                `presentScene(_:)` 메서드로 SKView에 Scene을 표시합니다.
+                
+                @Code(name: "GameViewController.swift", file: "02-scene-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SKScene 생명주기") {
+        @ContentAndMedia {
+            SKScene은 게임의 한 화면을 나타내는 루트 노드입니다.
+            메인 메뉴, 게임 플레이, 게임 오버 등 
+            각 화면을 별도의 Scene으로 구성합니다.
+            
+            **Scene 생명주기 메서드:**
+            - `didMove(to:)`: Scene이 View에 표시될 때
+            - `willMove(from:)`: Scene이 View에서 제거될 때
+            - `update(_:)`: 매 프레임마다 호출
+            - `didChangeSize(_:)`: Scene 크기 변경 시
+            
+            @Image(source: "scene-lifecycle.png", alt: "Scene 생명주기")
+        }
+        
+        @Steps {
+            @Step {
+                기본 Scene 클래스를 생성합니다.
+                `SKScene`을 상속받아 커스텀 Scene을 만듭니다.
+                
+                @Code(name: "GameScene.swift", file: "02-scene-04.swift")
+            }
+            
+            @Step {
+                `didMove(to:)` 메서드를 구현합니다.
+                Scene이 View에 처음 표시될 때 초기화 작업을 수행합니다.
+                
+                @Code(name: "GameScene.swift", file: "02-scene-05.swift")
+            }
+            
+            @Step {
+                `update(_:)` 메서드를 구현합니다.
+                이 메서드는 매 프레임마다 호출되어 
+                게임 로직을 업데이트합니다.
+                
+                @Code(name: "GameScene.swift", file: "02-scene-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Scene 전환하기") {
+        @ContentAndMedia {
+            게임에서는 여러 Scene 간에 전환이 필요합니다.
+            메뉴에서 게임으로, 게임에서 결과 화면으로 등
+            다양한 전환 효과를 적용할 수 있습니다.
+            
+            **전환 효과 종류:**
+            - `crossFade`: 페이드 인/아웃
+            - `flipHorizontal`: 수평 뒤집기
+            - `push`: 밀어내기
+            - `reveal`: 드러내기
+            - `doorway`: 문 열림 효과
+            
+            @Image(source: "scene-transitions.png", alt: "Scene 전환 효과")
+        }
+        
+        @Steps {
+            @Step {
+                MenuScene을 생성합니다.
+                게임 시작 전 표시할 메뉴 화면을 만듭니다.
+                
+                @Code(name: "MenuScene.swift", file: "02-scene-07.swift")
+            }
+            
+            @Step {
+                전환 효과와 함께 Scene을 변경합니다.
+                `SKTransition`을 사용하여 부드러운 전환을 구현합니다.
+                
+                @Code(name: "MenuScene.swift", file: "02-scene-08.swift")
+            }
+            
+            @Step {
+                Scene 크기 조정 모드를 설정합니다.
+                `scaleMode`로 다양한 화면 비율에 대응합니다.
+                
+                @Code(name: "GameScene.swift", file: "02-scene-09.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Scene이 SKView에 처음 표시될 때 호출되는 메서드는 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                `didMove(to:)`
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    `didMove(to:)` 메서드는 Scene이 View에 
+                    표시될 때 호출되며, 초기 설정을 수행하기에 
+                    적합한 위치입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `viewDidLoad()`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    `viewDidLoad()`는 UIViewController의 메서드입니다.
+                    SKScene에서는 `didMove(to:)`를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `sceneDidLoad()`
+                
+                @Justification(reaction: "다시 생각해 보세요.") {
+                    `sceneDidLoad()`는 Scene 객체가 초기화된 직후 호출되지만,
+                    아직 View에 표시되기 전입니다.
+                    `didMove(to:)`가 View에 표시된 시점입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SKView에서 프레임 레이트를 화면에 표시하려면 어떤 속성을 설정해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                `showsDrawCount = true`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    `showsDrawCount`는 드로우 콜 수를 표시합니다.
+                    FPS를 표시하려면 다른 속성을 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `showsFPS = true`
+                
+                @Justification(reaction: "맞습니다! 🎮") {
+                    `showsFPS`를 true로 설정하면 
+                    현재 프레임 레이트가 화면에 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `displayFPS = true`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    SKView에는 `displayFPS` 속성이 없습니다.
+                    올바른 속성명은 `showsFPS`입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            여러 화면 크기에 대응하기 위해 Scene의 어떤 속성을 설정하나요?
+            
+            @Choice(isCorrect: true) {
+                `scaleMode`
+                
+                @Justification(reaction: "정확합니다! 📱") {
+                    `scaleMode`를 설정하여 Scene이 다양한 
+                    화면 비율에 어떻게 맞춰질지 결정합니다.
+                    `.aspectFill`, `.aspectFit` 등이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `contentMode`
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    `contentMode`는 UIView의 속성입니다.
+                    SKScene에서는 `scaleMode`를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `resizeMode`
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    SKScene에는 `resizeMode` 속성이 없습니다.
+                    `scaleMode`가 올바른 속성명입니다.
+                }
+            }
+        }
+    }
+}
