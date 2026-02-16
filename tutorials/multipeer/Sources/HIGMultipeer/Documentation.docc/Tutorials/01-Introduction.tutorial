@@ -1,0 +1,159 @@
+@Tutorial(time: 10) {
+    @Intro(title: "MultipeerConnectivity 소개") {
+        MultipeerConnectivity 프레임워크의 핵심 개념과 
+        근거리 통신을 위한 기본 설정을 배웁니다.
+    }
+    
+    @Section(title: "MultipeerConnectivity란?") {
+        @ContentAndMedia {
+            MultipeerConnectivity는 Wi-Fi, P2P Wi-Fi, Bluetooth를 통해 
+            근처 기기들과 직접 통신할 수 있게 해주는 프레임워크입니다.
+            
+            인터넷 연결 없이도 데이터, 스트림, 파일을 
+            주고받을 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                MultipeerConnectivity의 주요 클래스들을 살펴봅니다.
+                
+                - `MCPeerID`: 기기 식별자
+                - `MCSession`: 연결된 피어 간 통신 세션
+                - `MCNearbyServiceBrowser`: 주변 기기 검색
+                - `MCNearbyServiceAdvertiser`: 자신을 광고
+                
+                @Code(name: "MultipeerOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                프로젝트에 MultipeerConnectivity를 import합니다.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info.plist 권한 설정") {
+        @ContentAndMedia {
+            MultipeerConnectivity를 사용하려면 
+            Info.plist에 필요한 권한들을 설정해야 합니다.
+            
+            로컬 네트워크 접근과 Bonjour 서비스 설정이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                로컬 네트워크 접근 권한을 추가합니다.
+                
+                `NSLocalNetworkUsageDescription` 키를 사용합니다.
+                
+                @Code(name: "Info.plist", file: "01-03-plist.swift")
+            }
+            
+            @Step {
+                Bonjour 서비스 타입을 등록합니다.
+                
+                `NSBonjourServices` 배열에 서비스 타입을 추가합니다.
+                
+                @Code(name: "Info.plist", file: "01-04-bonjour.swift")
+            }
+            
+            @Step {
+                Bluetooth 사용을 위한 권한도 추가합니다.
+                
+                @Code(name: "Info.plist", file: "01-05-bluetooth.swift")
+            }
+        }
+    }
+    
+    @Section(title: "서비스 타입 정의") {
+        @ContentAndMedia {
+            MultipeerConnectivity에서는 서비스 타입으로 
+            같은 앱의 기기들을 식별합니다.
+            
+            서비스 타입은 1-15자의 소문자와 숫자로 구성됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                서비스 타입 상수를 정의합니다.
+                
+                앱 전체에서 동일한 서비스 타입을 사용해야 합니다.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-06-service-type.swift")
+            }
+            
+            @Step {
+                MultipeerManager 클래스의 기본 구조를 작성합니다.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-07-manager-struct.swift")
+            }
+            
+            @Step {
+                ObservableObject로 만들어 SwiftUI와 연동합니다.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-08-observable.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MultipeerConnectivity가 지원하는 통신 방식이 아닌 것은?
+            
+            @Choice(isCorrect: false) {
+                Wi-Fi
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Wi-Fi는 MultipeerConnectivity가 지원하는 통신 방식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bluetooth
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Bluetooth는 MultipeerConnectivity가 지원하는 통신 방식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                셀룰러 네트워크
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    MultipeerConnectivity는 Wi-Fi, P2P Wi-Fi, Bluetooth만 
+                    지원하며 셀룰러 네트워크는 지원하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            서비스 타입의 올바른 형식은?
+            
+            @Choice(isCorrect: true) {
+                1-15자의 소문자와 숫자
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    서비스 타입은 1-15자의 소문자와 숫자로 구성되며, 
+                    하이픈(-)을 포함할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                대문자로 시작하는 단어
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    서비스 타입에는 대문자를 사용할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID 형식
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    UUID 형식이 아닌 짧은 문자열을 사용합니다.
+                }
+            }
+        }
+    }
+}

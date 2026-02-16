@@ -1,0 +1,250 @@
+@Tutorial(time: 25) {
+    @Intro(title: "성능 최적화") {
+        CoreImage 앱의 메모리 관리와 GPU 활용을 최적화하여 
+        최상의 성능을 달성하는 방법을 학습합니다.
+        
+        @Image(source: "optimization.png", alt: "성능 최적화")
+    }
+    
+    @Section(title: "메모리 관리 기본") {
+        @ContentAndMedia {
+            이미지 처리는 메모리를 많이 사용합니다.
+            효율적인 메모리 관리로 크래시를 방지하고 성능을 높입니다.
+            
+            메모리 이슈:
+            - 대용량 이미지 로딩 시 메모리 스파이크
+            - 중간 결과물 누적으로 메모리 증가
+            - autoreleasepool 미사용으로 인한 지연 해제
+            - 캐시 미관리로 인한 메모리 폭증
+            
+            @Image(source: "memory-management.png", alt: "메모리 관리")
+        }
+        
+        @Steps {
+            @Step {
+                autoreleasepool을 사용해 즉시 메모리를 해제합니다.
+                루프에서 이미지를 처리할 때 필수입니다.
+                
+                @Code(name: "AutoreleasePool.swift", file: "10-01-autoreleasepool.swift")
+            }
+            
+            @Step {
+                이미지 크기를 적절히 리사이징합니다.
+                표시할 크기에 맞게 미리 축소하면 메모리를 절약합니다.
+                
+                @Code(name: "ImageResizing.swift", file: "10-02-image-resizing.swift")
+            }
+            
+            @Step {
+                캐시 정책을 설정합니다.
+                NSCache를 사용해 메모리 압박 시 자동 해제되도록 합니다.
+                
+                @Code(name: "ImageCaching.swift", file: "10-03-image-caching.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIContext 최적화") {
+        @ContentAndMedia {
+            CIContext 설정에 따라 성능이 크게 달라집니다.
+            용도에 맞는 옵션을 선택해야 합니다.
+            
+            최적화 옵션:
+            - workingColorSpace: 작업 색공간 (nil이면 자동)
+            - cacheIntermediates: 중간 결과 캐싱
+            - priorityRequestLow: 백그라운드 작업에 적합
+            - outputPremultiplied: 알파 프리멀티플라이
+        }
+        
+        @Steps {
+            @Step {
+                용도별 CIContext 설정을 구성합니다.
+                실시간 프리뷰와 최종 렌더링에 다른 설정을 사용합니다.
+                
+                @Code(name: "ContextOptions.swift", file: "10-04-context-options.swift")
+            }
+            
+            @Step {
+                중간 결과 캐싱을 비활성화해 메모리를 절약합니다.
+                일회성 렌더링에서는 캐싱이 불필요합니다.
+                
+                @Code(name: "DisableCaching.swift", file: "10-05-disable-caching.swift")
+            }
+            
+            @Step {
+                우선순위를 조절해 시스템 부하를 관리합니다.
+                백그라운드 작업은 낮은 우선순위로 실행합니다.
+                
+                @Code(name: "PriorityControl.swift", file: "10-06-priority-control.swift")
+            }
+        }
+    }
+    
+    @Section(title: "렌더링 성능 최적화") {
+        @ContentAndMedia {
+            렌더링 단계에서 성능을 최적화하는 다양한 기법입니다.
+            불필요한 연산을 줄이고 GPU를 효율적으로 활용합니다.
+            
+            최적화 기법:
+            - 필요한 영역만 렌더링 (ROI)
+            - 저해상도 프리뷰 사용
+            - 비동기 렌더링
+            - 적절한 출력 포맷 선택
+        }
+        
+        @Steps {
+            @Step {
+                Region of Interest(ROI)를 지정해 필요한 영역만 렌더링합니다.
+                전체 이미지 대신 보이는 부분만 처리합니다.
+                
+                @Code(name: "ROIRendering.swift", file: "10-07-roi-rendering.swift")
+            }
+            
+            @Step {
+                프리뷰와 최종 출력에 다른 해상도를 사용합니다.
+                사용자 조작 중에는 저해상도로 빠르게 미리보기합니다.
+                
+                @Code(name: "DualResolution.swift", file: "10-08-dual-resolution.swift")
+            }
+            
+            @Step {
+                비동기 렌더링으로 UI 응답성을 유지합니다.
+                Grand Central Dispatch를 활용합니다.
+                
+                @Code(name: "AsyncRendering.swift", file: "10-09-async-rendering.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로파일링과 디버깅") {
+        @ContentAndMedia {
+            Instruments를 사용해 CoreImage 성능을 분석합니다.
+            병목 지점을 찾고 최적화 효과를 측정합니다.
+            
+            유용한 도구:
+            - Core Animation 프로파일러
+            - GPU 프로파일러
+            - Allocations (메모리)
+            - Time Profiler (CPU)
+        }
+        
+        @Steps {
+            @Step {
+                Instruments에서 GPU 사용량을 모니터링합니다.
+                필터 처리 시간과 GPU 점유율을 확인합니다.
+                
+                @Code(name: "GPUProfiling.swift", file: "10-10-gpu-profiling.swift")
+            }
+            
+            @Step {
+                렌더링 시간을 측정하는 유틸리티를 만듭니다.
+                각 필터의 처리 시간을 로깅합니다.
+                
+                @Code(name: "RenderingTimer.swift", file: "10-11-rendering-timer.swift")
+            }
+            
+            @Step {
+                메모리 사용량을 추적합니다.
+                이미지 처리 전후의 메모리 변화를 모니터링합니다.
+                
+                @Code(name: "MemoryTracking.swift", file: "10-12-memory-tracking.swift")
+            }
+            
+            @Step {
+                최적화 체크리스트를 정리합니다.
+                앱 출시 전 확인해야 할 성능 항목을 점검합니다.
+                
+                @Code(name: "OptimizationChecklist.swift", file: "10-13-checklist.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            루프에서 이미지를 처리할 때 autoreleasepool을 사용해야 하는 이유는?
+            
+            @Choice(isCorrect: true) {
+                메모리가 루프 끝까지 해제되지 않아 누적되는 것을 방지
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    autoreleasepool 없이는 루프 전체가 끝날 때까지 
+                    임시 객체들이 해제되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                컴파일러 최적화를 위해
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    autoreleasepool은 런타임 메모리 관리에 관한 것입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                GPU 가속을 활성화하기 위해
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    GPU 가속은 CIContext 설정과 관련됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIContext의 cacheIntermediates를 비활성화하면 어떤 효과가 있나요?
+            
+            @Choice(isCorrect: true) {
+                메모리 사용량이 줄지만 동일 필터 재적용 시 느려질 수 있다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    캐시를 끄면 메모리는 절약되지만, 
+                    반복 렌더링 시 재계산이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                항상 렌더링 속도가 빨라진다
+                
+                @Justification(reaction: "상황에 따라 다릅니다.") {
+                    캐시 히트 시에는 오히려 캐싱이 더 빠릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지 품질이 향상된다
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    캐싱은 성능에 관한 것이지 품질과 무관합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            프리뷰에 저해상도 이미지를 사용하는 이유는?
+            
+            @Choice(isCorrect: true) {
+                사용자 조작 중 빠른 피드백을 제공하기 위해
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    조작 중에는 빠른 응답이 중요하고, 
+                    최종 출력 시에만 고해상도가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                저해상도가 더 좋은 품질을 제공하기 때문
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    품질은 고해상도가 더 좋지만, 속도와 트레이드오프합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 기기에서 동일한 결과를 보장하기 위해
+                
+                @Justification(reaction: "핵심 이유가 아닙니다.") {
+                    성능 최적화가 주요 목적입니다.
+                }
+            }
+        }
+    }
+}

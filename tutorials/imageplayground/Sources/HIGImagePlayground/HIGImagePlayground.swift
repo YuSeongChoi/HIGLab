@@ -1,1 +1,4 @@
-public struct HIGImagePlayground { public init() {} }
+import ImagePlayground
+
+// ImagePlayground 튜토리얼
+// HIG Lab - Apple Frameworks 실습

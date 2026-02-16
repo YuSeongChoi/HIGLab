@@ -1,0 +1,163 @@
+@Tutorial(time: 15) {
+    @Intro(title: "통화 기록 (CXCallDirectoryProvider)") {
+        Call Directory Extension을 만들어 
+        발신자 식별과 전화번호 차단 기능을 구현합니다.
+    }
+    
+    @Section(title: "Call Directory Extension 생성") {
+        @ContentAndMedia {
+            Xcode에서 Call Directory Extension을 
+            프로젝트에 추가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                새 Target으로 Call Directory Extension을 추가합니다.
+                
+                File > New > Target > Call Directory Extension
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-01-extension.swift")
+            }
+            
+            @Step {
+                CXCallDirectoryProvider를 상속받는 클래스를 확인합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-02-provider.swift")
+            }
+            
+            @Step {
+                beginRequest 메서드를 구현합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-03-begin-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "발신자 식별 구현") {
+        @ContentAndMedia {
+            전화번호에 대한 발신자 정보를 
+            시스템에 등록합니다.
+        }
+        
+        @Steps {
+            @Step {
+                발신자 식별 데이터를 준비합니다.
+                
+                전화번호는 오름차순으로 정렬되어야 합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-04-identification-data.swift")
+            }
+            
+            @Step {
+                addIdentificationEntry 메서드로 등록합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-05-add-identification.swift")
+            }
+            
+            @Step {
+                증분 업데이트를 구현합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-06-incremental.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Extension과 앱 간 데이터 공유") {
+        @ContentAndMedia {
+            App Group을 사용하여 
+            메인 앱과 Extension 간에 데이터를 공유합니다.
+        }
+        
+        @Steps {
+            @Step {
+                App Group을 설정합니다.
+                
+                @Code(name: "AppGroupConfig.swift", file: "08-07-app-group.swift")
+            }
+            
+            @Step {
+                공유 저장소를 구현합니다.
+                
+                @Code(name: "SharedStorage.swift", file: "08-08-shared-storage.swift")
+            }
+            
+            @Step {
+                Extension에서 데이터를 읽어옵니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-09-read-data.swift")
+            }
+            
+            @Step {
+                Extension 새로고침을 요청합니다.
+                
+                @Code(name: "CallManager.swift", file: "08-10-reload.swift")
+            }
+            
+            @Step {
+                Extension 상태를 확인합니다.
+                
+                @Code(name: "CallManager.swift", file: "08-11-status.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Call Directory Extension에서 발신자 식별을 등록하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `addIdentificationEntry(withNextSequentialPhoneNumber:label:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이 메서드로 전화번호와 레이블을 
+                    발신자 식별 목록에 추가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `addCallerIdentification(phoneNumber:name:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `registerCaller(number:label:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Call Directory Extension에 전화번호를 등록할 때 주의할 점은?
+            
+            @Choice(isCorrect: true) {
+                전화번호를 오름차순으로 정렬해야 함
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    전화번호는 반드시 오름차순으로 정렬되어야 
+                    시스템이 올바르게 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                전화번호를 해싱해야 함
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    전화번호는 원본 그대로 등록합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                중복 전화번호를 등록해야 함
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    중복 등록은 허용되지 않습니다.
+                }
+            }
+        }
+    }
+}

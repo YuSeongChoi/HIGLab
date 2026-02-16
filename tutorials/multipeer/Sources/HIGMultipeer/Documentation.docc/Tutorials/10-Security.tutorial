@@ -1,0 +1,195 @@
+@Tutorial(time: 12) {
+    @Intro(title: "보안 & 암호화") {
+        MCSession의 암호화 설정과 인증서 검증을 통해 
+        안전한 통신을 구현합니다.
+    }
+    
+    @Section(title: "암호화 설정") {
+        @ContentAndMedia {
+            MCSession은 세 가지 암호화 옵션을 제공합니다.
+            
+            - none: 암호화 없음
+            - optional: 가능하면 암호화
+            - required: 필수 암호화
+        }
+        
+        @Steps {
+            @Step {
+                MCEncryptionPreference를 이해합니다.
+                
+                @Code(name: "SecurityManager.swift", file: "10-01-encryption-pref.swift")
+            }
+            
+            @Step {
+                암호화가 필수인 세션을 생성합니다.
+                
+                @Code(name: "SecurityManager.swift", file: "10-02-required-encryption.swift")
+            }
+        }
+    }
+    
+    @Section(title: "인증서 기반 인증") {
+        @ContentAndMedia {
+            SecurityIdentity를 사용하여 
+            피어를 인증할 수 있습니다.
+            
+            신뢰할 수 있는 피어만 연결을 허용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                securityIdentity 매개변수를 이해합니다.
+                
+                @Code(name: "SecurityManager.swift", file: "10-03-security-identity.swift")
+            }
+            
+            @Step {
+                자체 서명 인증서를 생성합니다.
+                
+                @Code(name: "CertificateManager.swift", file: "10-04-create-cert.swift")
+            }
+            
+            @Step {
+                인증서로 세션을 생성합니다.
+                
+                @Code(name: "SecurityManager.swift", file: "10-05-cert-session.swift")
+            }
+            
+            @Step {
+                인증서 검증 콜백을 구현합니다.
+                
+                @Code(name: "SecurityManager.swift", file: "10-06-verify-cert.swift")
+            }
+        }
+    }
+    
+    @Section(title: "데이터 암호화") {
+        @ContentAndMedia {
+            민감한 데이터는 전송 전에 
+            추가 암호화를 적용할 수 있습니다.
+            
+            CryptoKit을 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CryptoKit으로 대칭 키를 생성합니다.
+                
+                @Code(name: "CryptoManager.swift", file: "10-07-symmetric-key.swift")
+            }
+            
+            @Step {
+                데이터를 암호화합니다.
+                
+                AES-GCM을 사용합니다.
+                
+                @Code(name: "CryptoManager.swift", file: "10-08-encrypt.swift")
+            }
+            
+            @Step {
+                데이터를 복호화합니다.
+                
+                @Code(name: "CryptoManager.swift", file: "10-09-decrypt.swift")
+            }
+            
+            @Step {
+                암호화된 메시지 전송을 구현합니다.
+                
+                @Code(name: "SecureMessageManager.swift", file: "10-10-secure-send.swift")
+            }
+        }
+    }
+    
+    @Section(title: "키 교환") {
+        @ContentAndMedia {
+            안전한 통신을 위해 피어 간에 
+            암호화 키를 교환하는 방법을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Diffie-Hellman 키 교환을 이해합니다.
+                
+                @Code(name: "KeyExchange.swift", file: "10-11-key-exchange.swift")
+            }
+            
+            @Step {
+                CryptoKit의 키 교환 API를 사용합니다.
+                
+                @Code(name: "KeyExchange.swift", file: "10-12-ecdh.swift")
+            }
+            
+            @Step {
+                키 교환 프로토콜을 구현합니다.
+                
+                @Code(name: "KeyExchange.swift", file: "10-13-exchange-protocol.swift")
+            }
+            
+            @Step {
+                교환된 키로 보안 채널을 설정합니다.
+                
+                @Code(name: "SecureChannel.swift", file: "10-14-secure-channel.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MCEncryptionPreference.required의 의미는?
+            
+            @Choice(isCorrect: true) {
+                암호화를 지원하지 않는 피어와는 연결하지 않는다
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    required 옵션은 암호화가 필수이며,
+                    암호화를 지원하지 않는 피어는 연결되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 피어와 연결할 수 있다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    required는 암호화 지원 피어만 연결합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                데이터는 암호화되지 않는다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    required는 필수 암호화를 의미합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CryptoKit에서 AES-GCM 암호화에 필요한 것은?
+            
+            @Choice(isCorrect: false) {
+                공개 키와 개인 키
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AES-GCM은 대칭 암호화로 하나의 키만 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                SymmetricKey
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AES-GCM은 대칭 암호화이므로 
+                    양쪽이 같은 SymmetricKey를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                인증서
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AES-GCM에는 인증서가 필요하지 않습니다.
+                }
+            }
+        }
+    }
+}

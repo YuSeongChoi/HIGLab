@@ -1,0 +1,238 @@
+@Tutorial(time: 15) {
+    @Intro(title: "에러 처리") {
+        ImagePlayground의 가용성을 확인하고 
+        다양한 에러 상황에 대응하는 방법을 배웁니다.
+        
+        @Image(source: "error-handling.png", alt: "에러 처리")
+    }
+    
+    @Section(title: "가용성 확인") {
+        @ContentAndMedia {
+            ImagePlayground는 모든 기기에서 
+            사용할 수 없습니다.
+            
+            **가용성 조건:**
+            - Apple Silicon(A17 Pro 이상, M1 이상)
+            - iOS 18.0 이상
+            - Apple Intelligence 활성화됨
+            - 지원되는 언어/지역 설정
+            
+            런타임에 가용성을 확인하고 
+            적절한 폴백을 제공해야 합니다.
+            
+            @Image(source: "availability.png", alt: "가용성 체크")
+        }
+        
+        @Steps {
+            @Step {
+                환경 변수를 사용하여 
+                가용성을 확인합니다.
+                
+                @Code(name: "EnvironmentCheck.swift", file: "08-01-environment.swift")
+            }
+            
+            @Step {
+                가용성에 따라 UI를 조건부로 표시합니다.
+                
+                @Code(name: "ConditionalUI.swift", file: "08-02-conditional.swift")
+            }
+            
+            @Step {
+                사용 불가능할 때 대체 기능을 제공합니다.
+                
+                @Code(name: "Fallback.swift", file: "08-03-fallback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "일반적인 에러 상황") {
+        @ContentAndMedia {
+            ImagePlayground 사용 중 발생할 수 있는 
+            일반적인 에러 상황들입니다:
+            
+            - **기기 미지원**: 하드웨어 요구사항 미충족
+            - **AI 비활성화**: 사용자가 Apple Intelligence를 끈 경우
+            - **저장 공간 부족**: 이미지 생성에 필요한 공간 부족
+            - **네트워크 문제**: 일부 처리에 네트워크 필요
+            
+            각 상황에 맞는 사용자 친화적인 
+            메시지를 제공해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                다양한 에러 상황을 구분하여 처리합니다.
+                
+                @Code(name: "ErrorTypes.swift", file: "08-04-error-types.swift")
+            }
+            
+            @Step {
+                사용자에게 친화적인 에러 메시지를 표시합니다.
+                
+                @Code(name: "UserFriendlyErrors.swift", file: "08-05-friendly.swift")
+            }
+        }
+    }
+    
+    @Section(title: "그레이스풀 디그레이데이션") {
+        @ContentAndMedia {
+            ImagePlayground를 사용할 수 없는 경우에도 
+            앱이 정상적으로 작동해야 합니다.
+            
+            **대체 전략:**
+            - 기본 이미지 제공
+            - 다른 이미지 소스 활용 (사진 라이브러리)
+            - 텍스트 기반 대체 콘텐츠
+            - 기능 숨기기
+            
+            사용자 경험을 해치지 않으면서 
+            기능 제한을 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                #available을 사용한 
+                컴파일 타임 분기 처리입니다.
+                
+                @Code(name: "AvailableCheck.swift", file: "08-06-available.swift")
+            }
+            
+            @Step {
+                대체 이미지 선택 기능을 제공합니다.
+                
+                @Code(name: "AlternativeSource.swift", file: "08-07-alternative.swift")
+            }
+            
+            @Step {
+                통합된 에러 처리 뷰 컴포넌트입니다.
+                재사용 가능한 에러 UI를 만듭니다.
+                
+                @Code(name: "ErrorView.swift", file: "08-08-error-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "디버깅 팁") {
+        @ContentAndMedia {
+            개발 중 ImagePlayground 관련 문제를 
+            디버깅하는 방법입니다.
+            
+            **확인 사항:**
+            - 시뮬레이터는 제한적 지원 (실기기 테스트 권장)
+            - Apple Intelligence 설정 확인
+            - 콘솔 로그에서 에러 메시지 확인
+            - 기기의 저장 공간 확인
+        }
+        
+        @Steps {
+            @Step {
+                디버그 정보를 로깅하여 
+                문제를 진단합니다.
+                
+                @Code(name: "DebugLogging.swift", file: "08-09-debug.swift")
+            }
+            
+            @Step {
+                개발 환경에서 가용성 상태를 
+                시각적으로 확인하는 디버그 뷰입니다.
+                
+                @Code(name: "DebugView.swift", file: "08-10-debug-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ImagePlayground 가용성을 확인하는 올바른 방법은?
+            
+            @Choice(isCorrect: true) {
+                @Environment의 supportsImagePlayground 또는 isImagePlaygroundAvailable 사용
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    환경 변수를 통해 런타임에 
+                    가용성을 정확히 확인할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UIDevice.current.model로 기기명 확인
+                
+                @Justification(reaction: "불충분합니다.") {
+                    기기명만으로는 Apple Intelligence 활성화 여부나 
+                    OS 버전을 확인할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                try-catch로 시트 표시 시도
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    사전에 가용성을 확인하는 것이 
+                    더 좋은 사용자 경험을 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ImagePlayground를 사용할 수 없을 때 
+            가장 좋은 대체 전략은?
+            
+            @Choice(isCorrect: false) {
+                빈 화면을 표시하고 아무 것도 하지 않음
+                
+                @Justification(reaction: "나쁜 UX입니다.") {
+                    사용자에게 상황을 설명하고 
+                    대안을 제공해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                사진 라이브러리 선택 등 대체 기능과 함께 안내 메시지 제공
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    그레이스풀 디그레이데이션으로 
+                    앱이 계속 유용하게 작동합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱을 강제 종료
+                
+                @Justification(reaction: "절대 안 됩니다!") {
+                    기능 제한이 앱 전체 사용을 
+                    막아서는 안 됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ImagePlayground 개발 시 테스트 환경으로 권장되는 것은?
+            
+            @Choice(isCorrect: false) {
+                iOS 시뮬레이터만으로 충분
+                
+                @Justification(reaction: "제한적입니다.") {
+                    시뮬레이터는 AI 기능 테스트에 제한이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Apple Silicon 기반 실제 기기에서 테스트
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    실제 AI 처리와 성능을 확인하려면 
+                    지원되는 실기기가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                웹 기반 프리뷰 도구 사용
+                
+                @Justification(reaction: "존재하지 않습니다.") {
+                    Apple Intelligence는 기기 내 처리이므로 
+                    웹 프리뷰가 불가능합니다.
+                }
+            }
+        }
+    }
+}

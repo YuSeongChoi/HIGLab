@@ -21,8 +21,8 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
 | 📝 블로그 | 50/50 | - | 완료! | 100% 🎉 |
-| 📚 DocC | 33/50 | - | 17개 | 66% |
-| 💻 샘플 | 1/50 | 29개 | 20개 | 2% |
+| 📚 DocC | 41/50 | - | 9개 | 82% |
+| 💻 샘플 | 7/50 | - | 43개 | 14% |
 
 > **블로그 상태**: ✅ 완성 50개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit, MusicKit, PhotosUI, CoreHaptics, ShazamKit, ImagePlayground, CoreBluetooth, CoreNFC, MultipeerConnectivity, Network, LocalAuthentication, CryptoKit, CallKit, EventKit, Contacts, WiFiAware, VisualIntelligence, AlarmKit, EnergyKit, PermissionKit, RelevanceKit, ExtensibleImage, AccessorySetupKit) 🎊
 

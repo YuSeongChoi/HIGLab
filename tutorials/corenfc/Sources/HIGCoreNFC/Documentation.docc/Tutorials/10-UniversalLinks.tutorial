@@ -1,0 +1,107 @@
+@Tutorial(time: 20) {
+    @Intro(title: "앱 실행 (Universal Links)") {
+        NFC 태그 스캔으로 앱을 자동 실행하는 방법을 학습합니다.
+        Universal Links와 백그라운드 태그 읽기를 구현합니다.
+    }
+    
+    @Section(title: "Universal Links 설정") {
+        @ContentAndMedia {
+            Universal Links를 사용하면 특정 URL이 포함된 NFC 태그를 스캔했을 때
+            앱이 자동으로 실행됩니다.
+        }
+        @Steps {
+            @Step {
+                Associated Domains 기능을 활성화합니다.
+                applinks:yourdomain.com 형식으로 도메인을 추가합니다.
+                @Code(name: "App.entitlements", file: "10-01-domains.swift")
+            }
+            @Step {
+                apple-app-site-association 파일을 서버에 배포합니다.
+                @Code(name: "apple-app-site-association", file: "10-02-aasa.swift")
+            }
+            @Step {
+                SceneDelegate에서 Universal Link를 처리합니다.
+                @Code(name: "SceneDelegate.swift", file: "10-03-scenedelegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "백그라운드 태그 읽기") {
+        @ContentAndMedia {
+            iOS 13+에서는 앱을 열지 않아도 백그라운드에서 
+            NFC 태그를 자동으로 읽을 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                Info.plist에 백그라운드 태그 읽기 지원을 선언합니다.
+                @Code(name: "Info.plist", file: "10-04-background.swift")
+            }
+            @Step {
+                NSUserActivity를 통해 백그라운드에서 읽은 태그를 처리합니다.
+                @Code(name: "SceneDelegate.swift", file: "10-05-useractivity.swift")
+            }
+            @Step {
+                태그 데이터에서 URL을 추출하고 앱 내 화면으로 이동합니다.
+                @Code(name: "SceneDelegate.swift", file: "10-06-navigate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앱 클립과 NFC") {
+        @ContentAndMedia {
+            App Clip을 NFC 태그와 연동하면 앱 설치 없이도 
+            기능을 바로 사용할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                App Clip 코드에 URL을 인코딩합니다.
+                @Code(name: "AppClipSetup.swift", file: "10-07-appclip.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Universal Links가 동작하려면 필요한 것은?
+            @Choice(isCorrect: false) {
+                특별한 NFC 태그 타입
+                @Justification(reaction: "다시 생각해보세요.") {
+                    일반 NDEF URL 태그면 충분합니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                서버의 apple-app-site-association 파일과 앱의 Associated Domains 설정
+                @Justification(reaction: "정답입니다!") {
+                    서버와 앱 양쪽 설정이 모두 필요합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Apple Developer Program 엔터프라이즈 계정
+                @Justification(reaction: "다시 생각해보세요.") {
+                    일반 개발자 계정으로도 가능합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            백그라운드 태그 읽기에서 태그 데이터를 받는 방법은?
+            @Choice(isCorrect: false) {
+                NFCNDEFReaderSessionDelegate
+                @Justification(reaction: "다시 생각해보세요.") {
+                    백그라운드에서는 세션을 직접 관리하지 않습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                NSUserActivity
+                @Justification(reaction: "정답입니다!") {
+                    scene(_:continue:)에서 NSUserActivity로 태그 데이터를 받습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Push Notification
+                @Justification(reaction: "다시 생각해보세요.") {
+                    NFC는 푸시 알림과 관련이 없습니다.
+                }
+            }
+        }
+    }
+}
