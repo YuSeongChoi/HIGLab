@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 16/50 | - | 34개 | 32% ✅ |
+| 📝 블로그 | 20/50 | - | 30개 | 40% ✅ |
 | 📚 DocC | 7/50 | - | 43개 | 14% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 16개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML) · ⬜ 미완성 34개
+> **블로그 상태**: ✅ 완성 20개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay) · ⬜ 미완성 30개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -60,10 +60,10 @@ WidgetKit
 | 14 | **MapKit** | [✅](https://m1zz.github.io/HIGLab/mapkit/01-tutorial.html) | ⬜ | ⬜ |
 | 15 | **Core Location** | [✅](https://m1zz.github.io/HIGLab/corelocation/01-tutorial.html) | ⬜ | ⬜ |
 | 16 | **Core ML** | [✅](https://m1zz.github.io/HIGLab/coreml/01-tutorial.html) | ⬜ | ⬜ |
-| 17 | **Vision** | [⬜](https://m1zz.github.io/HIGLab/vision/01-tutorial.html) | ⬜ | ⬜ |
-| 18 | **User Notifications** | [⬜](https://m1zz.github.io/HIGLab/notifications/01-tutorial.html) | ⬜ | ⬜ |
-| 19 | **TipKit** | [⬜](https://m1zz.github.io/HIGLab/tipkit/01-tutorial.html) | ⬜ | ⬜ |
-| 20 | **SharePlay** | [⬜](https://m1zz.github.io/HIGLab/shareplay/01-tutorial.html) | ⬜ | ⬜ |
+| 17 | **Vision** | [✅](https://m1zz.github.io/HIGLab/vision/01-tutorial.html) | ⬜ | ⬜ |
+| 18 | **User Notifications** | [✅](https://m1zz.github.io/HIGLab/notifications/01-tutorial.html) | ⬜ | ⬜ |
+| 19 | **TipKit** | [✅](https://m1zz.github.io/HIGLab/tipkit/01-tutorial.html) | ⬜ | ⬜ |
+| 20 | **SharePlay** | [✅](https://m1zz.github.io/HIGLab/shareplay/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🎮 Phase 3: Graphics & Media (그래픽/미디어)
 

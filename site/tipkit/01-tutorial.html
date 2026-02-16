@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>💡 기능 팁 표시 — HIG Lab</title>
+<title>💡 TipKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
@@ -13,19 +13,530 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spac
 h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
 pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
 </style></head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
-<h1>💡 기능 팁 표시</h1>
-<p class="subtitle">TipKit 온보딩 가이드</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 기능 팁 표시의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<h1>💡 TipKit</h1>
+<p class="subtitle">앱 기능을 발견하게 돕는 인앱 팁</p>
+
+<div><span class="badge ios">iOS 17+</span><span class="badge new">2023 신규</span></div>
+
+<h2>✨ TipKit이란?</h2>
+<p>TipKit은 iOS 17에서 도입된 프레임워크로, 사용자가 앱의 새로운 기능이나 숨겨진 기능을 자연스럽게 발견할 수 있도록 인앱 팁을 표시합니다. Apple의 네이티브 스타일을 따르며, 사용자 행동에 따라 지능적으로 팁을 표시하거나 숨깁니다.</p>
+
+<div class="info-box">
+<strong>💡 핵심 기능:</strong> 인라인/팝오버 팁 · 규칙 기반 표시 · 이벤트 추적 · 자동 무시 · iCloud 동기화 · 커스텀 스타일링 · 다국어 지원
+</div>
+
+<h2>🎯 1. 기본 설정</h2>
+<p>앱 시작 시 TipKit을 초기화합니다.</p>
+
+<div class="code-block">
+<div class="code-header">App.swift — TipKit 초기화</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">@main</span>
+<span class="kw">struct</span> <span class="type">MyApp</span>: <span class="type">App</span> {
+    <span class="kw">init</span>() {
+        <span class="comment">// TipKit 초기화</span>
+        <span class="kw">try</span>? <span class="type">Tips</span>.configure([
+            <span class="comment">// 개발 중: 앱 실행 시마다 팁 표시</span>
+            .<span class="kw">displayFrequency</span>(.immediate),
+
+            <span class="comment">// 프로덕션: 기본 정책 사용</span>
+            <span class="comment">// .displayFrequency(.daily)</span>
+
+            <span class="comment">// 데이터 저장 위치</span>
+            .<span class="kw">datastoreLocation</span>(.<span class="kw">applicationDefault</span>)
+        ])
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">Scene</span> {
+        <span class="type">WindowGroup</span> {
+            <span class="type">ContentView</span>()
+        }
+    }
+}</pre>
+</div>
+
+<h2>💬 2. 기본 팁 생성</h2>
+<p>Tip 프로토콜을 채택하여 팁을 정의합니다.</p>
+
+<div class="code-block">
+<div class="code-header">FavoriteTip.swift — 간단한 팁</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">FavoriteTip</span>: <span class="type">Tip</span> {
+    <span class="comment">// 팁 제목</span>
+    <span class="kw">var</span> title: <span class="type">Text</span> {
+        <span class="type">Text</span>(<span class="str">"즐겨찾기에 추가하세요"</span>)
+    }
+
+    <span class="comment">// 팁 설명</span>
+    <span class="kw">var</span> message: <span class="type">Text</span>? {
+        <span class="type">Text</span>(<span class="str">"별 아이콘을 탭하면 자주 사용하는 항목을 빠르게 찾을 수 있어요"</span>)
+    }
+
+    <span class="comment">// 팁 아이콘</span>
+    <span class="kw">var</span> image: <span class="type">Image</span>? {
+        <span class="type">Image</span>(systemName: <span class="str">"star"</span>)
+    }
+}
+
+<span class="comment">// SwiftUI View에서 사용</span>
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> favoriteTip = <span class="type">FavoriteTip</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 인라인 팁 (뷰에 직접 삽입)</span>
+            <span class="type">TipView</span>(favoriteTip)
+
+            <span class="type">Button</span>(<span class="str">"즐겨찾기 추가"</span>) {
+                <span class="comment">// 액션</span>
+            }
+        }
+        .padding()
+    }
+}</pre>
+</div>
+
+<h2>🎨 3. 팁 스타일</h2>
+<p>인라인 팁과 팝오버 팁 두 가지 스타일을 제공합니다.</p>
+
+<div class="code-block">
+<div class="code-header">TipStyles.swift — 팁 스타일</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">TipStylesView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> inlineTip = <span class="type">FavoriteTip</span>()
+    <span class="kw">let</span> popoverTip = <span class="type">SearchTip</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">30</span>) {
+            <span class="comment">// 1. 인라인 팁 (뷰 계층에 직접 삽입)</span>
+            <span class="type">TipView</span>(inlineTip, arrowEdge: .top)
+
+            <span class="type">Divider</span>()
+
+            <span class="comment">// 2. 팝오버 팁 (특정 요소에 화살표로 연결)</span>
+            <span class="type">Button</span>(<span class="str">"검색"</span>) {
+                <span class="comment">// 검색 액션</span>
+            }
+            .popoverTip(popoverTip)
+
+            <span class="comment">// 3. 커스텀 스타일 인라인 팁</span>
+            <span class="type">TipView</span>(inlineTip) { action <span class="kw">in</span>
+                <span class="comment">// 액션 버튼 커스터마이즈</span>
+                <span class="kw">if</span> <span class="kw">let</span> action {
+                    <span class="type">Button</span>(action: action.handler) {
+                        <span class="type">Text</span>(action.label)
+                            .foregroundStyle(.white)
+                            .padding(<span class="str">8</span>)
+                            .background(<span class="type">Color</span>.blue)
+                            .cornerRadius(<span class="str">8</span>)
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+<span class="comment">// 검색 팁 정의</span>
+<span class="kw">struct</span> <span class="type">SearchTip</span>: <span class="type">Tip</span> {
+    <span class="kw">var</span> title: <span class="type">Text</span> {
+        <span class="type">Text</span>(<span class="str">"빠른 검색"</span>)
+    }
+
+    <span class="kw">var</span> message: <span class="type">Text</span>? {
+        <span class="type">Text</span>(<span class="str">"⌘ + F로 빠르게 검색할 수 있어요"</span>)
+    }
+
+    <span class="kw">var</span> image: <span class="type">Image</span>? {
+        <span class="type">Image</span>(systemName: <span class="str">"magnifyingglass"</span>)
+    }
+}</pre>
+</div>
+
+<h2>🎯 4. 규칙 기반 팁 (Rules)</h2>
+<p>특정 조건이 만족될 때만 팁을 표시합니다.</p>
+
+<div class="code-block">
+<div class="code-header">RuleBasedTip.swift — 규칙 기반 팁</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">EditTip</span>: <span class="type">Tip</span> {
+    <span class="comment">// 사용자가 3개 항목을 생성했는지 추적</span>
+    <span class="kw">@Parameter</span>
+    <span class="kw">static</span> <span class="kw">var</span> itemsCreated: <span class="type">Int</span> = <span class="str">0</span>
+
+    <span class="comment">// 편집 기능을 사용했는지 추적</span>
+    <span class="kw">static</span> <span class="kw">let</span> hasEditedItem = <span class="type">Event</span>(id: <span class="str">"hasEditedItem"</span>)
+
+    <span class="kw">var</span> title: <span class="type">Text</span> {
+        <span class="type">Text</span>(<span class="str">"항목 편집하기"</span>)
+    }
+
+    <span class="kw">var</span> message: <span class="type">Text</span>? {
+        <span class="type">Text</span>(<span class="str">"항목을 길게 눌러서 편집할 수 있어요"</span>)
+    }
+
+    <span class="kw">var</span> image: <span class="type">Image</span>? {
+        <span class="type">Image</span>(systemName: <span class="str">"pencil"</span>)
+    }
+
+    <span class="comment">// 팁 표시 규칙</span>
+    <span class="kw">var</span> rules: [<span class="type">Rule</span>] {
+        [
+            <span class="comment">// 규칙 1: 3개 이상 항목을 생성했을 때</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.$itemsCreated) { $0 >= <span class="str">3</span> },
+
+            <span class="comment">// 규칙 2: 아직 편집을 한 번도 안 했을 때</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.hasEditedItem) { $0.donations.count == <span class="str">0</span> }
+        ]
+    }
+
+    <span class="comment">// 옵션: 표시 후 액션</span>
+    <span class="kw">var</span> actions: [<span class="type">Action</span>] {
+        [
+            <span class="type">Action</span>(id: <span class="str">"try-edit"</span>, title: <span class="str">"지금 해보기"</span>)
+        ]
+    }
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">ItemListView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> editTip = <span class="type">EditTip</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> items: [<span class="type">String</span>] = []
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">TipView</span>(editTip) { action <span class="kw">in</span>
+                <span class="kw">if</span> action.id == <span class="str">"try-edit"</span> {
+                    <span class="type">Button</span>(<span class="str">"지금 해보기"</span>) {
+                        <span class="comment">// 편집 모드로 전환</span>
+                    }
+                }
+            }
+
+            <span class="type">List</span>(items, id: \.<span class="kw">self</span>) { item <span class="kw">in</span>
+                <span class="type">Text</span>(item)
+                    .onLongPressGesture {
+                        <span class="comment">// 편집 액션</span>
+                        <span class="type">Task</span> {
+                            <span class="kw">await</span> <span class="type">EditTip</span>.hasEditedItem.donate()
+                        }
+                    }
+            }
+
+            <span class="type">Button</span>(<span class="str">"항목 추가"</span>) {
+                items.append(<span class="str">"새 항목"</span>)
+
+                <span class="comment">// 파라미터 업데이트</span>
+                <span class="type">EditTip</span>.itemsCreated += <span class="str">1</span>
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>📊 5. 이벤트 추적</h2>
+<p>사용자 행동을 추적하여 적절한 시점에 팁을 표시합니다.</p>
+
+<div class="code-block">
+<div class="code-header">EventTracking.swift — 이벤트 추적</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">ShareTip</span>: <span class="type">Tip</span> {
+    <span class="comment">// 여러 이벤트 정의</span>
+    <span class="kw">static</span> <span class="kw">let</span> didViewItem = <span class="type">Event</span>(id: <span class="str">"didViewItem"</span>)
+    <span class="kw">static</span> <span class="kw">let</span> didCreateItem = <span class="type">Event</span>(id: <span class="str">"didCreateItem"</span>)
+    <span class="kw">static</span> <span class="kw">let</span> didShareItem = <span class="type">Event</span>(id: <span class="str">"didShareItem"</span>)
+
+    <span class="kw">var</span> title: <span class="type">Text</span> {
+        <span class="type">Text</span>(<span class="str">"친구에게 공유하기"</span>)
+    }
+
+    <span class="kw">var</span> message: <span class="type">Text</span>? {
+        <span class="type">Text</span>(<span class="str">"공유 버튼으로 친구들과 항목을 공유해보세요"</span>)
+    }
+
+    <span class="kw">var</span> rules: [<span class="type">Rule</span>] {
+        [
+            <span class="comment">// 5번 이상 항목을 봤을 때</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.didViewItem) {
+                $0.donations.count >= <span class="str">5</span>
+            },
+
+            <span class="comment">// 2개 이상 항목을 만들었을 때</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.didCreateItem) {
+                $0.donations.count >= <span class="str">2</span>
+            },
+
+            <span class="comment">// 아직 공유를 안 했을 때</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.didShareItem) {
+                $0.donations.count == <span class="str">0</span>
+            }
+        ]
+    }
+}
+
+<span class="comment">// 이벤트 기록 예제</span>
+<span class="kw">struct</span> <span class="type">DetailView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> shareTip = <span class="type">ShareTip</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"상세 내용"</span>)
+
+            <span class="type">Button</span>(<span class="str">"공유"</span>) {
+                <span class="comment">// 공유 액션</span>
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> <span class="type">ShareTip</span>.didShareItem.donate()
+                }
+            }
+            .popoverTip(shareTip)
+        }
+        .task {
+            <span class="comment">// 뷰 진입 시 이벤트 기록</span>
+            <span class="kw">await</span> <span class="type">ShareTip</span>.didViewItem.donate()
+        }
+    }
+}</pre>
+</div>
+
+<h2>⚙️ 6. 팁 관리</h2>
+<p>팁의 상태를 프로그래밍 방식으로 제어합니다.</p>
+
+<div class="code-block">
+<div class="code-header">TipManagement.swift — 팁 관리</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">TipManagementView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> tip = <span class="type">FavoriteTip</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="type">TipView</span>(tip)
+
+            <span class="comment">// 팁 무효화 (다시는 표시 안 함)</span>
+            <span class="type">Button</span>(<span class="str">"이 팁 무효화"</span>) {
+                tip.invalidate(reason: .actionPerformed)
+            }
+
+            <span class="comment">// 모든 팁 리셋 (개발/테스트용)</span>
+            <span class="type">Button</span>(<span class="str">"모든 팁 리셋"</span>) {
+                <span class="type">Task</span> {
+                    <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Tips</span>.resetDatastore()
+                }
+            }
+
+            <span class="comment">// 모든 이벤트와 파라미터 초기화</span>
+            <span class="type">Button</span>(<span class="str">"데이터 초기화"</span>) {
+                <span class="type">Task</span> {
+                    <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Tips</span>.configureTips {
+                        <span class="type">Tips</span>.showAllTipsForTesting()
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+<span class="comment">// 팁 무효화 이유</span>
+<span class="kw">extension</span> <span class="type">Tip</span>.<span class="type">InvalidationReason</span> {
+    <span class="comment">// .actionPerformed - 사용자가 팁의 액션을 수행함</span>
+    <span class="comment">// .tipClosed - 사용자가 팁을 직접 닫음</span>
+    <span class="comment">// .displayCountExceeded - 최대 표시 횟수 초과</span>
+}</pre>
+</div>
+
+<h2>🔄 7. 고급 규칙</h2>
+<p>복잡한 조건을 조합하여 지능적으로 팁을 표시합니다.</p>
+
+<div class="code-block">
+<div class="code-header">AdvancedRules.swift — 고급 규칙</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">ProTip</span>: <span class="type">Tip</span> {
+    <span class="comment">// 파라미터들</span>
+    <span class="kw">@Parameter</span>
+    <span class="kw">static</span> <span class="kw">var</span> userLevel: <span class="type">Int</span> = <span class="str">0</span>
+
+    <span class="kw">@Parameter</span>
+    <span class="kw">static</span> <span class="kw">var</span> isPremiumUser: <span class="type">Bool</span> = <span class="kw">false</span>
+
+    <span class="comment">// 이벤트</span>
+    <span class="kw">static</span> <span class="kw">let</span> usedBasicFeature = <span class="type">Event</span>(id: <span class="str">"usedBasicFeature"</span>)
+    <span class="kw">static</span> <span class="kw">let</span> usedProFeature = <span class="type">Event</span>(id: <span class="str">"usedProFeature"</span>)
+
+    <span class="kw">var</span> title: <span class="type">Text</span> {
+        <span class="type">Text</span>(<span class="str">"프로 기능 사용하기"</span>)
+    }
+
+    <span class="kw">var</span> message: <span class="type">Text</span>? {
+        <span class="type">Text</span>(<span class="str">"프리미엄 기능으로 더 많은 작업을 할 수 있어요"</span>)
+    }
+
+    <span class="kw">var</span> rules: [<span class="type">Rule</span>] {
+        [
+            <span class="comment">// 레벨 5 이상</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.$userLevel) { $0 >= <span class="str">5</span> },
+
+            <span class="comment">// 프리미엄 유저가 아님</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.$isPremiumUser) { $0 == <span class="kw">false</span> },
+
+            <span class="comment">// 기본 기능을 10번 이상 사용</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.usedBasicFeature) {
+                $0.donations.count >= <span class="str">10</span>
+            },
+
+            <span class="comment">// 프로 기능은 아직 안 써봄</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.usedProFeature) {
+                $0.donations.count == <span class="str">0</span>
+            },
+
+            <span class="comment">// 최근 7일 이내에 기본 기능 사용</span>
+            #<span class="type">Rule</span>(<span class="kw">Self</span>.usedBasicFeature) {
+                $0.donations.last7Days.count > <span class="str">0</span>
+            }
+        ]
+    }
+
+    <span class="kw">var</span> options: [<span class="type">Option</span>] {
+        [
+            <span class="comment">// 최대 3번까지만 표시</span>
+            .<span class="kw">maxDisplayCount</span>(<span class="str">3</span>),
+
+            <span class="comment">// 무시하면 더 이상 표시 안 함</span>
+            .<span class="kw">ignoresDisplayFrequency</span>(<span class="kw">false</span>)
+        ]
+    }
+}</pre>
+</div>
+
+<h2>📱 종합 예제</h2>
+
+<div class="code-block">
+<div class="code-header">TipKitDemoView.swift — 종합 데모</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">TipKit</span>
+
+<span class="kw">struct</span> <span class="type">TipKitDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> items: [<span class="type">String</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> favorites: <span class="type">Set</span><<span class="type">String</span>> = []
+
+    <span class="kw">let</span> favoriteTip = <span class="type">FavoriteTip</span>()
+    <span class="kw">let</span> editTip = <span class="type">EditTip</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span> {
+                <span class="comment">// 인라인 팁</span>
+                <span class="type">TipView</span>(favoriteTip)
+                    .padding()
+
+                <span class="type">List</span> {
+                    <span class="type">ForEach</span>(items, id: \.<span class="kw">self</span>) { item <span class="kw">in</span>
+                        <span class="type">HStack</span> {
+                            <span class="type">Text</span>(item)
+
+                            <span class="type">Spacer</span>()
+
+                            <span class="type">Button</span> {
+                                toggleFavorite(item)
+                            } label: {
+                                <span class="type">Image</span>(systemName: favorites.contains(item) ? <span class="str">"star.fill"</span> : <span class="str">"star"</span>)
+                            }
+                        }
+                        .contentShape(<span class="type">Rectangle</span>())
+                        .onLongPressGesture {
+                            <span class="type">Task</span> {
+                                <span class="kw">await</span> <span class="type">EditTip</span>.hasEditedItem.donate()
+                            }
+                        }
+                    }
+                }
+
+                <span class="comment">// 팝오버 팁</span>
+                <span class="type">Button</span>(<span class="str">"항목 추가"</span>) {
+                    items.append(<span class="str">"항목 \(items.count + 1)"</span>)
+                    <span class="type">EditTip</span>.itemsCreated += <span class="str">1</span>
+                }
+                .buttonStyle(.borderedProminent)
+                .padding()
+                .popoverTip(editTip)
+            }
+            .navigationTitle(<span class="str">"TipKit 데모"</span>)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .topBarTrailing) {
+                    <span class="type">Button</span>(<span class="str">"리셋"</span>) {
+                        <span class="type">Task</span> {
+                            <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Tips</span>.resetDatastore()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    <span class="kw">func</span> toggleFavorite(<span class="kw">_</span> item: <span class="type">String</span>) {
+        <span class="kw">if</span> favorites.contains(item) {
+            favorites.remove(item)
+        } <span class="kw">else</span> {
+            favorites.insert(item)
+            <span class="comment">// 즐겨찾기 추가 시 팁 무효화</span>
+            favoriteTip.invalidate(reason: .actionPerformed)
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG 가이드라인</h2>
+
+<ul>
+<li><strong>적절한 타이밍:</strong> 사용자가 기능을 사용할 준비가 되었을 때 팁 표시</li>
+<li><strong>간결성:</strong> 팁 내용은 짧고 명확하게 작성 (1-2 문장)</li>
+<li><strong>비침습성:</strong> 팁이 주요 작업을 방해하지 않도록 배치</li>
+<li><strong>맥락성:</strong> 관련 UI 요소 근처에 팁 표시</li>
+<li><strong>점진적 공개:</strong> 한 번에 하나의 팁만 표시</li>
+<li><strong>해제 가능:</strong> 사용자가 언제든지 팁을 닫을 수 있어야 함</li>
+<li><strong>지능성:</strong> 사용자가 이미 알고 있는 내용은 표시하지 않음</li>
+</ul>
+
+<h2>🎯 실전 활용</h2>
+
+<ul>
+<li><strong>온보딩:</strong> 신규 사용자에게 핵심 기능 소개</li>
+<li><strong>기능 발견:</strong> 숨겨진 제스처나 단축키 알려주기</li>
+<li><strong>업셀링:</strong> 프리미엄 기능 홍보</li>
+<li><strong>컨텍스트 도움말:</strong> 상황에 맞는 사용 팁 제공</li>
+<li><strong>신기능 소개:</strong> 업데이트 후 새 기능 안내</li>
+</ul>
+
+<h2>📚 더 알아보기</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/tipkit">TipKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/10229/">WWDC 2023: Make features discoverable with TipKit</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/tips">HIG: Tips</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 팁:</strong> 개발 중에는 <code>.displayFrequency(.immediate)</code>를 사용하여 앱 실행 시마다 팁을 테스트할 수 있습니다. 프로덕션에서는 기본값 사용을 권장합니다.
+</div>
+
 </article>
 </body></html>
