@@ -22,10 +22,10 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 |------|------|--------|
 | 📝 블로그 | 50/50 | 100% ✅ |
 | 📚 DocC | 7/50 | 14% |
-| 💻 샘플 | 7/50 | 14% |
+| 💻 샘플 | 1/50 | 2% |
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
-WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundation Models
+WidgetKit
 
 ---
 
@@ -38,18 +38,18 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
 | 1 | **WidgetKit** | [✅](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/) | [✅](samples/WeatherWidget/) |
-| 2 | **ActivityKit** | [✅](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | [✅](samples/DeliveryTracker/) |
-| 3 | **App Intents** | [✅](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | [✅](samples/SiriTodo/) |
+| 2 | **ActivityKit** | [✅](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | ⬜ |
+| 3 | **App Intents** | [✅](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | ⬜ |
 | 4 | **SwiftUI** | [✅](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | ⬜ | ⬜ |
 | 5 | **SwiftData** | [✅](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | ⬜ | ⬜ |
 | 6 | **Observation** | [✅](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | ⬜ | ⬜ |
-| 7 | 🆕 **Foundation Models** | [✅](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | [✅](samples/AIChatbot/) |
+| 7 | 🆕 **Foundation Models** | [✅](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | ⬜ |
 
 ### 💳 Phase 2: App Services (서비스 통합)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 8 | **StoreKit 2** | [✅](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | [✅](samples/SubscriptionApp/) |
+| 8 | **StoreKit 2** | [✅](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ⬜ |
 | 9 | **PassKit** | [✅](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | ⬜ | ⬜ |
 | 10 | **CloudKit** | [✅](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
 | 11 | **Authentication Services** | [✅](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | ⬜ | ⬜ |
@@ -67,7 +67,7 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 21 | **ARKit** | [✅](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | [✅](samples/ARFurniture/) |
+| 21 | **ARKit** | [✅](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ⬜ |
 | 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
 | 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
 | 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
@@ -85,7 +85,7 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 34 | **Core Bluetooth** | [✅](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | [✅](samples/BLEScanner/) |
+| 34 | **Core Bluetooth** | [✅](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
 | 35 | **Core NFC** | [✅](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | ⬜ | ⬜ |
 | 36 | **MultipeerConnectivity** | [✅](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | ⬜ | ⬜ |
 | 37 | **Network** | [✅](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | ⬜ | ⬜ |
@@ -119,14 +119,8 @@ HIGLab/
 │   └── {framework}/01-*.html
 ├── tutorials/              # 📚 DocC 튜토리얼 (7개 빌드됨)
 │   └── {framework}/        # Swift Package + DocC
-└── samples/               # 💻 샘플 프로젝트 (7개 완료)
-    ├── WeatherWidget/     # WidgetKit
-    ├── DeliveryTracker/   # ActivityKit
-    ├── SiriTodo/          # App Intents
-    ├── SubscriptionApp/   # StoreKit 2
-    ├── ARFurniture/       # ARKit
-    ├── BLEScanner/        # Core Bluetooth
-    └── AIChatbot/         # Foundation Models
+└── samples/               # 💻 샘플 프로젝트 (1개 완료)
+    └── WeatherWidget/     # WidgetKit ✅
 ```
 
 ---
