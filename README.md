@@ -38,20 +38,20 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 1 | **WidgetKit** | 홈화면/잠금화면 위젯 | [날씨 위젯](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [튜토리얼](https://m1zz.github.io/HIGLab/widgets/documentation/higwidgets/) | ✅ |
-| 2 | **ActivityKit** | Live Activities, Dynamic Island | [배달 추적](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [튜토리얼](https://m1zz.github.io/HIGLab/activitykit/documentation/higactivitykit/) | ✅ |
-| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | [Siri 앱](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/appintents/documentation/higappintents/) | ✅ |
-| 4 | **SwiftUI** | 선언적 UI 프레임워크 | [블로그](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/swiftui/documentation/higswiftui/) | ✅ |
-| 5 | **SwiftData** | 현대적 데이터 저장 | [블로그](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/swiftdata/documentation/higswiftdata/) | ✅ |
-| 6 | **Observation** | @Observable 상태관리 | [블로그](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/observation/documentation/higobservation/) | ✅ |
-| 7 | 🆕 **Foundation Models** | 온디바이스 LLM (iOS 26) | [AI 챗봇](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [튜토리얼](https://m1zz.github.io/HIGLab/foundationmodels/documentation/higfoundationmodels/) | ✅ |
+| 1 | **WidgetKit** | 홈화면/잠금화면 위젯 | [날씨 위젯](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/) | ✅ |
+| 2 | **ActivityKit** | Live Activities, Dynamic Island | [배달 추적](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | ✅ |
+| 3 | **App Intents** | Siri, 단축어, 위젯 통합 | [Siri 앱](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | ✅ |
+| 4 | **SwiftUI** | 선언적 UI 프레임워크 | [블로그](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/swiftui/documentation/higswiftui/) | ✅ |
+| 5 | **SwiftData** | 현대적 데이터 저장 | [블로그](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/swiftdata/documentation/higswiftdata/) | ✅ |
+| 6 | **Observation** | @Observable 상태관리 | [블로그](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/observation/documentation/higobservation/) | ✅ |
+| 7 | 🆕 **Foundation Models** | 온디바이스 LLM (iOS 26) | [AI 챗봇](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | ✅ |
 
 ### 💳 Phase 2: App Services (서비스 통합)
 > 앱의 기능을 시스템과 클라우드로 확장
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 8 | **StoreKit 2** | 인앱결제, 구독 | [구독 앱](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/storekit/documentation/higstorekit/) | ✅ |
+| 8 | **StoreKit 2** | 인앱결제, 구독 | [구독 앱](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ✅ |
 | 9 | **PassKit** | Apple Pay, Wallet | [블로그](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/passkit/documentation/higpasskit/) | ✅ |
 | 10 | **CloudKit** | iCloud 데이터 동기화 | [블로그](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/cloudkit/documentation/higcloudkit/) | ✅ |
 | 11 | **Authentication Services** | Sign in with Apple | [블로그](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/authservices/documentation/higauthservices/) | ✅ |
@@ -70,7 +70,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 21 | **ARKit** | 증강현실 | [AR 가구 배치](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/arkit/documentation/higarkit/) | ✅ |
+| 21 | **ARKit** | 증강현실 | [AR 가구 배치](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | ✅ |
 | 22 | **RealityKit** | 3D 렌더링 | [블로그](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/realitykit/documentation/higrealitykit/) | ✅ |
 | 23 | **SpriteKit** | 2D 게임 엔진 | [블로그](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/spritekit/documentation/higspritekit/) | ✅ |
 | 24 | **Core Image** | 이미지 필터 | [블로그](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/coreimage/documentation/higcoreimage/) | ✅ |
@@ -89,7 +89,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | # | Technology | 설명 | 블로그 | DocC | 상태 |
 |---|-----------|------|--------|------|------|
-| 34 | **Core Bluetooth** | BLE 기기 연결 | [BLE 스캐너](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [튜토리얼](https://m1zz.github.io/HIGLab/bluetooth/documentation/higbluetooth/) | ✅ |
+| 34 | **Core Bluetooth** | BLE 기기 연결 | [BLE 스캐너](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [튜토리얼](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ✅ |
 | 35 | **Core NFC** | NFC 태그 읽기/쓰기 | [블로그](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/corenfc/documentation/higcorenfc/) | ✅ |
 | 36 | **MultipeerConnectivity** | P2P 통신 | [블로그](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/multipeer/documentation/higmultipeer/) | ✅ |
 | 37 | **Network** | TCP/UDP/QUIC | [블로그](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | [튜토리얼](https://m1zz.github.io/HIGLab/network/documentation/hignetwork/) | ✅ |
