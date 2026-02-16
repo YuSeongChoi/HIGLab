@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 1/50 | 4개 | 45개 | 2% |
+| 📝 블로그 | 5/50 | - | 45개 | 10% ✅ |
 | 📚 DocC | 7/50 | - | 43개 | 14% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 1개 (WidgetKit) · 🔄 작업 중 4개 (ActivityKit, AppIntents, StoreKit, FoundationModels) · ⬜ 미완성 45개
+> **블로그 상태**: ✅ 완성 5개 (WidgetKit, ActivityKit, AppIntents, StoreKit, FoundationModels) · ⬜ 미완성 45개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -40,18 +40,18 @@ WidgetKit
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
 | 1 | **WidgetKit** | [✅](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/) | [✅](samples/WeatherWidget/) |
-| 2 | **ActivityKit** | [🔄](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | ⬜ |
-| 3 | **App Intents** | [🔄](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | ⬜ |
+| 2 | **ActivityKit** | [✅](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | ⬜ |
+| 3 | **App Intents** | [✅](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | ⬜ |
 | 4 | **SwiftUI** | [⬜](https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html) | ⬜ | ⬜ |
 | 5 | **SwiftData** | [⬜](https://m1zz.github.io/HIGLab/swiftdata/01-tutorial.html) | ⬜ | ⬜ |
 | 6 | **Observation** | [⬜](https://m1zz.github.io/HIGLab/observation/01-tutorial.html) | ⬜ | ⬜ |
-| 7 | 🆕 **Foundation Models** | [🔄](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | ⬜ |
+| 7 | 🆕 **Foundation Models** | [✅](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | ⬜ |
 
 ### 💳 Phase 2: App Services (서비스 통합)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 8 | **StoreKit 2** | [🔄](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ⬜ |
+| 8 | **StoreKit 2** | [✅](https://m1zz.github.io/HIGLab/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | ⬜ |
 | 9 | **PassKit** | [⬜](https://m1zz.github.io/HIGLab/passkit/01-tutorial.html) | ⬜ | ⬜ |
 | 10 | **CloudKit** | [⬜](https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
 | 11 | **Authentication Services** | [⬜](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html) | ⬜ | ⬜ |
