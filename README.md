@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 28/50 | - | 22개 | 56% ✅ |
+| 📝 블로그 | 33/50 | - | 17개 | 66% ✅ |
 | 📚 DocC | 6/50 | - | 44개 | 12% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 28개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit) · ⬜ 미완성 22개
+> **블로그 상태**: ✅ 완성 33개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit, MusicKit, PhotosUI, CoreHaptics, ShazamKit, ImagePlayground) · ⬜ 미완성 17개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -77,11 +77,11 @@ WidgetKit
 | 26 | **PDFKit** | [✅](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
 | 27 | **AVFoundation** | [✅](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
 | 28 | **AVKit** | [✅](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
-| 29 | **MusicKit** | [⬜](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
-| 30 | **PhotosUI** | [⬜](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
-| 31 | **Core Haptics** | [⬜](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
-| 32 | **ShazamKit** | [⬜](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | ⬜ | ⬜ |
-| 33 | 🆕 **Image Playground** | [⬜](https://m1zz.github.io/HIGLab/imageplayground/01-tutorial.html) | ⬜ | ⬜ |
+| 29 | **MusicKit** | [✅](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
+| 30 | **PhotosUI** | [✅](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
+| 31 | **Core Haptics** | [✅](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
+| 32 | **ShazamKit** | [✅](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html) | ⬜ | ⬜ |
+| 33 | 🆕 **Image Playground** | [✅](https://m1zz.github.io/HIGLab/imageplayground/01-tutorial.html) | ⬜ | ⬜ |
 
 ### 🔧 Phase 4: System (시스템/네트워크)
 
