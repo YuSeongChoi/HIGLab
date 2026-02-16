@@ -37,19 +37,19 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 1 | **WidgetKit** | [✅](site/widgets/01-weather-widget-challenge.html) | [✅](tutorials/widgets/) | [✅](samples/WeatherWidget/) |
-| 2 | **ActivityKit** | [✅](site/activitykit/01-delivery-tracker.html) | [✅](tutorials/activitykit/) | [✅](samples/DeliveryTracker/) |
-| 3 | **App Intents** | [✅](site/appintents/01-siri-todo-app.html) | [✅](tutorials/appintents/) | [✅](samples/SiriTodo/) |
+| 1 | **WidgetKit** | [✅](site/widgets/01-weather-widget-challenge.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/) | [✅](samples/WeatherWidget/) |
+| 2 | **ActivityKit** | [✅](site/activitykit/01-delivery-tracker.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/) | [✅](samples/DeliveryTracker/) |
+| 3 | **App Intents** | [✅](site/appintents/01-siri-todo-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/) | [✅](samples/SiriTodo/) |
 | 4 | **SwiftUI** | [✅](site/swiftui/01-tutorial.html) | ⬜ | ⬜ |
 | 5 | **SwiftData** | [✅](site/swiftdata/01-tutorial.html) | ⬜ | ⬜ |
 | 6 | **Observation** | [✅](site/observation/01-tutorial.html) | ⬜ | ⬜ |
-| 7 | 🆕 **Foundation Models** | [✅](site/foundationmodels/01-ai-chatbot.html) | [✅](tutorials/foundationmodels/) | [✅](samples/AIChatbot/) |
+| 7 | 🆕 **Foundation Models** | [✅](site/foundationmodels/01-ai-chatbot.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/) | [✅](samples/AIChatbot/) |
 
 ### 💳 Phase 2: App Services (서비스 통합)
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 8 | **StoreKit 2** | [✅](site/storekit/01-subscription-app.html) | [✅](tutorials/storekit/) | [✅](samples/SubscriptionApp/) |
+| 8 | **StoreKit 2** | [✅](site/storekit/01-subscription-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/) | [✅](samples/SubscriptionApp/) |
 | 9 | **PassKit** | [✅](site/passkit/01-tutorial.html) | ⬜ | ⬜ |
 | 10 | **CloudKit** | [✅](site/cloudkit/01-tutorial.html) | ⬜ | ⬜ |
 | 11 | **Authentication Services** | [✅](site/authservices/01-tutorial.html) | ⬜ | ⬜ |
@@ -67,7 +67,7 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 21 | **ARKit** | [✅](site/arkit/01-ar-furniture-app.html) | [✅](tutorials/arkit/) | [✅](samples/ARFurniture/) |
+| 21 | **ARKit** | [✅](site/arkit/01-ar-furniture-app.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/) | [✅](samples/ARFurniture/) |
 | 22 | **RealityKit** | [✅](site/realitykit/01-tutorial.html) | ⬜ | ⬜ |
 | 23 | **SpriteKit** | [✅](site/spritekit/01-tutorial.html) | ⬜ | ⬜ |
 | 24 | **Core Image** | [✅](site/coreimage/01-tutorial.html) | ⬜ | ⬜ |
@@ -85,7 +85,7 @@ WidgetKit, ActivityKit, App Intents, StoreKit 2, ARKit, Core Bluetooth, Foundati
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 34 | **Core Bluetooth** | [✅](site/bluetooth/01-ble-device-scanner.html) | [✅](tutorials/bluetooth/) | [✅](samples/BLEScanner/) |
+| 34 | **Core Bluetooth** | [✅](site/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | [✅](samples/BLEScanner/) |
 | 35 | **Core NFC** | [✅](site/corenfc/01-tutorial.html) | ⬜ | ⬜ |
 | 36 | **MultipeerConnectivity** | [✅](site/multipeer/01-tutorial.html) | ⬜ | ⬜ |
 | 37 | **Network** | [✅](site/network/01-tutorial.html) | ⬜ | ⬜ |
