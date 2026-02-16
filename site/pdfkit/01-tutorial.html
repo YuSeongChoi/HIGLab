@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>📄 PDF 뷰어 — HIG Lab</title>
+<title>📄 PDFKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
@@ -13,19 +13,715 @@ h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spac
 h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
 .subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
 .code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
 pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
-.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
 </style></head>
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a></div></div>
 <article>
-<h1>📄 PDF 뷰어</h1>
-<p class="subtitle">PDFKit 문서 앱</p>
-<h2>✨ 개요</h2>
-<p>이 튜토리얼에서는 PDF 뷰어의 핵심 개념과 실전 사용법을 배웁니다.</p>
-<h2>🚀 시작하기</h2>
-<p>DocC 튜토리얼과 샘플 코드를 통해 직접 실습해보세요.</p>
-<div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">Framework</span>
-<span class="comment">// 곧 업데이트 예정!</span></pre></div>
+<h1>📄 PDFKit</h1>
+<p class="subtitle">PDF 표시, 주석, 검색, 생성을 위한 완전한 솔루션</p>
+
+<div><span class="badge ios">iOS 11+</span><span class="badge new">macOS 지원</span></div>
+
+<h2>✨ PDFKit이란?</h2>
+<p>PDFKit은 PDF 문서를 표시, 편집, 생성할 수 있는 강력한 프레임워크입니다. 페이지 네비게이션, 확대/축소, 검색, 주석 추가, 썸네일 표시 등 PDF 작업에 필요한 모든 기능을 제공합니다. SwiftUI와 UIKit 모두에서 사용할 수 있으며, 문서 뷰어 앱, 전자책 리더, 주석 도구 등을 만들 때 필수적입니다.</p>
+
+<div class="info-box">
+<strong>💡 핵심 기능:</strong> PDF 표시 · 페이지 네비게이션 · 검색 · 주석 추가 · 썸네일 · PDF 생성 · 텍스트 선택 · 확대/축소 · 북마크
+</div>
+
+<h2>🎯 1. PDF 표시 기본</h2>
+<p>PDFView를 사용하여 PDF 문서를 표시합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFViewerView.swift — 기본 PDF 뷰어</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">struct</span> <span class="type">PDFViewerView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> pdfURL: <span class="type">URL</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">PDFKitView</span>(url: pdfURL)
+            .ignoresSafeArea()
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PDFKitView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PDFView</span> {
+        <span class="kw">let</span> pdfView = <span class="type">PDFView</span>()
+
+        <span class="comment">// PDF 문서 로드</span>
+        <span class="kw">if</span> <span class="kw">let</span> document = <span class="type">PDFDocument</span>(url: url) {
+            pdfView.document = document
+        }
+
+        <span class="comment">// 기본 설정</span>
+        pdfView.autoScales = <span class="kw">true</span>
+        pdfView.displayMode = .singlePageContinuous
+        pdfView.displayDirection = .vertical
+
+        <span class="kw">return</span> pdfView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PDFView</span>, context: <span class="type">Context</span>) {}
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="kw">if</span> <span class="kw">let</span> url = <span class="type">Bundle</span>.main.url(forResource: <span class="str">"sample"</span>, withExtension: <span class="str">"pdf"</span>) {
+            <span class="type">PDFViewerView</span>(pdfURL: url)
+        }
+    }
+}</pre>
+</div>
+
+<h2>📑 2. 페이지 네비게이션</h2>
+<p>PDF 페이지 간 이동과 썸네일 표시를 구현합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFNavigationView.swift — 페이지 네비게이션</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">struct</span> <span class="type">PDFNavigationView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> pdfView = <span class="type">PDFView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> currentPage: <span class="type">Int</span> = <span class="str">1</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> totalPages: <span class="type">Int</span> = <span class="str">0</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showThumbnails = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">0</span>) {
+                <span class="type">PDFViewWrapper</span>(
+                    pdfView: $pdfView,
+                    url: url,
+                    currentPage: $currentPage,
+                    totalPages: $totalPages
+                )
+
+                <span class="comment">// 페이지 컨트롤</span>
+                <span class="type">HStack</span> {
+                    <span class="type">Button</span> {
+                        goToPreviousPage()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"chevron.left"</span>)
+                    }
+                    .disabled(currentPage <= <span class="str">1</span>)
+
+                    <span class="type">Text</span>(<span class="str">"\(currentPage) / \(totalPages)"</span>)
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity)
+
+                    <span class="type">Button</span> {
+                        goToNextPage()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"chevron.right"</span>)
+                    }
+                    .disabled(currentPage >= totalPages)
+                }
+                .padding()
+                .background(<span class="type">Color</span>(uiColor: .systemBackground))
+                .border(<span class="type">Color</span>.gray.opacity(<span class="str">0.2</span>), width: <span class="str">1</span>)
+            }
+            .navigationTitle(<span class="str">"PDF 뷰어"</span>)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .topBarTrailing) {
+                    <span class="type">Button</span> {
+                        showThumbnails.toggle()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"square.grid.2x2"</span>)
+                    }
+                }
+            }
+            .sheet(isPresented: $showThumbnails) {
+                <span class="type">PDFThumbnailView</span>(pdfView: pdfView)
+            }
+        }
+    }
+
+    <span class="kw">func</span> goToPreviousPage() {
+        <span class="kw">guard</span> <span class="kw">let</span> currentPage = pdfView.currentPage,
+              <span class="kw">let</span> previousPage = pdfView.document?.page(at: currentPage.pageRef!.pageNumber - <span class="str">2</span>)
+        <span class="kw">else</span> { <span class="kw">return</span> }
+        pdfView.go(to: previousPage)
+    }
+
+    <span class="kw">func</span> goToNextPage() {
+        <span class="kw">guard</span> <span class="kw">let</span> currentPage = pdfView.currentPage,
+              <span class="kw">let</span> nextPage = pdfView.document?.page(at: currentPage.pageRef!.pageNumber)
+        <span class="kw">else</span> { <span class="kw">return</span> }
+        pdfView.go(to: nextPage)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PDFViewWrapper</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> pdfView: <span class="type">PDFView</span>
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@Binding</span> <span class="kw">var</span> currentPage: <span class="type">Int</span>
+    <span class="kw">@Binding</span> <span class="kw">var</span> totalPages: <span class="type">Int</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PDFView</span> {
+        <span class="kw">let</span> document = <span class="type">PDFDocument</span>(url: url)
+        pdfView.document = document
+        totalPages = document?.pageCount ?? <span class="str">0</span>
+
+        <span class="comment">// 페이지 변경 감지</span>
+        <span class="type">NotificationCenter</span>.default.addObserver(
+            forName: .PDFViewPageChanged,
+            object: pdfView,
+            queue: .main
+        ) { <span class="kw">_</span> <span class="kw">in</span>
+            updateCurrentPage()
+        }
+
+        <span class="kw">return</span> pdfView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PDFView</span>, context: <span class="type">Context</span>) {}
+
+    <span class="kw">func</span> updateCurrentPage() {
+        <span class="kw">if</span> <span class="kw">let</span> page = pdfView.currentPage,
+           <span class="kw">let</span> index = pdfView.document?.index(for: page) {
+            currentPage = index + <span class="str">1</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>🔍 3. PDF 검색</h2>
+<p>PDF 문서 내에서 텍스트를 검색합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFSearchView.swift — 텍스트 검색</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PDFSearchManager</span> {
+    <span class="kw">var</span> searchResults: [<span class="type">PDFSelection</span>] = []
+    <span class="kw">var</span> currentResultIndex: <span class="type">Int</span> = <span class="str">0</span>
+
+    <span class="kw">func</span> search(query: <span class="type">String</span>, in document: <span class="type">PDFDocument</span>?) {
+        searchResults.removeAll()
+
+        <span class="kw">guard</span> <span class="kw">let</span> document = document, !query.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 전체 문서 검색</span>
+        document.beginFindString(query, withOptions: .caseInsensitive)
+
+        <span class="comment">// 검색 결과 수집</span>
+        <span class="type">NotificationCenter</span>.default.addObserver(
+            forName: .PDFDocumentDidFindMatch,
+            object: document,
+            queue: .main
+        ) { notification <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> selection = notification.userInfo?[<span class="str">"PDFDocumentFoundSelection"</span>] <span class="kw">as</span>? <span class="type">PDFSelection</span> {
+                <span class="kw">self</span>.searchResults.append(selection)
+            }
+        }
+    }
+
+    <span class="kw">func</span> goToResult(at index: <span class="type">Int</span>, in pdfView: <span class="type">PDFView</span>) {
+        <span class="kw">guard</span> index >= <span class="str">0</span> && index < searchResults.count <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> selection = searchResults[index]
+        pdfView.setCurrentSelection(selection, animate: <span class="kw">true</span>)
+        pdfView.go(to: selection)
+        currentResultIndex = index
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PDFSearchView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> pdfView = <span class="type">PDFView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> searchManager = <span class="type">PDFSearchManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> searchQuery = <span class="str">""</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> isSearching = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 검색 바</span>
+            <span class="type">HStack</span> {
+                <span class="type">TextField</span>(<span class="str">"검색..."</span>, text: $searchQuery)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit {
+                        performSearch()
+                    }
+
+                <span class="type">Button</span>(<span class="str">"검색"</span>) {
+                    performSearch()
+                }
+            }
+            .padding()
+
+            <span class="comment">// 검색 결과</span>
+            <span class="kw">if</span> !searchManager.searchResults.isEmpty {
+                <span class="type">HStack</span> {
+                    <span class="type">Button</span> {
+                        navigateToPrevious()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"chevron.up"</span>)
+                    }
+
+                    <span class="type">Text</span>(<span class="str">"\(searchManager.currentResultIndex + 1) / \(searchManager.searchResults.count)"</span>)
+                        .font(.caption)
+
+                    <span class="type">Button</span> {
+                        navigateToNext()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"chevron.down"</span>)
+                    }
+                }
+                .padding(.horizontal)
+            }
+
+            <span class="comment">// PDF 뷰</span>
+            <span class="type">PDFKitView</span>(url: url)
+                .onAppear {
+                    <span class="kw">if</span> <span class="kw">let</span> document = <span class="type">PDFDocument</span>(url: url) {
+                        pdfView.document = document
+                    }
+                }
+        }
+    }
+
+    <span class="kw">func</span> performSearch() {
+        searchManager.search(query: searchQuery, in: pdfView.document)
+        <span class="kw">if</span> !searchManager.searchResults.isEmpty {
+            searchManager.goToResult(at: <span class="str">0</span>, in: pdfView)
+        }
+    }
+
+    <span class="kw">func</span> navigateToNext() {
+        <span class="kw">let</span> nextIndex = (searchManager.currentResultIndex + <span class="str">1</span>) % searchManager.searchResults.count
+        searchManager.goToResult(at: nextIndex, in: pdfView)
+    }
+
+    <span class="kw">func</span> navigateToPrevious() {
+        <span class="kw">let</span> prevIndex = (searchManager.currentResultIndex - <span class="str">1</span> + searchManager.searchResults.count) % searchManager.searchResults.count
+        searchManager.goToResult(at: prevIndex, in: pdfView)
+    }
+}</pre>
+</div>
+
+<h2>✏️ 4. PDF 주석</h2>
+<p>PDF에 하이라이트, 노트, 그림 등의 주석을 추가합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFAnnotationView.swift — 주석 추가</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">struct</span> <span class="type">PDFAnnotationView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> pdfView = <span class="type">PDFView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedTool: <span class="type">AnnotationTool</span> = .none
+
+    <span class="kw">enum</span> <span class="type">AnnotationTool</span> {
+        <span class="kw">case</span> none, highlight, note, freeText
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 주석 툴바</span>
+            <span class="type">HStack</span> {
+                <span class="type">Button</span> {
+                    selectedTool = .highlight
+                    addHighlight()
+                } label: {
+                    <span class="type">Label</span>(<span class="str">"하이라이트"</span>, systemImage: <span class="str">"highlighter"</span>)
+                }
+
+                <span class="type">Button</span> {
+                    selectedTool = .note
+                    addNote()
+                } label: {
+                    <span class="type">Label</span>(<span class="str">"노트"</span>, systemImage: <span class="str">"note.text"</span>)
+                }
+
+                <span class="type">Button</span> {
+                    selectedTool = .freeText
+                    addFreeText()
+                } label: {
+                    <span class="type">Label</span>(<span class="str">"텍스트"</span>, systemImage: <span class="str">"text.cursor"</span>)
+                }
+
+                <span class="type">Spacer</span>()
+
+                <span class="type">Button</span> {
+                    savePDF()
+                } label: {
+                    <span class="type">Label</span>(<span class="str">"저장"</span>, systemImage: <span class="str">"square.and.arrow.down"</span>)
+                }
+            }
+            .padding()
+            .background(<span class="type">Color</span>(uiColor: .systemBackground))
+
+            <span class="comment">// PDF 뷰</span>
+            <span class="type">PDFAnnotatableView</span>(pdfView: $pdfView, url: url)
+        }
+    }
+
+    <span class="kw">func</span> addHighlight() {
+        <span class="kw">guard</span> <span class="kw">let</span> selection = pdfView.currentSelection,
+              <span class="kw">let</span> page = selection.pages.first
+        <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 하이라이트 주석 생성</span>
+        <span class="kw">let</span> highlight = <span class="type">PDFAnnotation</span>(
+            bounds: selection.bounds(for: page),
+            forType: .highlight,
+            withProperties: <span class="kw">nil</span>
+        )
+        highlight.color = .<span class="type">UIColor</span>.yellow.withAlphaComponent(<span class="str">0.5</span>)
+
+        page.addAnnotation(highlight)
+    }
+
+    <span class="kw">func</span> addNote() {
+        <span class="kw">guard</span> <span class="kw">let</span> page = pdfView.currentPage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 노트 주석 생성</span>
+        <span class="kw">let</span> bounds = <span class="type">CGRect</span>(x: <span class="str">100</span>, y: <span class="str">100</span>, width: <span class="str">20</span>, height: <span class="str">20</span>)
+        <span class="kw">let</span> note = <span class="type">PDFAnnotation</span>(bounds: bounds, forType: .text, withProperties: <span class="kw">nil</span>)
+        note.contents = <span class="str">"새 노트"</span>
+        note.color = .<span class="type">UIColor</span>.yellow
+
+        page.addAnnotation(note)
+    }
+
+    <span class="kw">func</span> addFreeText() {
+        <span class="kw">guard</span> <span class="kw">let</span> page = pdfView.currentPage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 자유 텍스트 주석</span>
+        <span class="kw">let</span> bounds = <span class="type">CGRect</span>(x: <span class="str">100</span>, y: <span class="str">200</span>, width: <span class="str">200</span>, height: <span class="str">50</span>)
+        <span class="kw">let</span> freeText = <span class="type">PDFAnnotation</span>(bounds: bounds, forType: .freeText, withProperties: <span class="kw">nil</span>)
+        freeText.contents = <span class="str">"텍스트 입력"</span>
+        freeText.font = <span class="type">UIFont</span>.systemFont(ofSize: <span class="str">14</span>)
+        freeText.fontColor = .<span class="type">UIColor</span>.black
+
+        page.addAnnotation(freeText)
+    }
+
+    <span class="kw">func</span> savePDF() {
+        <span class="kw">guard</span> <span class="kw">let</span> document = pdfView.document <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 문서에 주석 저장</span>
+        <span class="kw">let</span> data = document.dataRepresentation()
+        <span class="comment">// data를 파일로 저장하거나 공유</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PDFAnnotatableView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> pdfView: <span class="type">PDFView</span>
+    <span class="kw">let</span> url: <span class="type">URL</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PDFView</span> {
+        pdfView.document = <span class="type">PDFDocument</span>(url: url)
+        pdfView.autoScales = <span class="kw">true</span>
+
+        <span class="comment">// 주석 편집 가능하도록 설정</span>
+        pdfView.displayMode = .singlePage
+
+        <span class="kw">return</span> pdfView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PDFView</span>, context: <span class="type">Context</span>) {}
+}</pre>
+</div>
+
+<h2>🖼️ 5. PDF 썸네일</h2>
+<p>PDFThumbnailView를 사용하여 페이지 썸네일을 표시합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFThumbnailView.swift — 썸네일 뷰</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">struct</span> <span class="type">PDFThumbnailView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> pdfView: <span class="type">PDFView</span>
+    <span class="kw">@Environment</span>(\.<span class="kw">dismiss</span>) <span class="kw">var</span> dismiss
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">ThumbnailViewWrapper</span>(pdfView: pdfView)
+                .navigationTitle(<span class="str">"페이지"</span>)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
+                        <span class="type">Button</span>(<span class="str">"닫기"</span>) {
+                            dismiss()
+                        }
+                    }
+                }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ThumbnailViewWrapper</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> pdfView: <span class="type">PDFView</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PDFThumbnailView</span> {
+        <span class="kw">let</span> thumbnailView = <span class="type">PDFThumbnailView</span>()
+        thumbnailView.pdfView = pdfView
+        thumbnailView.layoutMode = .vertical
+        thumbnailView.thumbnailSize = <span class="type">CGSize</span>(width: <span class="str">100</span>, height: <span class="str">150</span>)
+        thumbnailView.backgroundColor = .<span class="type">UIColor</span>.systemBackground
+
+        <span class="kw">return</span> thumbnailView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PDFThumbnailView</span>, context: <span class="type">Context</span>) {}
+}</pre>
+</div>
+
+<h2>📝 6. PDF 생성</h2>
+<p>코드로 새로운 PDF 문서를 생성합니다.</p>
+
+<div class="code-block">
+<div class="code-header">PDFGenerator.swift — PDF 생성</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PDFKit</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">class</span> <span class="type">PDFGenerator</span> {
+    <span class="comment">// 텍스트로 PDF 생성</span>
+    <span class="kw">func</span> generatePDF(from text: <span class="type">String</span>) -> <span class="type">PDFDocument</span>? {
+        <span class="kw">let</span> pdfMetaData = [
+            kCGPDFContextCreator: <span class="str">"MyApp"</span>,
+            kCGPDFContextAuthor: <span class="str">"Author Name"</span>,
+            kCGPDFContextTitle: <span class="str">"Generated PDF"</span>
+        ]
+
+        <span class="kw">let</span> format = <span class="type">UIGraphicsPDFRendererFormat</span>()
+        format.documentInfo = pdfMetaData <span class="kw">as</span> [<span class="type">String</span>: <span class="type">Any</span>]
+
+        <span class="kw">let</span> pageRect = <span class="type">CGRect</span>(x: <span class="str">0</span>, y: <span class="str">0</span>, width: <span class="str">612</span>, height: <span class="str">792</span>) <span class="comment">// US Letter</span>
+        <span class="kw">let</span> renderer = <span class="type">UIGraphicsPDFRenderer</span>(bounds: pageRect, format: format)
+
+        <span class="kw">let</span> data = renderer.pdfData { context <span class="kw">in</span>
+            context.beginPage()
+
+            <span class="comment">// 텍스트 그리기</span>
+            <span class="kw">let</span> paragraphStyle = <span class="type">NSMutableParagraphStyle</span>()
+            paragraphStyle.alignment = .natural
+            paragraphStyle.lineBreakMode = .byWordWrapping
+
+            <span class="kw">let</span> attributes: [<span class="type">NSAttributedString</span>.<span class="type">Key</span>: <span class="type">Any</span>] = [
+                .font: <span class="type">UIFont</span>.systemFont(ofSize: <span class="str">14</span>),
+                .paragraphStyle: paragraphStyle
+            ]
+
+            <span class="kw">let</span> textRect = <span class="type">CGRect</span>(x: <span class="str">40</span>, y: <span class="str">40</span>, width: pageRect.width - <span class="str">80</span>, height: pageRect.height - <span class="str">80</span>)
+            text.draw(in: textRect, withAttributes: attributes)
+        }
+
+        <span class="kw">return</span> <span class="type">PDFDocument</span>(data: data)
+    }
+
+    <span class="comment">// 이미지로 PDF 생성</span>
+    <span class="kw">func</span> generatePDF(from images: [<span class="type">UIImage</span>]) -> <span class="type">PDFDocument</span>? {
+        <span class="kw">let</span> pdfDocument = <span class="type">PDFDocument</span>()
+
+        <span class="kw">for</span> (index, image) <span class="kw">in</span> images.enumerated() {
+            <span class="kw">let</span> pageRect = <span class="type">CGRect</span>(origin: .zero, size: image.size)
+
+            <span class="kw">let</span> renderer = <span class="type">UIGraphicsPDFRenderer</span>(bounds: pageRect)
+            <span class="kw">let</span> data = renderer.pdfData { context <span class="kw">in</span>
+                context.beginPage()
+                image.draw(in: pageRect)
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> page = <span class="type">PDFPage</span>(image: image) {
+                pdfDocument.insert(page, at: index)
+            }
+        }
+
+        <span class="kw">return</span> pdfDocument
+    }
+
+    <span class="comment">// SwiftUI View를 PDF로 변환</span>
+    <span class="kw">func</span> generatePDF(from view: <span class="type">UIView</span>) -> <span class="type">PDFDocument</span>? {
+        <span class="kw">let</span> renderer = <span class="type">UIGraphicsPDFRenderer</span>(bounds: view.bounds)
+
+        <span class="kw">let</span> data = renderer.pdfData { context <span class="kw">in</span>
+            context.beginPage()
+            view.layer.render(in: context.cgContext)
+        }
+
+        <span class="kw">return</span> <span class="type">PDFDocument</span>(data: data)
+    }
+
+    <span class="comment">// PDF 저장</span>
+    <span class="kw">func</span> savePDF(<span class="kw">_</span> document: <span class="type">PDFDocument</span>, to url: <span class="type">URL</span>) -> <span class="type">Bool</span> {
+        <span class="kw">return</span> document.write(to: url)
+    }
+}</pre>
+</div>
+
+<h2>📱 종합 예제</h2>
+
+<div class="code-block">
+<div class="code-header">PDFReaderApp.swift — PDF 리더 앱</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PDFKit</span>
+
+<span class="kw">struct</span> <span class="type">PDFReaderApp</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> pdfView = <span class="type">PDFView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showSearch = <span class="kw">false</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showThumbnails = <span class="kw">false</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> displayMode: <span class="type">PDFDisplayMode</span> = .singlePageContinuous
+    <span class="kw">let</span> url: <span class="type">URL</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">ZStack</span> {
+                <span class="type">PDFReaderView</span>(
+                    pdfView: $pdfView,
+                    url: url,
+                    displayMode: displayMode
+                )
+
+                <span class="kw">if</span> showSearch {
+                    <span class="type">SearchOverlay</span>(pdfView: pdfView, isPresented: $showSearch)
+                }
+            }
+            .navigationTitle(<span class="str">"PDF"</span>)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                <span class="type">ToolbarItemGroup</span>(placement: .topBarTrailing) {
+                    <span class="type">Button</span> {
+                        showSearch.toggle()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"magnifyingglass"</span>)
+                    }
+
+                    <span class="type">Button</span> {
+                        showThumbnails = <span class="kw">true</span>
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"square.grid.2x2"</span>)
+                    }
+
+                    <span class="type">Menu</span> {
+                        <span class="type">Button</span>(<span class="str">"단일 페이지"</span>) {
+                            displayMode = .singlePage
+                            updateDisplayMode()
+                        }
+                        <span class="type">Button</span>(<span class="str">"연속 스크롤"</span>) {
+                            displayMode = .singlePageContinuous
+                            updateDisplayMode()
+                        }
+                        <span class="type">Button</span>(<span class="str">"두 페이지"</span>) {
+                            displayMode = .twoUp
+                            updateDisplayMode()
+                        }
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"doc.text.viewfinder"</span>)
+                    }
+                }
+            }
+            .sheet(isPresented: $showThumbnails) {
+                <span class="type">PDFThumbnailView</span>(pdfView: pdfView)
+            }
+        }
+    }
+
+    <span class="kw">func</span> updateDisplayMode() {
+        pdfView.displayMode = displayMode
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PDFReaderView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> pdfView: <span class="type">PDFView</span>
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">let</span> displayMode: <span class="type">PDFDisplayMode</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PDFView</span> {
+        pdfView.document = <span class="type">PDFDocument</span>(url: url)
+        pdfView.autoScales = <span class="kw">true</span>
+        pdfView.displayMode = displayMode
+        pdfView.displayDirection = .vertical
+
+        <span class="kw">return</span> pdfView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PDFView</span>, context: <span class="type">Context</span>) {
+        uiView.displayMode = displayMode
+    }
+}
+
+<span class="kw">struct</span> <span class="type">SearchOverlay</span>: <span class="type">View</span> {
+    <span class="kw">let</span> pdfView: <span class="type">PDFView</span>
+    <span class="kw">@Binding</span> <span class="kw">var</span> isPresented: <span class="type">Bool</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> searchText = <span class="str">""</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">HStack</span> {
+                <span class="type">TextField</span>(<span class="str">"검색"</span>, text: $searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit {
+                        pdfView.document?.beginFindString(searchText, withOptions: .caseInsensitive)
+                    }
+
+                <span class="type">Button</span>(<span class="str">"닫기"</span>) {
+                    isPresented = <span class="kw">false</span>
+                    pdfView.document?.cancelFindString()
+                }
+            }
+            .padding()
+            .background(<span class="type">Color</span>(uiColor: .systemBackground))
+            .shadow(radius: <span class="str">5</span>)
+
+            <span class="type">Spacer</span>()
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG 가이드라인</h2>
+
+<ul>
+<li><strong>가독성:</strong> 자동 크기 조절(autoScales)로 읽기 편한 크기 제공</li>
+<li><strong>네비게이션:</strong> 명확한 페이지 표시 및 이동 컨트롤</li>
+<li><strong>검색:</strong> 빠른 텍스트 검색과 결과 하이라이팅</li>
+<li><strong>주석:</strong> 직관적인 주석 도구 제공</li>
+<li><strong>성능:</strong> 대용량 PDF는 페이지별 로딩 고려</li>
+<li><strong>접근성:</strong> VoiceOver 지원 및 텍스트 선택 가능</li>
+</ul>
+
+<h2>🎯 실전 활용</h2>
+
+<ul>
+<li><strong>문서 뷰어:</strong> 계약서, 보고서 열람 앱</li>
+<li><strong>전자책 리더:</strong> PDF 전자책 리더</li>
+<li><strong>주석 도구:</strong> 학습용 PDF 마킹 앱</li>
+<li><strong>리포트 생성:</strong> 데이터를 PDF 리포트로 변환</li>
+<li><strong>문서 서명:</strong> 전자 서명 추가 앱</li>
+</ul>
+
+<h2>📚 더 알아보기</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/pdfkit">PDFKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/pdfkit/pdfview">PDFView 레퍼런스</a></li>
+<li><a href="https://developer.apple.com/documentation/pdfkit/pdfdocument">PDFDocument 레퍼런스</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 성능 팁:</strong> 대용량 PDF는 <code>PDFView</code>의 <code>pageBreakMargins</code>와 <code>minScaleFactor/maxScaleFactor</code>를 조정하여 메모리 사용량을 최적화하세요. 썸네일은 백그라운드 스레드에서 생성하면 UI가 부드럽습니다.
+</div>
+
 </article>
 </body></html>

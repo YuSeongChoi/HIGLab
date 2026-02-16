@@ -20,11 +20,11 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
-| 📝 블로그 | 24/50 | - | 26개 | 48% ✅ |
+| 📝 블로그 | 28/50 | - | 22개 | 56% ✅ |
 | 📚 DocC | 6/50 | - | 44개 | 12% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
-> **블로그 상태**: ✅ 완성 24개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage) · ⬜ 미완성 26개
+> **블로그 상태**: ✅ 완성 28개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage, PencilKit, PDFKit, AVFoundation, AVKit) · ⬜ 미완성 22개
 
 ### 완성된 기술 (DocC + 블로그 + 샘플)
 WidgetKit
@@ -73,10 +73,10 @@ WidgetKit
 | 22 | **RealityKit** | [✅](https://m1zz.github.io/HIGLab/realitykit/01-tutorial.html) | ⬜ | ⬜ |
 | 23 | **SpriteKit** | [✅](https://m1zz.github.io/HIGLab/spritekit/01-tutorial.html) | ⬜ | ⬜ |
 | 24 | **Core Image** | [✅](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html) | ⬜ | ⬜ |
-| 25 | **PencilKit** | [⬜](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
-| 26 | **PDFKit** | [⬜](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
-| 27 | **AVFoundation** | [⬜](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
-| 28 | **AVKit** | [⬜](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
+| 25 | **PencilKit** | [✅](https://m1zz.github.io/HIGLab/pencilkit/01-tutorial.html) | ⬜ | ⬜ |
+| 26 | **PDFKit** | [✅](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html) | ⬜ | ⬜ |
+| 27 | **AVFoundation** | [✅](https://m1zz.github.io/HIGLab/avfoundation/01-tutorial.html) | ⬜ | ⬜ |
+| 28 | **AVKit** | [✅](https://m1zz.github.io/HIGLab/avkit/01-tutorial.html) | ⬜ | ⬜ |
 | 29 | **MusicKit** | [⬜](https://m1zz.github.io/HIGLab/musickit/01-tutorial.html) | ⬜ | ⬜ |
 | 30 | **PhotosUI** | [⬜](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html) | ⬜ | ⬜ |
 | 31 | **Core Haptics** | [⬜](https://m1zz.github.io/HIGLab/corehaptics/01-tutorial.html) | ⬜ | ⬜ |
