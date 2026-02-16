@@ -21,7 +21,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 | 구분 | 완료 | 작업 중 | 미완성 | 진행률 |
 |------|------|---------|--------|--------|
 | 📝 블로그 | 24/50 | - | 26개 | 48% ✅ |
-| 📚 DocC | 7/50 | - | 43개 | 14% |
+| 📚 DocC | 6/50 | - | 44개 | 12% |
 | 💻 샘플 | 1/50 | - | 49개 | 2% |
 
 > **블로그 상태**: ✅ 완성 24개 (WidgetKit, ActivityKit, AppIntents, SwiftUI, SwiftData, Observation, StoreKit, FoundationModels, PassKit, CloudKit, AuthServices, HealthKit, WeatherKit, MapKit, CoreLocation, CoreML, Vision, UserNotifications, TipKit, SharePlay, ARKit, RealityKit, SpriteKit, CoreImage) · ⬜ 미완성 26개
@@ -87,7 +87,7 @@ WidgetKit
 
 | # | Technology | 블로그 | DocC | 샘플 |
 |---|-----------|:------:|:----:|:----:|
-| 34 | **Core Bluetooth** | [⬜](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [✅](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
+| 34 | **Core Bluetooth** | [⬜](https://m1zz.github.io/HIGLab/bluetooth/01-ble-device-scanner.html) | [⬜](https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/) | ⬜ |
 | 35 | **Core NFC** | [⬜](https://m1zz.github.io/HIGLab/corenfc/01-tutorial.html) | ⬜ | ⬜ |
 | 36 | **MultipeerConnectivity** | [⬜](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html) | ⬜ | ⬜ |
 | 37 | **Network** | [⬜](https://m1zz.github.io/HIGLab/network/01-tutorial.html) | ⬜ | ⬜ |
