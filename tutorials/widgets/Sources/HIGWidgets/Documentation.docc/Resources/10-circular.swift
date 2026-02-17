@@ -79,5 +79,5 @@ struct CircularWeatherProgressView: View {
 #Preview("Circular", as: .accessoryCircular) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }

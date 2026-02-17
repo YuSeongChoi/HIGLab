@@ -2,23 +2,23 @@ import WidgetKit
 import SwiftUI
 
 // MARK: - Widget Entry
-struct WeatherEntry: TimelineEntry {
+struct CurrentWeatherEntry: TimelineEntry {
     let date: Date
     let weather: WeatherData
 }
 
 // MARK: - Timeline Provider
-struct WeatherProvider: TimelineProvider {
-    func placeholder(in context: Context) -> WeatherEntry {
-        WeatherEntry(date: .now, weather: .preview)
+struct CurrentWeatherProvider: TimelineProvider {
+    func placeholder(in context: Context) -> CurrentWeatherEntry {
+        CurrentWeatherEntry(date: .now, weather: .preview)
     }
     
-    func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> Void) {
-        completion(WeatherEntry(date: .now, weather: .preview))
+    func getSnapshot(in context: Context, completion: @escaping (CurrentWeatherEntry) -> Void) {
+        completion(CurrentWeatherEntry(date: .now, weather: .preview))
     }
     
-    func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherEntry>) -> Void) {
-        let entry = WeatherEntry(date: .now, weather: .preview)
+    func getTimeline(in context: Context, completion: @escaping (Timeline<CurrentWeatherEntry>) -> Void) {
+        let entry = CurrentWeatherEntry(date: .now, weather: .preview)
         let timeline = Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(900)))
         completion(timeline)
     }
@@ -26,7 +26,7 @@ struct WeatherProvider: TimelineProvider {
 
 // MARK: - Widget View
 struct WeatherWidgetEntryView: View {
-    let entry: WeatherEntry
+    let entry: CurrentWeatherEntry
     
     var body: some View {
         Text("날씨 위젯")
@@ -38,7 +38,7 @@ struct WeatherWidget: Widget {
     let kind = "WeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: CurrentWeatherProvider()) { entry in
             WeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("날씨")

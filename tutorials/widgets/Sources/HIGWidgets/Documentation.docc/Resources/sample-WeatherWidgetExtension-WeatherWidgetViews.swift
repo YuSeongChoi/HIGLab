@@ -260,7 +260,7 @@ struct RectangularWeatherView: View {
 
 struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
-    let entry: WeatherEntry
+    let entry: CurrentWeatherEntry
     
     var body: some View {
         switch family {
@@ -287,24 +287,24 @@ struct WeatherWidgetEntryView: View {
 #Preview("Small", as: .systemSmall) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
-    WeatherEntry(date: .now, weather: .rainyPreview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .rainyPreview)
 }
 
 #Preview("Medium", as: .systemMedium) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Large", as: .systemLarge) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Circular", as: .accessoryCircular) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }

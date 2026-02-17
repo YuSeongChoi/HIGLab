@@ -1,25 +1,25 @@
 import WidgetKit
 import SwiftUI
 
-struct WeatherProvider: TimelineProvider {
+struct CurrentWeatherProvider: TimelineProvider {
     
-    func placeholder(in context: Context) -> WeatherEntry {
-        WeatherEntry(date: .now, weather: .preview)
+    func placeholder(in context: Context) -> CurrentWeatherEntry {
+        CurrentWeatherEntry(date: .now, weather: .preview)
     }
     
-    func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> Void) {
-        completion(WeatherEntry(date: .now, weather: .preview))
+    func getSnapshot(in context: Context, completion: @escaping (CurrentWeatherEntry) -> Void) {
+        completion(CurrentWeatherEntry(date: .now, weather: .preview))
     }
     
     // MARK: - Timeline 생성
     // 시스템에 타임라인을 제공하면, 시스템이 적절한 시점에 위젯을 업데이트합니다.
-    func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherEntry>) -> Void) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<CurrentWeatherEntry>) -> Void) {
         Task {
             // 1. 날씨 데이터 가져오기
             let weather = await WeatherService.shared.fetchWeather()
             
             // 2. 현재 시점의 엔트리 생성
-            let entry = WeatherEntry(date: .now, weather: weather)
+            let entry = CurrentWeatherEntry(date: .now, weather: weather)
             
             // 3. 다음 갱신 시점 계산 (15분 후)
             let nextUpdate = Calendar.current.date(

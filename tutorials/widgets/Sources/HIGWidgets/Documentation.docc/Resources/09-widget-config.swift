@@ -13,7 +13,7 @@ struct WeatherWidget: Widget {
         AppIntentConfiguration(
             kind: kind,
             intent: SelectCityIntent.self,
-            provider: WeatherProvider()
+            provider: CurrentWeatherProvider()
         ) { entry in
             WeatherWidgetEntryView(entry: entry)
                 .containerBackground(for: .widget) {
@@ -38,24 +38,24 @@ struct WeatherWidget: Widget {
 // MARK: - Configurable Provider
 // AppIntentTimelineProvider로 설정을 받아 처리합니다.
 
-struct WeatherProvider: AppIntentTimelineProvider {
-    typealias Entry = WeatherEntry
+struct CurrentWeatherProvider: AppIntentTimelineProvider {
+    typealias Entry = CurrentWeatherEntry
     typealias Intent = SelectCityIntent
     
-    func placeholder(in context: Context) -> WeatherEntry {
-        WeatherEntry(date: .now, weather: .preview)
+    func placeholder(in context: Context) -> CurrentWeatherEntry {
+        CurrentWeatherEntry(date: .now, weather: .preview)
     }
     
-    func snapshot(for configuration: SelectCityIntent, in context: Context) async -> WeatherEntry {
+    func snapshot(for configuration: SelectCityIntent, in context: Context) async -> CurrentWeatherEntry {
         let weather = await WeatherService.shared.fetchWeather(for: configuration.city)
-        return WeatherEntry(date: .now, weather: weather, configuration: configuration)
+        return CurrentWeatherEntry(date: .now, weather: weather, configuration: configuration)
     }
     
-    func timeline(for configuration: SelectCityIntent, in context: Context) async -> Timeline<WeatherEntry> {
+    func timeline(for configuration: SelectCityIntent, in context: Context) async -> Timeline<CurrentWeatherEntry> {
         // 설정된 도시의 날씨 가져오기
         let weather = await WeatherService.shared.fetchWeather(for: configuration.city)
         
-        let entry = WeatherEntry(
+        let entry = CurrentWeatherEntry(
             date: .now,
             weather: weather,
             configuration: configuration
@@ -71,7 +71,7 @@ struct WeatherProvider: AppIntentTimelineProvider {
 // MARK: - Entry View with Configuration
 struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
-    let entry: WeatherEntry
+    let entry: CurrentWeatherEntry
     
     var body: some View {
         switch family {

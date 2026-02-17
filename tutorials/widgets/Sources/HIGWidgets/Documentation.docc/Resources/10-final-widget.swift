@@ -20,7 +20,7 @@ struct WeatherWidget: Widget {
         AppIntentConfiguration(
             kind: kind,
             intent: SelectCityIntent.self,
-            provider: WeatherProvider()
+            provider: CurrentWeatherProvider()
         ) { entry in
             WeatherWidgetEntryView(entry: entry)
                 .containerBackground(for: .widget) {
@@ -48,7 +48,7 @@ struct WeatherWidget: Widget {
 struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
     @Environment(\.widgetRenderingMode) var renderingMode
-    let entry: WeatherEntry
+    let entry: CurrentWeatherEntry
     
     var body: some View {
         switch family {
@@ -86,36 +86,36 @@ struct WeatherWidgetEntryView: View {
 #Preview("All Sizes", as: .systemSmall) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
-    WeatherEntry(date: .now.addingTimeInterval(3600), weather: .rainyPreview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now.addingTimeInterval(3600), weather: .rainyPreview)
 }
 
 #Preview("Medium", as: .systemMedium) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Large", as: .systemLarge) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Lock Screen - Circular", as: .accessoryCircular) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Lock Screen - Rectangular", as: .accessoryRectangular) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }
 
 #Preview("Lock Screen - Inline", as: .accessoryInline) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }

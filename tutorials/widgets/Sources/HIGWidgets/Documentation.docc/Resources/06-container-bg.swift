@@ -12,7 +12,7 @@ struct WeatherWidget: Widget {
         AppIntentConfiguration(
             kind: kind,
             intent: SelectCityIntent.self,
-            provider: WeatherProvider()
+            provider: CurrentWeatherProvider()
         ) { entry in
             WeatherWidgetEntryView(entry: entry)
                 // HIG: containerBackground로 배경 처리
@@ -37,7 +37,7 @@ struct WeatherWidget: Widget {
 // MARK: - Entry View with Family Switching
 struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
-    let entry: WeatherEntry
+    let entry: CurrentWeatherEntry
     
     var body: some View {
         switch family {

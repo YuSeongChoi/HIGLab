@@ -40,6 +40,6 @@ struct SmallWeatherView: View {
 #Preview("Small Widget", as: .systemSmall) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
-    WeatherEntry(date: .now, weather: .rainyPreview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .rainyPreview)
 }

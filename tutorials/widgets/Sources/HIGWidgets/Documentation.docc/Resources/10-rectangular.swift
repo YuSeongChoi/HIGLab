@@ -110,5 +110,5 @@ struct RectangularWeatherWithHourlyView: View {
 #Preview("Rectangular", as: .accessoryRectangular) {
     WeatherWidget()
 } timeline: {
-    WeatherEntry(date: .now, weather: .preview)
+    CurrentWeatherEntry(date: .now, weather: .preview)
 }

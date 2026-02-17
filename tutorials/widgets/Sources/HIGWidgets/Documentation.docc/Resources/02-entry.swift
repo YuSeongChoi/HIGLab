@@ -4,7 +4,7 @@ import WidgetKit
 // TimelineEntry 프로토콜은 반드시 date 프로퍼티가 필요합니다.
 // 시스템은 이 date를 기준으로 적절한 시점에 위젯을 렌더링합니다.
 
-struct WeatherEntry: TimelineEntry {
+struct CurrentWeatherEntry: TimelineEntry {
     /// 이 엔트리가 표시되어야 하는 시점
     let date: Date
     

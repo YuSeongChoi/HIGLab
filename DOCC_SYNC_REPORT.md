@@ -1,7 +1,19 @@
 # DocC 튜토리얼 ↔ 샘플 코드 동기화 보고서
 
 **생성일:** 2026-02-17  
+**최종 수정:** 2026-02-17 11:35  
 **분석 범위:** 50개 기술, 43개 샘플 프로젝트
+
+---
+
+## ✅ 완료된 수정 작업
+
+| 기술 | 작업 내용 | 상태 |
+|------|----------|------|
+| realitykit | Chapter 01-02 리소스 16개 파일 생성 | ✅ 완료 |
+| avkit | Chapter 01 리소스 5개 파일 생성 | ✅ 완료 |
+| corehaptics | Chapter 01 리소스 5개 파일 생성 | ✅ 완료 |
+| widgets | 명명 통일 (WeatherEntry → CurrentWeatherEntry) | ✅ 완료 |
 
 ---
 
@@ -10,9 +22,9 @@
 | 항목 | 수량 |
 |------|------|
 | 전체 튜토리얼 | 50개 |
-| 스텁 파일만 있는 튜토리얼 | 9개 |
+| 스텁 파일만 있는 튜토리얼 | ~~9개~~ 6개 (3개 수정) |
 | 누락된 코드 파일 참조 | 2,500+ 건 |
-| 명명 불일치 | 5개 기술 |
+| 명명 불일치 | ~~5개~~ 4개 기술 (1개 수정) |
 
 ---
 
@@ -22,9 +34,9 @@
 
 | 기술 | 샘플 프로젝트 | 상태 | 필요 작업 |
 |------|-------------|------|----------|
-| realitykit | ARFurniture | ❌ 스텁만 | 샘플에서 코드 추출 |
-| avkit | MusicPlayer | ❌ 스텁만 | 샘플에서 코드 추출 |
-| corehaptics | HapticDemo | ❌ 스텁만 | 샘플에서 코드 추출 |
+| realitykit | ARFurniture | ✅ 수정됨 | Chapter 01-02 완료, 나머지 진행 중 |
+| avkit | MusicPlayer | ✅ 수정됨 | Chapter 01 완료, 나머지 진행 중 |
+| corehaptics | HapticDemo | ✅ 수정됨 | Chapter 01 완료, 나머지 진행 중 |
 | wifiaware | DirectShare | ❌ 스텁만 | 샘플에서 코드 추출 |
 | visualintelligence | VisionScanner | ❌ 스텁만 | 샘플에서 코드 추출 |
 | alarmkit | WakeUp | ❌ 스텁만 | 샘플에서 코드 추출 |
@@ -99,9 +111,9 @@
 
 튜토리얼 코드와 샘플 코드에서 다른 이름 사용:
 
-### widgets ↔ WeatherWidget
-- `WeatherProvider` (tutorial) vs `CurrentWeatherProvider` (sample)
-- `WeatherEntry` (tutorial) vs `CurrentWeatherEntry` (sample)
+### widgets ↔ WeatherWidget ✅ 수정됨
+- ~~`WeatherProvider` (tutorial) vs `CurrentWeatherProvider` (sample)~~ ✅
+- ~~`WeatherEntry` (tutorial) vs `CurrentWeatherEntry` (sample)~~ ✅
 - `HourlyForecast` (tutorial) vs `HourlyForecastProvider/Entry` (sample)
 - `WeeklyForecast` (tutorial) vs `WeeklyForecastProvider/Entry` (sample)
 
