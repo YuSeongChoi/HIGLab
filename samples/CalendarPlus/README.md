@@ -53,7 +53,7 @@ CalendarPlus/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/eventkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/eventkit/documentation/higeventkit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

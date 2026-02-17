@@ -53,7 +53,7 @@ PhotoGallery/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/photosui/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/photosui/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/photosui/documentation/higphotosui/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

@@ -53,7 +53,7 @@ SiriTodo/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/appintents/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/appintents/01-siri-todo-app.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

@@ -53,7 +53,7 @@ MLClassifier/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/coreml/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/coreml/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/coreml/documentation/higcoreml/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

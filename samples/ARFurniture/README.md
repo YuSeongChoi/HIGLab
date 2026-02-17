@@ -53,7 +53,7 @@ ARFurniture/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/arkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/arkit/01-ar-furniture-app.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

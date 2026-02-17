@@ -53,7 +53,7 @@ WeatherWidget/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/widgets/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

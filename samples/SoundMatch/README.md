@@ -53,7 +53,7 @@ SoundMatch/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/shazamkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/shazamkit/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/shazamkit/documentation/higshazamkit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

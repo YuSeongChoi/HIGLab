@@ -53,7 +53,7 @@ FilterLab/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/coreimage/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/coreimage/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/coreimage/documentation/higcoreimage/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

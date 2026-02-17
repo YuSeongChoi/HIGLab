@@ -53,7 +53,7 @@ AIChatbot/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/foundationmodels/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/foundationmodels/01-ai-chatbot.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

@@ -53,7 +53,7 @@ PDFReader/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/pdfkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/pdfkit/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/pdfkit/documentation/higpdfkit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

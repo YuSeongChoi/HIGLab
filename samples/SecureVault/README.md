@@ -53,7 +53,7 @@ SecureVault/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/authservices/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/authservices/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/authservices/documentation/higauthservices/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

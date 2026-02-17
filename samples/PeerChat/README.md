@@ -53,7 +53,7 @@ PeerChat/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/multipeer/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/multipeer/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/multipeer/documentation/higmultipeer/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

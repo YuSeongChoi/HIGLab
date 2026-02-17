@@ -53,7 +53,7 @@ DeliveryTracker/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/activitykit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/activitykit/01-delivery-tracker.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 

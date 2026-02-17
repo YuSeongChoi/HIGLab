@@ -53,7 +53,7 @@ PermissionHub/
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/permissionkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/permissionkit/01-tutorial.html)
 - [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/permissionkit/documentation/higpermissionkit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
