@@ -147,6 +147,42 @@ HIGLab/
 
 ---
 
+## 🤖 AI Reference (NEW!)
+
+AI가 iOS 코드를 정확하게 생성할 수 있도록 설계된 참조 문서입니다.
+
+| 문서 | 설명 |
+|------|------|
+| [widgets.md](ai-reference/widgets.md) | WidgetKit 위젯 구현 |
+| [activitykit.md](ai-reference/activitykit.md) | Live Activity, Dynamic Island |
+| [swiftui-observation.md](ai-reference/swiftui-observation.md) | @Observable 상태 관리 |
+| [swiftdata.md](ai-reference/swiftdata.md) | SwiftData CRUD |
+| [foundation-models.md](ai-reference/foundation-models.md) | 온디바이스 AI |
+| [storekit.md](ai-reference/storekit.md) | 인앱결제, 구독 |
+| [core-bluetooth.md](ai-reference/core-bluetooth.md) | BLE 기기 연결 |
+
+> 💡 Claude, GPT, Cursor 등에 문서를 제공하면 정확한 iOS 코드 생성 가능!
+
+---
+
+## 📁 프로젝트 구조
+
+```
+HIGLab/
+├── site/                    # 📝 블로그 (50개)
+│   ├── index.html
+│   └── {framework}/
+├── tutorials/              # 📚 DocC 튜토리얼 (50개)
+│   └── {framework}/        # Swift Package + DocC
+├── samples/               # 💻 샘플 프로젝트 (43개)
+│   └── {SampleName}/      # 완성된 SwiftUI 앱 + README.md
+├── ai-reference/          # 🤖 AI 코드 생성용 참조 문서
+│   └── {framework}.md
+└── SSOT.json              # Single Source of Truth
+```
+
+---
+
 ## 🚀 시작하기
 
 ### 블로그 보기
@@ -161,7 +197,12 @@ swift package --disable-sandbox preview-documentation --target HIGWidgets
 ```
 
 ### 샘플 프로젝트 실행
-Xcode에서 samples/ 폴더의 Swift 파일들을 새 프로젝트에 추가하세요.
+각 샘플 폴더의 `README.md`를 참고하세요.
+
+```bash
+cd samples/WeatherWidget
+cat README.md
+```
 
 ---
 
