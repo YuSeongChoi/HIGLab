@@ -1,21 +1,21 @@
-# 팁 쇼케이스
+# 필터 연구소
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> Core Image로 30가지 이상의 이미지 필터를 적용하는 앱입니다.
 
-![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
+![Phase](https://img.shields.io/badge/Phase_3-Graphics_&_Media-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
 ![iOS](https://img.shields.io/badge/iOS-17+-green)
 
 ## 🎯 사용 기술
 
-`TipKit`
+`Core Image`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- 실시간 필터 미리보기
+- 필터 체인
+- 커스텀 커널
+- 내보내기
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+비파괴 편집으로 자유로운 실험
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+FilterLab/
+├── FilterLabApp/          # 메인 앱
+│   ├── FilterLabApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 9개 |
+| 코드 라인 | 2,516줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/coreimage/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/coreimage/documentation/higcoreimage/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

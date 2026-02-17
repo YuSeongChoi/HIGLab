@@ -1,6 +1,6 @@
-# 팁 쇼케이스
+# 워치 파티
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> SharePlay로 친구들과 함께 영상을 시청하는 앱입니다.
 
 ![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
@@ -8,14 +8,14 @@
 
 ## 🎯 사용 기술
 
-`TipKit`
+`SharePlay`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- 그룹 세션
+- 동기화 재생
+- 공유 컨트롤
+- 참여자 관리
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+함께하는 미디어 경험
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+WatchParty/
+├── WatchPartyApp/          # 메인 앱
+│   ├── WatchPartyApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 12개 |
+| 코드 라인 | 3,296줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/shareplay/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/shareplay/documentation/higshareplay/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

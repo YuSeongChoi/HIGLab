@@ -1,21 +1,21 @@
-# 팁 쇼케이스
+# 스페이스 슈터
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> SpriteKit으로 만든 2D 슈팅 게임입니다.
 
-![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
+![Phase](https://img.shields.io/badge/Phase_3-Graphics_&_Media-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
 ![iOS](https://img.shields.io/badge/iOS-17+-green)
 
 ## 🎯 사용 기술
 
-`TipKit`
+`SpriteKit`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- 물리 엔진
+- 파티클 효과
+- 터치 컨트롤
+- 점수 시스템
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+직관적인 게임 조작감
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+SpaceShooter/
+├── SpaceShooterApp/          # 메인 앱
+│   ├── SpaceShooterApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 10개 |
+| 코드 라인 | 2,804줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/spritekit/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/spritekit/documentation/higspritekit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

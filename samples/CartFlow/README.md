@@ -1,6 +1,6 @@
-# 팁 쇼케이스
+# 장바구니 결제 앱
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> Apple Pay를 활용한 원터치 결제 앱입니다.
 
 ![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
@@ -8,14 +8,14 @@
 
 ## 🎯 사용 기술
 
-`TipKit`
+`PassKit`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- Apple Pay 버튼
+- 배송지/결제수단 선택
+- 결제 시트
+- 영수증 생성
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+최소한의 탭으로 결제 완료
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+CartFlow/
+├── CartFlowApp/          # 메인 앱
+│   ├── CartFlowApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 4개 |
+| 코드 라인 | 479줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/passkit/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/passkit/documentation/higpasskit/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

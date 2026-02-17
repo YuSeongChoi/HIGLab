@@ -1,21 +1,21 @@
-# 팁 쇼케이스
+# 날씨 위젯
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> 홈 화면과 잠금 화면에서 실시간 날씨 정보를 표시하는 위젯입니다.
 
-![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
+![Phase](https://img.shields.io/badge/Phase_1-App_Frameworks-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
 ![iOS](https://img.shields.io/badge/iOS-17+-green)
 
 ## 🎯 사용 기술
 
-`TipKit`
+`WidgetKit` `WeatherKit`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- Small/Medium/Large/Lock Screen 위젯
+- Timeline 기반 자동 갱신
+- 인터랙티브 버튼
+- 도시 선택 Configuration
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+Glanceable, Relevant, Personalized 원칙 적용
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+WeatherWidget/
+├── WeatherWidgetApp/          # 메인 앱
+│   ├── WeatherWidgetApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -49,12 +49,12 @@ TipShowcase/
 | 항목 | 값 |
 |------|-----|
 | 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 코드 라인 | 823줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/widgets/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

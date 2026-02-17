@@ -1,21 +1,21 @@
-# 팁 쇼케이스
+# 스마트 크롭
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> ExtensibleImage로 AI 기반 이미지 편집을 구현한 앱입니다.
 
-![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
+![Phase](https://img.shields.io/badge/Phase_5-iOS_26_신규_API-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
 ![iOS](https://img.shields.io/badge/iOS-17+-green)
 
 ## 🎯 사용 기술
 
-`TipKit`
+`ExtensibleImage`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- AI 배경 제거
+- 스마트 크롭
+- 객체 선택
+- 이미지 확장
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+지능적인 이미지 편집
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+SmartCrop/
+├── SmartCropApp/          # 메인 앱
+│   ├── SmartCropApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 11개 |
+| 코드 라인 | 3,137줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/extensibleimage/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/extensibleimage/documentation/higextensibleimage/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---

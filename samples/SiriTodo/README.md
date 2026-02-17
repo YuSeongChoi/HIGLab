@@ -1,111 +1,62 @@
-# SiriTodo - AppIntents 샘플 프로젝트
+# Siri 연동 할일 앱
 
-Siri 및 단축어와 연동되는 할일 관리 앱 샘플입니다.  
-iOS 16+ / macOS 13+의 **AppIntents** 프레임워크를 활용합니다.
+> App Intents를 활용해 Siri와 단축어로 할일을 관리하는 앱입니다.
 
-## 🎯 주요 기능
+![Phase](https://img.shields.io/badge/Phase_1-App_Frameworks-blue)
+![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
+![iOS](https://img.shields.io/badge/iOS-17+-green)
 
-- **Siri 음성 명령**: "할일에 장보기 추가해줘"
-- **단축어 앱 연동**: 자동화 및 위젯에서 사용 가능
-- **앱 내 할일 관리**: 추가, 완료, 삭제
+## 🎯 사용 기술
+
+`App Intents`
+
+## ✨ 주요 기능
+
+- 음성으로 할일 추가/완료/삭제
+- Siri 제안
+- 단축어 앱 통합
+- 위젯 인텐트
+
+## 📱 스크린샷
+
+<!-- 스크린샷 추가 예정 -->
+
+## 🍎 HIG 가이드라인
+
+자연어 인터랙션으로 핸즈프리 경험 제공
 
 ## 📁 프로젝트 구조
 
 ```
 SiriTodo/
-├── Shared/
-│   ├── TodoItem.swift      # 할일 모델 (AppEntity 준수)
-│   └── TodoStore.swift     # 데이터 저장소 (싱글톤)
-├── SiriTodoApp/
-│   ├── SiriTodoApp.swift   # @main 진입점
-│   ├── ContentView.swift   # 메인 목록 화면
-│   └── AddTodoView.swift   # 할일 추가 시트
-├── Intents/
-│   ├── AddTodoIntent.swift      # 할일 추가 인텐트
-│   ├── ListTodosIntent.swift    # 목록 조회 인텐트
-│   ├── CompleteTodoIntent.swift # 완료 처리 인텐트
-│   └── AppShortcuts.swift       # Siri 단축어 정의
-└── README.md
+├── SiriTodoApp/          # 메인 앱
+│   ├── SiriTodoApp.swift
+│   ├── ContentView.swift
+│   └── Views/
+└── Shared/                    # 공유 모델/서비스
+    ├── Models/
+    └── Services/
 ```
 
-## 🗣️ Siri 명령어 예시
+## 🚀 실행 방법
 
-| 기능 | 명령어 예시 |
-|------|------------|
-| 할일 추가 | "할일에 장보기 추가해줘" |
-| 목록 보기 | "할일 목록 보여줘" |
-| 완료 처리 | "장보기 완료해줘" |
-| 빠른 완료 | "다음 할일 완료" |
+1. Xcode에서 프로젝트 열기
+2. 시뮬레이터 또는 실제 기기 선택
+3. `Cmd + R`로 실행
 
-## 🔧 핵심 개념
+## 📊 통계
 
-### AppIntent
-```swift
-struct AddTodoIntent: AppIntent {
-    static var title: LocalizedStringResource = "할일 추가"
-    
-    @Parameter(title: "할일 제목")
-    var title: String
-    
-    func perform() async throws -> some IntentResult {
-        // 실행 로직
-    }
-}
-```
+| 항목 | 값 |
+|------|-----|
+| 파일 수 | 9개 |
+| 코드 라인 | 816줄 |
 
-### AppEntity
-```swift
-extension TodoItem: AppEntity {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(name: "할일")
-    }
-    
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(title)")
-    }
-}
-```
+## 🔗 관련 링크
 
-### AppShortcutsProvider
-```swift
-struct SiriTodoShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: AddTodoIntent(),
-            phrases: ["할일에 \(\.$title) 추가해줘"],
-            shortTitle: "할일 추가"
-        )
-    }
-}
-```
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/appintents/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/)
+- [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
-## 🚀 시작하기
+---
 
-### 1. Xcode 프로젝트 생성
-1. Xcode에서 새 프로젝트 생성 (App 템플릿)
-2. 이 폴더의 파일들을 프로젝트에 추가
-
-### 2. 앱 그룹 설정 (선택)
-위젯이나 앱 확장과 데이터 공유가 필요한 경우:
-1. Signing & Capabilities에서 App Groups 추가
-2. `TodoStore.swift`의 UserDefaults 코드 수정
-
-### 3. 빌드 및 실행
-- 시뮬레이터 또는 실제 기기에서 실행
-- 단축어 앱에서 "SiriTodo" 검색하여 확인
-
-## 📚 참고 자료
-
-- [App Intents - Apple Developer](https://developer.apple.com/documentation/appintents)
-- [Siri and Shortcuts - HIG](https://developer.apple.com/design/human-interface-guidelines/siri)
-- [WWDC22: Dive into App Intents](https://developer.apple.com/videos/play/wwdc2022/10032/)
-
-## ⚠️ 요구 사항
-
-- iOS 16.0+ / macOS 13.0+
-- Xcode 14.0+
-- Swift 5.7+
-
-## 📝 라이선스
-
-MIT License - 학습 및 참고용 샘플 코드
+Made with ❤️ by [개발자리](https://youtube.com/@devjari)

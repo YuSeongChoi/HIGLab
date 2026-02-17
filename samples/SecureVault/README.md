@@ -1,6 +1,6 @@
-# 팁 쇼케이스
+# 보안 금고 앱
 
-> TipKit으로 사용자 온보딩 팁을 표시하는 앱입니다.
+> 생체인증과 암호화로 민감한 정보를 보호하는 앱입니다.
 
 ![Phase](https://img.shields.io/badge/Phase_2-App_Services-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
@@ -8,14 +8,14 @@
 
 ## 🎯 사용 기술
 
-`TipKit`
+`Authentication Services` `LocalAuthentication` `CryptoKit`
 
 ## ✨ 주요 기능
 
-- 인라인 팁
-- 팝오버 팁
-- 조건부 표시
-- 진행 상태 추적
+- Face ID/Touch ID 인증
+- Sign in with Apple
+- Keychain 저장
+- AES 암호화
 
 ## 📱 스크린샷
 
@@ -23,14 +23,14 @@
 
 ## 🍎 HIG 가이드라인
 
-맥락에 맞는 도움말 제공
+강력한 보안과 편리한 접근의 균형
 
 ## 📁 프로젝트 구조
 
 ```
-TipShowcase/
-├── TipShowcaseApp/          # 메인 앱
-│   ├── TipShowcaseApp.swift
+SecureVault/
+├── SecureVaultApp/          # 메인 앱
+│   ├── SecureVaultApp.swift
 │   ├── ContentView.swift
 │   └── Views/
 └── Shared/                    # 공유 모델/서비스
@@ -48,13 +48,13 @@ TipShowcase/
 
 | 항목 | 값 |
 |------|-----|
-| 파일 수 | 8개 |
-| 코드 라인 | 738줄 |
+| 파일 수 | 4개 |
+| 코드 라인 | 652줄 |
 
 ## 🔗 관련 링크
 
-- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/tipkit/)
-- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/)
+- [📝 블로그 포스트](https://m1zz.github.io/HIGLab/authservices/)
+- [📚 DocC 튜토리얼](https://m1zz.github.io/HIGLab/tutorials/authservices/documentation/higauthservices/)
 - [🏠 HIGLab 메인](https://m1zz.github.io/HIGLab/)
 
 ---
