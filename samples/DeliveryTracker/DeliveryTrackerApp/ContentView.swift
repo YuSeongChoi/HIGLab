@@ -85,12 +85,15 @@ struct ContentView: View {
             Image(systemName: "bicycle")
                 .font(.system(size: 60))
                 .foregroundStyle(.blue.gradient)
+                .accessibilityHidden(true)
             
             Text("ActivityKit 데모")
                 .font(.headline)
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("ActivityKit 배달 추적 데모 앱")
     }
     
     /// Live Activity 지원 여부 배너
@@ -98,6 +101,7 @@ struct ContentView: View {
         HStack(spacing: 12) {
             Image(systemName: areActivitiesEnabled ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundStyle(areActivitiesEnabled ? .green : .red)
+                .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("Live Activity")
@@ -111,6 +115,9 @@ struct ContentView: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Live Activity 상태")
+        .accessibilityValue(areActivitiesEnabled ? "사용 가능" : "비활성화됨")
     }
     
     /// 메인 제어 버튼 섹션
@@ -128,6 +135,8 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!areActivitiesEnabled)
+                .accessibilityLabel("새 배달 주문 시작")
+                .accessibilityHint("탭하면 Live Activity가 시작됩니다")
             } else {
                 // 자동 진행 토글
                 Toggle(isOn: $isAutoProgressEnabled) {
@@ -151,6 +160,8 @@ struct ContentView: View {
                         .padding()
                 }
                 .buttonStyle(.bordered)
+                .accessibilityLabel("주문 취소")
+                .accessibilityHint("탭하면 현재 주문과 Live Activity가 종료됩니다")
             }
         }
     }
@@ -180,6 +191,9 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                     .tint(currentState.status == status ? .blue : .gray)
+                    .accessibilityLabel("\(status.rawValue) 상태로 변경")
+                    .accessibilityValue(currentState.status == status ? "현재 상태" : "")
+                    .accessibilityHint("탭하면 배달 상태가 \(status.rawValue)로 변경됩니다")
                 }
             }
         }

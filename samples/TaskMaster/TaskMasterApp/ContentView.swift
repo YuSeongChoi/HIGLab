@@ -81,6 +81,8 @@ struct ContentView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
                     }
+                    .accessibilityLabel("새 할일 추가")
+                    .accessibilityHint("탭하면 새 할일을 추가할 수 있습니다")
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {
@@ -91,6 +93,7 @@ struct ContentView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                    .accessibilityLabel("추가 옵션")
                 }
             }
             .sheet(isPresented: $showingAddTask) {
@@ -283,6 +286,10 @@ struct CategoryChip: View {
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(name) 카테고리")
+        .accessibilityValue(isSelected ? "선택됨" : (count > 0 ? "\(count)개 미완료" : ""))
+        .accessibilityHint("탭하면 \(name) 카테고리로 필터링합니다")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
