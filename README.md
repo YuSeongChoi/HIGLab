@@ -149,21 +149,59 @@ HIGLab/
 
 ---
 
-## 🤖 AI Reference (NEW!)
+## 🤖 AI Reference (32개)
 
 AI가 iOS 코드를 정확하게 생성할 수 있도록 설계된 참조 문서입니다.
 
 👉 **[사용 가이드 보기](ai-reference/HOW-TO-USE.md)** — 프롬프트 작성법, 실전 예제, 문제 해결 팁
 
+### App Frameworks
 | 문서 | 설명 |
 |------|------|
 | [widgets.md](ai-reference/widgets.md) | WidgetKit 위젯 구현 |
 | [activitykit.md](ai-reference/activitykit.md) | Live Activity, Dynamic Island |
+| [swiftui.md](ai-reference/swiftui.md) | SwiftUI 선언적 UI |
 | [swiftui-observation.md](ai-reference/swiftui-observation.md) | @Observable 상태 관리 |
 | [swiftdata.md](ai-reference/swiftdata.md) | SwiftData CRUD |
-| [foundation-models.md](ai-reference/foundation-models.md) | 온디바이스 AI |
+| [appintents.md](ai-reference/appintents.md) | Siri, 단축어 통합 |
+| [foundation-models.md](ai-reference/foundation-models.md) | 온디바이스 LLM |
+
+### App Services
+| 문서 | 설명 |
+|------|------|
 | [storekit.md](ai-reference/storekit.md) | 인앱결제, 구독 |
+| [passkit.md](ai-reference/passkit.md) | Apple Pay, Wallet |
+| [cloudkit.md](ai-reference/cloudkit.md) | iCloud 동기화 |
+| [healthkit.md](ai-reference/healthkit.md) | 건강 데이터 |
+| [mapkit.md](ai-reference/mapkit.md) | 지도, POI |
+| [corelocation.md](ai-reference/corelocation.md) | GPS, 지오펜싱 |
+| [coreml.md](ai-reference/coreml.md) | 온디바이스 ML |
+| [vision.md](ai-reference/vision.md) | 이미지 분석, OCR |
+| [notifications.md](ai-reference/notifications.md) | 푸시/로컬 알림 |
+| [tipkit.md](ai-reference/tipkit.md) | 기능 팁, 온보딩 |
+| [shareplay.md](ai-reference/shareplay.md) | FaceTime 함께 보기 |
+
+### Graphics & Media
+| 문서 | 설명 |
+|------|------|
+| [arkit.md](ai-reference/arkit.md) | 증강현실 |
+| [spritekit.md](ai-reference/spritekit.md) | 2D 게임 엔진 |
+| [pencilkit.md](ai-reference/pencilkit.md) | Apple Pencil 드로잉 |
+| [pdfkit.md](ai-reference/pdfkit.md) | PDF 뷰어/편집 |
+| [avfoundation.md](ai-reference/avfoundation.md) | 카메라, 비디오 |
+| [musickit.md](ai-reference/musickit.md) | Apple Music 통합 |
+| [photosui.md](ai-reference/photosui.md) | 사진 라이브러리 |
+| [corehaptics.md](ai-reference/corehaptics.md) | 햅틱 피드백 |
+
+### System & Security
+| 문서 | 설명 |
+|------|------|
 | [core-bluetooth.md](ai-reference/core-bluetooth.md) | BLE 기기 연결 |
+| [authservices.md](ai-reference/authservices.md) | Sign in with Apple |
+| [localauth.md](ai-reference/localauth.md) | Face ID / Touch ID |
+| [cryptokit.md](ai-reference/cryptokit.md) | 암호화/해싱 |
+| [eventkit.md](ai-reference/eventkit.md) | 캘린더/리마인더 |
+| [contacts.md](ai-reference/contacts.md) | 연락처 관리 |
 
 > 💡 Claude, GPT, Cursor 등에 문서를 제공하면 정확한 iOS 코드 생성 가능!
 
