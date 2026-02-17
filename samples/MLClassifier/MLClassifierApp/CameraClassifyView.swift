@@ -3,6 +3,7 @@ import AVFoundation
 
 // MARK: - 카메라 분류 뷰
 // 실시간 카메라 피드를 사용한 이미지 분류
+// VNCoreMLRequest, VNImageRequestHandler 활용
 
 struct CameraClassifyView: View {
     
@@ -16,9 +17,12 @@ struct CameraClassifyView: View {
     @State private var results: [ClassificationResult] = []
     @State private var isClassifying = false
     @State private var lastClassificationTime = Date.distantPast
+    @State private var showingStats = false
+    @State private var fps: Double = 0
+    @State private var inferenceTimeMs: Double = 0
     
     /// 분류 간격 (초)
-    private let classificationInterval: TimeInterval = 0.5
+    private let classificationInterval: TimeInterval = 0.3
     
     // MARK: - Body
     var body: some View {
@@ -28,16 +32,22 @@ struct CameraClassifyView: View {
                 CameraPreviewView(session: cameraManager.session)
                     .ignoresSafeArea()
                 
-                // 결과 오버레이
+                // 상단 정보 오버레이
                 VStack {
+                    if showingStats {
+                        statsOverlay
+                    }
+                    
                     Spacer()
                     
-                    // 결과 표시
+                    // 결과 오버레이
                     if !results.isEmpty {
                         ResultsOverlay(results: results)
                             .padding()
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
+                .animation(.easeInOut(duration: 0.2), value: results)
                 
                 // 권한 없음 메시지
                 if !cameraManager.isAuthorized {
@@ -46,6 +56,24 @@ struct CameraClassifyView: View {
             }
             .navigationTitle("실시간 분류")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        showingStats.toggle()
+                    } label: {
+                        Image(systemName: showingStats ? "info.circle.fill" : "info.circle")
+                    }
+                }
+                
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        cameraManager.toggleCamera()
+                    } label: {
+                        Image(systemName: "camera.rotate")
+                    }
+                    .disabled(!cameraManager.isAuthorized)
+                }
+            }
             .onAppear {
                 cameraManager.startSession()
             }
@@ -58,6 +86,48 @@ struct CameraClassifyView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - 통계 오버레이
+    @ViewBuilder
+    private var statsOverlay: some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading) {
+                Text("FPS")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(String(format: "%.1f", fps))
+                    .font(.headline)
+            }
+            
+            Divider()
+                .frame(height: 30)
+            
+            VStack(alignment: .leading) {
+                Text("추론 시간")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(String(format: "%.1f ms", inferenceTimeMs))
+                    .font(.headline)
+            }
+            
+            if let modelType = classifier.currentModelType {
+                Divider()
+                    .frame(height: 30)
+                
+                VStack(alignment: .leading) {
+                    Text("모델")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(modelType.rawValue)
+                        .font(.headline)
+                }
+            }
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding()
     }
     
     // MARK: - 권한 없음 뷰
@@ -78,11 +148,7 @@ struct CameraClassifyView: View {
                 .multilineTextAlignment(.center)
             
             Button("설정 열기") {
-                #if canImport(UIKit)
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-                #endif
+                openSettings()
             }
             .buttonStyle(.borderedProminent)
         }
@@ -105,15 +171,30 @@ struct CameraClassifyView: View {
         defer { isClassifying = false }
         
         do {
+            let startTime = CFAbsoluteTimeGetCurrent()
             let newResults = try await classifier.classify(ciImage: frame)
+            let endTime = CFAbsoluteTimeGetCurrent()
+            
+            let elapsed = endTime - startTime
+            
             await MainActor.run {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     results = newResults
+                    inferenceTimeMs = elapsed * 1000
+                    fps = 1.0 / elapsed
                 }
             }
         } catch {
             print("분류 오류: \(error)")
         }
+    }
+    
+    private func openSettings() {
+        #if canImport(UIKit)
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
+        }
+        #endif
     }
 }
 
@@ -125,16 +206,25 @@ struct ResultsOverlay: View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(results.prefix(3)) { result in
                 HStack {
-                    Text(result.label)
+                    // 신뢰도 레벨 아이콘
+                    Image(systemName: result.confidenceLevel.iconName)
+                        .foregroundStyle(confidenceColor(for: result.confidenceLevel))
+                    
+                    Text(result.formattedLabel)
                         .font(.headline)
                         .lineLimit(1)
                     
                     Spacer()
                     
+                    // 신뢰도 바
+                    ConfidenceBar(confidence: result.confidence)
+                        .frame(width: 60)
+                    
                     Text(result.confidencePercentage)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(confidenceColor(for: result.confidenceLevel))
+                        .frame(width: 50, alignment: .trailing)
                 }
             }
         }
@@ -147,7 +237,36 @@ struct ResultsOverlay: View {
         switch level {
         case .high: return .green
         case .medium: return .orange
-        case .low: return .red
+        case .low: return .yellow
+        case .veryLow: return .red
+        }
+    }
+}
+
+// MARK: - 신뢰도 바
+struct ConfidenceBar: View {
+    let confidence: Float
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.gray.opacity(0.3))
+                
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(barColor)
+                    .frame(width: geometry.size.width * CGFloat(confidence))
+            }
+        }
+        .frame(height: 6)
+    }
+    
+    private var barColor: Color {
+        switch confidence {
+        case 0.8...1.0: return .green
+        case 0.5..<0.8: return .orange
+        case 0.2..<0.5: return .yellow
+        default: return .red
         }
     }
 }
@@ -159,9 +278,11 @@ final class CameraManager: NSObject, ObservableObject {
     // MARK: - Published 프로퍼티
     @Published private(set) var isAuthorized = false
     @Published private(set) var currentFrame: CIImage?
+    @Published private(set) var currentCameraPosition: AVCaptureDevice.Position = .back
     
     // MARK: - 세션
     let session = AVCaptureSession()
+    private var currentInput: AVCaptureDeviceInput?
     private let videoOutput = AVCaptureVideoDataOutput()
     private let processingQueue = DispatchQueue(label: "camera.processing", qos: .userInitiated)
     
@@ -197,7 +318,7 @@ final class CameraManager: NSObject, ObservableObject {
         session.sessionPreset = .high
         
         // 카메라 입력 추가
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: currentCameraPosition),
               let input = try? AVCaptureDeviceInput(device: camera),
               session.canAddInput(input) else {
             session.commitConfiguration()
@@ -205,13 +326,48 @@ final class CameraManager: NSObject, ObservableObject {
         }
         
         session.addInput(input)
+        currentInput = input
         
         // 비디오 출력 추가
         videoOutput.setSampleBufferDelegate(self, queue: processingQueue)
         videoOutput.alwaysDiscardsLateVideoFrames = true
+        videoOutput.videoSettings = [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
+        ]
         
         if session.canAddOutput(videoOutput) {
             session.addOutput(videoOutput)
+        }
+        
+        // 비디오 방향 설정
+        if let connection = videoOutput.connection(with: .video) {
+            if connection.isVideoOrientationSupported {
+                connection.videoOrientation = .portrait
+            }
+        }
+        
+        session.commitConfiguration()
+    }
+    
+    // MARK: - 카메라 전환
+    func toggleCamera() {
+        let newPosition: AVCaptureDevice.Position = currentCameraPosition == .back ? .front : .back
+        
+        guard let newCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: newPosition),
+              let newInput = try? AVCaptureDeviceInput(device: newCamera) else {
+            return
+        }
+        
+        session.beginConfiguration()
+        
+        if let currentInput = currentInput {
+            session.removeInput(currentInput)
+        }
+        
+        if session.canAddInput(newInput) {
+            session.addInput(newInput)
+            currentInput = newInput
+            currentCameraPosition = newPosition
         }
         
         session.commitConfiguration()
@@ -256,28 +412,31 @@ struct CameraPreviewView: UIViewRepresentable {
     let session: AVCaptureSession
     
     func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        
-        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-        previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.frame = view.bounds
-        view.layer.addSublayer(previewLayer)
-        
-        context.coordinator.previewLayer = previewLayer
-        
+        let view = CameraPreviewUIView(session: session)
         return view
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {
-        context.coordinator.previewLayer?.frame = uiView.bounds
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
+class CameraPreviewUIView: UIView {
+    private let previewLayer: AVCaptureVideoPreviewLayer
+    
+    init(session: AVCaptureSession) {
+        previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        super.init(frame: .zero)
+        
+        previewLayer.videoGravity = .resizeAspectFill
+        layer.addSublayer(previewLayer)
     }
     
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    class Coordinator {
-        var previewLayer: AVCaptureVideoPreviewLayer?
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        previewLayer.frame = bounds
     }
 }
 #elseif canImport(AppKit)

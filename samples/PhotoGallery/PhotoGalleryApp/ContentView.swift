@@ -1,232 +1,198 @@
 import SwiftUI
+import Photos
 import PhotosUI
 
 // MARK: - 메인 콘텐츠 뷰
-/// PhotosPicker를 사용해 사진/비디오를 선택하고 갤러리로 표시
+/// 앱의 메인 탭 네비게이션 구조
+/// 사진 그리드, 앨범, 검색, 설정 탭으로 구성
 struct ContentView: View {
+    
+    // MARK: - 환경 객체
+    
+    @EnvironmentObject private var photoLibraryViewModel: PhotoLibraryViewModel
+    @EnvironmentObject private var albumViewModel: AlbumViewModel
     
     // MARK: - 상태
     
-    /// PhotosPicker 선택 항목
-    @State private var selectedItems: [PhotosPickerItem] = []
+    /// 현재 선택된 탭
+    @State private var selectedTab: Tab = .photos
     
-    /// 로드된 미디어 아이템 목록
-    @State private var mediaItems: [MediaItem] = []
+    /// 권한 거부 알림 표시 여부
+    @State private var showPermissionAlert = false
     
-    /// 로딩 중 상태
-    @State private var isLoading = false
+    // MARK: - 탭 열거형
     
-    /// 에러 메시지
-    @State private var errorMessage: String?
-    
-    /// 에러 알림 표시 여부
-    @State private var showError = false
+    enum Tab: String, CaseIterable {
+        case photos = "사진"
+        case albums = "앨범"
+        case favorites = "즐겨찾기"
+        case search = "검색"
+        
+        var iconName: String {
+            switch self {
+            case .photos: return "photo.on.rectangle.angled"
+            case .albums: return "rectangle.stack"
+            case .favorites: return "heart"
+            case .search: return "magnifyingglass"
+            }
+        }
+    }
     
     // MARK: - 뷰 바디
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                if mediaItems.isEmpty {
-                    // 빈 상태
-                    emptyStateView
-                } else {
-                    // 갤러리 그리드
-                    GalleryGridView(mediaItems: $mediaItems)
-                }
+        Group {
+            switch photoLibraryViewModel.authorizationStatus {
+            case .authorized, .limited:
+                // 권한 있음 - 메인 콘텐츠 표시
+                mainTabView
                 
-                // 로딩 인디케이터
-                if isLoading {
-                    loadingOverlay
-                }
-            }
-            .navigationTitle("포토 갤러리")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    photosPickerButton
-                }
+            case .denied, .restricted:
+                // 권한 거부됨 - 설정 안내
+                permissionDeniedView
                 
-                if !mediaItems.isEmpty {
-                    ToolbarItem(placement: .topBarLeading) {
-                        clearButton
-                    }
-                }
+            case .notDetermined:
+                // 권한 미결정 - 요청 대기 중
+                requestingPermissionView
+                
+            @unknown default:
+                EmptyView()
             }
-            .alert("오류", isPresented: $showError) {
-                Button("확인", role: .cancel) {}
-            } message: {
-                Text(errorMessage ?? "알 수 없는 오류가 발생했습니다")
+        }
+        .task {
+            // 초기 권한 확인 및 앨범 로드
+            if photoLibraryViewModel.authorizationStatus == .authorized ||
+               photoLibraryViewModel.authorizationStatus == .limited {
+                await albumViewModel.loadAlbums()
             }
         }
     }
     
-    // MARK: - 서브뷰
+    // MARK: - 메인 탭 뷰
     
-    /// 빈 상태 뷰
-    private var emptyStateView: some View {
+    /// 메인 탭바 인터페이스
+    private var mainTabView: some View {
+        TabView(selection: $selectedTab) {
+            // 사진 탭
+            PhotoGridView()
+                .tabItem {
+                    Label(Tab.photos.rawValue, systemImage: Tab.photos.iconName)
+                }
+                .tag(Tab.photos)
+            
+            // 앨범 탭
+            AlbumListView()
+                .tabItem {
+                    Label(Tab.albums.rawValue, systemImage: Tab.albums.iconName)
+                }
+                .tag(Tab.albums)
+            
+            // 즐겨찾기 탭
+            FavoritesView()
+                .tabItem {
+                    Label(Tab.favorites.rawValue, systemImage: Tab.favorites.iconName)
+                }
+                .tag(Tab.favorites)
+            
+            // 검색 탭
+            SearchView()
+                .tabItem {
+                    Label(Tab.search.rawValue, systemImage: Tab.search.iconName)
+                }
+                .tag(Tab.search)
+        }
+    }
+    
+    // MARK: - 권한 거부 뷰
+    
+    /// 권한 거부 시 표시되는 안내 뷰
+    private var permissionDeniedView: some View {
         ContentUnavailableView {
-            Label("사진이 없습니다", systemImage: "photo.on.rectangle.angled")
+            Label("사진 접근 권한 필요", systemImage: "photo.badge.exclamationmark")
         } description: {
-            Text("우측 상단의 + 버튼을 눌러\n사진과 비디오를 추가하세요")
+            Text("사진 앱을 사용하려면 사진 라이브러리에 대한 접근 권한이 필요합니다.\n설정에서 권한을 허용해주세요.")
+                .multilineTextAlignment(.center)
         } actions: {
-            PhotosPicker(
-                selection: $selectedItems,
-                maxSelectionCount: 20,
-                matching: .any(of: [.images, .videos]),
-                photoLibrary: .shared()
-            ) {
-                Text("사진 선택하기")
+            Button("설정 열기") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
             }
             .buttonStyle(.borderedProminent)
         }
-        .onChange(of: selectedItems) { _, newItems in
-            Task {
-                await loadMedia(from: newItems)
-            }
-        }
     }
     
-    /// PhotosPicker 버튼
-    private var photosPickerButton: some View {
-        PhotosPicker(
-            selection: $selectedItems,
-            maxSelectionCount: 20,
-            matching: .any(of: [.images, .videos]),
-            photoLibrary: .shared()
-        ) {
-            Image(systemName: "plus")
-        }
-        .onChange(of: selectedItems) { _, newItems in
-            Task {
-                await loadMedia(from: newItems)
-            }
-        }
-    }
+    // MARK: - 권한 요청 대기 뷰
     
-    /// 전체 삭제 버튼
-    private var clearButton: some View {
-        Button(role: .destructive) {
-            withAnimation {
-                mediaItems.removeAll()
-                selectedItems.removeAll()
-            }
-        } label: {
-            Text("전체 삭제")
-        }
-    }
-    
-    /// 로딩 오버레이
-    private var loadingOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.3)
-                .ignoresSafeArea()
+    /// 권한 요청 중 표시되는 뷰
+    private var requestingPermissionView: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "photo.on.rectangle.angled")
+                .font(.system(size: 60))
+                .foregroundStyle(.secondary)
             
-            VStack(spacing: 16) {
-                ProgressView()
-                    .scaleEffect(1.5)
-                Text("미디어 로딩 중...")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(32)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-    
-    // MARK: - 미디어 로딩
-    
-    /// 선택된 아이템들에서 미디어 로드
-    /// - Parameter items: PhotosPicker에서 선택된 아이템 배열
-    private func loadMedia(from items: [PhotosPickerItem]) async {
-        guard !items.isEmpty else { return }
-        
-        isLoading = true
-        defer { isLoading = false }
-        
-        var newMediaItems: [MediaItem] = []
-        
-        for item in items {
-            var mediaItem = MediaItem(pickerItem: item)
+            Text("사진 라이브러리 접근 중...")
+                .font(.title2)
+                .foregroundStyle(.secondary)
             
-            do {
-                // 미디어 타입에 따라 로드
-                switch mediaItem.mediaType {
-                case .image, .livePhoto:
-                    // 이미지 로드
-                    let transferable = try await PhotoLoader.shared.loadImage(from: item)
-                    mediaItem.image = transferable.image
-                    mediaItem.loadingState = .loaded
-                    
-                    // 캐시에 저장
-                    ImageCache.shared.cacheUIImage(transferable.uiImage, forKey: mediaItem.cacheKey)
-                    
-                case .video:
-                    // 비디오 URL 로드
-                    let url = try await PhotoLoader.shared.loadVideo(from: item)
-                    mediaItem.videoURL = url
-                    mediaItem.loadingState = .loaded
-                    
-                    // 비디오 썸네일 생성 (첫 프레임)
-                    if let thumbnail = await generateVideoThumbnail(from: url) {
-                        mediaItem.image = Image(uiImage: thumbnail)
-                        ImageCache.shared.cacheUIImage(thumbnail, forKey: mediaItem.thumbnailCacheKey)
-                    }
-                    
-                case .unknown:
-                    mediaItem.loadingState = .failed(PhotoLoaderError.unsupportedType)
-                }
-                
-                newMediaItems.append(mediaItem)
-                
-            } catch {
-                mediaItem.loadingState = .failed(error)
-                newMediaItems.append(mediaItem)
-                
-                // 에러 로깅
-                print("미디어 로드 실패: \(error.localizedDescription)")
-            }
-        }
-        
-        // UI 업데이트
-        await MainActor.run {
-            withAnimation {
-                mediaItems.append(contentsOf: newMediaItems)
-            }
-            // 선택 초기화
-            selectedItems.removeAll()
-        }
-    }
-    
-    /// 비디오에서 썸네일 이미지 생성
-    /// - Parameter url: 비디오 파일 URL
-    /// - Returns: 썸네일 이미지
-    private func generateVideoThumbnail(from url: URL) async -> UIImage? {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                let asset = AVAsset(url: url)
-                let generator = AVAssetImageGenerator(asset: asset)
-                generator.appliesPreferredTrackTransform = true
-                generator.maximumSize = CGSize(width: 400, height: 400)
-                
-                let time = CMTime(seconds: 0, preferredTimescale: 600)
-                
-                do {
-                    let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-                    let thumbnail = UIImage(cgImage: cgImage)
-                    continuation.resume(returning: thumbnail)
-                } catch {
-                    print("썸네일 생성 실패: \(error.localizedDescription)")
-                    continuation.resume(returning: nil)
-                }
-            }
+            ProgressView()
         }
     }
 }
 
-// MARK: - AVFoundation Import
-import AVFoundation
+// MARK: - 즐겨찾기 뷰
+/// 즐겨찾기한 사진만 표시하는 뷰
+struct FavoritesView: View {
+    
+    @EnvironmentObject private var viewModel: PhotoLibraryViewModel
+    
+    var body: some View {
+        NavigationStack {
+            PhotoGridView(filterType: .favorites)
+                .navigationTitle("즐겨찾기")
+        }
+    }
+}
+
+// MARK: - 검색 뷰
+/// 사진 검색 인터페이스
+struct SearchView: View {
+    
+    @EnvironmentObject private var viewModel: PhotoLibraryViewModel
+    @State private var searchText = ""
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                if searchText.isEmpty {
+                    // 검색 전 상태
+                    searchPromptView
+                } else {
+                    // 검색 결과
+                    PhotoGridView()
+                }
+            }
+            .navigationTitle("검색")
+            .searchable(text: $searchText, prompt: "파일명으로 검색")
+            .onChange(of: searchText) { _, newValue in
+                viewModel.searchQuery = newValue
+            }
+        }
+    }
+    
+    /// 검색 안내 뷰
+    private var searchPromptView: some View {
+        ContentUnavailableView {
+            Label("사진 검색", systemImage: "magnifyingglass")
+        } description: {
+            Text("파일명으로 사진을 검색할 수 있습니다")
+        }
+    }
+}
 
 // MARK: - 프리뷰
 #Preview {
     ContentView()
+        .environmentObject(PhotoLibraryViewModel())
+        .environmentObject(AlbumViewModel())
 }
