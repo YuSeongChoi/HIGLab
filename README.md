@@ -51,6 +51,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 | 샘플 | 기술 | 규모 | 설명 |
 |------|------|------|------|
 | [SubscriptionApp](samples/SubscriptionApp/) | StoreKit 2 | 2,043줄 | 구독 + 인앱결제 |
+| [PremiumApp](samples/PremiumApp/) | StoreKit 2 | 1,900줄 | 인앱결제 + 복원 |
 | [CartFlow](samples/CartFlow/) | PassKit | 5,391줄 | Apple Pay 완전 구현 |
 | [CloudNotes](samples/CloudNotes/) | CloudKit | 1,952줄 | iCloud 동기화 |
 | [SecureVault](samples/SecureVault/) | AuthServices, LocalAuth, CryptoKit | 5,935줄 | Sign in with Apple + 생체인증 + 암호화 |
