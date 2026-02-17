@@ -23,16 +23,23 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 • 오프라인 지원 (네트워크 불필요)<br>
 • Swift 네이티브 async/await API</p>
 
-<h2>💬 기본 사용법</h2>
+<h2>💬 기본 사용법 (LanguageModelSession)</h2>
 <div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">FoundationModels</span>
 
-<span class="kw">let</span> model = <span class="type">LanguageModel</span>.default
-<span class="kw">let</span> result = <span class="kw">try await</span> model.<span class="func">generate</span>(prompt: <span class="str">"안녕하세요"</span>)
-print(result.text)</pre></div>
+<span class="comment">// 세션 생성 (시스템 프롬프트 설정)</span>
+<span class="kw">let</span> session = <span class="type">LanguageModelSession</span>(
+    instructions: <span class="str">"친절한 AI 어시스턴트입니다"</span>
+)
+
+<span class="comment">// 응답 요청</span>
+<span class="kw">let</span> response = <span class="kw">try await</span> session.<span class="func">respond</span>(to: <span class="str">"안녕하세요"</span>)
+print(response.content)</pre></div>
 
 <h2>🔄 스트리밍 응답</h2>
-<div class="code-block"><pre class="code-body"><span class="kw">for try await</span> token <span class="kw">in</span> model.<span class="func">streamGenerate</span>(prompt: prompt) {
-    response += token.text  <span class="comment">// 실시간으로 텍스트 추가</span>
+<div class="code-block"><pre class="code-body"><span class="comment">// 스트리밍으로 실시간 응답 받기</span>
+<span class="kw">let</span> stream = session.<span class="func">streamResponse</span>(to: prompt)
+<span class="kw">for try await</span> partial <span class="kw">in</span> stream {
+    response = partial.outputSoFar  <span class="comment">// 지금까지 생성된 텍스트</span>
 }</pre></div>
 
 <h2>🔧 Tool Calling</h2>
@@ -56,14 +63,22 @@ print(result.text)</pre></div>
     @<span class="type">State</span> <span class="kw">private var</span> messages: [<span class="type">Message</span>] = []
     @<span class="type">State</span> <span class="kw">private var</span> inputText = <span class="str">""</span>
     @<span class="type">State</span> <span class="kw">private var</span> isGenerating = <span class="kw">false</span>
+    @<span class="type">State</span> <span class="kw">private var</span> streamingText = <span class="str">""</span>
 
-    <span class="kw">let</span> model = <span class="type">LanguageModel</span>.default
+    <span class="comment">// LanguageModelSession 사용</span>
+    @<span class="type">State</span> <span class="kw">private var</span> session = <span class="type">LanguageModelSession</span>(
+        instructions: <span class="str">"친절한 AI 어시스턴트입니다. 한국어로 답변하세요."</span>
+    )
 
     <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">VStack</span> {
             <span class="type">ScrollView</span> {
                 <span class="type">ForEach</span>(messages) { message <span class="kw">in</span>
                     <span class="type">MessageBubble</span>(message: message)
+                }
+                <span class="comment">// 스트리밍 중인 응답 표시</span>
+                <span class="kw">if</span> !streamingText.isEmpty {
+                    <span class="type">MessageBubble</span>(message: <span class="type">Message</span>(role: .assistant, content: streamingText))
                 }
             }
 
@@ -83,20 +98,24 @@ print(result.text)</pre></div>
     <span class="kw">func</span> <span class="func">sendMessage</span>() {
         <span class="kw">let</span> userMessage = <span class="type">Message</span>(role: .user, content: inputText)
         messages.append(userMessage)
+        <span class="kw">let</span> prompt = inputText
         inputText = <span class="str">""</span>
         isGenerating = <span class="kw">true</span>
+        streamingText = <span class="str">""</span>
 
         <span class="type">Task</span> {
-            <span class="kw">var</span> response = <span class="str">""</span>
-            <span class="kw">let</span> aiMessage = <span class="type">Message</span>(role: .assistant, content: <span class="str">""</span>)
-            messages.append(aiMessage)
-
-            <span class="comment">// 스트리밍 응답</span>
-            <span class="kw">for try await</span> token <span class="kw">in</span> model.<span class="func">streamGenerate</span>(prompt: userMessage.content) {
-                response += token.text
-                messages[messages.count - <span class="num">1</span>].content = response
+            <span class="kw">do</span> {
+                <span class="comment">// 스트리밍 응답</span>
+                <span class="kw">let</span> stream = session.<span class="func">streamResponse</span>(to: prompt)
+                <span class="kw">for try await</span> partial <span class="kw">in</span> stream {
+                    streamingText = partial.outputSoFar
+                }
+                <span class="comment">// 완료 후 메시지 배열에 추가</span>
+                messages.append(<span class="type">Message</span>(role: .assistant, content: streamingText))
+                streamingText = <span class="str">""</span>
+            } <span class="kw">catch</span> {
+                print(<span class="str">"오류: \(error)"</span>)
             }
-
             isGenerating = <span class="kw">false</span>
         }
     }

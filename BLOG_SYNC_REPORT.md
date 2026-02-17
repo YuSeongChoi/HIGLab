@@ -151,10 +151,32 @@ https://m1zz.github.io/HIGLab/tutorials/{tech}/documentation/hig{tech}/
 
 ---
 
-## 🔧 수정 완료 (이 보고서 생성 시점)
+## 🔧 수정 완료
 
-- 없음 (검토만 완료)
+### 1. ✅ Widgets 블로그 업데이트
+- **파일**: `site/widgets/01-weather-widget-challenge.html`
+- **변경**: `TimelineProvider` → `AppIntentTimelineProvider`
+- `getSnapshot()`, `getTimeline()` → `snapshot()`, `timeline()` (async)
+- App Intents 통합 (`SelectCityIntent`) 추가
+
+### 2. ✅ Foundation Models 블로그 업데이트
+- **파일**: `site/foundationmodels/01-ai-chatbot.html`
+- **변경**: 
+  - `LanguageModel.default` → `LanguageModelSession(instructions:)`
+  - `model.generate()` → `session.respond(to:)`
+  - `model.streamGenerate()` → `session.streamResponse(to:)`
+
+### 3. ✅ SwiftUI 블로그 업데이트
+- **파일**: `site/swiftui/01-tutorial.html`
+- **변경**: 
+  - `@Observable` 권장 안내 추가
+  - Observation 튜토리얼 링크 추가
+  - 레거시 `ObservableObject` 코드는 `<details>` 태그로 접기 처리
+
+### 4. ✅ DocC 링크 통일
+- `site/widgets/01-weather-widget-challenge.html`: 상대 경로 → 절대 URL (2곳)
+- `site/activitykit/01-delivery-tracker.html`: 상대 경로 → 절대 URL (1곳)
 
 ---
 
-*이 보고서는 자동 검토 후 생성되었습니다.*
+*이 보고서는 2026-02-17 자동 검토 후 생성되었습니다.*
