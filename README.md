@@ -151,6 +151,8 @@ HIGLab/
 
 AI가 iOS 코드를 정확하게 생성할 수 있도록 설계된 참조 문서입니다.
 
+👉 **[사용 가이드 보기](ai-reference/HOW-TO-USE.md)** — 프롬프트 작성법, 실전 예제, 문제 해결 팁
+
 | 문서 | 설명 |
 |------|------|
 | [widgets.md](ai-reference/widgets.md) | WidgetKit 위젯 구현 |

@@ -4,6 +4,14 @@
 > 
 > 이 폴더의 문서들은 Claude, GPT 등 AI가 iOS/SwiftUI 코드를 정확하게 생성할 수 있도록 설계되었습니다.
 
+## 📖 [사용 가이드 (HOW-TO-USE.md)](HOW-TO-USE.md)
+
+👉 **처음이라면 이 가이드를 먼저 읽어주세요!**
+
+- 프롬프트 작성법
+- 실전 예제
+- 문제 해결 팁
+
 ## 📚 문서 목록
 
 ### App Frameworks (Phase 1)
