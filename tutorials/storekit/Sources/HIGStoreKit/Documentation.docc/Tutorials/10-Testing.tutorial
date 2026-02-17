@@ -1,0 +1,173 @@
+@Tutorial(time: 25) {
+    @Intro(title: "StoreKit 테스팅") {
+        Xcode의 StoreKit Testing과 Sandbox 환경을 활용해
+        인앱결제 기능을 철저히 테스트합니다.
+    }
+    
+    @Section(title: "StoreKit Configuration 파일") {
+        @ContentAndMedia {
+            StoreKit Configuration 파일로 로컬에서 
+            인앱결제를 시뮬레이션합니다.
+            
+            장점:
+            - App Store Connect 설정 없이 테스트
+            - 네트워크 없이 동작
+            - 다양한 시나리오 재현 가능
+        }
+        
+        @Steps {
+            @Step {
+                StoreKit Configuration 파일을 생성하고 상품을 정의합니다.
+                @Code(name: "Products.storekit", file: "10-storekit-config.json")
+            }
+            @Step {
+                Xcode 스킴에서 StoreKit Configuration을 연결합니다.
+                @Code(name: "TestScheme.md", file: "10-scheme-setup.md")
+            }
+        }
+    }
+    
+    @Section(title: "Unit Test 작성") {
+        @ContentAndMedia {
+            SKTestSession을 사용하면 구매, 갱신, 환불 등
+            다양한 시나리오를 자동화된 테스트로 검증할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                StoreKit 테스트 환경을 설정합니다.
+                @Code(name: "StoreKitTests.swift", file: "10-test-setup.swift")
+            }
+            @Step {
+                구매 플로우를 테스트합니다.
+                @Code(name: "PurchaseTests.swift", file: "10-purchase-tests.swift")
+            }
+            @Step {
+                구독 갱신과 만료 시나리오를 테스트합니다.
+                @Code(name: "SubscriptionTests.swift", file: "10-subscription-tests.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sandbox 테스트") {
+        @ContentAndMedia {
+            프로덕션 배포 전 Sandbox 환경에서 
+            실제 App Store Connect 상품을 테스트합니다.
+            
+            Sandbox 특징:
+            - 실제 결제 없이 전체 플로우 테스트
+            - 구독 갱신 주기 단축 (1달 → 5분)
+            - 테스터 계정으로 반복 테스트 가능
+        }
+        
+        @Steps {
+            @Step {
+                Sandbox 테스터 계정을 설정하고 구독 갱신 주기를 확인합니다.
+                @Code(name: "SandboxTesting.md", file: "10-sandbox-guide.md")
+            }
+        }
+    }
+    
+    @Section(title: "에러 시나리오 테스트") {
+        @ContentAndMedia {
+            결제 실패, 네트워크 오류, 환불 등 
+            엣지 케이스를 시뮬레이션합니다.
+        }
+        
+        @Steps {
+            @Step {
+                다양한 실패 시나리오를 테스트합니다.
+                @Code(name: "ErrorTests.swift", file: "10-error-tests.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            StoreKit Configuration 파일의 가장 큰 장점은?
+            
+            @Choice(isCorrect: true) {
+                App Store Connect 설정 없이 로컬에서 테스트 가능
+                
+                @Justification(reaction: "정확합니다!") {
+                    Configuration 파일을 사용하면 네트워크나 
+                    App Store Connect 연결 없이 빠르게 개발/테스트할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실제 결제가 이루어집니다.
+                
+                @Justification(reaction: "아쉽네요!") {
+                    Configuration 파일은 시뮬레이션이며 실제 결제는 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                프로덕션 환경과 100% 동일합니다.
+                
+                @Justification(reaction: "다시 생각해보세요!") {
+                    Sandbox와 프로덕션 테스트도 함께 수행해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Sandbox에서 월간 구독의 갱신 주기는?
+            
+            @Choice(isCorrect: false) {
+                1시간
+                
+                @Justification(reaction: "다시 생각해보세요!") {
+                    더 짧은 주기로 빠르게 테스트할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                5분
+                
+                @Justification(reaction: "정확합니다!") {
+                    Sandbox에서는 1달 = 5분, 1년 = 1시간으로 단축됩니다.
+                    빠른 갱신 테스트가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1일
+                
+                @Justification(reaction: "아쉽네요!") {
+                    Sandbox는 더 빠른 갱신 주기를 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SKTestSession으로 할 수 없는 것은?
+            
+            @Choice(isCorrect: false) {
+                구매 시뮬레이션
+                
+                @Justification(reaction: "가능해요!") {
+                    SKTestSession.buyProduct()로 구매를 시뮬레이션합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                환불 시뮬레이션
+                
+                @Justification(reaction: "가능해요!") {
+                    SKTestSession.refundTransaction()으로 환불을 테스트합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                실제 Apple 서버 응답 테스트
+                
+                @Justification(reaction: "정확합니다!") {
+                    SKTestSession은 로컬 시뮬레이션입니다.
+                    실제 서버 응답은 Sandbox나 Production에서 테스트해야 합니다.
+                }
+            }
+        }
+    }
+}

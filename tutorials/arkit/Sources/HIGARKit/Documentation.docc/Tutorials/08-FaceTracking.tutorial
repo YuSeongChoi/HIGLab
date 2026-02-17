@@ -1,0 +1,66 @@
+@Tutorial(time: 25) {
+    @Intro(title: "얼굴 트래킹") {
+        전면 카메라로 얼굴을 추적하고 AR 효과를 적용합니다.
+    }
+    
+    @Section(title: "얼굴 메시 트래킹") {
+        @ContentAndMedia {
+            ARFaceTrackingConfiguration으로 얼굴의 기하학적 정보와 표정을 실시간으로 추적합니다. TrueDepth 카메라가 필요합니다.
+        }
+        @Steps {
+            @Step {
+                ARFaceTrackingConfiguration을 설정하고 얼굴 추적을 시작합니다.
+                @Code(name: "FaceTracking.swift", file: "08-facetracking.swift")
+            }
+            @Step {
+                ARFaceAnchor의 geometry로 얼굴 메시를 생성합니다.
+                @Code(name: "FaceTracking.swift", file: "08-facetracking-02.swift")
+            }
+            @Step {
+                얼굴에 커스텀 텍스처나 마스크를 오버레이합니다.
+                @Code(name: "FaceTracking.swift", file: "08-facetracking-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "표정 인식") {
+        @ContentAndMedia {
+            BlendShapes로 52개의 얼굴 표정 계수를 실시간으로 추적합니다.
+        }
+        @Steps {
+            @Step {
+                blendShapes 딕셔너리에서 표정 데이터를 읽어옵니다.
+                @Code(name: "FaceTracking.swift", file: "08-facetracking-04.swift")
+            }
+            @Step {
+                표정에 따라 캐릭터 애니메이션을 제어합니다.
+                @Code(name: "FaceTracking.swift", file: "08-facetracking-05.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ARKit 얼굴 트래킹에서 눈을 감은 정도를 나타내는 BlendShape 키는?
+            
+            @Choice(isCorrect: false) {
+                `.eyesClosed`
+                @Justification(reaction: "다시 생각해보세요.") {
+                    양쪽 눈을 한번에 나타내는 키는 없습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                `.eyeBlinkLeft` / `.eyeBlinkRight`
+                @Justification(reaction: "정답입니다! 🎉") {
+                    각 눈의 깜빡임은 개별 키로 추적되며, 0.0~1.0 사이의 값을 가집니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                `.eyeLookDown`
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 키는 눈이 아래를 보는 정도를 나타냅니다.
+                }
+            }
+        }
+    }
+}

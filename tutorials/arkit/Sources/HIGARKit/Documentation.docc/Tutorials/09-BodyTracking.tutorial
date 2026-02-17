@@ -1,0 +1,66 @@
+@Tutorial(time: 30) {
+    @Intro(title: "바디 트래킹") {
+        전신 포즈를 추적하여 AR 캐릭터 애니메이션과 모션 캡처를 구현합니다.
+    }
+    
+    @Section(title: "바디 트래킹 설정") {
+        @ContentAndMedia {
+            ARBodyTrackingConfiguration으로 사람의 전신 스켈레톤을 실시간 추적합니다. A12 Bionic 이상의 칩이 필요합니다.
+        }
+        @Steps {
+            @Step {
+                바디 트래킹 지원 여부를 확인하고 세션을 구성합니다.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking.swift")
+            }
+            @Step {
+                ARBodyAnchor에서 스켈레톤 조인트 정보를 추출합니다.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-02.swift")
+            }
+        }
+    }
+    
+    @Section(title: "캐릭터 애니메이션") {
+        @ContentAndMedia {
+            추적된 바디 포즈로 3D 캐릭터를 실시간으로 애니메이션합니다.
+        }
+        @Steps {
+            @Step {
+                BodyTrackedEntity로 캐릭터를 로딩합니다.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-03.swift")
+            }
+            @Step {
+                bodyAnchor에 캐릭터를 연결하여 동기화합니다.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-04.swift")
+            }
+            @Step {
+                특정 조인트의 위치를 활용하여 상호작용을 구현합니다.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-05.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ARBodyAnchor의 skeleton에서 조인트 위치를 얻을 때 반환되는 좌표계는?
+            
+            @Choice(isCorrect: false) {
+                월드 좌표계 (World Space)
+                @Justification(reaction: "다시 생각해보세요.") {
+                    조인트 위치는 루트 조인트 기준의 로컬 좌표입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                루트 조인트 기준 로컬 좌표계
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `skeleton.localTransform(for:)`은 hip(루트) 조인트 기준의 상대 좌표를 반환합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                카메라 좌표계 (Camera Space)
+                @Justification(reaction: "다시 생각해보세요.") {
+                    카메라 기준 좌표가 아닌 바디 루트 기준입니다.
+                }
+            }
+        }
+    }
+}

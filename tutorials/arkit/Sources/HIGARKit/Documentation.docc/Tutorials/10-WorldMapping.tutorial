@@ -1,0 +1,70 @@
+@Tutorial(time: 25) {
+    @Intro(title: "월드 맵 저장과 로드") {
+        AR 세션의 공간 매핑 데이터를 저장하고 복원하여 지속적인 AR 경험을 제공합니다.
+    }
+    
+    @Section(title: "월드 맵 저장") {
+        @ContentAndMedia {
+            ARWorldMap은 감지된 특징점, 앵커, 환경 정보를 담고 있어 나중에 같은 위치에서 AR 세션을 복원할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                현재 세션의 월드 맵 상태를 확인합니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping.swift")
+            }
+            @Step {
+                ARSession에서 월드 맵을 비동기로 가져옵니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-02.swift")
+            }
+            @Step {
+                ARWorldMap을 파일로 아카이브하여 저장합니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "월드 맵 복원") {
+        @ContentAndMedia {
+            저장된 월드 맵을 로드하여 이전 AR 세션의 공간을 재구성합니다.
+        }
+        @Steps {
+            @Step {
+                저장된 파일에서 ARWorldMap을 언아카이브합니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-04.swift")
+            }
+            @Step {
+                initialWorldMap을 설정하여 세션을 시작합니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-05.swift")
+            }
+            @Step {
+                재로컬라이제이션 상태를 모니터링합니다.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-06.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            월드 맵을 저장하기에 적합한 상태를 나타내는 ARFrame.WorldMappingStatus는?
+            
+            @Choice(isCorrect: false) {
+                `.notAvailable`
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 상태에서는 월드 맵을 가져올 수 없습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                `.limited`
+                @Justification(reaction: "다시 생각해보세요.") {
+                    제한된 데이터만 수집되어 신뢰성이 낮습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                `.mapped`
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `.mapped` 상태는 충분한 공간 데이터가 수집되어 저장에 적합합니다. `.extending`도 사용 가능합니다.
+                }
+            }
+        }
+    }
+}
