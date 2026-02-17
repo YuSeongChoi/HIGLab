@@ -1,0 +1,129 @@
+@Tutorial(time: 25) {
+    @Intro(title: "위치 컨텍스트") {
+        `LocationContext`를 활용하여 사용자의 현재 위치, 
+        자주 방문하는 장소, 이동 패턴에 따른 맞춤 콘텐츠를 제공합니다.
+        
+        @Image(source: "location-context-hero.png", alt: "위치 컨텍스트 개요")
+    }
+    
+    @Section(title: "LocationProvider 설정") {
+        @ContentAndMedia {
+            `LocationProvider`는 프라이버시를 보호하면서 
+            위치 기반 관련성을 계산합니다. 
+            정확한 위치 대신 의미 있는 장소 유형을 사용합니다.
+            
+            @Image(source: "location-provider.png", alt: "LocationProvider 구조")
+        }
+        
+        @Steps {
+            @Step {
+                `LocationProvider`를 초기화하고 권한을 요청합니다.
+                
+                @Code(name: "LocationProvider.swift", file: "06-location-01.swift")
+            }
+            
+            @Step {
+                위치 정확도 수준을 설정합니다. 
+                RelevanceKit은 프라이버시를 위해 대략적인 위치만 사용합니다.
+                
+                @Code(name: "LocationProvider.swift", file: "06-location-02.swift")
+            }
+            
+            @Step {
+                현재 위치 컨텍스트를 가져옵니다.
+                
+                @Code(name: "LocationProvider.swift", file: "06-location-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "장소 유형 기반 추천") {
+        @ContentAndMedia {
+            `PlaceType`을 사용하여 집, 직장, 카페 등 
+            장소 유형에 따른 콘텐츠를 추천합니다.
+        }
+        
+        @Steps {
+            @Step {
+                콘텐츠에 적합한 장소 유형을 태그합니다.
+                
+                @Code(name: "PlaceType.swift", file: "06-place-01.swift")
+            }
+            
+            @Step {
+                현재 장소 유형에 맞는 콘텐츠를 필터링합니다.
+                
+                @Code(name: "PlaceType.swift", file: "06-place-02.swift")
+            }
+            
+            @Step {
+                장소 유형별 가중치를 설정하여 점수를 조절합니다.
+                
+                @Code(name: "PlaceType.swift", file: "06-place-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지오펜스 기반 트리거") {
+        @ContentAndMedia {
+            `RelevanceGeofence`를 사용하여 특정 영역 진입/이탈 시 
+            관련 콘텐츠를 자동으로 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                지오펜스 영역을 정의합니다.
+                
+                @Code(name: "Geofence.swift", file: "06-geo-01.swift")
+            }
+            
+            @Step {
+                지오펜스 이벤트에 콘텐츠를 연결합니다.
+                
+                @Code(name: "Geofence.swift", file: "06-geo-02.swift")
+            }
+            
+            @Step {
+                지오펜스 트리거를 `ContentScorer`와 통합합니다.
+                
+                @Code(name: "Geofence.swift", file: "06-geo-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이동 상태 감지") {
+        @ContentAndMedia {
+            사용자가 걷기, 운전, 대중교통 이용 중인지 감지하여 
+            상황에 맞는 콘텐츠를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `MotionContext`를 사용하여 이동 상태를 감지합니다.
+                
+                @Code(name: "Motion.swift", file: "06-motion-01.swift")
+            }
+            
+            @Step {
+                이동 상태에 따른 콘텐츠 필터를 적용합니다.
+                
+                @Code(name: "Motion.swift", file: "06-motion-02.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            RelevanceKit의 LocationProvider가 프라이버시를 보호하는 방법은?
+            
+            @Choice(isCorrect: false) { 위치 데이터를 서버로 전송하지 않음 }
+            @Choice(isCorrect: true) { 정확한 좌표 대신 장소 유형을 사용 }
+            @Choice(isCorrect: false) { 위치 권한을 요청하지 않음 }
+            
+            @Justification(reaction: "정답입니다!") {
+                RelevanceKit은 정확한 GPS 좌표 대신 '집', '직장', '카페' 같은 
+                의미 있는 장소 유형을 사용하여 프라이버시를 보호합니다.
+            }
+        }
+    }
+}

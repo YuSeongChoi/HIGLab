@@ -1,0 +1,155 @@
+@Tutorial(time: 40) {
+    @Intro(title: "권한 관리 베스트 프랙티스") {
+        iOS 26 앱 개발에서 사용하는 권한 관리의 베스트 프랙티스와 디자인 패턴을 학습합니다.
+        재사용 가능한 권한 관리 아키텍처와 테스트 전략을 구축합니다.
+        
+        @Image(source: "patterns-hero.png", alt: "권한 관리 패턴")
+    }
+    
+    @Section(title: "권한 관리 아키텍처") {
+        @ContentAndMedia {
+            앱 전체에서 일관된 권한 관리를 위한 아키텍처를 설계합니다.
+            MVVM 패턴과 PermissionKit을 조합하여 깔끔한 구조를 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                권한 상태를 중앙에서 관리하는 PermissionManager를 구현합니다.
+                
+                @Code(name: "PermissionManager.swift", file: "10-permission-manager.swift")
+            }
+            
+            @Step {
+                의존성 주입을 위한 Environment Key를 정의합니다.
+                
+                @Code(name: "PermissionEnvironment.swift", file: "10-permission-environment.swift")
+            }
+            
+            @Step {
+                SwiftUI 뷰에서 권한 상태를 구독하는 패턴을 구현합니다.
+                
+                @Code(name: "PermissionObserver.swift", file: "10-permission-observer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재사용 가능한 권한 컴포넌트") {
+        @ContentAndMedia {
+            다양한 권한 유형에 대응하는 범용 UI 컴포넌트를 만듭니다.
+            제네릭과 프로토콜을 활용하여 유연한 설계를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                권한 타입을 추상화하는 프로토콜을 정의합니다.
+                
+                @Code(name: "PermissionProtocol.swift", file: "10-permission-protocol.swift")
+            }
+            
+            @Step {
+                범용 권한 요청 뷰 컴포넌트를 만듭니다.
+                
+                @Code(name: "GenericPermissionView.swift", file: "10-generic-permission-view.swift")
+            }
+            
+            @Step {
+                ViewModifier로 권한 체크를 래핑합니다.
+                
+                @Code(name: "PermissionModifier.swift", file: "10-permission-modifier.swift")
+            }
+        }
+    }
+    
+    @Section(title: "에러 처리와 복구") {
+        @ContentAndMedia {
+            권한 관련 에러를 우아하게 처리하고 사용자에게 명확한 피드백을 제공합니다.
+            네트워크 오류, 시스템 오류 등 다양한 상황에 대응합니다.
+        }
+        
+        @Steps {
+            @Step {
+                권한 에러 타입을 정의하고 처리합니다.
+                
+                @Code(name: "PermissionError.swift", file: "10-permission-error.swift")
+            }
+            
+            @Step {
+                사용자 친화적인 에러 메시지를 표시합니다.
+                
+                @Code(name: "ErrorHandling.swift", file: "10-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "테스트 전략") {
+        @ContentAndMedia {
+            권한 로직을 효과적으로 테스트하기 위한 모킹 전략을 학습합니다.
+            실제 시스템 권한 없이도 다양한 시나리오를 테스트할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                테스트를 위한 권한 Mock 객체를 만듭니다.
+                
+                @Code(name: "MockPermission.swift", file: "10-mock-permission.swift")
+            }
+            
+            @Step {
+                다양한 권한 시나리오에 대한 유닛 테스트를 작성합니다.
+                
+                @Code(name: "PermissionTests.swift", file: "10-permission-tests.swift")
+            }
+            
+            @Step {
+                SwiftUI Preview에서 권한 상태를 시뮬레이션합니다.
+                
+                @Code(name: "PreviewHelpers.swift", file: "10-preview-helpers.swift")
+            }
+        }
+    }
+    
+    @Section(title: "성능 최적화") {
+        @ContentAndMedia {
+            권한 체크의 성능을 최적화하고 불필요한 호출을 줄입니다.
+            캐싱과 배치 처리로 앱 시작 시간을 단축합니다.
+        }
+        
+        @Steps {
+            @Step {
+                권한 상태 캐싱과 최적화 전략을 구현합니다.
+                
+                @Code(name: "PermissionCache.swift", file: "10-permission-cache.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            권한 로직을 테스트할 때 가장 좋은 방법은?
+            
+            @Choice(isCorrect: false) {
+                실제 기기에서만 테스트
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    실제 기기 테스트는 느리고 자동화하기 어렵습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                프로토콜과 Mock 객체를 사용한 단위 테스트
+                
+                @Justification(reaction: "정답입니다!") {
+                    Mock을 사용하면 다양한 시나리오를 빠르게 테스트할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                테스트 불필요
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    권한 로직도 반드시 테스트해야 합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,117 @@
+@Tutorial(time: 30) {
+    @Intro(title: "위치 권한 마스터하기") {
+        iOS 26 PermissionKit을 활용하여 위치 권한의 다양한 유형을 학습합니다.
+        "앱 사용 중", "항상 허용", 정확한 위치 vs 대략적 위치 등
+        복잡한 위치 권한 시나리오를 효과적으로 처리하는 방법을 배웁니다.
+        
+        @Image(source: "location-hero.png", alt: "위치 권한 관리")
+    }
+    
+    @Section(title: "위치 권한의 종류 이해하기") {
+        @ContentAndMedia {
+            iOS의 위치 권한은 여러 단계로 나뉩니다:
+            - **When In Use**: 앱 사용 중에만 위치 접근
+            - **Always**: 백그라운드에서도 위치 접근
+            - **Precise/Reduced**: 정확한 위치 vs 대략적 위치
+            
+            각 권한 유형의 차이점과 적절한 사용 시나리오를 이해합니다.
+        }
+        
+        @Steps {
+            @Step {
+                위치 권한 관련 Info.plist 키들을 추가합니다.
+                사용하는 권한 유형에 따라 필요한 키가 다릅니다.
+                
+                @Code(name: "Info.plist", file: "05-location-plist.swift")
+            }
+            
+            @Step {
+                `LocationPermission`의 다양한 상태를 처리하는 열거형을 정의합니다.
+                
+                @Code(name: "LocationStatus.swift", file: "05-location-status.swift")
+            }
+        }
+    }
+    
+    @Section(title: "'앱 사용 중' 위치 권한") {
+        @ContentAndMedia {
+            대부분의 앱에서 사용하는 기본 위치 권한입니다.
+            앱이 포그라운드에 있을 때만 위치에 접근할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                `LocationPermission.whenInUse`로 기본 위치 권한을 요청합니다.
+                
+                @Code(name: "WhenInUse.swift", file: "05-when-in-use.swift")
+            }
+            
+            @Step {
+                위치 정보를 가져와 지도에 표시하는 뷰를 구현합니다.
+                
+                @Code(name: "MapView.swift", file: "05-map-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "'항상 허용' 위치 권한") {
+        @ContentAndMedia {
+            백그라운드 위치 추적이 필요한 앱(피트니스, 내비게이션 등)에서 사용합니다.
+            Apple의 가이드라인에 따라 신중하게 요청해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                '항상 허용' 권한은 단계적으로 요청하는 것이 권장됩니다.
+                먼저 'When In Use'를 획득한 후 'Always'로 업그레이드합니다.
+                
+                @Code(name: "AlwaysLocation.swift", file: "05-always-location.swift")
+            }
+        }
+    }
+    
+    @Section(title: "정확도 권한 관리") {
+        @ContentAndMedia {
+            iOS 14부터 사용자는 정확한 위치 대신 대략적 위치만 제공할 수 있습니다.
+            앱에서 정확한 위치가 필요한 경우 일시적으로 요청할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                위치 정확도를 확인하고 필요시 정확한 위치를 요청합니다.
+                
+                @Code(name: "Accuracy.swift", file: "05-accuracy.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            백그라운드 위치 추적에 필요한 권한은?
+            
+            @Choice(isCorrect: false) {
+                When In Use
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    When In Use는 앱이 포그라운드에 있을 때만 동작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Always
+                
+                @Justification(reaction: "정답입니다!") {
+                    백그라운드 추적에는 Always 권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Precise Location
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    정확도와 백그라운드 권한은 별개입니다.
+                }
+            }
+        }
+    }
+}

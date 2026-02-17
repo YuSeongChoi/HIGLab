@@ -1,0 +1,104 @@
+@Tutorial(time: 25) {
+    @Intro(title: "카메라 & 마이크 권한") {
+        iOS 26의 PermissionKit을 사용하여 카메라와 마이크 권한을 요청하고 관리하는 방법을 학습합니다.
+        사진 촬영, 동영상 녹화, 음성 녹음 등 미디어 기능에 필수적인 권한 처리를 구현합니다.
+        
+        @Image(source: "camera-microphone-hero.png", alt: "카메라와 마이크 권한 관리")
+    }
+    
+    @Section(title: "카메라 권한 요청하기") {
+        @ContentAndMedia {
+            카메라 접근 권한은 사진 촬영이나 QR 코드 스캔 등의 기능에 필수입니다.
+            PermissionKit의 `CameraPermission`을 사용하여 권한 상태를 확인하고 요청합니다.
+        }
+        
+        @Steps {
+            @Step {
+                먼저 Info.plist에 카메라 사용 목적을 설명하는 키를 추가합니다.
+                `NSCameraUsageDescription` 키에 사용자에게 표시될 설명을 입력합니다.
+                
+                @Code(name: "Info.plist", file: "04-camera-plist.swift")
+            }
+            
+            @Step {
+                `CameraPermission`을 사용하여 현재 권한 상태를 확인합니다.
+                `.notDetermined`, `.authorized`, `.denied` 등의 상태를 처리합니다.
+                
+                @Code(name: "CameraPermission.swift", file: "04-camera-status.swift")
+            }
+            
+            @Step {
+                권한이 결정되지 않은 경우 시스템 다이얼로그를 통해 권한을 요청합니다.
+                `async/await` 패턴으로 간결하게 구현할 수 있습니다.
+                
+                @Code(name: "CameraRequest.swift", file: "04-camera-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "마이크 권한 관리") {
+        @ContentAndMedia {
+            마이크 권한은 음성 녹음, 영상 통화, 음성 메모 등에 필요합니다.
+            iOS 26에서는 `MicrophonePermission`으로 간편하게 관리할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                마이크 권한을 위한 `NSMicrophoneUsageDescription` 키를 추가합니다.
+                
+                @Code(name: "Info.plist", file: "04-microphone-plist.swift")
+            }
+            
+            @Step {
+                `MicrophonePermission`으로 권한을 요청하고 결과에 따라 UI를 업데이트합니다.
+                
+                @Code(name: "MicrophonePermission.swift", file: "04-microphone-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "카메라 & 마이크 동시 요청") {
+        @ContentAndMedia {
+            동영상 녹화와 같이 카메라와 마이크가 모두 필요한 경우,
+            `PermissionGroup`을 사용하여 효율적으로 권한을 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `PermissionGroup`으로 여러 권한을 한 번에 관리하는 뷰를 구현합니다.
+                
+                @Code(name: "MediaPermissions.swift", file: "04-media-combined.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            카메라 권한 요청 전에 반드시 필요한 것은?
+            
+            @Choice(isCorrect: false) {
+                앱 재시작
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    앱 재시작은 필요하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Info.plist에 NSCameraUsageDescription 추가
+                
+                @Justification(reaction: "정답입니다!") {
+                    시스템 다이얼로그에 표시될 설명이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사용자 로그인
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    로그인과 권한 요청은 무관합니다.
+                }
+            }
+        }
+    }
+}

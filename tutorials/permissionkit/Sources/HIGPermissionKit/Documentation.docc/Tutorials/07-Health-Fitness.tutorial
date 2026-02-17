@@ -1,0 +1,119 @@
+@Tutorial(time: 30) {
+    @Intro(title: "건강 & 피트니스 권한") {
+        HealthKit을 통한 건강 데이터 접근 권한을 관리합니다.
+        iOS 26 PermissionKit으로 걸음 수, 심박수, 수면 데이터 등
+        민감한 건강 정보에 안전하게 접근하는 방법을 학습합니다.
+        
+        @Image(source: "health-fitness-hero.png", alt: "건강과 피트니스 권한")
+    }
+    
+    @Section(title: "HealthKit 권한의 특수성") {
+        @ContentAndMedia {
+            HealthKit 권한은 다른 권한과 다르게 동작합니다:
+            - **읽기/쓰기 권한 분리**: 데이터 유형별로 읽기와 쓰기 권한을 따로 요청
+            - **권한 상태 비공개**: 사용자 프라이버시를 위해 거부 상태를 앱에서 확인 불가
+            - **세분화된 권한**: 각 데이터 유형별로 개별 권한 관리
+        }
+        
+        @Steps {
+            @Step {
+                HealthKit 사용을 위한 Info.plist 키와 Capability를 설정합니다.
+                
+                @Code(name: "Info.plist", file: "07-health-plist.swift")
+            }
+            
+            @Step {
+                접근할 건강 데이터 유형을 정의합니다.
+                
+                @Code(name: "HealthTypes.swift", file: "07-health-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "건강 데이터 읽기 권한") {
+        @ContentAndMedia {
+            걸음 수, 심박수, 칼로리 등의 건강 데이터를 읽기 위한 권한을 요청합니다.
+            사용자가 어떤 데이터를 공유했는지 앱에서는 알 수 없습니다.
+        }
+        
+        @Steps {
+            @Step {
+                `HealthPermission`으로 읽기 권한을 요청합니다.
+                
+                @Code(name: "HealthRead.swift", file: "07-health-read.swift")
+            }
+            
+            @Step {
+                권한 획득 후 건강 데이터를 쿼리합니다.
+                
+                @Code(name: "HealthQuery.swift", file: "07-health-query.swift")
+            }
+        }
+    }
+    
+    @Section(title: "건강 데이터 쓰기 권한") {
+        @ContentAndMedia {
+            운동 기록, 수면 분석 결과 등을 HealthKit에 저장하기 위한 권한입니다.
+            쓰기 권한은 읽기 권한과 별도로 요청해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                쓰기 권한을 포함한 복합 권한 요청을 구현합니다.
+                
+                @Code(name: "HealthWrite.swift", file: "07-health-write.swift")
+            }
+            
+            @Step {
+                운동 데이터를 HealthKit에 저장하는 기능을 구현합니다.
+                
+                @Code(name: "WorkoutSave.swift", file: "07-workout-save.swift")
+            }
+        }
+    }
+    
+    @Section(title: "모션 & 피트니스 권한") {
+        @ContentAndMedia {
+            CoreMotion을 통한 가속도계, 만보계 데이터 접근 권한입니다.
+            HealthKit과는 별도의 권한 체계를 가집니다.
+        }
+        
+        @Steps {
+            @Step {
+                모션 데이터 접근 권한을 요청합니다.
+                
+                @Code(name: "MotionPermission.swift", file: "07-motion-permission.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            HealthKit 권한의 특수한 점은?
+            
+            @Choice(isCorrect: false) {
+                한 번에 모든 데이터 접근 가능
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    각 데이터 유형별로 개별 권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                권한 거부 상태를 앱에서 확인할 수 없음
+                
+                @Justification(reaction: "정답입니다!") {
+                    사용자 프라이버시 보호를 위해 거부 상태는 숨겨집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드에서 자동 갱신
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이는 권한과 별개의 기능입니다.
+                }
+            }
+        }
+    }
+}
