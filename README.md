@@ -281,4 +281,18 @@ MIT License. 자유롭게 사용하세요.
 
 ---
 
+## 🤖 AI Agents 지원
+
+AI 에이전트가 콘텐츠를 효율적으로 소비할 수 있도록 [llms.txt](https://m1zz.github.io/HIGLab/llms.txt) 표준을 지원합니다.
+
+| 엔드포인트 | 설명 |
+|-----------|------|
+| [`/llms.txt`](https://m1zz.github.io/HIGLab/llms.txt) | 프로젝트 요약 + 50개 AI Reference 링크 |
+| [`/llms-full.txt`](https://m1zz.github.io/HIGLab/llms-full.txt) | 50개 AI Reference 합본 (마크다운) |
+| [`/ai-reference/*.md`](https://m1zz.github.io/HIGLab/ai-reference/) | 개별 프레임워크 참조 문서 |
+
+> 💡 Claude, GPT, Cursor 등에서 `llms.txt` URL을 제공하면 정확한 iOS 코드 생성이 가능합니다.
+
+---
+
 Made with ❤️ by [개발자리](https://youtube.com/@devjari)
