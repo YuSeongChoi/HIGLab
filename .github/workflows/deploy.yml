@@ -48,7 +48,7 @@ jobs:
           cp -r site/* deploy/
 
       # ========================================
-      # 📚 DocC: Widgets
+      # 📚 Phase 1: App Frameworks
       # ========================================
       - name: Build DocC - Widgets
         run: |
@@ -64,9 +64,6 @@ jobs:
             --output-path ../../deploy/tutorials/widgets \
             --hosting-base-path HIGLab/tutorials/widgets
 
-      # ========================================
-      # 📚 DocC: ActivityKit
-      # ========================================
       - name: Build DocC - ActivityKit
         run: |
           cd tutorials/activitykit
@@ -81,9 +78,6 @@ jobs:
             --output-path ../../deploy/tutorials/activitykit \
             --hosting-base-path HIGLab/tutorials/activitykit
 
-      # ========================================
-      # 📚 DocC: App Intents
-      # ========================================
       - name: Build DocC - AppIntents
         run: |
           cd tutorials/appintents
@@ -98,8 +92,64 @@ jobs:
             --output-path ../../deploy/tutorials/appintents \
             --hosting-base-path HIGLab/tutorials/appintents
 
+      - name: Build DocC - SwiftUI
+        run: |
+          cd tutorials/swiftui
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGSwiftUI \
+            -derivedDataPath /tmp/docbuild-swiftui \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-swiftui/Build/Products/Debug/HIGSwiftUI.doccarchive \
+            --output-path ../../deploy/tutorials/swiftui \
+            --hosting-base-path HIGLab/tutorials/swiftui
+
+      - name: Build DocC - SwiftData
+        run: |
+          cd tutorials/swiftdata
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGSwiftData \
+            -derivedDataPath /tmp/docbuild-swiftdata \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-swiftdata/Build/Products/Debug/HIGSwiftData.doccarchive \
+            --output-path ../../deploy/tutorials/swiftdata \
+            --hosting-base-path HIGLab/tutorials/swiftdata
+
+      - name: Build DocC - Observation
+        run: |
+          cd tutorials/observation
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGObservation \
+            -derivedDataPath /tmp/docbuild-observation \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-observation/Build/Products/Debug/HIGObservation.doccarchive \
+            --output-path ../../deploy/tutorials/observation \
+            --hosting-base-path HIGLab/tutorials/observation
+
+      - name: Build DocC - FoundationModels
+        run: |
+          cd tutorials/foundationmodels
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGFoundationModels \
+            -derivedDataPath /tmp/docbuild-foundationmodels \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-foundationmodels/Build/Products/Debug/HIGFoundationModels.doccarchive \
+            --output-path ../../deploy/tutorials/foundationmodels \
+            --hosting-base-path HIGLab/tutorials/foundationmodels
+
       # ========================================
-      # 📚 DocC: StoreKit
+      # 📚 Phase 2: App Services
       # ========================================
       - name: Build DocC - StoreKit
         run: |
@@ -115,8 +165,176 @@ jobs:
             --output-path ../../deploy/tutorials/storekit \
             --hosting-base-path HIGLab/tutorials/storekit
 
+      - name: Build DocC - PassKit
+        run: |
+          cd tutorials/passkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGPassKit \
+            -derivedDataPath /tmp/docbuild-passkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-passkit/Build/Products/Debug/HIGPassKit.doccarchive \
+            --output-path ../../deploy/tutorials/passkit \
+            --hosting-base-path HIGLab/tutorials/passkit
+
+      - name: Build DocC - CloudKit
+        run: |
+          cd tutorials/cloudkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCloudKit \
+            -derivedDataPath /tmp/docbuild-cloudkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-cloudkit/Build/Products/Debug/HIGCloudKit.doccarchive \
+            --output-path ../../deploy/tutorials/cloudkit \
+            --hosting-base-path HIGLab/tutorials/cloudkit
+
+      - name: Build DocC - AuthServices
+        run: |
+          cd tutorials/authservices
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGAuthServices \
+            -derivedDataPath /tmp/docbuild-authservices \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-authservices/Build/Products/Debug/HIGAuthServices.doccarchive \
+            --output-path ../../deploy/tutorials/authservices \
+            --hosting-base-path HIGLab/tutorials/authservices
+
+      - name: Build DocC - HealthKit
+        run: |
+          cd tutorials/healthkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGHealthKit \
+            -derivedDataPath /tmp/docbuild-healthkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-healthkit/Build/Products/Debug/HIGHealthKit.doccarchive \
+            --output-path ../../deploy/tutorials/healthkit \
+            --hosting-base-path HIGLab/tutorials/healthkit
+
+      - name: Build DocC - WeatherKit
+        run: |
+          cd tutorials/weatherkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGWeatherKit \
+            -derivedDataPath /tmp/docbuild-weatherkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-weatherkit/Build/Products/Debug/HIGWeatherKit.doccarchive \
+            --output-path ../../deploy/tutorials/weatherkit \
+            --hosting-base-path HIGLab/tutorials/weatherkit
+
+      - name: Build DocC - MapKit
+        run: |
+          cd tutorials/mapkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGMapKit \
+            -derivedDataPath /tmp/docbuild-mapkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-mapkit/Build/Products/Debug/HIGMapKit.doccarchive \
+            --output-path ../../deploy/tutorials/mapkit \
+            --hosting-base-path HIGLab/tutorials/mapkit
+
+      - name: Build DocC - CoreLocation
+        run: |
+          cd tutorials/corelocation
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCoreLocation \
+            -derivedDataPath /tmp/docbuild-corelocation \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-corelocation/Build/Products/Debug/HIGCoreLocation.doccarchive \
+            --output-path ../../deploy/tutorials/corelocation \
+            --hosting-base-path HIGLab/tutorials/corelocation
+
+      - name: Build DocC - CoreML
+        run: |
+          cd tutorials/coreml
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCoreML \
+            -derivedDataPath /tmp/docbuild-coreml \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-coreml/Build/Products/Debug/HIGCoreML.doccarchive \
+            --output-path ../../deploy/tutorials/coreml \
+            --hosting-base-path HIGLab/tutorials/coreml
+
+      - name: Build DocC - Vision
+        run: |
+          cd tutorials/vision
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGVision \
+            -derivedDataPath /tmp/docbuild-vision \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-vision/Build/Products/Debug/HIGVision.doccarchive \
+            --output-path ../../deploy/tutorials/vision \
+            --hosting-base-path HIGLab/tutorials/vision
+
+      - name: Build DocC - Notifications
+        run: |
+          cd tutorials/notifications
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGNotifications \
+            -derivedDataPath /tmp/docbuild-notifications \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-notifications/Build/Products/Debug/HIGNotifications.doccarchive \
+            --output-path ../../deploy/tutorials/notifications \
+            --hosting-base-path HIGLab/tutorials/notifications
+
+      - name: Build DocC - TipKit
+        run: |
+          cd tutorials/tipkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGTipKit \
+            -derivedDataPath /tmp/docbuild-tipkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-tipkit/Build/Products/Debug/HIGTipKit.doccarchive \
+            --output-path ../../deploy/tutorials/tipkit \
+            --hosting-base-path HIGLab/tutorials/tipkit
+
+      - name: Build DocC - SharePlay
+        run: |
+          cd tutorials/shareplay
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGSharePlay \
+            -derivedDataPath /tmp/docbuild-shareplay \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-shareplay/Build/Products/Debug/HIGSharePlay.doccarchive \
+            --output-path ../../deploy/tutorials/shareplay \
+            --hosting-base-path HIGLab/tutorials/shareplay
+
       # ========================================
-      # 📚 DocC: ARKit
+      # 📚 Phase 3: Graphics & Media
       # ========================================
       - name: Build DocC - ARKit
         run: |
@@ -132,8 +350,176 @@ jobs:
             --output-path ../../deploy/tutorials/arkit \
             --hosting-base-path HIGLab/tutorials/arkit
 
+      - name: Build DocC - RealityKit
+        run: |
+          cd tutorials/realitykit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGRealityKit \
+            -derivedDataPath /tmp/docbuild-realitykit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-realitykit/Build/Products/Debug/HIGRealityKit.doccarchive \
+            --output-path ../../deploy/tutorials/realitykit \
+            --hosting-base-path HIGLab/tutorials/realitykit
+
+      - name: Build DocC - SpriteKit
+        run: |
+          cd tutorials/spritekit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGSpriteKit \
+            -derivedDataPath /tmp/docbuild-spritekit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-spritekit/Build/Products/Debug/HIGSpriteKit.doccarchive \
+            --output-path ../../deploy/tutorials/spritekit \
+            --hosting-base-path HIGLab/tutorials/spritekit
+
+      - name: Build DocC - CoreImage
+        run: |
+          cd tutorials/coreimage
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCoreImage \
+            -derivedDataPath /tmp/docbuild-coreimage \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-coreimage/Build/Products/Debug/HIGCoreImage.doccarchive \
+            --output-path ../../deploy/tutorials/coreimage \
+            --hosting-base-path HIGLab/tutorials/coreimage
+
+      - name: Build DocC - PencilKit
+        run: |
+          cd tutorials/pencilkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGPencilKit \
+            -derivedDataPath /tmp/docbuild-pencilkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-pencilkit/Build/Products/Debug/HIGPencilKit.doccarchive \
+            --output-path ../../deploy/tutorials/pencilkit \
+            --hosting-base-path HIGLab/tutorials/pencilkit
+
+      - name: Build DocC - PDFKit
+        run: |
+          cd tutorials/pdfkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGPDFKit \
+            -derivedDataPath /tmp/docbuild-pdfkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-pdfkit/Build/Products/Debug/HIGPDFKit.doccarchive \
+            --output-path ../../deploy/tutorials/pdfkit \
+            --hosting-base-path HIGLab/tutorials/pdfkit
+
+      - name: Build DocC - AVFoundation
+        run: |
+          cd tutorials/avfoundation
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGAVFoundation \
+            -derivedDataPath /tmp/docbuild-avfoundation \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-avfoundation/Build/Products/Debug/HIGAVFoundation.doccarchive \
+            --output-path ../../deploy/tutorials/avfoundation \
+            --hosting-base-path HIGLab/tutorials/avfoundation
+
+      - name: Build DocC - AVKit
+        run: |
+          cd tutorials/avkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGAVKit \
+            -derivedDataPath /tmp/docbuild-avkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-avkit/Build/Products/Debug/HIGAVKit.doccarchive \
+            --output-path ../../deploy/tutorials/avkit \
+            --hosting-base-path HIGLab/tutorials/avkit
+
+      - name: Build DocC - MusicKit
+        run: |
+          cd tutorials/musickit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGMusicKit \
+            -derivedDataPath /tmp/docbuild-musickit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-musickit/Build/Products/Debug/HIGMusicKit.doccarchive \
+            --output-path ../../deploy/tutorials/musickit \
+            --hosting-base-path HIGLab/tutorials/musickit
+
+      - name: Build DocC - PhotosUI
+        run: |
+          cd tutorials/photosui
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGPhotosUI \
+            -derivedDataPath /tmp/docbuild-photosui \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-photosui/Build/Products/Debug/HIGPhotosUI.doccarchive \
+            --output-path ../../deploy/tutorials/photosui \
+            --hosting-base-path HIGLab/tutorials/photosui
+
+      - name: Build DocC - CoreHaptics
+        run: |
+          cd tutorials/corehaptics
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCoreHaptics \
+            -derivedDataPath /tmp/docbuild-corehaptics \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-corehaptics/Build/Products/Debug/HIGCoreHaptics.doccarchive \
+            --output-path ../../deploy/tutorials/corehaptics \
+            --hosting-base-path HIGLab/tutorials/corehaptics
+
+      - name: Build DocC - ShazamKit
+        run: |
+          cd tutorials/shazamkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGShazamKit \
+            -derivedDataPath /tmp/docbuild-shazamkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-shazamkit/Build/Products/Debug/HIGShazamKit.doccarchive \
+            --output-path ../../deploy/tutorials/shazamkit \
+            --hosting-base-path HIGLab/tutorials/shazamkit
+
+      - name: Build DocC - ImagePlayground
+        run: |
+          cd tutorials/imageplayground
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGImagePlayground \
+            -derivedDataPath /tmp/docbuild-imageplayground \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-imageplayground/Build/Products/Debug/HIGImagePlayground.doccarchive \
+            --output-path ../../deploy/tutorials/imageplayground \
+            --hosting-base-path HIGLab/tutorials/imageplayground
+
       # ========================================
-      # 📚 DocC: Bluetooth
+      # 📚 Phase 4: System & Network
       # ========================================
       - name: Build DocC - Bluetooth
         run: |
@@ -149,22 +535,204 @@ jobs:
             --output-path ../../deploy/tutorials/bluetooth \
             --hosting-base-path HIGLab/tutorials/bluetooth
 
-      # ========================================
-      # 📚 DocC: Foundation Models
-      # ========================================
-      - name: Build DocC - FoundationModels
+      - name: Build DocC - CoreNFC
         run: |
-          cd tutorials/foundationmodels
+          cd tutorials/corenfc
           swift package resolve
           xcodebuild docbuild \
-            -scheme HIGFoundationModels \
-            -derivedDataPath /tmp/docbuild-foundationmodels \
+            -scheme HIGCoreNFC \
+            -derivedDataPath /tmp/docbuild-corenfc \
             -destination 'platform=macOS'
           $(xcrun --find docc) process-archive \
             transform-for-static-hosting \
-            /tmp/docbuild-foundationmodels/Build/Products/Debug/HIGFoundationModels.doccarchive \
-            --output-path ../../deploy/tutorials/foundationmodels \
-            --hosting-base-path HIGLab/tutorials/foundationmodels
+            /tmp/docbuild-corenfc/Build/Products/Debug/HIGCoreNFC.doccarchive \
+            --output-path ../../deploy/tutorials/corenfc \
+            --hosting-base-path HIGLab/tutorials/corenfc
+
+      - name: Build DocC - MultipeerConnectivity
+        run: |
+          cd tutorials/multipeer
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGMultipeer \
+            -derivedDataPath /tmp/docbuild-multipeer \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-multipeer/Build/Products/Debug/HIGMultipeer.doccarchive \
+            --output-path ../../deploy/tutorials/multipeer \
+            --hosting-base-path HIGLab/tutorials/multipeer
+
+      - name: Build DocC - Network
+        run: |
+          cd tutorials/network
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGNetwork \
+            -derivedDataPath /tmp/docbuild-network \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-network/Build/Products/Debug/HIGNetwork.doccarchive \
+            --output-path ../../deploy/tutorials/network \
+            --hosting-base-path HIGLab/tutorials/network
+
+      - name: Build DocC - LocalAuthentication
+        run: |
+          cd tutorials/localauth
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGLocalAuth \
+            -derivedDataPath /tmp/docbuild-localauth \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-localauth/Build/Products/Debug/HIGLocalAuth.doccarchive \
+            --output-path ../../deploy/tutorials/localauth \
+            --hosting-base-path HIGLab/tutorials/localauth
+
+      - name: Build DocC - CryptoKit
+        run: |
+          cd tutorials/cryptokit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCryptoKit \
+            -derivedDataPath /tmp/docbuild-cryptokit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-cryptokit/Build/Products/Debug/HIGCryptoKit.doccarchive \
+            --output-path ../../deploy/tutorials/cryptokit \
+            --hosting-base-path HIGLab/tutorials/cryptokit
+
+      - name: Build DocC - CallKit
+        run: |
+          cd tutorials/callkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGCallKit \
+            -derivedDataPath /tmp/docbuild-callkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-callkit/Build/Products/Debug/HIGCallKit.doccarchive \
+            --output-path ../../deploy/tutorials/callkit \
+            --hosting-base-path HIGLab/tutorials/callkit
+
+      - name: Build DocC - EventKit
+        run: |
+          cd tutorials/eventkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGEventKit \
+            -derivedDataPath /tmp/docbuild-eventkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-eventkit/Build/Products/Debug/HIGEventKit.doccarchive \
+            --output-path ../../deploy/tutorials/eventkit \
+            --hosting-base-path HIGLab/tutorials/eventkit
+
+      - name: Build DocC - Contacts
+        run: |
+          cd tutorials/contacts
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGContacts \
+            -derivedDataPath /tmp/docbuild-contacts \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-contacts/Build/Products/Debug/HIGContacts.doccarchive \
+            --output-path ../../deploy/tutorials/contacts \
+            --hosting-base-path HIGLab/tutorials/contacts
+
+      - name: Build DocC - WiFiAware
+        run: |
+          cd tutorials/wifiaware
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGWiFiAware \
+            -derivedDataPath /tmp/docbuild-wifiaware \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-wifiaware/Build/Products/Debug/HIGWiFiAware.doccarchive \
+            --output-path ../../deploy/tutorials/wifiaware \
+            --hosting-base-path HIGLab/tutorials/wifiaware
+
+      # ========================================
+      # 📚 Phase 5: iOS 26 신규 기술
+      # ========================================
+      - name: Build DocC - VisualIntelligence
+        run: |
+          cd tutorials/visualintelligence
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGVisualIntelligence \
+            -derivedDataPath /tmp/docbuild-visualintelligence \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-visualintelligence/Build/Products/Debug/HIGVisualIntelligence.doccarchive \
+            --output-path ../../deploy/tutorials/visualintelligence \
+            --hosting-base-path HIGLab/tutorials/visualintelligence
+
+      - name: Build DocC - AlarmKit
+        run: |
+          cd tutorials/alarmkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGAlarmKit \
+            -derivedDataPath /tmp/docbuild-alarmkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-alarmkit/Build/Products/Debug/HIGAlarmKit.doccarchive \
+            --output-path ../../deploy/tutorials/alarmkit \
+            --hosting-base-path HIGLab/tutorials/alarmkit
+
+      - name: Build DocC - EnergyKit
+        run: |
+          cd tutorials/energykit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGEnergyKit \
+            -derivedDataPath /tmp/docbuild-energykit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-energykit/Build/Products/Debug/HIGEnergyKit.doccarchive \
+            --output-path ../../deploy/tutorials/energykit \
+            --hosting-base-path HIGLab/tutorials/energykit
+
+      - name: Build DocC - PermissionKit
+        run: |
+          cd tutorials/permissionkit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGPermissionKit \
+            -derivedDataPath /tmp/docbuild-permissionkit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-permissionkit/Build/Products/Debug/HIGPermissionKit.doccarchive \
+            --output-path ../../deploy/tutorials/permissionkit \
+            --hosting-base-path HIGLab/tutorials/permissionkit
+
+      - name: Build DocC - RelevanceKit
+        run: |
+          cd tutorials/relevancekit
+          swift package resolve
+          xcodebuild docbuild \
+            -scheme HIGRelevanceKit \
+            -derivedDataPath /tmp/docbuild-relevancekit \
+            -destination 'platform=macOS'
+          $(xcrun --find docc) process-archive \
+            transform-for-static-hosting \
+            /tmp/docbuild-relevancekit/Build/Products/Debug/HIGRelevanceKit.doccarchive \
+            --output-path ../../deploy/tutorials/relevancekit \
+            --hosting-base-path HIGLab/tutorials/relevancekit
 
       # ========================================
       # 🚀 배포
