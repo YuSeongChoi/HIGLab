@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -23,3 +24,4 @@ struct MultipleConceptsView: View {
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import CoreLocation
 import SwiftUI
@@ -57,3 +58,4 @@ enum LocationPermissionState {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

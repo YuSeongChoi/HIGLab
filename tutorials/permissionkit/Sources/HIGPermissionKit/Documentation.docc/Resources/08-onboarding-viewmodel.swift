@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import SwiftUI
 import AVFoundation
@@ -87,3 +88,4 @@ final class OnboardingViewModel {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

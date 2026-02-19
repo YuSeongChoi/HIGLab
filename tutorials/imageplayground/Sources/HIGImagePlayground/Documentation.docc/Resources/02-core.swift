@@ -1,4 +1,6 @@
+#if canImport(ImagePlayground)
 import ImagePlayground
 
 // ImagePlayground 핵심 기능
 // 주요 API 사용법
+#endif

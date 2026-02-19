@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import SwiftUI
 
@@ -323,3 +324,4 @@ import CoreLocation
 import UserNotifications
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

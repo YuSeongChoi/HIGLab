@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import HealthKit
 
@@ -55,3 +56,4 @@ struct HealthDataTypes {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

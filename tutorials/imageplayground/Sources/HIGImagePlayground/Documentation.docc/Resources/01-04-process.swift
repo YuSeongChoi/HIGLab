@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -35,3 +36,4 @@ struct GenerationProcessView: View {
         }
     }
 }
+#endif

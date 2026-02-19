@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -46,3 +47,4 @@ struct Note {
     let title: String
     let content: String
 }
+#endif

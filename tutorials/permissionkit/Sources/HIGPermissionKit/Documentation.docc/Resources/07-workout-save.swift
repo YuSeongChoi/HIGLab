@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import HealthKit
 import SwiftUI
@@ -175,3 +176,4 @@ struct WorkoutRecorderView: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

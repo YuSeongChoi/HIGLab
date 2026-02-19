@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -52,3 +53,4 @@ struct GoodPromptsView: View {
         ) { _ in }
     }
 }
+#endif

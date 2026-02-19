@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -14,3 +15,4 @@ struct SheetStateView: View {
         }
     }
 }
+#endif

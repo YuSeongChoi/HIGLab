@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import MapKit
 import SwiftUI
@@ -58,3 +59,4 @@ struct LocationPermissionPrompt: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

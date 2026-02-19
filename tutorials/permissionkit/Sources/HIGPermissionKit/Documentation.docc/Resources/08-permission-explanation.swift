@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import SwiftUI
 
@@ -135,3 +136,4 @@ struct PermissionExplanationCard: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

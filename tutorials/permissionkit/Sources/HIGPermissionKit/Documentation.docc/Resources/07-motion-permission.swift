@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import CoreMotion
 import SwiftUI
@@ -153,3 +154,4 @@ struct MotionPermissionView: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

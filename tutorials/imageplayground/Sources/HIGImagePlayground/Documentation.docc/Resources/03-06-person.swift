@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -27,3 +28,4 @@ struct PersonConceptView: View {
 // 참고: 개발자가 프로그래밍 방식으로 특정 사람의 얼굴을
 // 임의로 주입하는 것은 불가능합니다.
 // 이는 딥페이크 방지와 개인정보 보호를 위한 설계입니다.
+#endif

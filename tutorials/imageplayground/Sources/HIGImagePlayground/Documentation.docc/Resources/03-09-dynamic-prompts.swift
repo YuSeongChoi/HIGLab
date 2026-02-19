@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -47,3 +48,4 @@ struct UserProfile {
     let favoriteColor: String
     let hobby: String
 }
+#endif

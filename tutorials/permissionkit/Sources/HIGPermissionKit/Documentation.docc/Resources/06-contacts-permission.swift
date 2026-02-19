@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import Contacts
 import SwiftUI
@@ -153,3 +154,4 @@ struct ContactsPermissionView: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

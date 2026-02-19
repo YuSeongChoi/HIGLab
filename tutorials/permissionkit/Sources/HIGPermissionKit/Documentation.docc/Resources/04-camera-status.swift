@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import AVFoundation
 
@@ -27,3 +28,4 @@ struct CameraPermissionChecker {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

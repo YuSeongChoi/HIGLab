@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -36,3 +37,4 @@ struct ContentArea: View {
         Text("메인 콘텐츠")
     }
 }
+#endif

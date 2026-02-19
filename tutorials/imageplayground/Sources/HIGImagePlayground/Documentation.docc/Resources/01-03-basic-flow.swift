@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -33,3 +34,4 @@ struct BasicFlowView: View {
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import HealthKit
 import SwiftUI
@@ -144,3 +145,4 @@ struct HealthTypeRow: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

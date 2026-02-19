@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import EventKit
 import SwiftUI
@@ -95,3 +96,4 @@ struct EventRow: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif

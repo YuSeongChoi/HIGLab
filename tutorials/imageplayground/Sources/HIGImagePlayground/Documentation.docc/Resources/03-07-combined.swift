@@ -1,3 +1,4 @@
+#if canImport(ImagePlayground)
 import SwiftUI
 import ImagePlayground
 
@@ -37,3 +38,4 @@ struct CombinedConceptsView: View {
         }
     }
 }
+#endif

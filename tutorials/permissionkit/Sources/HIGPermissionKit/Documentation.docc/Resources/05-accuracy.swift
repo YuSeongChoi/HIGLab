@@ -1,3 +1,4 @@
+#if canImport(PermissionKit)
 import PermissionKit
 import CoreLocation
 import SwiftUI
@@ -125,3 +126,4 @@ struct LocationAccuracyView: View {
 }
 
 // iOS 26 PermissionKit - HIG Lab
+#endif
