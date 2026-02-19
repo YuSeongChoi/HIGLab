@@ -70,11 +70,10 @@ final class DataService {
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
         
         let predicate = #Predicate<TaskItem> { task in
-            if let dueDate = task.dueDate {
-                return dueDate >= startOfDay && dueDate < endOfDay
-            }
-            return false
+            task.dueDate! >= startOfDay &&
+            task.dueDate! < endOfDay
         }
+    
         let descriptor = FetchDescriptor<TaskItem>(
             predicate: predicate,
             sortBy: [SortDescriptor(\.priority, order: .reverse)]
