@@ -295,4 +295,4 @@ AI 에이전트가 콘텐츠를 효율적으로 소비할 수 있도록 [llms.tx
 
 ---
 
-Made with ❤️ by [개발자리](https://youtube.com/@devjari)
+Made with ❤️ by [개발자리](https://youtube.com/@leeo25)

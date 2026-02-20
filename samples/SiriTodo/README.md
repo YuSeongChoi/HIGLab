@@ -59,4 +59,4 @@ SiriTodo/
 
 ---
 
-Made with ❤️ by [개발자리](https://youtube.com/@devjari)
+Made with ❤️ by [개발자리](https://youtube.com/@leeo25)

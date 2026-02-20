@@ -196,7 +196,7 @@ open .  # Finder에서 열기
 
 ## 🔗 도움되는 링크
 
-- 📺 [개발자리 유튜브](https://youtube.com/@devjari) - 영상 강의
+- 📺 [개발자리 유튜브](https://youtube.com/@leeo25) - 영상 강의
 - 🌐 [HIGLab 사이트](https://m1zz.github.io/HIGLab/) - 블로그
 - 📚 [Apple HIG](https://developer.apple.com/design/human-interface-guidelines/) - 공식 가이드
 - 📖 [Swift 문서](https://docs.swift.org/swift-book/) - 언어 레퍼런스
