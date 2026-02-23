@@ -271,6 +271,21 @@ We support [llms.txt](https://m1zz.github.io/HIGLab/llms.txt) for efficient AI a
 
 ---
 
+## 🛠️ AI Tool Integration
+
+This project integrates seamlessly with popular AI coding tools:
+
+| Tool | Config File | Usage |
+|------|------------|-------|
+| Claude Code | `CLAUDE.md` | Run Claude Code in the project folder |
+| Cursor | `.cursorrules` | Open project with Cursor |
+| GitHub Copilot | `.github/copilot-instructions.md` | Auto-applied in VS Code |
+| Other AI | `llms.txt` / `llms-full.txt` | Provide URL: `https://m1zz.github.io/HIGLab/llms.txt` |
+
+> 💡 Clone the project and open it with your AI coding tool — the AI will automatically reference all 50 framework documents to generate accurate iOS code.
+
+---
+
 ## 🤝 Contributing
 
 PRs welcome!

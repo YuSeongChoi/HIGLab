@@ -273,6 +273,21 @@ cat README.md
 
 ---
 
+## 🛠️ AI 도구 연동
+
+이 프로젝트는 다양한 AI 코딩 도구와 바로 연동됩니다:
+
+| 도구 | 설정 파일 | 사용법 |
+|------|----------|--------|
+| Claude Code | `CLAUDE.md` | 프로젝트 폴더에서 Claude Code 실행 |
+| Cursor | `.cursorrules` | Cursor로 프로젝트 열기 |
+| GitHub Copilot | `.github/copilot-instructions.md` | VS Code에서 자동 적용 |
+| 기타 AI | `llms.txt` / `llms-full.txt` | URL 제공: `https://m1zz.github.io/HIGLab/llms.txt` |
+
+> 💡 프로젝트를 클론하고 AI 코딩 도구로 열면, AI가 자동으로 50개 프레임워크 레퍼런스를 참고하여 정확한 iOS 코드를 생성합니다.
+
+---
+
 ## 🤝 기여하기
 
 PR 환영합니다! 
