@@ -1,15 +1,15 @@
 # HIGPractice Learning Log
 
-Track each chapter with links to Issue, PR, and retrospective.
+Track each framework/scope with links to Issue, PR, and retrospective.
 
 ## How To Record
 
-For each completed chapter, append one row:
+For each completed scope, append one row:
 
 - `Date`: completion date (YYYY-MM-DD)
 - `Phase`: e.g. Phase 1
-- `Framework`: e.g. SwiftUI
-- `Chapter`: e.g. Chapter 1
+- `Framework`: e.g. WidgetKit
+- `Scope`: e.g. Core timeline
 - `Issue`: GitHub issue link
 - `PR`: Pull request link
 - `Velog`: retrospective post link
@@ -17,9 +17,9 @@ For each completed chapter, append one row:
 
 ## Log Table
 
-| Date | Phase | Framework | Chapter | Issue | PR | Velog | Key Learning |
+| Date | Phase | Framework | Scope | Issue | PR | Velog | Key Learning |
 |---|---|---|---|---|---|---|---|
-| 2026-02-23 | Phase 1 | SwiftUI | Chapter 1 | #123 | #124 | https://velog.io/@... | View state flow from `@State` to composition |
+| 2026-02-23 | Phase 1 | WidgetKit | Core timeline | #5 | #6 | https://velog.io/@... | Understood placeholder/snapshot/timeline flow |
 
 ## Weekly Reflection (Optional)
 
