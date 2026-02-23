@@ -1,0 +1,49 @@
+name: Learning Log Reminder
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  remind:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post merged PR learning log template
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const today = new Date().toISOString().slice(0, 10);
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prRef = `#${pr.number}`;
+            const issueMatch = (pr.body || '').match(/#(\d+)/);
+            const issueRef = issueMatch ? `#${issueMatch[1]}` : '#<issue-number>';
+
+            const body = [
+              'Learning log template for this merged PR:',
+              '',
+              '| Date | Phase | Framework | Chapter | Issue | PR | Velog | Key Learning |',
+              '|---|---|---|---|---|---|---|---|',
+              `| ${today} | Phase <n> | <Framework> | Chapter <n> | ${issueRef} | ${prRef} | https://velog.io/@... | <one key learning> |`,
+              '',
+              'Quick add command:',
+              '```bash',
+              `scripts/add_learning_log.sh --date ${today} --phase "Phase <n>" --framework "<Framework>" --chapter "Chapter <n>" --issue "${issueRef}" --pr "${prRef}" --velog "https://velog.io/@..." --key "<one key learning>"`,
+              '```',
+              '',
+              'Then commit and push the log update to your next chapter branch.'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pr.number,
+              body
+            });
