@@ -4,10 +4,12 @@ set -euo pipefail
 REPO="${1:-YuSeongChoi/HIGLab}"
 BRANCH="${2:-main}"
 REQUIRED_CHECK="${3:-Build HIGPractice (iOS 26)}"
+REQUIRED_APPROVALS="${4:-0}"
 
 # Requires admin permission on the repository.
 # Usage:
 #   .github/scripts/protect_main_branch.sh YuSeongChoi/HIGLab main "Build HIGPractice (iOS 26)"
+#   .github/scripts/protect_main_branch.sh YuSeongChoi/HIGLab main "Build HIGPractice (iOS 26)" 0
 
 gh api \
   --method PUT \
@@ -25,7 +27,7 @@ gh api \
   "required_pull_request_reviews": {
     "dismiss_stale_reviews": true,
     "require_code_owner_reviews": false,
-    "required_approving_review_count": 1
+    "required_approving_review_count": ${REQUIRED_APPROVALS}
   },
   "restrictions": null,
   "required_linear_history": true,

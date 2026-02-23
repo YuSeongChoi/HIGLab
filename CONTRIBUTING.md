@@ -57,7 +57,6 @@ Examples:
 ## CI Policy
 
 - Required: `Build HIGPractice (iOS 26)`
-- Advisory: `SwiftLint (Advisory)`
 
 ## Local Validation
 
