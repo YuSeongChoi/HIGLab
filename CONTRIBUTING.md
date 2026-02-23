@@ -23,7 +23,7 @@ scripts/start_chapter_branch.sh --phase p1 --framework widgetkit --unit core
 3. Push and open a PR.
 4. Pass CI and review.
 5. Merge (squash) and delete branch.
-6. Write retrospective and update `practice/HIGPractice/LEARNING_LOG.md`.
+6. Write retrospective and update `practice/HIGPractice/HIGPractice/Learning/LEARNING_LOG.md`.
 
 ## Commit Convention
 
