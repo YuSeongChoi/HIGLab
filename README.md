@@ -15,6 +15,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 🌐 **라이브 사이트**: [m1zz.github.io/HIGLab](https://m1zz.github.io/HIGLab/)
 
 > 🌱 **주니어 개발자라면?** → [시작 가이드 (GETTING_STARTED.md)](GETTING_STARTED.md)를 먼저 읽어보세요!
+> 🧭 **Practice 학습 워크플로우** → [CONTRIBUTING.md](CONTRIBUTING.md), [practice/HIGPractice/LEARNING_LOG.md](practice/HIGPractice/LEARNING_LOG.md)
 
 ---
 
