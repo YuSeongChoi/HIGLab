@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Apple 핵심 50개 프레임워크를 블로그, DocC 튜토리얼, 샘플 프로젝트로 학습하세요.">
+    <meta property="og:title" content="HIG Lab — Apple Frameworks를 코드로 실습하는 곳">
+    <meta property="og:description" content="Apple 핵심 50개 프레임워크를 블로그, DocC 튜토리얼, 샘플 프로젝트로 학습하세요.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="HIG Lab — Apple Frameworks를 코드로 실습하는 곳">
+    <meta name="twitter:description" content="Apple 핵심 50개 프레임워크를 블로그, DocC 튜토리얼, 샘플 프로젝트로 학습하세요.">
 <title>HIG Lab — Apple Frameworks를 코드로 실습하는 곳</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
@@ -66,6 +75,7 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
     <a href="#" class="logo">HIG <span>Lab</span></a>
     <div class="nav">
       <a href="https://github.com/M1zz/HIGLab/blob/main/GETTING_STARTED.md" data-i18n="nav_start">🌱 시작하기</a>
+      <a href="roadmap.html" data-i18n="nav_roadmap">🗺️ 로드맵</a>
       <a href="#ai-reference">🤖 AI Reference</a>
       <a href="https://github.com/M1zz/HIGLab">GitHub</a>
       <a href="https://youtube.com/@leeo25" data-i18n="nav_channel">개발자리</a>
@@ -1206,6 +1216,7 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 const i18n = {
   ko: {
     nav_start: '🌱 시작하기',
+    nav_roadmap: '🗺️ 로드맵',
     nav_channel: '개발자리',
     hero_title: 'Apple Frameworks를<br>코드로 실습하는 곳',
     hero_desc: '367개 Apple 프레임워크 중 핵심 50개를 실전 중심으로 학습합니다.<br>각 기술별로 블로그 + DocC 튜토리얼 + 샘플 프로젝트를 제공합니다.',
@@ -1303,6 +1314,7 @@ const i18n = {
   },
   en: {
     nav_start: '🌱 Get Started',
+    nav_roadmap: '🗺️ Roadmap',
     nav_channel: 'YouTube',
     hero_title: 'Learn Apple Frameworks<br>Through Code',
     hero_desc: 'Master 50 essential Apple frameworks out of 367, with hands-on practice.<br>Each topic includes a blog tutorial + DocC tutorial + sample project.',
@@ -1527,6 +1539,86 @@ applyLang = function(lang) {
 
 // Apply saved language on load
 document.addEventListener('DOMContentLoaded', () => applyLang(currentLang));
+</script>
+
+<!-- Learning Progress Checklist -->
+<script>
+(function() {
+  const STORAGE_KEY = 'higlab-progress';
+  
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } 
+    catch { return {}; }
+  }
+  
+  function saveProgress(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+  
+  function updateCounter() {
+    const p = getProgress();
+    const done = Object.values(p).filter(Boolean).length;
+    const total = document.querySelectorAll('.card .higlab-check').length;
+    const el = document.getElementById('higlab-progress-counter');
+    if (el) {
+      const lang = document.documentElement.lang || 'ko';
+      el.textContent = lang === 'en' 
+        ? `✅ ${done}/${total} learned` 
+        : `✅ ${done}/${total} 학습 완료`;
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add progress counter to hero
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+      const counter = document.createElement('div');
+      counter.className = 'stat';
+      counter.innerHTML = '<div class="stat-num" id="higlab-progress-counter" style="font-size:16px;cursor:pointer;" title="Click to reset progress">✅ 0/0</div><div class="stat-label">📋 학습 체크</div>';
+      heroStats.appendChild(counter);
+      // Long-press to reset
+      counter.querySelector('#higlab-progress-counter').addEventListener('dblclick', function() {
+        if (confirm('학습 진행률을 초기화할까요? / Reset progress?')) {
+          localStorage.removeItem(STORAGE_KEY);
+          document.querySelectorAll('.higlab-check').forEach(c => c.textContent = '☐');
+          updateCounter();
+        }
+      });
+    }
+    
+    // Add checkbox to each card
+    const progress = getProgress();
+    document.querySelectorAll('.card').forEach(function(card) {
+      const titleEl = card.querySelector('.card-title');
+      if (!titleEl) return;
+      const key = titleEl.textContent.trim();
+      
+      const check = document.createElement('span');
+      check.className = 'higlab-check';
+      check.textContent = progress[key] ? '☑' : '☐';
+      check.style.cssText = 'position:absolute;top:8px;right:8px;font-size:18px;cursor:pointer;opacity:0.6;transition:opacity .15s;z-index:10;user-select:none;';
+      check.addEventListener('mouseenter', function() { this.style.opacity = '1'; });
+      check.addEventListener('mouseleave', function() { this.style.opacity = progress[key] ? '0.8' : '0.6'; });
+      check.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const p = getProgress();
+        p[key] = !p[key];
+        saveProgress(p);
+        this.textContent = p[key] ? '☑' : '☐';
+        this.style.opacity = p[key] ? '0.8' : '0.6';
+        updateCounter();
+      });
+      
+      // Make card-body relative for positioning
+      const body = card.querySelector('.card-body');
+      if (body) {
+        body.style.position = 'relative';
+        body.appendChild(check);
+      }
+    });
+    
+    updateCounter();
+  });
+})();
 </script>
 </body>
 </html>
