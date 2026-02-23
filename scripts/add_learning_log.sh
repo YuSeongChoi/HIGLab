@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LOG_FILE="practice/HIGPractice/LEARNING_LOG.md"
+LOG_FILE="practice/HIGPractice/HIGPractice/Learning/LEARNING_LOG.md"
 
 usage() {
   cat <<USAGE
@@ -62,7 +62,7 @@ python3 - "${ROW}" <<'PY'
 import sys
 from pathlib import Path
 
-log_file = Path("practice/HIGPractice/LEARNING_LOG.md")
+log_file = Path("practice/HIGPractice/HIGPractice/Learning/LEARNING_LOG.md")
 row = sys.argv[1]
 
 text = log_file.read_text(encoding="utf-8")
