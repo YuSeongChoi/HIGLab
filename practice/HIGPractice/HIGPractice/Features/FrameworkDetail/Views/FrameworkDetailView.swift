@@ -1,17 +1,25 @@
 import SwiftUI
 
 struct FrameworkDetailView: View {
+    @EnvironmentObject private var progressStore: LearningProgressStore
+
     let item: FrameworkItem
+
+    private var statusBinding: Binding<LearningStatus> {
+        Binding(
+            get: { progressStore.status(for: item) },
+            set: { progressStore.setStatus($0, for: item) }
+        )
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerCard
-
+                progressCard
                 resourcesCard
-
                 localPathCard
-
+                checklistCard
                 nextStepCard
             }
             .padding(16)
@@ -41,10 +49,22 @@ struct FrameworkDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        }
+        .padding(16)
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
 
-            Label(item.isCompleted ? "완성된 학습 카드" : "진행 예정 카드", systemImage: item.isCompleted ? "checkmark.circle.fill" : "clock")
-                .font(.footnote)
-                .foregroundStyle(item.isCompleted ? .green : .secondary)
+    private var progressCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("학습 상태")
+                .font(.headline)
+
+            Picker("학습 상태", selection: statusBinding) {
+                ForEach(LearningStatus.allCases) { status in
+                    Text(status.title).tag(status)
+                }
+            }
+            .pickerStyle(.segmented)
         }
         .padding(16)
         .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -91,14 +111,46 @@ struct FrameworkDetailView: View {
         .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
+    private var checklistCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("오늘 할 일")
+                .font(.headline)
+
+            ForEach(DailyChecklistItem.allCases) { task in
+                Button {
+                    progressStore.toggle(task, for: item)
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: progressStore.isChecked(task, for: item) ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(progressStore.isChecked(task, for: item) ? Color.green : Color.secondary)
+                        Text(task.title)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+
+            let completedCount = progressStore.completedCount(for: item)
+            let totalCount = DailyChecklistItem.allCases.count
+            Text("완료: \(completedCount)/\(totalCount)")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .padding(16)
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
     private var nextStepCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("다음 단계")
                 .font(.headline)
-            Text("다음 구현에서는 이 화면 대신 \"샘플 코드를 바탕으로 만든 예제 View\"를 연결하면 됩니다.")
+            Text("다음 구현에서는 이 화면 대신 샘플 코드를 바탕으로 만든 예제 View를 연결하면 됩니다.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-            Text("추천: `Features/Examples/\(item.id.capitalized)ExampleView.swift`")
+            Text("추천: Features/Examples/\(item.id.capitalized)ExampleView.swift")
                 .font(.footnote.monospaced())
                 .foregroundStyle(.secondary)
         }

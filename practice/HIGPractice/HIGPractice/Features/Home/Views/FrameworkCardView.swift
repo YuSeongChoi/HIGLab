@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct FrameworkCardView: View {
+    @EnvironmentObject private var progressStore: LearningProgressStore
+
     let item: FrameworkItem
 
     private let cardHeight: CGFloat = 276
@@ -58,12 +60,14 @@ struct FrameworkCardView: View {
     }
 
     private var completionBadge: some View {
-        HStack(spacing: 6) {
-            Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-            Text(item.isCompleted ? "완성" : "진행중")
+        let status = progressStore.status(for: item)
+
+        return HStack(spacing: 6) {
+            Image(systemName: status.systemImage)
+            Text(status.title)
         }
         .font(.caption2.weight(.semibold))
-        .foregroundStyle(item.isCompleted ? Color.green : Color.secondary)
+        .foregroundStyle(status == .completed ? Color.green : Color.secondary)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(Color(.secondarySystemBackground), in: Capsule())
