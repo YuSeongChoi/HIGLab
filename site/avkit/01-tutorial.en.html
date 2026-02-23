@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>▶️ AVKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>▶️ AVKit</h1>
+<p class="subtitle">An advanced framework for video player UI and controls</p>
+
+<div><span class="badge ios">iOS 8+</span><span class="badge new">SwiftUI Supported</span></div>
+
+<h2>✨ AVKit is?</h2>
+<p>AVKit is a framework that provides a complete user interface for video playback. Built on top of AVFoundation, it makes it easy to implement professional video player features like playback controls, Picture-in-Picture, AirPlay, subtitles, and chapter navigation. It supports both UIKit's AVPlayerViewController and SwiftUI's VideoPlayer.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Playback Controls · Picture-in-Picture · AirPlay · Subtitles · Chapters · Speed Control · Full Screen · Gestures · System Integration
+</div>
+
+<h2>🎬 1. 기본 비디오 플레이어 (SwiftUI)</h2>
+<p>Play video easily with SwiftUI's VideoPlayer.</p>
+
+<div class="code-block">
+<div class="code-header">VideoPlayerView.swift — SwiftUI Video Player</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">SimpleVideoPlayer</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VideoPlayer</span>(player: <span class="type">AVPlayer</span>(url: url))
+            .frame(height: <span class="str">300</span>)
+    }
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> <span class="kw">let</span> url = <span class="type">URL</span>(string: <span class="str">"https://example.com/video.mp4"</span>) {
+                <span class="type">SimpleVideoPlayer</span>(url: url)
+            }
+        }
+    }
+}
+
+<span class="comment">// 커스텀 컨트롤이 있는 VideoPlayer</span>
+<span class="kw">struct</span> <span class="type">VideoPlayerWithOverlay</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> player: <span class="type">AVPlayer</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> isPlaying = <span class="kw">false</span>
+
+    <span class="kw">init</span>(url: <span class="type">URL</span>) {
+        _player = <span class="type">State</span>(initialValue: <span class="type">AVPlayer</span>(url: url))
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VideoPlayer</span>(player: player) {
+            <span class="comment">// 커스텀 오버레이</span>
+            <span class="type">VStack</span> {
+                <span class="type">Text</span>(<span class="str">"나만의 비디오"</span>)
+                    .font(.title)
+                    .foregroundStyle(.white)
+                    .padding()
+
+                <span class="type">Spacer</span>()
+
+                <span class="type">HStack</span> {
+                    <span class="type">Button</span> {
+                        <span class="kw">if</span> isPlaying {
+                            player.pause()
+                        } <span class="kw">else</span> {
+                            player.play()
+                        }
+                        isPlaying.toggle()
+                    } label: {
+                        <span class="type">Image</span>(systemName: isPlaying ? <span class="str">"pause.fill"</span> : <span class="str">"play.fill"</span>)
+                            .font(.largeTitle)
+                            .foregroundStyle(.white)
+                    }
+                }
+                .padding()
+            }
+        }
+        .frame(height: <span class="str">300</span>)
+    }
+}</pre>
+</div>
+
+<h2>📱 2. AVPlayerViewController (UIKit)</h2>
+<p>Build a full-featured player using AVPlayerViewController in UIKit.</p>
+
+<div class="code-block">
+<div class="code-header">PlayerViewController.swift — UIKit Player</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">PlayerView</span>: <span class="type">UIViewControllerRepresentable</span> {
+    <span class="kw">let</span> player: <span class="type">AVPlayer</span>
+
+    <span class="kw">func</span> makeUIViewController(context: <span class="type">Context</span>) -> <span class="type">AVPlayerViewController</span> {
+        <span class="kw">let</span> controller = <span class="type">AVPlayerViewController</span>()
+        controller.player = player
+
+        <span class="comment">// 재생 컨트롤 설정</span>
+        controller.showsPlaybackControls = <span class="kw">true</span>
+
+        <span class="comment">// Picture-in-Picture 허용</span>
+        controller.allowsPictureInPicturePlayback = <span class="kw">true</span>
+
+        <span class="comment">// 비디오 중력 설정</span>
+        controller.videoGravity = .resizeAspect
+
+        <span class="comment">// 자막 표시</span>
+        controller.canStartPictureInPictureAutomaticallyFromInline = <span class="kw">true</span>
+
+        <span class="kw">return</span> controller
+    }
+
+    <span class="kw">func</span> updateUIViewController(<span class="kw">_</span> uiViewController: <span class="type">AVPlayerViewController</span>, context: <span class="type">Context</span>) {}
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">VideoPlayerScreen</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> player: <span class="type">AVPlayer</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> <span class="kw">let</span> player = player {
+                <span class="type">PlayerView</span>(player: player)
+                    .frame(height: <span class="str">300</span>)
+            } <span class="kw">else</span> {
+                <span class="type">ProgressView</span>()
+            }
+        }
+        .onAppear {
+            loadVideo()
+        }
+    }
+
+    <span class="kw">func</span> loadVideo() {
+        <span class="kw">guard</span> <span class="kw">let</span> url = <span class="type">URL</span>(string: <span class="str">"https://example.com/video.mp4"</span>) <span class="kw">else</span> { <span class="kw">return</span> }
+        player = <span class="type">AVPlayer</span>(url: url)
+    }
+}</pre>
+</div>
+
+<h2>📺 3. Picture-in-Picture</h2>
+<p>Implement Picture-in-Picture to play video in a floating window.</p>
+
+<div class="code-block">
+<div class="code-header">PiPPlayerView.swift — Picture-in-Picture</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PiPManager</span>: <span class="type">NSObject</span> {
+    <span class="kw">var</span> pipController: <span class="type">AVPictureInPictureController</span>?
+    <span class="kw">var</span> isPiPActive = <span class="kw">false</span>
+    <span class="kw">var</span> isPiPSupported = <span class="kw">false</span>
+
+    <span class="kw">func</span> setupPiP(with playerLayer: <span class="type">AVPlayerLayer</span>) {
+        <span class="comment">// PiP 지원 확인</span>
+        isPiPSupported = <span class="type">AVPictureInPictureController</span>.isPictureInPictureSupported()
+
+        <span class="kw">guard</span> isPiPSupported <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// PiP 컨트롤러 생성</span>
+        pipController = <span class="type">AVPictureInPictureController</span>(playerLayer: playerLayer)
+        pipController?.delegate = <span class="kw">self</span>
+
+        <span class="comment">// 오디오 세션 설정</span>
+        <span class="kw">try</span>? <span class="type">AVAudioSession</span>.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        <span class="kw">try</span>? <span class="type">AVAudioSession</span>.sharedInstance().setActive(<span class="kw">true</span>)
+    }
+
+    <span class="kw">func</span> startPiP() {
+        pipController?.startPictureInPicture()
+    }
+
+    <span class="kw">func</span> stopPiP() {
+        pipController?.stopPictureInPicture()
+    }
+}
+
+<span class="kw">extension</span> <span class="type">PiPManager</span>: <span class="type">AVPictureInPictureControllerDelegate</span> {
+    <span class="kw">func</span> pictureInPictureControllerWillStartPictureInPicture(<span class="kw">_</span> pictureInPictureController: <span class="type">AVPictureInPictureController</span>) {
+        isPiPActive = <span class="kw">true</span>
+    }
+
+    <span class="kw">func</span> pictureInPictureControllerDidStopPictureInPicture(<span class="kw">_</span> pictureInPictureController: <span class="type">AVPictureInPictureController</span>) {
+        isPiPActive = <span class="kw">false</span>
+    }
+
+    <span class="kw">func</span> pictureInPictureController(
+        <span class="kw">_</span> pictureInPictureController: <span class="type">AVPictureInPictureController</span>,
+        failedToStartPictureInPictureWithError error: <span class="type">Error</span>
+    ) {
+        print(<span class="str">"PiP 시작 실패: \(error.localizedDescription)"</span>)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PiPPlayerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> player: <span class="type">AVPlayer</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> pipManager = <span class="type">PiPManager</span>()
+
+    <span class="kw">init</span>(url: <span class="type">URL</span>) {
+        _player = <span class="type">State</span>(initialValue: <span class="type">AVPlayer</span>(url: url))
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">PiPVideoView</span>(player: player, pipManager: pipManager)
+                .frame(height: <span class="str">300</span>)
+
+            <span class="type">Button</span> {
+                <span class="kw">if</span> pipManager.isPiPActive {
+                    pipManager.stopPiP()
+                } <span class="kw">else</span> {
+                    pipManager.startPiP()
+                }
+            } label: {
+                <span class="type">Label</span>(
+                    pipManager.isPiPActive ? <span class="str">"PiP 종료"</span> : <span class="str">"PiP 시작"</span>,
+                    systemImage: <span class="str">"pip"</span>
+                )
+            }
+            .disabled(!pipManager.isPiPSupported)
+            .buttonStyle(.borderedProminent)
+            .padding()
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PiPVideoView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> player: <span class="type">AVPlayer</span>
+    <span class="kw">let</span> pipManager: <span class="type">PiPManager</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">UIView</span> {
+        <span class="kw">let</span> view = <span class="type">UIView</span>()
+        <span class="kw">let</span> playerLayer = <span class="type">AVPlayerLayer</span>(player: player)
+        playerLayer.videoGravity = .resizeAspect
+        view.layer.addSublayer(playerLayer)
+
+        <span class="comment">// PiP 설정</span>
+        pipManager.setupPiP(with: playerLayer)
+
+        <span class="type">DispatchQueue</span>.main.async {
+            playerLayer.frame = view.bounds
+        }
+
+        <span class="kw">return</span> view
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">UIView</span>, context: <span class="type">Context</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> layer = uiView.layer.sublayers?.first <span class="kw">as</span>? <span class="type">AVPlayerLayer</span> {
+            layer.frame = uiView.bounds
+        }
+    }
+}</pre>
+</div>
+
+<h2>📡 4. AirPlay</h2>
+<p>Stream video to other devices via AirPlay.</p>
+
+<div class="code-block">
+<div class="code-header">AirPlayView.swift — AirPlay Supported</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">AirPlayButton</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">AVRoutePickerView</span> {
+        <span class="kw">let</span> routePickerView = <span class="type">AVRoutePickerView</span>()
+        routePickerView.tintColor = .<span class="type">UIColor</span>.systemBlue
+        routePickerView.activeTintColor = .<span class="type">UIColor</span>.systemGreen
+        routePickerView.prioritizesVideoDevices = <span class="kw">true</span>
+
+        <span class="kw">return</span> routePickerView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">AVRoutePickerView</span>, context: <span class="type">Context</span>) {}
+}
+
+<span class="kw">struct</span> <span class="type">VideoPlayerWithAirPlay</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> player: <span class="type">AVPlayer</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> <span class="kw">let</span> player = player {
+                <span class="type">VideoPlayer</span>(player: player)
+                    .frame(height: <span class="str">300</span>)
+            }
+
+            <span class="type">HStack</span> {
+                <span class="type">Text</span>(<span class="str">"AirPlay로 재생"</span>)
+                    .font(.headline)
+
+                <span class="type">Spacer</span>()
+
+                <span class="type">AirPlayButton</span>()
+                    .frame(width: <span class="str">40</span>, height: <span class="str">40</span>)
+            }
+            .padding()
+        }
+        .onAppear {
+            setupPlayer()
+        }
+    }
+
+    <span class="kw">func</span> setupPlayer() {
+        player = <span class="type">AVPlayer</span>(url: url)
+
+        <span class="comment">// AirPlay를 위한 오디오 세션</span>
+        <span class="kw">let</span> audioSession = <span class="type">AVAudioSession</span>.sharedInstance()
+        <span class="kw">try</span>? audioSession.setCategory(.playback, mode: .moviePlayback)
+        <span class="kw">try</span>? audioSession.setActive(<span class="kw">true</span>)
+
+        <span class="comment">// 외부 재생 허용</span>
+        player?.allowsExternalPlayback = <span class="kw">true</span>
+        player?.usesExternalPlaybackWhileExternalScreenIsActive = <span class="kw">true</span>
+    }
+}</pre>
+</div>
+
+<h2>⚙️ 5. 커스텀 컨트롤</h2>
+<p>완전히 커스터마이즈된 재생 컨트롤을 만듭.</p>
+
+<div class="code-block">
+<div class="code-header">CustomPlayerView.swift — Custom Controls</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+<span class="kw">import</span> <span class="type">Combine</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">CustomPlayerManager</span> {
+    <span class="kw">var</span> player: <span class="type">AVPlayer</span>
+    <span class="kw">var</span> isPlaying = <span class="kw">false</span>
+    <span class="kw">var</span> currentTime: <span class="type">Double</span> = <span class="str">0</span>
+    <span class="kw">var</span> duration: <span class="type">Double</span> = <span class="str">0</span>
+    <span class="kw">var</span> playbackRate: <span class="type">Float</span> = <span class="str">1.0</span>
+    <span class="kw">var</span> volume: <span class="type">Float</span> = <span class="str">1.0</span>
+
+    <span class="kw">private</span> <span class="kw">var</span> timeObserver: <span class="type">Any</span>?
+
+    <span class="kw">init</span>(url: <span class="type">URL</span>) {
+        <span class="kw">self</span>.player = <span class="type">AVPlayer</span>(url: url)
+        setupObservers()
+    }
+
+    <span class="kw">func</span> setupObservers() {
+        <span class="comment">// 재생 시간 관찰</span>
+        timeObserver = player.addPeriodicTimeObserver(
+            forInterval: <span class="type">CMTime</span>(seconds: <span class="str">0.5</span>, preferredTimescale: <span class="str">600</span>),
+            queue: .main
+        ) { [<span class="kw">weak self</span>] time <span class="kw">in</span>
+            <span class="kw">self</span>?.currentTime = time.seconds
+        }
+
+        <span class="comment">// 재생 완료 감지</span>
+        <span class="type">NotificationCenter</span>.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem,
+            queue: .main
+        ) { [<span class="kw">weak self</span>] <span class="kw">_</span> <span class="kw">in</span>
+            <span class="kw">self</span>?.isPlaying = <span class="kw">false</span>
+            <span class="kw">self</span>?.player.seek(to: .zero)
+        }
+
+        <span class="comment">// 영상 길이 로드</span>
+        <span class="type">Task</span> {
+            <span class="kw">if</span> <span class="kw">let</span> asset = player.currentItem?.asset,
+               <span class="kw">let</span> duration = <span class="kw">try</span>? <span class="kw">await</span> asset.load(.duration) {
+                <span class="kw">self</span>.duration = duration.seconds
+            }
+        }
+    }
+
+    <span class="kw">func</span> togglePlayPause() {
+        <span class="kw">if</span> isPlaying {
+            player.pause()
+        } <span class="kw">else</span> {
+            player.play()
+        }
+        isPlaying.toggle()
+    }
+
+    <span class="kw">func</span> seek(to time: <span class="type">Double</span>) {
+        <span class="kw">let</span> cmTime = <span class="type">CMTime</span>(seconds: time, preferredTimescale: <span class="str">600</span>)
+        player.seek(to: cmTime)
+    }
+
+    <span class="kw">func</span> skipForward(<span class="kw">_</span> seconds: <span class="type">Double</span> = <span class="str">10</span>) {
+        seek(to: currentTime + seconds)
+    }
+
+    <span class="kw">func</span> skipBackward(<span class="kw">_</span> seconds: <span class="type">Double</span> = <span class="str">10</span>) {
+        seek(to: max(<span class="str">0</span>, currentTime - seconds))
+    }
+
+    <span class="kw">func</span> changePlaybackRate(to rate: <span class="type">Float</span>) {
+        playbackRate = rate
+        player.rate = rate
+    }
+
+    <span class="kw">func</span> changeVolume(to volume: <span class="type">Float</span>) {
+        <span class="kw">self</span>.volume = volume
+        player.volume = volume
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CustomPlayerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> playerManager: <span class="type">CustomPlayerManager</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showControls = <span class="kw">true</span>
+
+    <span class="kw">init</span>(url: <span class="type">URL</span>) {
+        _playerManager = <span class="type">State</span>(initialValue: <span class="type">CustomPlayerManager</span>(url: url))
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ZStack</span> {
+            <span class="comment">// 비디오 레이어</span>
+            <span class="type">VideoLayer</span>(player: playerManager.player)
+                .onTapGesture {
+                    <span class="kw">withAnimation</span> {
+                        showControls.toggle()
+                    }
+                }
+
+            <span class="comment">// 커스텀 컨트롤</span>
+            <span class="kw">if</span> showControls {
+                <span class="type">VStack</span> {
+                    <span class="type">Spacer</span>()
+
+                    <span class="comment">// 진행 바</span>
+                    <span class="type">VStack</span>(spacing: <span class="str">8</span>) {
+                        <span class="type">Slider</span>(
+                            value: <span class="type">Binding</span>(
+                                get: { playerManager.currentTime },
+                                set: { playerManager.seek(to: $0) }
+                            ),
+                            in: <span class="str">0</span>...max(playerManager.duration, <span class="str">1</span>)
+                        )
+                        .tint(.white)
+
+                        <span class="type">HStack</span> {
+                            <span class="type">Text</span>(formatTime(playerManager.currentTime))
+                            <span class="type">Spacer</span>()
+                            <span class="type">Text</span>(formatTime(playerManager.duration))
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal)
+
+                    <span class="comment">// 재생 컨트롤</span>
+                    <span class="type">HStack</span>(spacing: <span class="str">40</span>) {
+                        <span class="type">Button</span> {
+                            playerManager.skipBackward()
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"gobackward.10"</span>)
+                                .font(.title)
+                        }
+
+                        <span class="type">Button</span> {
+                            playerManager.togglePlayPause()
+                        } label: {
+                            <span class="type">Image</span>(systemName: playerManager.isPlaying ? <span class="str">"pause.fill"</span> : <span class="str">"play.fill"</span>)
+                                .font(.title)
+                        }
+
+                        <span class="type">Button</span> {
+                            playerManager.skipForward()
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"goforward.10"</span>)
+                                .font(.title)
+                        }
+
+                        <span class="type">Menu</span> {
+                            <span class="type">Button</span>(<span class="str">"0.5x"</span>) { playerManager.changePlaybackRate(to: <span class="str">0.5</span>) }
+                            <span class="type">Button</span>(<span class="str">"1.0x"</span>) { playerManager.changePlaybackRate(to: <span class="str">1.0</span>) }
+                            <span class="type">Button</span>(<span class="str">"1.5x"</span>) { playerManager.changePlaybackRate(to: <span class="str">1.5</span>) }
+                            <span class="type">Button</span>(<span class="str">"2.0x"</span>) { playerManager.changePlaybackRate(to: <span class="str">2.0</span>) }
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"gauge"</span>)
+                                .font(.title)
+                        }
+                    }
+                    .foregroundStyle(.white)
+                    .padding()
+                }
+                .background(
+                    <span class="type">LinearGradient</span>(
+                        colors: [.<span class="type">Color</span>.clear, .<span class="type">Color</span>.black.opacity(<span class="str">0.7</span>)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .transition(.opacity)
+            }
+        }
+        .frame(height: <span class="str">300</span>)
+        .background(<span class="type">Color</span>.black)
+    }
+
+    <span class="kw">func</span> formatTime(<span class="kw">_</span> time: <span class="type">Double</span>) -> <span class="type">String</span> {
+        <span class="kw">let</span> minutes = <span class="type">Int</span>(time) / <span class="str">60</span>
+        <span class="kw">let</span> seconds = <span class="type">Int</span>(time) % <span class="str">60</span>
+        <span class="kw">return</span> <span class="type">String</span>(format: <span class="str">"%d:%02d"</span>, minutes, seconds)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">VideoLayer</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> player: <span class="type">AVPlayer</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">UIView</span> {
+        <span class="kw">let</span> view = <span class="type">UIView</span>()
+        <span class="kw">let</span> playerLayer = <span class="type">AVPlayerLayer</span>(player: player)
+        playerLayer.videoGravity = .resizeAspect
+        view.layer.addSublayer(playerLayer)
+
+        <span class="type">DispatchQueue</span>.main.async {
+            playerLayer.frame = view.bounds
+        }
+
+        <span class="kw">return</span> view
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">UIView</span>, context: <span class="type">Context</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> layer = uiView.layer.sublayers?.first <span class="kw">as</span>? <span class="type">AVPlayerLayer</span> {
+            layer.frame = uiView.bounds
+        }
+    }
+}</pre>
+</div>
+
+<h2>📱 Complete Example</h2>
+
+<div class="code-block">
+<div class="code-header">VideoApp.swift — App</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">VideoApp</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedVideo: <span class="type">VideoItem</span>?
+
+    <span class="kw">let</span> videos = [
+        <span class="type">VideoItem</span>(title: <span class="str">"샘플 비디오 1"</span>, url: <span class="type">URL</span>(string: <span class="str">"https://example.com/video1.mp4"</span>)!),
+        <span class="type">VideoItem</span>(title: <span class="str">"샘플 비디오 2"</span>, url: <span class="type">URL</span>(string: <span class="str">"https://example.com/video2.mp4"</span>)!),
+    ]
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span>(videos) { video <span class="kw">in</span>
+                <span class="type">Button</span> {
+                    selectedVideo = video
+                } label: {
+                    <span class="type">HStack</span> {
+                        <span class="type">Image</span>(systemName: <span class="str">"play.rectangle.fill"</span>)
+                            .font(.largeTitle)
+                            .foregroundStyle(.blue)
+
+                        <span class="type">Text</span>(video.title)
+                            .font(.headline)
+                    }
+                }
+            }
+            .navigationTitle(<span class="str">"비디오"</span>)
+            .sheet(item: $selectedVideo) { video <span class="kw">in</span>
+                <span class="type">VideoPlayerSheet</span>(video: video)
+            }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">VideoPlayerSheet</span>: <span class="type">View</span> {
+    <span class="kw">let</span> video: <span class="type">VideoItem</span>
+    <span class="kw">@Environment</span>(\.<span class="kw">dismiss</span>) <span class="kw">var</span> dismiss
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">CustomPlayerView</span>(url: video.url)
+                .navigationTitle(video.title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
+                        <span class="type">Button</span>(<span class="str">"닫기"</span>) {
+                            dismiss()
+                        }
+                    }
+                }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">VideoItem</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> title: <span class="type">String</span>
+    <span class="kw">let</span> url: <span class="type">URL</span>
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>네이티브 컨트롤:</strong> Use AVPlayerViewController's default controls when possible.</li>
+<li><strong>제스처:</strong> 탭으로 컨트롤 표시/숨김, 스와이프로 탐색</li>
+<li><strong>Picture-in-Picture:</strong> 멀티태스킹을 위해 PiP Supported</li>
+<li><strong>AirPlay:</strong> 외부 디스플레이 재생 허용</li>
+<li><strong>Background:</strong> In Info.plist, 백그라운드 모드 추가</li>
+<li><strong>접근성:</strong> 자막 및 오디오 설명 Supported</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>Streaming Apps:</strong> Netflix, YouTube 스타일 플레이어</li>
+<li><strong>교육 플랫폼:</strong> 강의 비디오 재생</li>
+<li><strong>Social Media:</strong> 인피드 비디오 재생</li>
+<li><strong>라이브 방송:</strong> 실시간 스트리밍 시청</li>
+<li><strong>Video Editing:</strong> 미리보기 플레이어</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/avkit">AVKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/avkit/avplayerviewcontroller">AVPlayerViewController 레퍼런스</a></li>
+<li><a href="https://developer.apple.com/documentation/avkit/adopting_picture_in_picture_in_a_standard_player">Picture-in-Picture 가이드</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> Using AVPlayerViewController lets the system automatically provide an optimized playback experience. When building custom controls, <code>addPeriodicTimeObserver</code> — don't set the interval too short. About 0.5 seconds is appropriate.
+</div>
+
+</article>
+</body></html>

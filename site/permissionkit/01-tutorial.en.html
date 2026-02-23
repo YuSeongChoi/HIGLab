@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🛡️ PermissionKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🛡️ PermissionKit</h1>
+<p class="subtitle">Build privacy-respecting apps with unified permission management</p>
+
+<div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
+
+<h2>✨ PermissionKit is?</h2>
+<p>PermissionKit is a unified permission management framework introduced in iOS 18. It manages various system permissions — camera, microphone, location, notifications, contacts — through a single consistent API. It tracks permission status in real-time, provides deep links to Settings when denied, and displays contextual explanations before requesting permissions to improve UX. A modern, privacy-first permission management solution.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Unified Permission API · Real-Time Status Tracking · Settings Deep Link · Contextual UI · Partial Permissions · Provisional Access · Permission Groups · SwiftUI Integration
+</div>
+
+<h2>🎯 1. Basic Setup</h2>
+<p>Set up PermissionKit and add permission descriptions to Info.plist.</p>
+
+<div class="code-block">
+<div class="code-header">Info.plist — Add Permission Descriptions</div>
+<pre class="code-body"><span class="comment">&lt;!-- 카메라 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSCameraUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>사진을 촬영하고 프로필 이미지를 설정하는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 사진 라이브러리 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSPhotoLibraryUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>사진을 저장하고 불러오는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 위치 (사용 중) --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSLocationWhenInUseUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>주변 장소를 검색하고 날씨 정보를 제공하는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 위치 (항상) --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSLocationAlwaysAndWhenInUseUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>위치 기반 알림을 보내는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 마이크 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSMicrophoneUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>음성 메시지를 녹음하는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 연락처 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSContactsUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>친구를 찾고 초대하는데 사용됩니다.<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 알림 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSUserNotificationsUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>중요한 업데이트를 알려드리는데 사용됩니다.<span class="kw">&lt;/string&gt;</span></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">PermissionManager.swift — Permission Manager</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+<span class="kw">import</span> <span class="type">CoreLocation</span>
+<span class="kw">import</span> <span class="type">UserNotifications</span>
+<span class="kw">import</span> <span class="type">Contacts</span>
+<span class="kw">import</span> <span class="type">Photos</span>
+
+<span class="comment">// 권한 타입</span>
+<span class="kw">enum</span> <span class="type">PermissionType</span>: <span class="type">String</span>, <span class="type">CaseIterable</span>, <span class="type">Identifiable</span> {
+    <span class="kw">case</span> camera = <span class="str">"카메라"</span>
+    <span class="kw">case</span> photoLibrary = <span class="str">"사진"</span>
+    <span class="kw">case</span> location = <span class="str">"위치"</span>
+    <span class="kw">case</span> microphone = <span class="str">"마이크"</span>
+    <span class="kw">case</span> contacts = <span class="str">"연락처"</span>
+    <span class="kw">case</span> notifications = <span class="str">"알림"</span>
+
+    <span class="kw">var</span> id: <span class="type">String</span> { rawValue }
+
+    <span class="kw">var</span> icon: <span class="type">String</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .camera: <span class="kw">return</span> <span class="str">"camera.fill"</span>
+        <span class="kw">case</span> .photoLibrary: <span class="kw">return</span> <span class="str">"photo.fill"</span>
+        <span class="kw">case</span> .location: <span class="kw">return</span> <span class="str">"location.fill"</span>
+        <span class="kw">case</span> .microphone: <span class="kw">return</span> <span class="str">"mic.fill"</span>
+        <span class="kw">case</span> .contacts: <span class="kw">return</span> <span class="str">"person.2.fill"</span>
+        <span class="kw">case</span> .notifications: <span class="kw">return</span> <span class="str">"bell.fill"</span>
+        }
+    }
+
+    <span class="kw">var</span> description: <span class="type">String</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .camera: <span class="kw">return</span> <span class="str">"사진과 비디오를 촬영하는데 필요합니다"</span>
+        <span class="kw">case</span> .photoLibrary: <span class="kw">return</span> <span class="str">"사진을 저장하고 불러오는데 필요합니다"</span>
+        <span class="kw">case</span> .location: <span class="kw">return</span> <span class="str">"주변 장소를 찾는데 필요합니다"</span>
+        <span class="kw">case</span> .microphone: <span class="kw">return</span> <span class="str">"음성을 녹음하는데 필요합니다"</span>
+        <span class="kw">case</span> .contacts: <span class="kw">return</span> <span class="str">"친구를 찾는데 필요합니다"</span>
+        <span class="kw">case</span> .notifications: <span class="kw">return</span> <span class="str">"중요한 알림을 받는데 필요합니다"</span>
+        }
+    }
+}
+
+<span class="comment">// 권한 상태</span>
+<span class="kw">enum</span> <span class="type">PermissionStatus</span> {
+    <span class="kw">case</span> notDetermined
+    <span class="kw">case</span> authorized
+    <span class="kw">case</span> denied
+    <span class="kw">case</span> restricted
+    <span class="kw">case</span> limited <span class="comment">// 부분 권한 (사진 등)</span>
+
+    <span class="kw">var</span> color: <span class="type">Color</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .gray
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> .green
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .red
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .orange
+        <span class="kw">case</span> .limited: <span class="kw">return</span> .yellow
+        }
+    }
+
+    <span class="kw">var</span> text: <span class="type">String</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> <span class="str">"미설정"</span>
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> <span class="str">"허용됨"</span>
+        <span class="kw">case</span> .denied: <span class="kw">return</span> <span class="str">"거부됨"</span>
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> <span class="str">"제한됨"</span>
+        <span class="kw">case</span> .limited: <span class="kw">return</span> <span class="str">"제한적 허용"</span>
+        }
+    }
+}
+
+<span class="comment">// 통합 권한 관리자</span>
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PermissionManager</span> {
+    <span class="kw">var</span> permissions: [<span class="type">PermissionType</span>: <span class="type">PermissionStatus</span>] = [:]
+
+    <span class="kw">init</span>() {
+        <span class="comment">// 초기 상태 확인</span>
+        <span class="type">Task</span> {
+            <span class="kw">await</span> checkAllPermissions()
+        }
+    }
+
+    <span class="comment">// 모든 권한 상태 확인</span>
+    <span class="kw">func</span> checkAllPermissions() <span class="kw">async</span> {
+        <span class="kw">for</span> type <span class="kw">in</span> <span class="type">PermissionType</span>.allCases {
+            <span class="kw">let</span> status = <span class="kw">await</span> checkPermission(type)
+            <span class="kw">await</span> <span class="type">MainActor</span>.run {
+                permissions[type] = status
+            }
+        }
+    }
+
+    <span class="comment">// 개별 권한 확인</span>
+    <span class="kw">func</span> checkPermission(<span class="kw">_</span> type: <span class="type">PermissionType</span>) <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> type {
+        <span class="kw">case</span> .camera:
+            <span class="kw">return</span> checkCameraPermission()
+
+        <span class="kw">case</span> .photoLibrary:
+            <span class="kw">return</span> checkPhotoLibraryPermission()
+
+        <span class="kw">case</span> .location:
+            <span class="kw">return</span> checkLocationPermission()
+
+        <span class="kw">case</span> .microphone:
+            <span class="kw">return</span> checkMicrophonePermission()
+
+        <span class="kw">case</span> .contacts:
+            <span class="kw">return</span> <span class="kw">await</span> checkContactsPermission()
+
+        <span class="kw">case</span> .notifications:
+            <span class="kw">return</span> <span class="kw">await</span> checkNotificationPermission()
+        }
+    }
+
+    <span class="comment">// 카메라 권한</span>
+    <span class="kw">func</span> checkCameraPermission() -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> <span class="type">AVCaptureDevice</span>.authorizationStatus(for: .video) {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .restricted
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="comment">// 사진 권한</span>
+    <span class="kw">func</span> checkPhotoLibraryPermission() -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> <span class="type">PHPhotoLibrary</span>.authorizationStatus(for: .readWrite) {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .restricted
+        <span class="kw">case</span> .limited: <span class="kw">return</span> .limited
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="comment">// 위치 권한</span>
+    <span class="kw">func</span> checkLocationPermission() -> <span class="type">PermissionStatus</span> {
+        <span class="kw">let</span> status = <span class="type">CLLocationManager</span>().authorizationStatus
+
+        <span class="kw">switch</span> status {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .authorizedAlways, .authorizedWhenInUse: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .restricted
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="comment">// 마이크 권한</span>
+    <span class="kw">func</span> checkMicrophonePermission() -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> <span class="type">AVAudioSession</span>.sharedInstance().recordPermission {
+        <span class="kw">case</span> .undetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .granted: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="comment">// 연락처 권한</span>
+    <span class="kw">func</span> checkContactsPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> <span class="type">CNContactStore</span>.authorizationStatus(for: .contacts) {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .restricted
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="comment">// 알림 권한</span>
+    <span class="kw">func</span> checkNotificationPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">let</span> settings = <span class="kw">await</span> <span class="type">UNUserNotificationCenter</span>.current().notificationSettings()
+
+        <span class="kw">switch</span> settings.authorizationStatus {
+        <span class="kw">case</span> .notDetermined: <span class="kw">return</span> .notDetermined
+        <span class="kw">case</span> .authorized, .provisional, .ephemeral: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+}</pre>
+</div>
+
+<h2>🔐 2. 권한 요청</h2>
+<p>사용자에게 권한을 요청하고 결과 handling.</p>
+
+<div class="code-block">
+<div class="code-header">PermissionRequest.swift — Permission Request</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">extension</span> <span class="type">PermissionManager</span> {
+    <span class="comment">// 권한 요청</span>
+    <span class="kw">func</span> requestPermission(<span class="kw">_</span> type: <span class="type">PermissionType</span>) <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">switch</span> type {
+        <span class="kw">case</span> .camera:
+            <span class="kw">return</span> <span class="kw">await</span> requestCameraPermission()
+
+        <span class="kw">case</span> .photoLibrary:
+            <span class="kw">return</span> <span class="kw">await</span> requestPhotoLibraryPermission()
+
+        <span class="kw">case</span> .location:
+            <span class="comment">// 위치는 CLLocationManager 델리게이트 필요</span>
+            <span class="kw">return</span> .notDetermined
+
+        <span class="kw">case</span> .microphone:
+            <span class="kw">return</span> <span class="kw">await</span> requestMicrophonePermission()
+
+        <span class="kw">case</span> .contacts:
+            <span class="kw">return</span> <span class="kw">await</span> requestContactsPermission()
+
+        <span class="kw">case</span> .notifications:
+            <span class="kw">return</span> <span class="kw">await</span> requestNotificationPermission()
+        }
+    }
+
+    <span class="kw">func</span> requestCameraPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">let</span> granted = <span class="kw">await</span> <span class="type">AVCaptureDevice</span>.requestAccess(for: .video)
+        <span class="kw">return</span> granted ? .authorized : .denied
+    }
+
+    <span class="kw">func</span> requestPhotoLibraryPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">let</span> status = <span class="kw">await</span> <span class="type">PHPhotoLibrary</span>.requestAuthorization(for: .readWrite)
+
+        <span class="kw">switch</span> status {
+        <span class="kw">case</span> .authorized: <span class="kw">return</span> .authorized
+        <span class="kw">case</span> .limited: <span class="kw">return</span> .limited
+        <span class="kw">case</span> .denied: <span class="kw">return</span> .denied
+        <span class="kw">case</span> .restricted: <span class="kw">return</span> .restricted
+        <span class="kw">default</span>: <span class="kw">return</span> .notDetermined
+        }
+    }
+
+    <span class="kw">func</span> requestMicrophonePermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">let</span> granted = <span class="kw">await</span> <span class="type">AVAudioSession</span>.sharedInstance().requestRecordPermission()
+        <span class="kw">return</span> granted ? .authorized : .denied
+    }
+
+    <span class="kw">func</span> requestContactsPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> granted = <span class="kw">try</span> <span class="kw">await</span> <span class="type">CNContactStore</span>().requestAccess(for: .contacts)
+            <span class="kw">return</span> granted ? .authorized : .denied
+        } <span class="kw">catch</span> {
+            <span class="kw">return</span> .denied
+        }
+    }
+
+    <span class="kw">func</span> requestNotificationPermission() <span class="kw">async</span> -> <span class="type">PermissionStatus</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> granted = <span class="kw">try</span> <span class="kw">await</span> <span class="type">UNUserNotificationCenter</span>.current()
+                .requestAuthorization(options: [.alert, .badge, .sound])
+            <span class="kw">return</span> granted ? .authorized : .denied
+        } <span class="kw">catch</span> {
+            <span class="kw">return</span> .denied
+        }
+    }
+
+    <span class="comment">// 설정 앱으로 이동</span>
+    <span class="kw">func</span> openSettings() {
+        <span class="kw">guard</span> <span class="kw">let</span> settingsURL = <span class="type">URL</span>(string: <span class="type">UIApplication</span>.openSettingsURLString)
+        <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="type">UIApplication</span>.shared.open(settingsURL)
+    }
+}</pre>
+</div>
+
+<h2>📱 3. 권한 UI</h2>
+<p>사용자 친화적인 권한 요청 화면을 만듭.</p>
+
+<div class="code-block">
+<div class="code-header">PermissionView.swift — 권한 화면</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">PermissionListView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">PermissionManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span>(<span class="type">PermissionType</span>.allCases) { type <span class="kw">in</span>
+                <span class="type">PermissionRow</span>(
+                    type: type,
+                    status: manager.permissions[type] ?? .notDetermined,
+                    onRequest: {
+                        <span class="type">Task</span> {
+                            <span class="kw">let</span> newStatus = <span class="kw">await</span> manager.requestPermission(type)
+                            manager.permissions[type] = newStatus
+                        }
+                    },
+                    onOpenSettings: {
+                        manager.openSettings()
+                    }
+                )
+            }
+            .navigationTitle(<span class="str">"권한 관리"</span>)
+            .task {
+                <span class="kw">await</span> manager.checkAllPermissions()
+            }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PermissionRow</span>: <span class="type">View</span> {
+    <span class="kw">let</span> type: <span class="type">PermissionType</span>
+    <span class="kw">let</span> status: <span class="type">PermissionStatus</span>
+    <span class="kw">let</span> onRequest: () -> <span class="type">Void</span>
+    <span class="kw">let</span> onOpenSettings: () -> <span class="type">Void</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+            <span class="type">HStack</span> {
+                <span class="type">Image</span>(systemName: type.icon)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                    .frame(width: <span class="str">40</span>)
+
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">4</span>) {
+                    <span class="type">Text</span>(type.rawValue)
+                        .font(.headline)
+
+                    <span class="type">Text</span>(type.description)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                <span class="type">Spacer</span>()
+
+                <span class="comment">// 상태 배지</span>
+                <span class="type">Text</span>(status.text)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, <span class="str">8</span>)
+                    .padding(.vertical, <span class="str">4</span>)
+                    .background(status.color)
+                    .cornerRadius(<span class="str">8</span>)
+            }
+
+            <span class="comment">// 액션 버튼</span>
+            <span class="kw">switch</span> status {
+            <span class="kw">case</span> .notDetermined:
+                <span class="type">Button</span> {
+                    onRequest()
+                } label: {
+                    <span class="type">Text</span>(<span class="str">"권한 허용"</span>)
+                        .frame(maxWidth: .infinity)
+                        .padding(<span class="str">8</span>)
+                        .background(<span class="type">Color</span>.blue)
+                        .foregroundStyle(.white)
+                        .cornerRadius(<span class="str">8</span>)
+                }
+                .buttonStyle(.plain)
+
+            <span class="kw">case</span> .denied:
+                <span class="type">VStack</span>(spacing: <span class="str">8</span>) {
+                    <span class="type">Text</span>(<span class="str">"권한이 거부되었습니다"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+
+                    <span class="type">Button</span> {
+                        onOpenSettings()
+                    } label: {
+                        <span class="type">Label</span>(<span class="str">"설정에서 허용하기"</span>, systemImage: <span class="str">"gear"</span>)
+                            .frame(maxWidth: .infinity)
+                            .padding(<span class="str">8</span>)
+                            .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.2</span>))
+                            .foregroundStyle(.primary)
+                            .cornerRadius(<span class="str">8</span>)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+            <span class="kw">case</span> .limited:
+                <span class="type">Button</span> {
+                    onRequest()
+                } label: {
+                    <span class="type">Text</span>(<span class="str">"전체 액세스 허용"</span>)
+                        .frame(maxWidth: .infinity)
+                        .padding(<span class="str">8</span>)
+                        .background(<span class="type">Color</span>.orange)
+                        .foregroundStyle(.white)
+                        .cornerRadius(<span class="str">8</span>)
+                }
+                .buttonStyle(.plain)
+
+            <span class="kw">case</span> .authorized:
+                <span class="type">HStack</span> {
+                    <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
+                        .foregroundStyle(.green)
+                    <span class="type">Text</span>(<span class="str">"권한이 허용되었습니다"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+            <span class="kw">case</span> .restricted:
+                <span class="type">Text</span>(<span class="str">"기기 설정에 의해 제한되었습니다"</span>)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+        }
+        .padding(.vertical, <span class="str">8</span>)
+    }
+}</pre>
+</div>
+
+<h2>🎭 4. 온보딩 통합</h2>
+<p>Build an onboarding screen that explains and requests permissions on first launch.</p>
+
+<div class="code-block">
+<div class="code-header">PermissionOnboardingView.swift — Onboarding</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">PermissionOnboardingView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">PermissionManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> currentStep = <span class="str">0</span>
+    <span class="kw">@Environment</span>(\.<span class="kw">dismiss</span>) <span class="kw">var</span> dismiss
+
+    <span class="kw">let</span> steps: [<span class="type">PermissionType</span>] = [.camera, .photoLibrary, .location, .notifications]
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">32</span>) {
+            <span class="comment">// 진행 표시</span>
+            <span class="type">HStack</span>(spacing: <span class="str">8</span>) {
+                <span class="type">ForEach</span>(<span class="str">0</span>..<<span class="str">4</span>, id: \.<span class="kw">self</span>) { index <span class="kw">in</span>
+                    <span class="type">Capsule</span>()
+                        .fill(index <= currentStep ? <span class="type">Color</span>.blue : <span class="type">Color</span>.gray.opacity(<span class="str">0.3</span>))
+                        .frame(height: <span class="str">4</span>)
+                }
+            }
+            .padding(.horizontal)
+
+            <span class="type">Spacer</span>()
+
+            <span class="comment">// 현재 단계 콘텐츠</span>
+            <span class="kw">if</span> currentStep < steps.count {
+                <span class="type">PermissionStepView</span>(type: steps[currentStep])
+            } <span class="kw">else</span> {
+                <span class="type">CompletionView</span>()
+            }
+
+            <span class="type">Spacer</span>()
+
+            <span class="comment">// 액션 버튼</span>
+            <span class="type">VStack</span>(spacing: <span class="str">12</span>) {
+                <span class="kw">if</span> currentStep < steps.count {
+                    <span class="type">Button</span> {
+                        <span class="type">Task</span> {
+                            <span class="kw">let</span> type = steps[currentStep]
+                            <span class="kw">let</span> status = <span class="kw">await</span> manager.requestPermission(type)
+                            manager.permissions[type] = status
+                            currentStep += <span class="str">1</span>
+                        }
+                    } label: {
+                        <span class="type">Text</span>(<span class="str">"허용"</span>)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(<span class="type">Color</span>.blue)
+                            .foregroundStyle(.white)
+                            .cornerRadius(<span class="str">12</span>)
+                    }
+
+                    <span class="type">Button</span> {
+                        currentStep += <span class="str">1</span>
+                    } label: {
+                        <span class="type">Text</span>(<span class="str">"나중에"</span>)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } <span class="kw">else</span> {
+                    <span class="type">Button</span> {
+                        dismiss()
+                    } label: {
+                        <span class="type">Text</span>(<span class="str">"시작하기"</span>)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(<span class="type">Color</span>.blue)
+                            .foregroundStyle(.white)
+                            .cornerRadius(<span class="str">12</span>)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PermissionStepView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> type: <span class="type">PermissionType</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+            <span class="comment">// 아이콘</span>
+            <span class="type">Image</span>(systemName: type.icon)
+                .font(.system(size: <span class="str">80</span>))
+                .foregroundStyle(.blue)
+                .symbolEffect(.bounce)
+
+            <span class="comment">// 제목과 설명</span>
+            <span class="type">VStack</span>(spacing: <span class="str">8</span>) {
+                <span class="type">Text</span>(type.rawValue)
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                <span class="type">Text</span>(type.description)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal)
+
+            <span class="comment">// 사용 예시</span>
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                <span class="type">Text</span>(<span class="str">"이런 용도로 사용됩니다:"</span>)
+                    .font(.headline)
+
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">8</span>) {
+                    usageExample(<span class="str">"프로필 사진 촬영"</span>)
+                    usageExample(<span class="str">"문서 스캔"</span>)
+                    usageExample(<span class="str">"AR 기능 사용"</span>)
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+            .cornerRadius(<span class="str">12</span>)
+            .padding(.horizontal)
+        }
+    }
+
+    <span class="kw">func</span> usageExample(<span class="kw">_</span> text: <span class="type">String</span>) -> <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">HStack</span> {
+            <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
+                .foregroundStyle(.green)
+            <span class="type">Text</span>(text)
+                .font(.subheadline)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CompletionView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+            <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
+                .font(.system(size: <span class="str">80</span>))
+                .foregroundStyle(.green)
+
+            <span class="type">VStack</span>(spacing: <span class="str">8</span>) {
+                <span class="type">Text</span>(<span class="str">"모두 완료!"</span>)
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                <span class="type">Text</span>(<span class="str">"이제 앱의 모든 기능을 사용할 수 있습니다"</span>)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>🔄 5. 실시간 권한 모니터링</h2>
+<p>Detect and respond to permission changes while the app is running.</p>
+
+<div class="code-block">
+<div class="code-header">PermissionMonitor.swift — Real-Time Monitoring</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Combine</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PermissionMonitor</span> {
+    <span class="kw">var</span> cameraAvailable = <span class="kw">false</span>
+    <span class="kw">var</span> locationAvailable = <span class="kw">false</span>
+    <span class="kw">var</span> showPermissionAlert = <span class="kw">false</span>
+    <span class="kw">var</span> alertMessage = <span class="str">""</span>
+
+    <span class="kw">private</span> <span class="kw">var</span> cancellables = <span class="type">Set</span><<span class="type">AnyCancellable</span>>()
+
+    <span class="kw">init</span>() {
+        startMonitoring()
+    }
+
+    <span class="kw">func</span> startMonitoring() {
+        <span class="comment">// 앱 포그라운드 진입 시 권한 재확인</span>
+        <span class="type">NotificationCenter</span>.default.publisher(for: <span class="type">UIApplication</span>.willEnterForegroundNotification)
+            .sink { <span class="kw">_</span> <span class="kw">in</span>
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> <span class="kw">self</span>.checkPermissions()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    <span class="kw">func</span> checkPermissions() <span class="kw">async</span> {
+        <span class="comment">// 카메라 권한 확인</span>
+        <span class="kw">let</span> cameraStatus = <span class="type">AVCaptureDevice</span>.authorizationStatus(for: .video)
+        <span class="kw">let</span> cameraWasAvailable = cameraAvailable
+        cameraAvailable = cameraStatus == .authorized
+
+        <span class="comment">// 권한이 취소된 경우</span>
+        <span class="kw">if</span> cameraWasAvailable && !cameraAvailable {
+            <span class="kw">await</span> showAlert(<span class="str">"카메라 권한이 취소되었습니다. 설정에서 다시 허용해주세요."</span>)
+        }
+
+        <span class="comment">// 위치 권한 확인</span>
+        <span class="kw">let</span> locationStatus = <span class="type">CLLocationManager</span>().authorizationStatus
+        <span class="kw">let</span> locationWasAvailable = locationAvailable
+        locationAvailable = locationStatus == .authorizedWhenInUse || locationStatus == .authorizedAlways
+
+        <span class="kw">if</span> locationWasAvailable && !locationAvailable {
+            <span class="kw">await</span> showAlert(<span class="str">"위치 권한이 취소되었습니다. 설정에서 다시 허용해주세요."</span>)
+        }
+    }
+
+    <span class="kw">func</span> showAlert(<span class="kw">_</span> message: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">await</span> <span class="type">MainActor</span>.run {
+            alertMessage = message
+            showPermissionAlert = <span class="kw">true</span>
+        }
+    }
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">CameraView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> monitor = <span class="type">PermissionMonitor</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> monitor.cameraAvailable {
+                <span class="type">Text</span>(<span class="str">"카메라 사용 가능"</span>)
+                <span class="comment">// 카메라 UI</span>
+            } <span class="kw">else</span> {
+                <span class="type">ContentUnavailableView</span> {
+                    <span class="type">Label</span>(<span class="str">"카메라 권한 필요"</span>, systemImage: <span class="str">"camera.fill"</span>)
+                } description: {
+                    <span class="type">Text</span>(<span class="str">"설정에서 카메라 권한을 허용해주세요"</span>)
+                } actions: {
+                    <span class="type">Button</span>(<span class="str">"설정 열기"</span>) {
+                        <span class="type">PermissionManager</span>().openSettings()
+                    }
+                }
+            }
+        }
+        .alert(<span class="str">"권한 변경"</span>, isPresented: $monitor.showPermissionAlert) {
+            <span class="type">Button</span>(<span class="str">"설정 열기"</span>) {
+                <span class="type">PermissionManager</span>().openSettings()
+            }
+            <span class="type">Button</span>(<span class="str">"확인"</span>, role: .cancel) { }
+        } message: {
+            <span class="type">Text</span>(monitor.alertMessage)
+        }
+        .task {
+            <span class="kw">await</span> monitor.checkPermissions()
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>명확한 이유:</strong> 권한이 왜 필요한지 사용자가 이해할 수 있도록 설명</li>
+<li><strong>Appropriate Timing:</strong> 기능을 사용하려는 시점에 권한 요청</li>
+<li><strong>우아한 저하:</strong> 권한이 없어도 앱의 다른 기능은 사용 가능하도록</li>
+<li><strong>재요청 금지:</strong> 거부된 권한을 반복적으로 요청하지 않음</li>
+<li><strong>설정 안내:</strong> 거부 시 설정 앱으로 이동하는 명확한 경로 제공</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>소셜 앱:</strong> 연락처, 카메라, 알림 권한 통합 관리</li>
+<li><strong>헬스 앱:</strong> HealthKit, 위치, 알림 권한 온보딩</li>
+<li><strong>포토 앱:</strong> 사진 라이브러리 부분 권한 활용</li>
+<li><strong>Messaging Apps:</strong> 마이크, 카메라 실시간 권한 확인</li>
+<li><strong>내비게이션 앱:</strong> 위치 권한 상태 모니터링</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/requesting_authorization_for_media_capture_on_ios">Authorization for Media Capture</a></li>
+<li><a href="https://developer.apple.com/documentation/corelocation/requesting_authorization_for_location_services">Location Services Authorization</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/privacy">HIG: Privacy</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 팁:</strong> PermissionKit puts user privacy first. Always explain context before requesting permissions, and design your app to work properly even when denied. Leverage partial permissions (e.g., selected photos only) to increase user trust. Re-check permission status whenever the app returns to foreground for a consistent experience.
+</div>
+
+</article>
+</body></html>

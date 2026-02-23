@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎵 MusicKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🎵 MusicKit</h1>
+<p class="subtitle">A powerful framework for integrating Apple Music into your app</p>
+
+<div><span class="badge ios">iOS 9.3+</span><span class="badge new">Apple Music 통합</span></div>
+
+<h2>✨ MusicKit is?</h2>
+<p>MusicKit is a framework that provides access to Apple Music's vast catalog and the user's personal music library. You can implement music playback, search, playlist creation, and recommendations directly in your app, delivering a complete streaming experience to Apple Music subscribers.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Apple Music Catalog Search · Music Playback · User Library Access · Playlist Management · Recently Played · Recommendations · Subscription Status
+</div>
+
+<h2>🔑 1. 권한 요청 및 초기화</h2>
+<p>Request Apple Music authorization before using MusicKit.</p>
+
+<div class="code-block">
+<div class="code-header">MusicAuthManager.swift — Authorization Request</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MusicKit</span>
+<span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MusicAuthManager</span> {
+    <span class="kw">var</span> authorizationStatus: <span class="type">MusicAuthorization</span>.<span class="type">Status</span> = .notDetermined
+    <span class="kw">var</span> isSubscriptionActive = <span class="kw">false</span>
+
+    <span class="comment">// 권한 요청</span>
+    <span class="kw">func</span> requestAuthorization() <span class="kw">async</span> {
+        <span class="kw">let</span> status = <span class="kw">await</span> <span class="type">MusicAuthorization</span>.request()
+        authorizationStatus = status
+
+        <span class="kw">switch</span> status {
+        <span class="kw">case</span> .authorized:
+            print(<span class="str">"✅ Apple Music 권한 승인됨"</span>)
+            <span class="kw">await</span> checkSubscriptionStatus()
+        <span class="kw">case</span> .denied:
+            print(<span class="str">"❌ Apple Music 권한 거부됨"</span>)
+        <span class="kw">case</span> .restricted:
+            print(<span class="str">"⚠️ Apple Music 권한 제한됨"</span>)
+        <span class="kw">case</span> .notDetermined:
+            print(<span class="str">"🤔 Apple Music 권한 미결정"</span>)
+        <span class="kw">@unknown</span> <span class="kw">default</span>:
+            <span class="kw">break</span>
+        }
+    }
+
+    <span class="comment">// 구독 상태 확인</span>
+    <span class="kw">func</span> checkSubscriptionStatus() <span class="kw">async</span> {
+        <span class="kw">let</span> subscription = <span class="type">MusicSubscription</span>.current
+        isSubscriptionActive = subscription?.canPlayCatalogContent ?? <span class="kw">false</span>
+
+        <span class="kw">if</span> isSubscriptionActive {
+            print(<span class="str">"🎵 Apple Music 구독 활성"</span>)
+        } <span class="kw">else</span> {
+            print(<span class="str">"📱 Apple Music 구독 필요"</span>)
+        }
+    }
+
+    <span class="comment">// 현재 권한 상태 확인</span>
+    <span class="kw">func</span> checkCurrentStatus() {
+        authorizationStatus = <span class="type">MusicAuthorization</span>.currentStatus
+    }
+}</pre>
+</div>
+
+<h2>🎧 2. 음악 재생</h2>
+<p>Use ApplicationMusicPlayer to play music within your app.</p>
+
+<div class="code-block">
+<div class="code-header">MusicPlayer.swift — 음악 재생</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MusicKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MusicPlayerManager</span> {
+    <span class="kw">let</span> player = <span class="type">ApplicationMusicPlayer</span>.shared
+    <span class="kw">var</span> currentSong: <span class="type">Song</span>?
+    <span class="kw">var</span> isPlaying = <span class="kw">false</span>
+    <span class="kw">var</span> playbackTime: <span class="type">TimeInterval</span> = <span class="str">0</span>
+
+    <span class="comment">// 단일 곡 재생</span>
+    <span class="kw">func</span> play(song: <span class="type">Song</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            player.queue = [song]
+            <span class="kw">try</span> <span class="kw">await</span> player.play()
+            currentSong = song
+            isPlaying = <span class="kw">true</span>
+            print(<span class="str">"▶️ 재생: \(song.title)"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 재생 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 앨범 재생</span>
+    <span class="kw">func</span> play(album: <span class="type">Album</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="comment">// 앨범의 모든 트랙 가져오기</span>
+            <span class="kw">let</span> detailedAlbum = <span class="kw">try</span> <span class="kw">await</span> album.with([.tracks])
+            <span class="kw">guard</span> <span class="kw">let</span> tracks = detailedAlbum.tracks <span class="kw">else</span> { <span class="kw">return</span> }
+
+            player.queue = <span class="type">ApplicationMusicPlayer</span>.<span class="type">Queue</span>(tracks)
+            <span class="kw">try</span> <span class="kw">await</span> player.play()
+            isPlaying = <span class="kw">true</span>
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 앨범 재생 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 재생/일시정지 토글</span>
+    <span class="kw">func</span> togglePlayPause() <span class="kw">async</span> {
+        <span class="kw">if</span> player.state.playbackStatus == .playing {
+            player.pause()
+            isPlaying = <span class="kw">false</span>
+        } <span class="kw">else</span> {
+            <span class="kw">do</span> {
+                <span class="kw">try</span> <span class="kw">await</span> player.play()
+                isPlaying = <span class="kw">true</span>
+            } <span class="kw">catch</span> {
+                print(<span class="str">"❌ 재생 실패: \(error)"</span>)
+            }
+        }
+    }
+
+    <span class="comment">// 다음 곡</span>
+    <span class="kw">func</span> skipToNext() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> player.skipToNextEntry()
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 다음 곡 이동 실패"</span>)
+        }
+    }
+
+    <span class="comment">// 이전 곡</span>
+    <span class="kw">func</span> skipToPrevious() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> player.skipToPreviousEntry()
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 이전 곡 이동 실패"</span>)
+        }
+    }
+
+    <span class="comment">// 재생 위치 변경</span>
+    <span class="kw">func</span> seek(to time: <span class="type">TimeInterval</span>) {
+        player.playbackTime = time
+    }
+
+    <span class="comment">// 셔플 모드 토글</span>
+    <span class="kw">func</span> toggleShuffle() {
+        player.state.shuffleMode = player.state.shuffleMode == .off ? .songs : .off
+    }
+
+    <span class="comment">// 반복 모드 변경</span>
+    <span class="kw">func</span> cycleRepeatMode() {
+        <span class="kw">switch</span> player.state.repeatMode {
+        <span class="kw">case</span> .none:
+            player.state.repeatMode = .all
+        <span class="kw">case</span> .all:
+            player.state.repeatMode = .one
+        <span class="kw">case</span> .one:
+            player.state.repeatMode = .none
+        <span class="kw">@unknown</span> <span class="kw">default</span>:
+            player.state.repeatMode = .none
+        }
+    }
+}</pre>
+</div>
+
+<h2>🔍 3. 카탈로그 검색</h2>
+<p>Apple Music 카탈로그에서 음악을 검색.</p>
+
+<div class="code-block">
+<div class="code-header">MusicSearch.swift — 카탈로그 검색</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MusicKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MusicSearchManager</span> {
+    <span class="kw">var</span> searchResults: <span class="type">MusicCatalogSearchResponse</span>?
+    <span class="kw">var</span> songs: [<span class="type">Song</span>] = []
+    <span class="kw">var</span> albums: [<span class="type">Album</span>] = []
+    <span class="kw">var</span> artists: [<span class="type">Artist</span>] = []
+    <span class="kw">var</span> playlists: [<span class="type">Playlist</span>] = []
+
+    <span class="comment">// 통합 검색</span>
+    <span class="kw">func</span> search(term: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">var</span> request = <span class="type">MusicCatalogSearchRequest</span>(
+                term: term,
+                types: [<span class="type">Song</span>.<span class="kw">self</span>, <span class="type">Album</span>.<span class="kw">self</span>, <span class="type">Artist</span>.<span class="kw">self</span>, <span class="type">Playlist</span>.<span class="kw">self</span>]
+            )
+            request.limit = <span class="str">25</span>
+
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            searchResults = response
+
+            songs = <span class="type">Array</span>(response.songs)
+            albums = <span class="type">Array</span>(response.albums)
+            artists = <span class="type">Array</span>(response.artists)
+            playlists = <span class="type">Array</span>(response.playlists)
+
+            print(<span class="str">"🔍 검색 결과: 노래 \(songs.count), 앨범 \(albums.count)"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 검색 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 노래만 검색</span>
+    <span class="kw">func</span> searchSongs(term: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">var</span> request = <span class="type">MusicCatalogSearchRequest</span>(term: term, types: [<span class="type">Song</span>.<span class="kw">self</span>])
+            request.limit = <span class="str">50</span>
+
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            songs = <span class="type">Array</span>(response.songs)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 노래 검색 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 아티스트 검색</span>
+    <span class="kw">func</span> searchArtists(term: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">var</span> request = <span class="type">MusicCatalogSearchRequest</span>(term: term, types: [<span class="type">Artist</span>.<span class="kw">self</span>])
+            request.limit = <span class="str">25</span>
+
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            artists = <span class="type">Array</span>(response.artists)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 아티스트 검색 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 특정 ID로 노래 가져오기</span>
+    <span class="kw">func</span> fetchSong(id: <span class="type">MusicItemID</span>) <span class="kw">async</span> -> <span class="type">Song</span>? {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> request = <span class="type">MusicCatalogResourceRequest</span><<span class="type">Song</span>>(matching: \.id, equalTo: id)
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            <span class="kw">return</span> response.items.first
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 노래 가져오기 실패: \(error)"</span>)
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>📚 4. 사용자 라이브러리</h2>
+<p>Access the user's Apple Music library.</p>
+
+<div class="code-block">
+<div class="code-header">MusicLibrary.swift — Library Access</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MusicKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MusicLibraryManager</span> {
+    <span class="kw">var</span> librarySongs: [<span class="type">Song</span>] = []
+    <span class="kw">var</span> libraryPlaylists: [<span class="type">Playlist</span>] = []
+    <span class="kw">var</span> recentlyPlayed: [<span class="type">RecentlyPlayedMusicItem</span>] = []
+
+    <span class="comment">// 라이브러리의 모든 노래 가져오기</span>
+    <span class="kw">func</span> fetchLibrarySongs() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> request = <span class="type">MusicLibraryRequest</span><<span class="type">Song</span>>()
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            librarySongs = <span class="type">Array</span>(response.items)
+            print(<span class="str">"📚 라이브러리 노래: \(librarySongs.count)개"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 라이브러리 노래 가져오기 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 라이브러리 플레이리스트 가져오기</span>
+    <span class="kw">func</span> fetchLibraryPlaylists() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> request = <span class="type">MusicLibraryRequest</span><<span class="type">Playlist</span>>()
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            libraryPlaylists = <span class="type">Array</span>(response.items)
+            print(<span class="str">"📚 라이브러리 플레이리스트: \(libraryPlaylists.count)개"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 플레이리스트 가져오기 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 최근 재생 목록</span>
+    <span class="kw">func</span> fetchRecentlyPlayed() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> request = <span class="type">MusicRecentlyPlayedRequest</span><<span class="type">RecentlyPlayedMusicItem</span>>()
+            <span class="kw">let</span> response = <span class="kw">try</span> <span class="kw">await</span> request.response()
+            recentlyPlayed = <span class="type">Array</span>(response.items)
+            print(<span class="str">"🕐 최근 재생: \(recentlyPlayed.count)개"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 최근 재생 가져오기 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 라이브러리에 노래 추가</span>
+    <span class="kw">func</span> addToLibrary(song: <span class="type">Song</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> <span class="type">MusicLibrary</span>.shared.add(song)
+            print(<span class="str">"➕ 라이브러리에 추가: \(song.title)"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 라이브러리 추가 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 라이브러리에 앨범 추가</span>
+    <span class="kw">func</span> addToLibrary(album: <span class="type">Album</span>) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> <span class="type">MusicLibrary</span>.shared.add(album)
+            print(<span class="str">"➕ 라이브러리에 앨범 추가: \(album.title)"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 앨범 추가 실패: \(error)"</span>)
+        }
+    }
+}</pre>
+</div>
+
+<h2>🎼 5. 플레이리스트 관리</h2>
+<p>플레이리스트를 생성하고 관리.</p>
+
+<div class="code-block">
+<div class="code-header">PlaylistManager.swift — Playlists</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MusicKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PlaylistManager</span> {
+    <span class="kw">var</span> playlists: [<span class="type">Playlist</span>] = []
+
+    <span class="comment">// 플레이리스트 생성</span>
+    <span class="kw">func</span> createPlaylist(name: <span class="type">String</span>, description: <span class="type">String</span>, songs: [<span class="type">Song</span>]) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> playlist = <span class="kw">try</span> <span class="kw">await</span> <span class="type">MusicLibrary</span>.shared.createPlaylist(
+                name: name,
+                description: description,
+                items: songs
+            )
+            print(<span class="str">"✅ 플레이리스트 생성: \(playlist.name)"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 플레이리스트 생성 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 플레이리스트에 곡 추가</span>
+    <span class="kw">func</span> addSongs(to playlist: <span class="type">Playlist</span>, songs: [<span class="type">Song</span>]) <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> <span class="type">MusicLibrary</span>.shared.add(songs, to: playlist)
+            print(<span class="str">"➕ \(songs.count)곡 추가됨"</span>)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 곡 추가 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 플레이리스트 상세 정보 가져오기</span>
+    <span class="kw">func</span> fetchPlaylistDetails(playlist: <span class="type">Playlist</span>) <span class="kw">async</span> -> <span class="type">Playlist</span>? {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> detailed = <span class="kw">try</span> <span class="kw">await</span> playlist.with([.tracks, .curator])
+            <span class="kw">return</span> detailed
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 플레이리스트 상세 정보 실패: \(error)"</span>)
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Permission Request:</strong> 사용자에게 명확한 이유를 제공하고 권한 요청</li>
+<li><strong>구독 상태:</strong> 비구독자에게 Apple Music 가입 안내</li>
+<li><strong>오프라인:</strong> 네트워크 오류 시 적절한 안내 메시지</li>
+<li><strong>앨범 아트:</strong> AsyncImage로 앨범 커버 로드</li>
+<li><strong>재생 상태:</strong> 현재 재생 중인 곡을 시각적으로 표시</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>음악 플레이어:</strong> 전체 기능을 갖춘 음악 재생 앱</li>
+<li><strong>운동 앱:</strong> 운동 중 음악 재생</li>
+<li><strong>드라이빙 앱:</strong> 운전 중 음악 컨트롤</li>
+<li><strong>소셜 앱:</strong> 친구와 음악 공유</li>
+<li><strong>분석 앱:</strong> 음악 취향 분석 및 추천</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/musickit">MusicKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/">WWDC: MusicKit 세션</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/apple-music">HIG: Apple Music</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> <code>MusicCatalogSearchRequest</code>의 <code>limit</code> appropriately to prevent unnecessary data loading. Implementing pagination provides a better user experience.
+</div>
+
+</article>
+</body></html>

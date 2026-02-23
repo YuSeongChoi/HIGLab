@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💳 구독형 앱 만들기 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-subscription-app.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>💳 구독형 앱 만들기</h1>
+<p>Implement a subscription system with StoreKit 2's modern async/await API.</p>
+
+<h2>📦 Product 로딩</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">StoreManager.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">loadProducts</span>() <span class="kw">async</span> {
+    products = <span class="kw">try await</span> <span class="type">Product</span>.products(<span class="kw">for</span>: productIDs)
+}</pre></div>
+
+<h2>💰 구매 처리</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Purchase.swift</span></div>
+<pre class="code-body"><span class="kw">let</span> result = <span class="kw">try await</span> product.purchase()
+<span class="kw">switch</span> result {
+<span class="kw">case</span> .success(<span class="kw">let</span> verification):
+    <span class="kw">guard case</span> .verified(<span class="kw">let</span> transaction) = verification <span class="kw">else</span> { <span class="kw">return</span> }
+    <span class="kw">await</span> transaction.finish()
+<span class="kw">case</span> .userCancelled, .pending:
+    <span class="kw">break</span>
+}</pre></div>
+
+<h2>🔄 구독 상태 확인</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SubscriptionStatus.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">checkSubscriptionStatus</span>() <span class="kw">async</span> {
+    <span class="kw">for await</span> result <span class="kw">in</span> <span class="type">Transaction</span>.currentEntitlements {
+        <span class="kw">guard case</span> .verified(<span class="kw">let</span> transaction) = result <span class="kw">else</span> { <span class="kw">continue</span> }
+
+        <span class="kw">if</span> transaction.productType == .autoRenewable {
+            <span class="comment">// 구독 활성화</span>
+            isPremium = <span class="kw">true</span>
+        }
+    }
+}</pre></div>
+
+<h2>♻️ 구매 복원</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Restore.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">restorePurchases</span>() <span class="kw">async</span> {
+    <span class="kw">try</span>? <span class="kw">await</span> <span class="type">AppStore</span>.sync()
+    <span class="kw">await</span> <span class="func">checkSubscriptionStatus</span>()
+}</pre></div>
+
+<h2>🎨 페이월 UI (HIG)</h2>
+<p>Apple HIG Paywall Guidelines: Show feature value first, clear pricing, easy restore path.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">PaywallView.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">PaywallView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> products: [<span class="type">Product</span>] = []
+    @<span class="type">State</span> <span class="kw">private var</span> isPurchasing = <span class="kw">false</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="comment">// 기능 가치 먼저 보여주기</span>
+            <span class="type">Text</span>(<span class="str">"프리미엄 기능"</span>)
+                .font(.largeTitle.bold())
+
+            <span class="type">FeatureRow</span>(icon: <span class="str">"star"</span>, text: <span class="str">"무제한 사용"</span>)
+            <span class="type">FeatureRow</span>(icon: <span class="str">"bolt"</span>, text: <span class="str">"광고 제거"</span>)
+            <span class="type">FeatureRow</span>(icon: <span class="str">"heart"</span>, text: <span class="str">"독점 콘텐츠"</span>)
+
+            <span class="type">Spacer</span>()
+
+            <span class="comment">// 구독 플랜</span>
+            <span class="type">ForEach</span>(products, id: \.id) { product <span class="kw">in</span>
+                <span class="type">Button</span> {
+                    <span class="func">purchase</span>(product)
+                } label: {
+                    <span class="type">VStack</span> {
+                        <span class="type">Text</span>(product.displayName)
+                        <span class="type">Text</span>(product.displayPrice)
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(<span class="type">Color</span>.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(<span class="num">12</span>)
+                }
+            }
+
+            <span class="comment">// 복원 버튼 (HIG 필수)</span>
+            <span class="type">Button</span>(<span class="str">"구매 복원"</span>) {
+                <span class="type">Task</span> { <span class="kw">await</span> <span class="func">restorePurchases</span>() }
+            }
+            .font(.caption)
+        }
+        .padding()
+        .task {
+            products = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Product</span>.products(<span class="kw">for</span>: [<span class="str">"premium_monthly"</span>])
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">purchase</span>(_ product: <span class="type">Product</span>) {
+        isPurchasing = <span class="kw">true</span>
+        <span class="type">Task</span> {
+            <span class="kw">let</span> result = <span class="kw">try</span> <span class="kw">await</span> product.purchase()
+            <span class="comment">// ... 구매 처리</span>
+            isPurchasing = <span class="kw">false</span>
+        }
+    }
+}</pre></div>
+
+<h2>🎯 Transaction 리스너</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">TransactionObserver.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">observeTransactions</span>() <span class="kw">async</span> {
+    <span class="kw">for await</span> result <span class="kw">in</span> <span class="type">Transaction</span>.updates {
+        <span class="kw">guard case</span> .verified(<span class="kw">let</span> transaction) = result <span class="kw">else</span> { <span class="kw">continue</span> }
+
+        <span class="comment">// 구매 완료 처리</span>
+        <span class="kw">if</span> transaction.revocationDate == <span class="kw">nil</span> {
+            <span class="comment">// 활성 구독</span>
+            <span class="func">unlockPremiumFeatures</span>()
+        } <span class="kw">else</span> {
+            <span class="comment">// 환불됨</span>
+            <span class="func">lockPremiumFeatures</span>()
+        }
+
+        <span class="kw">await</span> transaction.finish()
+    }
+}</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ 가치 먼저, 가격은 나중에<br>
+✅ 명확한 구독 기간과 갱신 주기<br>
+✅ 복원 버튼 필수<br>
+✅ "구독 관리" 링크 제공<br>
+✅ 무료 체험 기간 명시</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📚</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">DocC Tutorial</div>
+</a>
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/in-app-purchase" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+</div>
+
+</article>
+</body>
+</html>

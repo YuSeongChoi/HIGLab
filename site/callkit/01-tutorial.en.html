@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📞 CallKit 완전정복 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>📞 CallKit 완전정복</h1>
+<p>Make VoIP apps feel native! Integrate call UI with the system using CallKit.</p>
+
+<h2>✨ CallKit is?</h2>
+<p>CallKit is a framework that integrates VoIP (Voice over IP) apps into the iPhone's native phone system. It displays calls with the same UI as FaceTime and Phone, and allows answering calls from the lock screen. Apps like Slack, WhatsApp, and Zoom use CallKit.</p>
+
+<h2>📦 Key Features</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Feature Overview</span></div>
+<pre class="code-body"><span class="comment">✅ 시스템 통화 UI 통합
+✅ 잠금 화면 통화 알림
+✅ 통화 기록 (최근 통화)
+✅ 차단 및 식별 (Caller ID)
+✅ PushKit 연동 (백그라운드 알림)
+✅ 통화 대기, 통화 전환
+✅ 음소거, 스피커 제어</span></pre></div>
+
+<h2>📞 Basic Structure: CXProvider and CXCallController</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CallManager.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">class</span> <span class="type">CallManager</span>: <span class="type">NSObject</span> {
+    <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">CallManager</span>()
+
+    <span class="comment">// CXProvider: 시스템에서 앱으로 들어오는 이벤트 처리</span>
+    <span class="kw">private let</span> <span class="prop">provider</span>: <span class="type">CXProvider</span>
+
+    <span class="comment">// CXCallController: 앱에서 시스템으로 액션 요청</span>
+    <span class="kw">private let</span> <span class="prop">callController</span> = <span class="type">CXCallController</span>()
+
+    <span class="kw">private override init</span>() {
+        <span class="comment">// Provider 설정</span>
+        <span class="kw">let</span> config = <span class="type">CXProviderConfiguration</span>()
+        config.localizedName = <span class="str">"MyVoIP"</span>
+        config.supportsVideo = <span class="kw">true</span>
+        config.maximumCallGroups = <span class="num">1</span>
+        config.maximumCallsPerCallGroup = <span class="num">1</span>
+        config.supportedHandleTypes = [.phoneNumber, .generic]
+
+        <span class="comment">// 벨소리 설정</span>
+        config.ringtoneSound = <span class="str">"ringtone.caf"</span>
+
+        provider = <span class="type">CXProvider</span>(configuration: config)
+
+        <span class="kw">super</span>.<span class="kw">init</span>()
+
+        provider.setDelegate(<span class="kw">self</span>, queue: <span class="kw">nil</span>)
+    }
+}
+
+<span class="comment">// MARK: - Provider Delegate</span>
+<span class="kw">extension</span> <span class="type">CallManager</span>: <span class="type">CXProviderDelegate</span> {
+    <span class="comment">// 오디오 세션 설정 (필수)</span>
+    <span class="kw">func</span> <span class="func">providerDidReset</span>(_ provider: <span class="type">CXProvider</span>) {
+        <span class="comment">// 모든 통화 종료</span>
+        <span class="func">print</span>(<span class="str">"Provider reset"</span>)
+    }
+
+    <span class="comment">// 통화 시작</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, perform action: <span class="type">CXStartCallAction</span>) {
+        <span class="comment">// 통화 시작 로직</span>
+        <span class="func">configureAudioSession</span>()
+        action.<span class="func">fulfill</span>()
+    }
+
+    <span class="comment">// 통화 응답</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, perform action: <span class="type">CXAnswerCallAction</span>) {
+        <span class="comment">// 통화 응답 로직</span>
+        <span class="func">configureAudioSession</span>()
+        action.<span class="func">fulfill</span>()
+    }
+
+    <span class="comment">// 통화 종료</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, perform action: <span class="type">CXEndCallAction</span>) {
+        <span class="comment">// 통화 종료 로직</span>
+        action.<span class="func">fulfill</span>()
+    }
+
+    <span class="comment">// 음소거</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, perform action: <span class="type">CXSetMutedCallAction</span>) {
+        action.<span class="func">fulfill</span>()
+    }
+
+    <span class="comment">// 대기 (Hold)</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, perform action: <span class="type">CXSetHeldCallAction</span>) {
+        action.<span class="func">fulfill</span>()
+    }
+
+    <span class="comment">// 오디오 세션 활성화</span>
+    <span class="kw">func</span> <span class="func">provider</span>(_ provider: <span class="type">CXProvider</span>, didActivate audioSession: <span class="type">AVAudioSession</span>) {
+        <span class="comment">// VoIP 오디오 시작</span>
+        <span class="func">print</span>(<span class="str">"Audio session activated"</span>)
+    }
+
+    <span class="kw">func</span> <span class="func">configureAudioSession</span>() {
+        <span class="kw">let</span> session = <span class="type">AVAudioSession</span>.<span class="func">sharedInstance</span>()
+        <span class="kw">do</span> {
+            <span class="kw">try</span> session.<span class="func">setCategory</span>(.playAndRecord, mode: .voiceChat)
+            <span class="kw">try</span> session.<span class="func">setActive</span>(<span class="kw">true</span>)
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"Audio session error: \(error)"</span>)
+        }
+    }
+}</pre></div>
+
+<h2>📲 수신 전화 표시하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">IncomingCall.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="kw">extension</span> <span class="type">CallManager</span> {
+    <span class="comment">// 수신 전화 알림</span>
+    <span class="kw">func</span> <span class="func">reportIncomingCall</span>(
+        uuid: <span class="type">UUID</span>,
+        handle: <span class="type">String</span>,
+        hasVideo: <span class="type">Bool</span> = <span class="kw">false</span>,
+        completion: ((<span class="type">Error</span>?) -> <span class="type">Void</span>)? = <span class="kw">nil</span>
+    ) {
+        <span class="comment">// CXCallUpdate로 통화 정보 설정</span>
+        <span class="kw">let</span> update = <span class="type">CXCallUpdate</span>()
+        update.remoteHandle = <span class="type">CXHandle</span>(type: .phoneNumber, value: handle)
+        update.hasVideo = hasVideo
+        update.localizedCallerName = handle
+
+        <span class="comment">// 시스템에 통화 알림</span>
+        provider.<span class="func">reportNewIncomingCall</span>(with: uuid, update: update) { error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                <span class="func">print</span>(<span class="str">"Failed to report call: \(error.localizedDescription)"</span>)
+            } <span class="kw">else</span> {
+                <span class="func">print</span>(<span class="str">"Incoming call reported"</span>)
+            }
+            completion?(error)
+        }
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> callUUID = <span class="type">UUID</span>()
+<span class="type">CallManager</span>.shared.<span class="func">reportIncomingCall</span>(
+    uuid: callUUID,
+    handle: <span class="str">"010-1234-5678"</span>,
+    hasVideo: <span class="kw">false</span>
+)</pre></div>
+
+<h2>📤 발신 전화 시작하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">OutgoingCall.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="kw">extension</span> <span class="type">CallManager</span> {
+    <span class="comment">// 발신 전화 시작</span>
+    <span class="kw">func</span> <span class="func">startCall</span>(handle: <span class="type">String</span>, videoEnabled: <span class="type">Bool</span> = <span class="kw">false</span>) {
+        <span class="kw">let</span> uuid = <span class="type">UUID</span>()
+
+        <span class="comment">// Handle 생성</span>
+        <span class="kw">let</span> handle = <span class="type">CXHandle</span>(type: .phoneNumber, value: handle)
+
+        <span class="comment">// Start Call Action</span>
+        <span class="kw">let</span> startCallAction = <span class="type">CXStartCallAction</span>(call: uuid, handle: handle)
+        startCallAction.isVideo = videoEnabled
+
+        <span class="comment">// Transaction 생성 및 요청</span>
+        <span class="kw">let</span> transaction = <span class="type">CXTransaction</span>(action: startCallAction)
+
+        callController.<span class="func">request</span>(transaction) { error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                <span class="func">print</span>(<span class="str">"Start call failed: \(error.localizedDescription)"</span>)
+            } <span class="kw">else</span> {
+                <span class="func">print</span>(<span class="str">"Start call succeeded"</span>)
+            }
+        }
+    }
+
+    <span class="comment">// 통화 종료</span>
+    <span class="kw">func</span> <span class="func">endCall</span>(uuid: <span class="type">UUID</span>) {
+        <span class="kw">let</span> endCallAction = <span class="type">CXEndCallAction</span>(call: uuid)
+        <span class="kw">let</span> transaction = <span class="type">CXTransaction</span>(action: endCallAction)
+
+        callController.<span class="func">request</span>(transaction) { error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                <span class="func">print</span>(<span class="str">"End call failed: \(error.localizedDescription)"</span>)
+            } <span class="kw">else</span> {
+                <span class="func">print</span>(<span class="str">"Call ended"</span>)
+            }
+        }
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="type">CallManager</span>.shared.<span class="func">startCall</span>(handle: <span class="str">"010-9876-5432"</span>, videoEnabled: <span class="kw">false</span>)</pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CallView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="kw">struct</span> <span class="type">CallView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> phoneNumber = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> isCallActive = <span class="kw">false</span>
+    @<span class="type">State</span> <span class="kw">private var</span> currentCallUUID: <span class="type">UUID</span>?
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="type">Text</span>(<span class="str">"VoIP 통화"</span>)
+                .font(.largeTitle)
+                .bold()
+
+            <span class="kw">if</span> isCallActive {
+                <span class="comment">// 통화 중 UI</span>
+                <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+                    <span class="type">Image</span>(systemName: <span class="str">"phone.fill"</span>)
+                        .font(.system(size: <span class="num">60</span>))
+                        .foregroundStyle(.green)
+
+                    <span class="type">Text</span>(<span class="str">"통화 중..."</span>)
+                        .font(.title2)
+
+                    <span class="type">Text</span>(phoneNumber)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    <span class="type">Button</span>(action: <span class="func">endCall</span>) {
+                        <span class="type">HStack</span> {
+                            <span class="type">Image</span>(systemName: <span class="str">"phone.down.fill"</span>)
+                            <span class="type">Text</span>(<span class="str">"통화 종료"</span>)
+                        }
+                        .frame(maxWidth: .<span class="prop">infinity</span>)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
+                }
+            } <span class="kw">else</span> {
+                <span class="comment">// 다이얼 UI</span>
+                <span class="type">TextField</span>(<span class="str">"전화번호"</span>, text: $phoneNumber)
+                    .textFieldStyle(.roundedBorder)
+                    .keyboardType(.phonePad)
+
+                <span class="type">Button</span>(action: <span class="func">makeCall</span>) {
+                    <span class="type">HStack</span> {
+                        <span class="type">Image</span>(systemName: <span class="str">"phone.fill"</span>)
+                        <span class="type">Text</span>(<span class="str">"전화 걸기"</span>)
+                    }
+                    .frame(maxWidth: .<span class="prop">infinity</span>)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(phoneNumber.isEmpty)
+
+                <span class="type">Button</span>(<span class="str">"수신 테스트"</span>) {
+                    <span class="func">simulateIncomingCall</span>()
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding()
+    }
+
+    <span class="kw">func</span> <span class="func">makeCall</span>() {
+        currentCallUUID = <span class="type">UUID</span>()
+        <span class="type">CallManager</span>.shared.<span class="func">startCall</span>(handle: phoneNumber)
+        isCallActive = <span class="kw">true</span>
+    }
+
+    <span class="kw">func</span> <span class="func">endCall</span>() {
+        <span class="kw">if let</span> uuid = currentCallUUID {
+            <span class="type">CallManager</span>.shared.<span class="func">endCall</span>(uuid: uuid)
+        }
+        isCallActive = <span class="kw">false</span>
+        currentCallUUID = <span class="kw">nil</span>
+    }
+
+    <span class="kw">func</span> <span class="func">simulateIncomingCall</span>() {
+        <span class="kw">let</span> uuid = <span class="type">UUID</span>()
+        <span class="type">CallManager</span>.shared.<span class="func">reportIncomingCall</span>(
+            uuid: uuid,
+            handle: <span class="str">"010-1234-5678"</span>
+        )
+    }
+}</pre></div>
+
+<h2>🔔 PushKit 연동 (백그라운드 알림)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">PushKitManager.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PushKit</span>
+<span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="kw">class</span> <span class="type">PushKitManager</span>: <span class="type">NSObject</span>, <span class="type">PKPushRegistryDelegate</span> {
+    <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">PushKitManager</span>()
+
+    <span class="kw">private let</span> <span class="prop">pushRegistry</span> = <span class="type">PKPushRegistry</span>(queue: .<span class="kw">main</span>)
+
+    <span class="kw">func</span> <span class="func">registerForVoIPPushes</span>() {
+        pushRegistry.delegate = <span class="kw">self</span>
+        pushRegistry.desiredPushTypes = [.voIP]
+    }
+
+    <span class="comment">// Push Token 받음</span>
+    <span class="kw">func</span> <span class="func">pushRegistry</span>(
+        _ registry: <span class="type">PKPushRegistry</span>,
+        didUpdate credentials: <span class="type">PKPushCredentials</span>,
+        for type: <span class="type">PKPushType</span>
+    ) {
+        <span class="kw">let</span> token = credentials.token.<span class="func">map</span> { <span class="type">String</span>(format: <span class="str">"%02x"</span>, $0) }.joined()
+        <span class="func">print</span>(<span class="str">"VoIP Push Token: \(token)"</span>)
+
+        <span class="comment">// 서버로 토큰 전송</span>
+        <span class="func">sendTokenToServer</span>(token)
+    }
+
+    <span class="comment">// Push 수신 (통화 알림)</span>
+    <span class="kw">func</span> <span class="func">pushRegistry</span>(
+        _ registry: <span class="type">PKPushRegistry</span>,
+        didReceiveIncomingPushWith payload: <span class="type">PKPushPayload</span>,
+        for type: <span class="type">PKPushType</span>,
+        completion: @escaping () -> <span class="type">Void</span>
+    ) {
+        <span class="kw">guard</span> type == .voIP <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// Payload에서 통화 정보 추출</span>
+        <span class="kw">let</span> callerID = payload.dictionaryPayload[<span class="str">"caller_id"</span>] <span class="kw">as</span>? <span class="type">String</span> ?? <span class="str">"Unknown"</span>
+        <span class="kw">let</span> hasVideo = payload.dictionaryPayload[<span class="str">"has_video"</span>] <span class="kw">as</span>? <span class="type">Bool</span> ?? <span class="kw">false</span>
+
+        <span class="comment">// CallKit으로 수신 전화 표시</span>
+        <span class="kw">let</span> callUUID = <span class="type">UUID</span>()
+        <span class="type">CallManager</span>.shared.<span class="func">reportIncomingCall</span>(
+            uuid: callUUID,
+            handle: callerID,
+            hasVideo: hasVideo
+        ) { error <span class="kw">in</span>
+            completion()
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">sendTokenToServer</span>(_ token: <span class="type">String</span>) {
+        <span class="comment">// API 호출하여 서버에 저장</span>
+    }
+}</pre></div>
+
+<h2>🎯 Practical Example: Complete VoIP App</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">VoIPApp.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+@<span class="kw">main</span>
+<span class="kw">struct</span> <span class="type">VoIPApp</span>: <span class="type">App</span> {
+    @<span class="type">UIApplicationDelegateAdaptor</span>(AppDelegate.<span class="kw">self</span>) <span class="kw">var</span> <span class="prop">appDelegate</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">Scene</span> {
+        <span class="type">WindowGroup</span> {
+            <span class="type">CallView</span>()
+        }
+    }
+}
+
+<span class="kw">class</span> <span class="type">AppDelegate</span>: <span class="type">NSObject</span>, <span class="type">UIApplicationDelegate</span> {
+    <span class="kw">func</span> <span class="func">application</span>(
+        _ application: <span class="type">UIApplication</span>,
+        didFinishLaunchingWithOptions launchOptions: [<span class="type">UIApplication</span>.<span class="type">LaunchOptionsKey</span>: <span class="type">Any</span>]? = <span class="kw">nil</span>
+    ) -> <span class="type">Bool</span> {
+        <span class="comment">// PushKit 등록</span>
+        <span class="type">PushKitManager</span>.shared.<span class="func">registerForVoIPPushes</span>()
+
+        <span class="comment">// CallManager 초기화</span>
+        _ = <span class="type">CallManager</span>.shared
+
+        <span class="kw">return true</span>
+    }
+}</pre></div>
+
+<h2>🔧 통화 상태 업데이트</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CallUpdate.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="kw">extension</span> <span class="type">CallManager</span> {
+    <span class="comment">// 통화 연결됨</span>
+    <span class="kw">func</span> <span class="func">reportCallConnected</span>(uuid: <span class="type">UUID</span>) {
+        provider.<span class="func">reportOutgoingCall</span>(with: uuid, connectedAt: <span class="type">Date</span>())
+    }
+
+    <span class="comment">// 통화 시작 실패</span>
+    <span class="kw">func</span> <span class="func">reportCallFailed</span>(uuid: <span class="type">UUID</span>) {
+        provider.<span class="func">reportCall</span>(with: uuid, endedAt: <span class="type">Date</span>(), reason: .failed)
+    }
+
+    <span class="comment">// 상대방이 거부</span>
+    <span class="kw">func</span> <span class="func">reportCallRemoteEnded</span>(uuid: <span class="type">UUID</span>) {
+        provider.<span class="func">reportCall</span>(with: uuid, endedAt: <span class="type">Date</span>(), reason: .remoteEnded)
+    }
+
+    <span class="comment">// 통화 정보 업데이트</span>
+    <span class="kw">func</span> <span class="func">updateCall</span>(uuid: <span class="type">UUID</span>, localizedName: <span class="type">String</span>) {
+        <span class="kw">let</span> update = <span class="type">CXCallUpdate</span>()
+        update.localizedCallerName = localizedName
+        provider.<span class="func">reportCall</span>(with: uuid, updated: update)
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> callUUID = <span class="type">UUID</span>()
+
+<span class="comment">// 통화 연결 성공</span>
+<span class="type">CallManager</span>.shared.<span class="func">reportCallConnected</span>(uuid: callUUID)
+
+<span class="comment">// 5초 후 통화 종료</span>
+<span class="type">DispatchQueue</span>.main.<span class="func">asyncAfter</span>(deadline: .<span class="func">now</span>() + <span class="num">5</span>) {
+    <span class="type">CallManager</span>.shared.<span class="func">reportCallRemoteEnded</span>(uuid: callUUID)
+}</pre></div>
+
+<h2>📋 Caller ID 및 차단 확장</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CallDirectoryExtension.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="comment">// Call Directory Extension (별도 타겟)</span>
+<span class="kw">class</span> <span class="type">CallDirectoryHandler</span>: <span class="type">CXCallDirectoryProvider</span> {
+    <span class="comment">// 차단 번호 추가</span>
+    <span class="kw">override func</span> <span class="func">beginRequest</span>(with context: <span class="type">CXCallDirectoryExtensionContext</span>) {
+        <span class="kw">do</span> {
+            <span class="comment">// 차단할 번호 목록</span>
+            <span class="kw">let</span> blockedNumbers: [<span class="type">CXCallDirectoryPhoneNumber</span>] = [
+                <span class="num">82101234567</span>,  <span class="comment">// 국가코드 포함</span>
+                <span class="num">82109876543</span>
+            ]
+
+            <span class="kw">for</span> number <span class="kw">in</span> blockedNumbers.sorted() {
+                context.<span class="func">addBlockingEntry</span>(withNextSequentialPhoneNumber: number)
+            }
+
+            <span class="comment">// 발신자 표시 정보</span>
+            <span class="kw">let</span> identifications: [(<span class="type">CXCallDirectoryPhoneNumber</span>, <span class="type">String</span>)] = [
+                (<span class="num">82101111111</span>, <span class="str">"홍길동"</span>),
+                (<span class="num">82102222222</span>, <span class="str">"배달 서비스"</span>)
+            ]
+
+            <span class="kw">for</span> (number, label) <span class="kw">in</span> identifications.sorted(by: { $0.<span class="num">0</span> < $1.<span class="num">0</span> }) {
+                context.<span class="func">addIdentificationEntry</span>(
+                    withNextSequentialPhoneNumber: number,
+                    label: label
+                )
+            }
+
+            context.<span class="func">completeRequest</span>()
+        } <span class="kw">catch</span> {
+            context.<span class="func">cancelRequest</span>(withError: error)
+        }
+    }
+}</pre></div>
+
+<h2>💡 HIG Guidelines</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">HIG Recommendations</span></div>
+<pre class="code-body"><span class="comment">✅ DO
+1. 정확한 발신자 정보 표시
+   - 이름, 번호를 명확하게
+   - localizedCallerName 사용
+
+2. 오디오 세션 올바르게 설정
+   - .playAndRecord + .voiceChat
+   - provider didActivate 에서 오디오 시작
+
+3. 통화 상태 즉시 업데이트
+   - 연결, 종료 상태를 정확하게 보고
+   - reportCallConnected, reportCallEnded
+
+4. PushKit 필수 사용
+   - 백그라운드에서도 통화 수신
+   - VoIP Push만 사용
+
+❌ DON'T
+1. 일반 Push Notification 사용 금지
+2. CallKit 없이 VoIP 앱 제작 불가
+3. 통화 아닌 용도로 PushKit 사용
+4. 통화 상태 보고 누락</span></pre></div>
+
+<h2>🔧 Practical Tips</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Real-World Patterns</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CallKit</span>
+
+<span class="comment">// 1. 통화 관찰자 (Observer)</span>
+<span class="kw">class</span> <span class="type">CallObserver</span> {
+    <span class="kw">let</span> <span class="prop">callObserver</span> = <span class="type">CXCallObserver</span>()
+
+    <span class="kw">init</span>() {
+        callObserver.<span class="func">setDelegate</span>(<span class="kw">self</span>, queue: .<span class="kw">main</span>)
+    }
+}
+
+<span class="kw">extension</span> <span class="type">CallObserver</span>: <span class="type">CXCallObserverDelegate</span> {
+    <span class="kw">func</span> <span class="func">callObserver</span>(_ callObserver: <span class="type">CXCallObserver</span>, callChanged call: <span class="type">CXCall</span>) {
+        <span class="func">print</span>(<span class="str">"Call changed: \(call.uuid)"</span>)
+
+        <span class="kw">if</span> call.isOnHold {
+            <span class="func">print</span>(<span class="str">"통화 대기 중"</span>)
+        }
+
+        <span class="kw">if</span> call.hasEnded {
+            <span class="func">print</span>(<span class="str">"통화 종료됨"</span>)
+        }
+    }
+}
+
+<span class="comment">// 2. 음소거 상태 토글</span>
+<span class="kw">func</span> <span class="func">toggleMute</span>(callUUID: <span class="type">UUID</span>, isMuted: <span class="type">Bool</span>) {
+    <span class="kw">let</span> muteAction = <span class="type">CXSetMutedCallAction</span>(call: callUUID, muted: isMuted)
+    <span class="kw">let</span> transaction = <span class="type">CXTransaction</span>(action: muteAction)
+
+    <span class="type">CXCallController</span>().<span class="func">request</span>(transaction) { error <span class="kw">in</span>
+        <span class="kw">if let</span> error = error {
+            <span class="func">print</span>(<span class="str">"Mute failed: \(error)"</span>)
+        }
+    }
+}
+
+<span class="comment">// 3. 다중 액션 (통화 전환)</span>
+<span class="kw">func</span> <span class="func">swapCalls</span>(currentUUID: <span class="type">UUID</span>, incomingUUID: <span class="type">UUID</span>) {
+    <span class="kw">let</span> holdAction = <span class="type">CXSetHeldCallAction</span>(call: currentUUID, onHold: <span class="kw">true</span>)
+    <span class="kw">let</span> answerAction = <span class="type">CXAnswerCallAction</span>(call: incomingUUID)
+
+    <span class="kw">let</span> transaction = <span class="type">CXTransaction</span>(actions: [holdAction, answerAction])
+
+    <span class="type">CXCallController</span>().<span class="func">request</span>(transaction) { error <span class="kw">in</span>
+        <span class="kw">if let</span> error = error {
+            <span class="func">print</span>(<span class="str">"Swap failed: \(error)"</span>)
+        }
+    }
+}</pre></div>
+
+<h2>🔐 Info.plist & Entitlements Configuration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Info.plist</span></div>
+<pre class="code-body"><span class="comment">&lt;!-- 백그라운드 모드 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>UIBackgroundModes<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;array&gt;</span>
+    <span class="kw">&lt;string&gt;</span>voip<span class="kw">&lt;/string&gt;</span>
+<span class="kw">&lt;/array&gt;</span>
+
+<span class="comment">&lt;!-- Entitlements에서 설정 필요 --&gt;
+- Push Notifications 활성화
+- Background Modes &gt; Voice over IP 체크</span></pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 CallKit 핵심</strong><br>
+✅ 시스템 통화 UI와 완벽 통합<br>
+✅ PushKit으로 백그라운드 수신<br>
+✅ 잠금 화면에서도 통화 가능<br>
+✅ 통화 기록 자동 저장<br>
+✅ FaceTime과 동일한 UX</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/documentation/callkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+<a href="https://developer.apple.com/videos/play/wwdc2016/230/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🎥</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">WWDC 2016</div>
+</a>
+</div>
+
+</article>
+</body>
+</html>

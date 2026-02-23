@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏃 Build a Delivery Tracker Live Activity — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;--accent:#0071e3;--green:#34c759;--red:#ff3b30;--border:#d2d2d7;--code-bg:#1e1e2e;--tag-bg:#f5f5f7;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}
+.top-logo span{color:var(--accent)}
+.top-nav{display:flex;gap:20px}
+.top-nav a{font-size:13px;color:var(--text-2);text-decoration:none;font-weight:500}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+.hero-section{margin-bottom:56px}
+.breadcrumb{font-size:13px;color:var(--text-3);margin-bottom:20px}
+.breadcrumb a{color:var(--accent);text-decoration:none}
+.article-title{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+.article-subtitle{font-size:18px;color:var(--text-2);line-height:1.7;margin-bottom:28px}
+.meta-row{display:flex;flex-wrap:wrap;gap:16px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.meta-item{font-size:13px;color:var(--text-2)}
+h2{font-size:26px;font-weight:800;margin:56px 0 16px;padding-top:24px}
+h3{font-size:20px;font-weight:700;margin:36px 0 12px}
+p{margin-bottom:16px;font-size:16px}
+.hig-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:24px 0}
+.hig-box-header{padding:16px 20px;background:var(--tag-bg);border-bottom:1px solid var(--border);font-size:14px;font-weight:700}
+.hig-box-body{padding:20px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace;font-weight:500}
+.code-lang{font-size:11px;color:#6c7086;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px}
+pre.code-body{margin:0;padding:16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;tab-size:4}
+.code-body .kw{color:#cba6f7}
+.code-body .type{color:#89b4fa}
+.code-body .str{color:#a6e3a1}
+.code-body .num{color:#fab387}
+.code-body .comment{color:#6c7086;font-style:italic}
+.code-body .func{color:#89dceb}
+.code-body .prop{color:#f5c2e7}
+.checkpoint{background:linear-gradient(135deg,#0071e308,#5856d608);border:1px solid #0071e320;border-radius:12px;padding:20px 24px;margin:32px 0;display:flex;gap:12px;align-items:flex-start}
+.checkpoint-icon{font-size:24px;flex-shrink:0}
+.checkpoint h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.checkpoint p{font-size:14px;color:var(--text-2);margin:0}
+.resource-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}
+.resource-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-decoration:none;color:inherit;transition:all .2s;text-align:center}
+.resource-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+.resource-icon{font-size:28px;margin-bottom:8px}
+.resource-label{font-size:13px;font-weight:600;color:var(--accent)}
+.resource-desc{font-size:12px;color:var(--text-3);margin-top:2px}
+@media(max-width:640px){.resource-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-delivery-tracker.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;margin-left:auto;">🌐 KO</a>
+    <div class="top-nav">
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="https://youtube.com/@leeo25">leeo_dev</a>
+    </div>
+  </div>
+</div>
+
+<article>
+  <div class="hero-section">
+    <div class="breadcrumb">
+      <a href="../index.html">HIG Lab</a> → <a href="../index.html#phase1">Phase 1</a> → ActivityKit
+    </div>
+    <h1 class="article-title">🏃 Delivery Tracking Live Activity<br>만들기</h1>
+    <p class="article-subtitle">
+      Build a Live Activity using ActivityKit to track delivery status on the Lock Screen and Dynamic Island in real-time.
+    </p>
+    <div class="meta-row">
+      <span class="meta-item">📅 2025.02</span>
+      <span class="meta-item">⏱ Estimated 2 Hours</span>
+      <span class="meta-item">📱 iOS 16.1+ / Xcode 15+</span>
+      <span class="meta-item">🎯 Intermediate</span>
+    </div>
+  </div>
+
+  <h2>📖 What is Live Activity?</h2>
+  
+  <p>
+    Live Activity <strong>the real-time status of ongoing tasks</strong> on the Lock Screen and Dynamic Island.
+    Unlike widgets, they have a time limit (max 8 hours) with real-time update capability.
+  </p>
+
+  <div class="hig-box">
+    <div class="hig-box-header">🍎 Good Use Cases for Live Activity</div>
+    <div class="hig-box-body">
+      <p><strong>✅ Good Examples</strong><br>Delivery/taxi tracking, sports scores, timers, music playback, flight info</p>
+      <p><strong>❌ Bad Examples</strong><br>Weather (→ Widget), Calendar reminders (→ Notification), Stocks (→ Widget)</p>
+    </div>
+  </div>
+
+  <h2>🏗️ Define ActivityAttributes</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">DeliveryAttributes.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">ActivityKit</span>
+
+<span class="kw">struct</span> <span class="type">DeliveryAttributes</span>: <span class="type">ActivityAttributes</span> {
+    <span class="comment">// Static: 변경 불가</span>
+    <span class="kw">let</span> <span class="prop">orderNumber</span>: <span class="type">String</span>
+    <span class="kw">let</span> <span class="prop">storeName</span>: <span class="type">String</span>
+    
+    <span class="comment">// ContentState: 실시간 업데이트</span>
+    <span class="kw">struct</span> <span class="type">ContentState</span>: <span class="type">Codable</span>, <span class="type">Hashable</span> {
+        <span class="kw">let</span> <span class="prop">status</span>: <span class="type">DeliveryStatus</span>
+        <span class="kw">let</span> <span class="prop">estimatedArrival</span>: <span class="type">Date</span>
+        <span class="kw">let</span> <span class="prop">driverName</span>: <span class="type">String</span>?
+    }
+}
+
+<span class="kw">enum</span> <span class="type">DeliveryStatus</span>: <span class="type">String</span>, <span class="type">Codable</span> {
+    <span class="kw">case</span> <span class="prop">preparing</span>  <span class="comment">// 준비 중</span>
+    <span class="kw">case</span> <span class="prop">pickedUp</span>   <span class="comment">// 픽업 완료</span>
+    <span class="kw">case</span> <span class="prop">nearby</span>     <span class="comment">// 근처 도착</span>
+    <span class="kw">case</span> <span class="prop">delivered</span>  <span class="comment">// 배달 완료</span>
+}</pre>
+  </div>
+
+  <h2>🏝️ Dynamic Island Layout</h2>
+
+  <p>Dynamic Island has 3 states: Compact, Minimal, and Expanded.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">DeliveryLiveActivity.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">DeliveryLiveActivity</span>: <span class="type">Widget</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">WidgetConfiguration</span> {
+        <span class="type">ActivityConfiguration</span>(<span class="kw">for</span>: <span class="type">DeliveryAttributes</span>.<span class="kw">self</span>) { context <span class="kw">in</span>
+            <span class="comment">// 잠금 화면</span>
+            <span class="type">LockScreenView</span>(context: context)
+        } dynamicIsland: { context <span class="kw">in</span>
+            <span class="type">DynamicIsland</span> {
+                <span class="comment">// Expanded</span>
+                <span class="type">DynamicIslandExpandedRegion</span>(.leading) {
+                    <span class="type">Image</span>(systemName: <span class="str">"person.circle"</span>)
+                }
+                <span class="type">DynamicIslandExpandedRegion</span>(.trailing) {
+                    <span class="type">Image</span>(systemName: context.state.status.<span class="prop">symbol</span>)
+                }
+                <span class="type">DynamicIslandExpandedRegion</span>(.center) {
+                    <span class="type">Text</span>(context.attributes.<span class="prop">storeName</span>)
+                }
+                <span class="type">DynamicIslandExpandedRegion</span>(.bottom) {
+                    <span class="type">ProgressView</span>(value: context.state.<span class="prop">progress</span>)
+                }
+            } compactLeading: {
+                <span class="type">Image</span>(systemName: <span class="str">"bicycle"</span>)
+            } compactTrailing: {
+                <span class="type">Text</span>(context.state.<span class="prop">estimatedArrival</span>, style: .timer)
+            } minimal: {
+                <span class="type">Image</span>(systemName: <span class="str">"bicycle"</span>)
+            }
+        }
+    }
+}</pre>
+  </div>
+
+  <h2>📱 Lock Screen View Implementation</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">LockScreenView.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">LockScreenView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">context</span>: <span class="type">ActivityViewContext</span>&lt;<span class="type">DeliveryAttributes</span>&gt;
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">HStack</span>(spacing: <span class="num">12</span>) {
+            <span class="comment">// 상태 아이콘</span>
+            <span class="type">Image</span>(systemName: context.state.status.<span class="prop">symbol</span>)
+                .font(.title2)
+                .foregroundStyle(.blue)
+
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">4</span>) {
+                <span class="type">Text</span>(context.attributes.<span class="prop">storeName</span>)
+                    .font(.headline)
+
+                <span class="type">Text</span>(context.state.status.<span class="prop">description</span>)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                <span class="comment">// 도착 예정 시간</span>
+                <span class="type">Text</span>(context.state.<span class="prop">estimatedArrival</span>, style: .relative)
+                    .font(.caption2)
+                    .foregroundStyle(.blue)
+            }
+
+            <span class="type">Spacer</span>()
+
+            <span class="comment">// 진행률</span>
+            <span class="type">ProgressView</span>(value: context.state.<span class="prop">progress</span>)
+                .progressViewStyle(.circular)
+        }
+        .padding(<span class="num">16</span>)
+    }
+}</pre>
+  </div>
+
+  <h2>⚡ Activity Lifecycle</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">ActivityManager.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">class</span> <span class="type">DeliveryActivityManager</span> {
+    <span class="kw">private var</span> <span class="prop">currentActivity</span>: <span class="type">Activity</span>&lt;<span class="type">DeliveryAttributes</span>&gt;?
+
+    <span class="comment">// 1. Activity 시작</span>
+    <span class="kw">func</span> <span class="func">startActivity</span>(orderNumber: <span class="type">String</span>, storeName: <span class="type">String</span>) <span class="kw">async throws</span> {
+        <span class="kw">let</span> attributes = <span class="type">DeliveryAttributes</span>(
+            orderNumber: orderNumber,
+            storeName: storeName
+        )
+
+        <span class="kw">let</span> initialState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: .preparing,
+            estimatedArrival: <span class="type">Date</span>().addingTimeInterval(<span class="num">1800</span>),
+            driverName: <span class="kw">nil</span>
+        )
+
+        currentActivity = <span class="kw">try</span> <span class="type">Activity</span>.request(
+            attributes: attributes,
+            content: <span class="type">ActivityContent</span>(state: initialState, staleDate: <span class="kw">nil</span>),
+            pushType: .token  <span class="comment">// Push Notification 지원</span>
+        )
+    }
+
+    <span class="comment">// 2. 상태 업데이트</span>
+    <span class="kw">func</span> <span class="func">updateStatus</span>(_ status: <span class="type">DeliveryStatus</span>, driverName: <span class="type">String</span>? = <span class="kw">nil</span>) <span class="kw">async</span> {
+        <span class="kw">let</span> newState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: status,
+            estimatedArrival: <span class="type">Date</span>().addingTimeInterval(<span class="num">600</span>),
+            driverName: driverName
+        )
+
+        <span class="kw">await</span> currentActivity?.update(
+            <span class="type">ActivityContent</span>(state: newState, staleDate: <span class="kw">nil</span>)
+        )
+    }
+
+    <span class="comment">// 3. Activity 종료</span>
+    <span class="kw">func</span> <span class="func">endActivity</span>() <span class="kw">async</span> {
+        <span class="kw">let</span> finalState = <span class="type">DeliveryAttributes</span>.<span class="type">ContentState</span>(
+            status: .delivered,
+            estimatedArrival: <span class="type">Date</span>(),
+            driverName: <span class="kw">nil</span>
+        )
+
+        <span class="kw">await</span> currentActivity?.end(
+            <span class="type">ActivityContent</span>(state: finalState, staleDate: <span class="kw">nil</span>),
+            dismissalPolicy: .after(<span class="type">Date</span>().addingTimeInterval(<span class="num">3600</span>))  <span class="comment">// 1시간 후 자동 제거</span>
+        )
+    }
+}</pre>
+  </div>
+
+  <h2>⚙️ Info.plist Configuration</h2>
+
+  <p>To use Live Activity, add the permission to Info.plist:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">Info.plist</span>
+      <span class="code-lang">XML</span>
+    </div>
+<pre class="code-body"><span class="kw">&lt;key&gt;</span>NSSupportsLiveActivities<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;true/&gt;</span></pre>
+  </div>
+
+  <h3>🔔 Push Notification Integration (Optional)</h3>
+
+  <p>To update remotely from a server, use Push Tokens:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">PushToken.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="comment">// Push Token 가져오기</span>
+<span class="kw">for await</span> pushToken <span class="kw">in</span> <span class="type">Activity</span>&lt;<span class="type">DeliveryAttributes</span>&gt;.pushToStartTokenUpdates {
+    <span class="comment">// 서버로 Push Token 전송</span>
+    <span class="kw">await</span> <span class="func">sendTokenToServer</span>(pushToken)
+}</pre>
+  </div>
+
+  <h2>⚠️ Important Notes</h2>
+
+  <div class="hig-box">
+    <div class="hig-box-header">🚨 Live Activity Limitations</div>
+    <div class="hig-box-body">
+      <p><strong>⏱️ Time Limit</strong><br>Displayed for up to 8 hours only. Automatically removed after that.</p>
+      <p><strong>🔋 Battery Impact</strong><br>Frequent updates drain battery. A minimum 5-second interval is recommended.</p>
+      <p><strong>📱 Device Limitations</strong><br>Dynamic Island is only displayed on iPhone 14 Pro and later. On other devices, it only shows on the Lock Screen.</p>
+      <p><strong>🎨 UI Constraints</strong><br>Tap gestures, animations, and video are not supported. Button, Toggle, and TextField cannot be used either.</p>
+    </div>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-icon">🎉</div>
+    <div class="checkpoint-content">
+      <h4>Challenge Complete!</h4>
+      <p>You've built a complete Live Activity that shows delivery status in real-time on Dynamic Island and the Lock Screen!</p>
+    </div>
+  </div>
+
+  <h2>📦 Learning Resources</h2>
+  
+  <div class="resource-grid">
+    <a href="https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/" class="resource-card">
+      <div class="resource-icon">📚</div>
+      <div class="resource-label">DocC Tutorial</div>
+      <div class="resource-desc">Try it in Xcode</div>
+    </a>
+    <a href="https://github.com/M1zz/HIGLab" class="resource-card">
+      <div class="resource-icon">💻</div>
+      <div class="resource-label">GitHub Project</div>
+      <div class="resource-desc">Complete Source Code</div>
+    </a>
+    <a href="https://developer.apple.com/design/human-interface-guidelines/live-activities" class="resource-card">
+      <div class="resource-icon">🍎</div>
+      <div class="resource-label">Apple HIG Docs</div>
+      <div class="resource-desc">Live Activities Guide</div>
+    </a>
+  </div>
+
+</article>
+</body>
+</html>

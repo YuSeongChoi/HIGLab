@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📅 EventKit 완전정복 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>📅 EventKit 완전정복</h1>
+<p>Integrate calendars and reminders! Build scheduling features with EventKit.</p>
+
+<h2>✨ EventKit is?</h2>
+<p>EventKit is a framework for accessing iOS calendar and reminder data. From creating, editing, and deleting events to setting alarms and recurring schedules, all calendar features are available. It auto-syncs with iCloud for consistent data across all devices.</p>
+
+<h2>📦 Key Features</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Feature Overview</span></div>
+<pre class="code-body"><span class="comment">✅ 캘린더 이벤트 생성/수정/삭제
+✅ 리마인더 생성/수정/삭제
+✅ 알람 설정 (시간 기반, 위치 기반)
+✅ 반복 일정 (매일, 매주, 매월...)
+✅ 캘린더 검색 및 필터링
+✅ 참석자 관리
+✅ iCloud 자동 동기화</span></pre></div>
+
+<h2>🔐 Permission Request</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">PermissionManager.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">class</span> <span class="type">EventKitManager</span> {
+    <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">EventKitManager</span>()
+    <span class="kw">let</span> <span class="prop">eventStore</span> = <span class="type">EKEventStore</span>()
+
+    <span class="comment">// 캘린더 권한 요청</span>
+    <span class="kw">func</span> <span class="func">requestCalendarAccess</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
+        <span class="kw">do</span> {
+            <span class="kw">return try await</span> eventStore.<span class="func">requestFullAccessToEvents</span>()
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"Calendar access error: \(error)"</span>)
+            <span class="kw">return false</span>
+        }
+    }
+
+    <span class="comment">// 리마인더 권한 요청</span>
+    <span class="kw">func</span> <span class="func">requestReminderAccess</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
+        <span class="kw">do</span> {
+            <span class="kw">return try await</span> eventStore.<span class="func">requestFullAccessToReminders</span>()
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"Reminder access error: \(error)"</span>)
+            <span class="kw">return false</span>
+        }
+    }
+
+    <span class="comment">// 권한 상태 확인</span>
+    <span class="kw">func</span> <span class="func">checkAuthorizationStatus</span>() -> <span class="type">EKAuthorizationStatus</span> {
+        <span class="kw">return</span> <span class="type">EKEventStore</span>.<span class="func">authorizationStatus</span>(for: .event)
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> hasAccess = <span class="kw">await</span> <span class="type">EventKitManager</span>.shared.<span class="func">requestCalendarAccess</span>()
+<span class="kw">if</span> hasAccess {
+    <span class="func">print</span>(<span class="str">"캘린더 접근 허용됨"</span>)
+}</pre></div>
+
+<h2>📆 이벤트 생성하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CreateEvent.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 기본 이벤트 생성</span>
+    <span class="kw">func</span> <span class="func">createEvent</span>(
+        title: <span class="type">String</span>,
+        startDate: <span class="type">Date</span>,
+        endDate: <span class="type">Date</span>,
+        notes: <span class="type">String</span>? = <span class="kw">nil</span>,
+        location: <span class="type">String</span>? = <span class="kw">nil</span>
+    ) <span class="kw">throws</span> -> <span class="type">String</span> {
+        <span class="comment">// 새 이벤트 생성</span>
+        <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.notes = notes
+        event.location = location
+
+        <span class="comment">// 기본 캘린더에 저장</span>
+        event.calendar = eventStore.defaultCalendarForNewEvents
+
+        <span class="comment">// 저장</span>
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+
+        <span class="kw">return</span> event.eventIdentifier
+    }
+
+    <span class="comment">// 알람 포함 이벤트</span>
+    <span class="kw">func</span> <span class="func">createEventWithAlarm</span>(
+        title: <span class="type">String</span>,
+        startDate: <span class="type">Date</span>,
+        endDate: <span class="type">Date</span>,
+        alarmMinutesBefore: <span class="type">Int</span>
+    ) <span class="kw">throws</span> -> <span class="type">String</span> {
+        <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.calendar = eventStore.defaultCalendarForNewEvents
+
+        <span class="comment">// 알람 추가 (10분 전)</span>
+        <span class="kw">let</span> alarm = <span class="type">EKAlarm</span>(relativeOffset: <span class="type">TimeInterval</span>(-alarmMinutesBefore * <span class="num">60</span>))
+        event.addAlarm(alarm)
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+
+        <span class="kw">return</span> event.eventIdentifier
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> tomorrow = <span class="type">Calendar</span>.current.date(byAdding: .day, value: <span class="num">1</span>, to: <span class="type">Date</span>())!
+<span class="kw">let</span> oneHourLater = <span class="type">Calendar</span>.current.date(byAdding: .hour, value: <span class="num">1</span>, to: tomorrow)!
+
+<span class="kw">let</span> eventID = <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createEvent</span>(
+    title: <span class="str">"팀 미팅"</span>,
+    startDate: tomorrow,
+    endDate: oneHourLater,
+    notes: <span class="str">"Q1 결과 리뷰"</span>,
+    location: <span class="str">"회의실 A"</span>
+)
+
+<span class="func">print</span>(<span class="str">"이벤트 생성됨: \(eventID)"</span>)</pre></div>
+
+<h2>🔁 반복 이벤트 생성</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">RecurringEvent.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 매주 반복 이벤트</span>
+    <span class="kw">func</span> <span class="func">createWeeklyRecurringEvent</span>(
+        title: <span class="type">String</span>,
+        startDate: <span class="type">Date</span>,
+        endDate: <span class="type">Date</span>
+    ) <span class="kw">throws</span> {
+        <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.calendar = eventStore.defaultCalendarForNewEvents
+
+        <span class="comment">// 반복 규칙 설정 (매주 반복)</span>
+        <span class="kw">let</span> recurrenceRule = <span class="type">EKRecurrenceRule</span>(
+            recurrenceWith: .weekly,
+            interval: <span class="num">1</span>,
+            end: <span class="kw">nil</span>  <span class="comment">// 무한 반복</span>
+        )
+
+        event.addRecurrenceRule(recurrenceRule)
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+    }
+
+    <span class="comment">// 매일 반복 (10회)</span>
+    <span class="kw">func</span> <span class="func">createDailyRecurringEvent</span>(
+        title: <span class="type">String</span>,
+        startDate: <span class="type">Date</span>,
+        endDate: <span class="type">Date</span>,
+        occurrenceCount: <span class="type">Int</span>
+    ) <span class="kw">throws</span> {
+        <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.calendar = eventStore.defaultCalendarForNewEvents
+
+        <span class="comment">// 10회 반복 후 종료</span>
+        <span class="kw">let</span> recurrenceEnd = <span class="type">EKRecurrenceEnd</span>(occurrenceCount: occurrenceCount)
+        <span class="kw">let</span> recurrenceRule = <span class="type">EKRecurrenceRule</span>(
+            recurrenceWith: .daily,
+            interval: <span class="num">1</span>,
+            end: recurrenceEnd
+        )
+
+        event.addRecurrenceRule(recurrenceRule)
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+    }
+
+    <span class="comment">// 특정 요일만 반복 (월, 수, 금)</span>
+    <span class="kw">func</span> <span class="func">createCustomRecurringEvent</span>(
+        title: <span class="type">String</span>,
+        startDate: <span class="type">Date</span>,
+        endDate: <span class="type">Date</span>
+    ) <span class="kw">throws</span> {
+        <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.calendar = eventStore.defaultCalendarForNewEvents
+
+        <span class="comment">// 월, 수, 금 반복</span>
+        <span class="kw">let</span> daysOfWeek = [
+            <span class="type">EKRecurrenceDayOfWeek</span>(.monday),
+            <span class="type">EKRecurrenceDayOfWeek</span>(.wednesday),
+            <span class="type">EKRecurrenceDayOfWeek</span>(.friday)
+        ]
+
+        <span class="kw">let</span> recurrenceRule = <span class="type">EKRecurrenceRule</span>(
+            recurrenceWith: .weekly,
+            interval: <span class="num">1</span>,
+            daysOfTheWeek: daysOfWeek,
+            daysOfTheMonth: <span class="kw">nil</span>,
+            monthsOfTheYear: <span class="kw">nil</span>,
+            weeksOfTheYear: <span class="kw">nil</span>,
+            daysOfTheYear: <span class="kw">nil</span>,
+            setPositions: <span class="kw">nil</span>,
+            end: <span class="kw">nil</span>
+        )
+
+        event.addRecurrenceRule(recurrenceRule)
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+    }
+}</pre></div>
+
+<h2>🔍 이벤트 검색하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SearchEvents.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 특정 기간의 이벤트 검색</span>
+    <span class="kw">func</span> <span class="func">fetchEvents</span>(from startDate: <span class="type">Date</span>, to endDate: <span class="type">Date</span>) -> [<span class="type">EKEvent</span>] {
+        <span class="kw">let</span> calendars = eventStore.calendars(for: .event)
+
+        <span class="comment">// Predicate 생성</span>
+        <span class="kw">let</span> predicate = eventStore.<span class="func">predicateForEvents</span>(
+            withStart: startDate,
+            end: endDate,
+            calendars: calendars
+        )
+
+        <span class="comment">// 이벤트 가져오기</span>
+        <span class="kw">let</span> events = eventStore.<span class="func">events</span>(matching: predicate)
+        <span class="kw">return</span> events
+    }
+
+    <span class="comment">// 오늘의 이벤트</span>
+    <span class="kw">func</span> <span class="func">fetchTodayEvents</span>() -> [<span class="type">EKEvent</span>] {
+        <span class="kw">let</span> calendar = <span class="type">Calendar</span>.current
+        <span class="kw">let</span> startOfDay = calendar.startOfDay(for: <span class="type">Date</span>())
+        <span class="kw">let</span> endOfDay = calendar.date(byAdding: .day, value: <span class="num">1</span>, to: startOfDay)!
+
+        <span class="kw">return</span> <span class="func">fetchEvents</span>(from: startOfDay, to: endOfDay)
+    }
+
+    <span class="comment">// 이번 주 이벤트</span>
+    <span class="kw">func</span> <span class="func">fetchThisWeekEvents</span>() -> [<span class="type">EKEvent</span>] {
+        <span class="kw">let</span> calendar = <span class="type">Calendar</span>.current
+        <span class="kw">let</span> today = <span class="type">Date</span>()
+
+        <span class="kw">guard let</span> weekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)),
+              <span class="kw">let</span> weekEnd = calendar.date(byAdding: .weekOfYear, value: <span class="num">1</span>, to: weekStart) <span class="kw">else</span> {
+            <span class="kw">return</span> []
+        }
+
+        <span class="kw">return</span> <span class="func">fetchEvents</span>(from: weekStart, to: weekEnd)
+    }
+
+    <span class="comment">// 특정 캘린더의 이벤트만</span>
+    <span class="kw">func</span> <span class="func">fetchEventsFromCalendar</span>(calendarID: <span class="type">String</span>, from: <span class="type">Date</span>, to: <span class="type">Date</span>) -> [<span class="type">EKEvent</span>] {
+        <span class="kw">guard let</span> calendar = eventStore.calendar(withIdentifier: calendarID) <span class="kw">else</span> {
+            <span class="kw">return</span> []
+        }
+
+        <span class="kw">let</span> predicate = eventStore.<span class="func">predicateForEvents</span>(
+            withStart: from,
+            end: to,
+            calendars: [calendar]
+        )
+
+        <span class="kw">return</span> eventStore.<span class="func">events</span>(matching: predicate)
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> todayEvents = <span class="type">EventKitManager</span>.shared.<span class="func">fetchTodayEvents</span>()
+<span class="kw">for</span> event <span class="kw">in</span> todayEvents {
+    <span class="func">print</span>(<span class="str">"\(event.title ?? "제목 없음") - \(event.startDate ?? Date())"</span>)
+}</pre></div>
+
+<h2>✏️ 이벤트 수정 및 삭제</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ModifyEvent.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 이벤트 가져오기</span>
+    <span class="kw">func</span> <span class="func">getEvent</span>(identifier: <span class="type">String</span>) -> <span class="type">EKEvent</span>? {
+        <span class="kw">return</span> eventStore.<span class="func">event</span>(withIdentifier: identifier)
+    }
+
+    <span class="comment">// 이벤트 수정</span>
+    <span class="kw">func</span> <span class="func">updateEvent</span>(identifier: <span class="type">String</span>, newTitle: <span class="type">String</span>) <span class="kw">throws</span> {
+        <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
+            <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
+        }
+
+        event.title = newTitle
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
+    }
+
+    <span class="comment">// 이벤트 삭제</span>
+    <span class="kw">func</span> <span class="func">deleteEvent</span>(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
+        <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
+            <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
+        }
+
+        <span class="kw">try</span> eventStore.<span class="func">remove</span>(event, span: .thisEvent)
+    }
+
+    <span class="comment">// 반복 이벤트 삭제 (모든 반복 포함)</span>
+    <span class="kw">func</span> <span class="func">deleteRecurringEvent</span>(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
+        <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
+            <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
+        }
+
+        <span class="comment">// .futureEvents: 이 이벤트와 미래 반복 모두 삭제</span>
+        <span class="kw">try</span> eventStore.<span class="func">remove</span>(event, span: .futureEvents)
+    }
+}</pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CalendarView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">struct</span> <span class="type">CalendarView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> events: [<span class="type">EKEvent</span>] = []
+    @<span class="type">State</span> <span class="kw">private var</span> hasAccess = <span class="kw">false</span>
+    @<span class="type">State</span> <span class="kw">private var</span> showingAddEvent = <span class="kw">false</span>
+
+    <span class="kw">let</span> <span class="prop">manager</span> = <span class="type">EventKitManager</span>.shared
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">Group</span> {
+                <span class="kw">if</span> hasAccess {
+                    <span class="type">List</span> {
+                        <span class="type">ForEach</span>(events, id: \.eventIdentifier) { event <span class="kw">in</span>
+                            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">4</span>) {
+                                <span class="type">Text</span>(event.title ?? <span class="str">"제목 없음"</span>)
+                                    .font(.headline)
+
+                                <span class="type">HStack</span> {
+                                    <span class="type">Image</span>(systemName: <span class="str">"clock"</span>)
+                                    <span class="type">Text</span>(event.startDate ?? <span class="type">Date</span>(), style: .time)
+                                }
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                                <span class="kw">if let</span> location = event.location {
+                                    <span class="type">HStack</span> {
+                                        <span class="type">Image</span>(systemName: <span class="str">"location"</span>)
+                                        <span class="type">Text</span>(location)
+                                    }
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(.vertical, <span class="num">4</span>)
+                        }
+                        .onDelete(<span class="func">deleteEvent</span>)
+                    }
+                } <span class="kw">else</span> {
+                    <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+                        <span class="type">Image</span>(systemName: <span class="str">"calendar.badge.exclamationmark"</span>)
+                            .font(.system(size: <span class="num">60</span>))
+                            .foregroundStyle(.gray)
+
+                        <span class="type">Text</span>(<span class="str">"캘린더 접근 권한 필요"</span>)
+                            .font(.title2)
+                            .bold()
+
+                        <span class="type">Button</span>(<span class="str">"권한 요청"</span>) {
+                            <span class="type">Task</span> {
+                                <span class="kw">await</span> <span class="func">requestAccess</span>()
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+            }
+            .navigationTitle(<span class="str">"오늘의 일정"</span>)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .primaryAction) {
+                    <span class="type">Button</span>(action: { showingAddEvent = <span class="kw">true</span> }) {
+                        <span class="type">Image</span>(systemName: <span class="str">"plus"</span>)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddEvent) {
+                <span class="type">AddEventView</span>()
+            }
+        }
+        .task {
+            <span class="kw">await</span> <span class="func">requestAccess</span>()
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">requestAccess</span>() <span class="kw">async</span> {
+        hasAccess = <span class="kw">await</span> manager.<span class="func">requestCalendarAccess</span>()
+        <span class="kw">if</span> hasAccess {
+            <span class="func">loadEvents</span>()
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">loadEvents</span>() {
+        events = manager.<span class="func">fetchTodayEvents</span>()
+    }
+
+    <span class="kw">func</span> <span class="func">deleteEvent</span>(at offsets: <span class="type">IndexSet</span>) {
+        <span class="kw">for</span> index <span class="kw">in</span> offsets {
+            <span class="kw">let</span> event = events[index]
+            <span class="kw">try</span>? manager.<span class="func">deleteEvent</span>(identifier: event.eventIdentifier)
+        }
+        <span class="func">loadEvents</span>()
+    }
+}
+
+<span class="comment">// 이벤트 추가 화면</span>
+<span class="kw">struct</span> <span class="type">AddEventView</span>: <span class="type">View</span> {
+    @<span class="type">Environment</span>(\.<span class="prop">dismiss</span>) <span class="kw">var</span> <span class="prop">dismiss</span>
+
+    @<span class="type">State</span> <span class="kw">private var</span> title = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> startDate = <span class="type">Date</span>()
+    @<span class="type">State</span> <span class="kw">private var</span> endDate = <span class="type">Date</span>().addingTimeInterval(<span class="num">3600</span>)
+    @<span class="type">State</span> <span class="kw">private var</span> location = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> notes = <span class="str">""</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">Form</span> {
+                <span class="type">Section</span>(<span class="str">"기본 정보"</span>) {
+                    <span class="type">TextField</span>(<span class="str">"제목"</span>, text: $title)
+                    <span class="type">TextField</span>(<span class="str">"위치"</span>, text: $location)
+                }
+
+                <span class="type">Section</span>(<span class="str">"시간"</span>) {
+                    <span class="type">DatePicker</span>(<span class="str">"시작"</span>, selection: $startDate)
+                    <span class="type">DatePicker</span>(<span class="str">"종료"</span>, selection: $endDate)
+                }
+
+                <span class="type">Section</span>(<span class="str">"메모"</span>) {
+                    <span class="type">TextEditor</span>(text: $notes)
+                        .frame(height: <span class="num">100</span>)
+                }
+            }
+            .navigationTitle(<span class="str">"새 이벤트"</span>)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
+                    <span class="type">Button</span>(<span class="str">"취소"</span>) { dismiss() }
+                }
+                <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
+                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                        <span class="func">saveEvent</span>()
+                    }
+                    .disabled(title.isEmpty)
+                }
+            }
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">saveEvent</span>() {
+        <span class="kw">do</span> {
+            _ = <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createEvent</span>(
+                title: title,
+                startDate: startDate,
+                endDate: endDate,
+                notes: notes.isEmpty ? <span class="kw">nil</span> : notes,
+                location: location.isEmpty ? <span class="kw">nil</span> : location
+            )
+            dismiss()
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"이벤트 저장 실패: \(error)"</span>)
+        }
+    }
+}</pre></div>
+
+<h2>✅ 리마인더 (Reminders)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Reminders.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 리마인더 생성</span>
+    <span class="kw">func</span> <span class="func">createReminder</span>(
+        title: <span class="type">String</span>,
+        dueDate: <span class="type">Date</span>? = <span class="kw">nil</span>,
+        priority: <span class="type">Int</span> = <span class="num">0</span>
+    ) <span class="kw">throws</span> -> <span class="type">String</span> {
+        <span class="kw">let</span> reminder = <span class="type">EKReminder</span>(eventStore: eventStore)
+        reminder.title = title
+        reminder.calendar = eventStore.defaultCalendarForNewReminders()
+
+        <span class="comment">// 기한 설정</span>
+        <span class="kw">if let</span> dueDate = dueDate {
+            reminder.dueDateComponents = <span class="type">Calendar</span>.current.<span class="func">dateComponents</span>(
+                [.year, .month, .day, .hour, .minute],
+                from: dueDate
+            )
+        }
+
+        <span class="comment">// 우선순위 (0: 없음, 1-4: 높음, 5: 보통, 6-9: 낮음)</span>
+        reminder.priority = priority
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(reminder, commit: <span class="kw">true</span>)
+
+        <span class="kw">return</span> reminder.calendarItemIdentifier
+    }
+
+    <span class="comment">// 완료되지 않은 리마인더 가져오기</span>
+    <span class="kw">func</span> <span class="func">fetchIncompleteReminders</span>() <span class="kw">async</span> -> [<span class="type">EKReminder</span>] {
+        <span class="kw">let</span> predicate = eventStore.<span class="func">predicateForIncompleteReminders</span>(
+            withDueDateStarting: <span class="kw">nil</span>,
+            ending: <span class="kw">nil</span>,
+            calendars: <span class="kw">nil</span>
+        )
+
+        <span class="kw">return await</span> <span class="func">withCheckedContinuation</span> { continuation <span class="kw">in</span>
+            eventStore.<span class="func">fetchReminders</span>(matching: predicate) { reminders <span class="kw">in</span>
+                continuation.<span class="func">resume</span>(returning: reminders ?? [])
+            }
+        }
+    }
+
+    <span class="comment">// 리마인더 완료 표시</span>
+    <span class="kw">func</span> <span class="func">completeReminder</span>(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
+        <span class="kw">guard let</span> reminder = eventStore.calendarItem(withIdentifier: identifier) <span class="kw">as</span>? <span class="type">EKReminder</span> <span class="kw">else</span> {
+            <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Reminder not found"</span>, code: <span class="num">404</span>)
+        }
+
+        reminder.isCompleted = <span class="kw">true</span>
+        reminder.completionDate = <span class="type">Date</span>()
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(reminder, commit: <span class="kw">true</span>)
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">let</span> tomorrow = <span class="type">Calendar</span>.current.date(byAdding: .day, value: <span class="num">1</span>, to: <span class="type">Date</span>())!
+<span class="kw">let</span> reminderID = <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createReminder</span>(
+    title: <span class="str">"우유 사기"</span>,
+    dueDate: tomorrow,
+    priority: <span class="num">1</span>
+)
+
+<span class="comment">// 미완료 리마인더 가져오기</span>
+<span class="kw">let</span> reminders = <span class="kw">await</span> <span class="type">EventKitManager</span>.shared.<span class="func">fetchIncompleteReminders</span>()
+<span class="func">print</span>(<span class="str">"할 일: \(reminders.count)개"</span>)</pre></div>
+
+<h2>🔔 위치 기반 알람</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">LocationAlarm.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+<span class="kw">import</span> <span class="type">CoreLocation</span>
+
+<span class="kw">extension</span> <span class="type">EventKitManager</span> {
+    <span class="comment">// 위치 기반 리마인더</span>
+    <span class="kw">func</span> <span class="func">createLocationBasedReminder</span>(
+        title: <span class="type">String</span>,
+        latitude: <span class="type">Double</span>,
+        longitude: <span class="type">Double</span>,
+        radius: <span class="type">Double</span> = <span class="num">100</span>  <span class="comment">// 미터</span>
+    ) <span class="kw">throws</span> {
+        <span class="kw">let</span> reminder = <span class="type">EKReminder</span>(eventStore: eventStore)
+        reminder.title = title
+        reminder.calendar = eventStore.defaultCalendarForNewReminders()
+
+        <span class="comment">// 위치 알람 생성</span>
+        <span class="kw">let</span> location = <span class="type">CLLocation</span>(latitude: latitude, longitude: longitude)
+        <span class="kw">let</span> structuredLocation = <span class="type">EKStructuredLocation</span>(title: <span class="str">"알림 위치"</span>)
+        structuredLocation.geoLocation = location
+        structuredLocation.radius = radius
+
+        <span class="comment">// 도착/출발 알림</span>
+        <span class="kw">let</span> alarm = <span class="type">EKAlarm</span>()
+        alarm.structuredLocation = structuredLocation
+        alarm.proximity = .enter  <span class="comment">// .enter (도착), .leave (출발)</span>
+
+        reminder.addAlarm(alarm)
+
+        <span class="kw">try</span> eventStore.<span class="func">save</span>(reminder, commit: <span class="kw">true</span>)
+    }
+}
+
+<span class="comment">// 사용 예시 (집 근처 도착 시 알림)</span>
+<span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createLocationBasedReminder</span>(
+    title: <span class="str">"현관문 열쇠 확인하기"</span>,
+    latitude: <span class="num">37.5665</span>,
+    longitude: <span class="num">126.9780</span>,
+    radius: <span class="num">200</span>
+)</pre></div>
+
+<h2>💡 HIG Guidelines</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">HIG Recommendations</span></div>
+<pre class="code-body"><span class="comment">✅ DO
+1. 권한 요청 전 이유 설명
+   - "일정을 캘린더에 저장하려면 접근 권한이 필요합니다"
+
+2. 기본 캘린더 사용
+   - defaultCalendarForNewEvents 사용
+   - 사용자가 선택한 기본 캘린더 존중
+
+3. 명확한 이벤트 정보
+   - 제목, 시간, 위치를 정확하게
+   - notes에 추가 정보 제공
+
+4. 반복 이벤트 처리 주의
+   - .thisEvent vs .futureEvents 구분
+   - 사용자에게 선택 옵션 제공
+
+❌ DON'T
+1. 권한 없이 캘린더 접근 시도
+2. 사용자 동의 없이 이벤트 생성
+3. 기본 캘린더 무시하고 임의 캘린더에 저장
+4. 알림 없이 기존 이벤트 삭제</span></pre></div>
+
+<h2>🔧 Practical Tips</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Real-World Patterns</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
+
+<span class="comment">// 1. 캘린더 변경 감지</span>
+<span class="kw">class</span> <span class="type">CalendarObserver</span> {
+    <span class="kw">let</span> <span class="prop">eventStore</span> = <span class="type">EKEventStore</span>()
+
+    <span class="kw">func</span> <span class="func">observeChanges</span>() {
+        <span class="type">NotificationCenter</span>.default.<span class="func">addObserver</span>(
+            forName: .<span class="prop">EKEventStoreChanged</span>,
+            object: eventStore,
+            queue: .<span class="kw">main</span>
+        ) { _ <span class="kw">in</span>
+            <span class="func">print</span>(<span class="str">"캘린더 데이터 변경됨"</span>)
+            <span class="comment">// UI 업데이트</span>
+        }
+    }
+}
+
+<span class="comment">// 2. 참석자 추가</span>
+<span class="kw">func</span> <span class="func">createEventWithAttendees</span>(
+    title: <span class="type">String</span>,
+    startDate: <span class="type">Date</span>,
+    endDate: <span class="type">Date</span>,
+    attendeeEmails: [<span class="type">String</span>]
+) <span class="kw">throws</span> {
+    <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: <span class="type">EventKitManager</span>.shared.eventStore)
+    event.title = title
+    event.startDate = startDate
+    event.endDate = endDate
+
+    <span class="comment">// 참석자는 iOS에서 직접 추가 불가 (읽기만 가능)</span>
+    <span class="comment">// Exchange 서버나 iCloud를 통해서만 가능</span>
+
+    <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.eventStore.<span class="func">save</span>(event, span: .thisEvent)
+}
+
+<span class="comment">// 3. 캘린더 색상 가져오기</span>
+<span class="kw">func</span> <span class="func">getCalendarColor</span>(event: <span class="type">EKEvent</span>) -> <span class="type">UIColor</span> {
+    <span class="kw">return</span> <span class="type">UIColor</span>(cgColor: event.calendar.cgColor)
+}</pre></div>
+
+<h2>🔐 Info.plist Configuration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Info.plist</span></div>
+<pre class="code-body"><span class="comment">&lt;!-- 캘린더 권한 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSCalendarsUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>앱에서 일정을 캘린더에 저장하려면 권한이 필요합니다<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- 리마인더 권한 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSRemindersUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>할 일을 리마인더에 추가하려면 권한이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 EventKit 핵심</strong><br>
+✅ 시스템 캘린더/리마인더 완벽 통합<br>
+✅ iCloud 자동 동기화<br>
+✅ 반복 일정 Supported<br>
+✅ 위치 기반 알람<br>
+✅ 모든 캘린더 앱과 호환</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/documentation/eventkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/accessing-private-data" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🎨</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">HIG 개인정보 가이드</div>
+</a>
+</div>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🌐 Network Framework — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🌐 Network Framework</h1>
+<p class="subtitle">현대적인 저수준 네트워크 통신 프레임워크</p>
+
+<div><span class="badge ios">iOS 12+</span><span class="badge new">TLS 1.3 Supported</span></div>
+
+<h2>✨ Network Framework?</h2>
+<p>Network is a modern low-level framework for implementing network communication using TCP, UDP, TLS, WebSocket and more. It provides finer control than URLSession, using NWConnection and NWListener for client/server communication. It offers advanced features like Bonjour service discovery, IPv6 support, and network path monitoring.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> TCP/UDP Communication · TLS 1.3 Encryption · WebSocket Support · Bonjour Discovery · Network Path Monitoring · IPv4/IPv6 · Custom Protocols
+</div>
+
+<h2>🔌 1. NWConnection — TCP Client</h2>
+<p>TCP 연결을 생성하고 데이터를 주고받.</p>
+
+<div class="code-block">
+<div class="code-header">TCPClient.swift — TCP 클라이언트</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Network</span>
+<span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">TCPClient</span> {
+    <span class="kw">private</span> <span class="kw">var</span> connection: <span class="type">NWConnection</span>?
+    <span class="kw">var</span> isConnected = <span class="kw">false</span>
+    <span class="kw">var</span> receivedMessages: [<span class="type">String</span>] = []
+
+    <span class="comment">// TCP 연결 시작</span>
+    <span class="kw">func</span> connect(to host: <span class="type">String</span>, port: <span class="type">UInt16</span>) {
+        <span class="comment">// 호스트와 포트 설정</span>
+        <span class="kw">guard</span> <span class="kw">let</span> endpoint = <span class="type">NWEndpoint</span>.<span class="type">Host</span>(host) <span class="kw">else</span> {
+            print(<span class="str">"❌ 잘못된 호스트"</span>)
+            <span class="kw">return</span>
+        }
+
+        <span class="kw">let</span> port = <span class="type">NWEndpoint</span>.<span class="type">Port</span>(rawValue: port) ?? <span class="type">NWEndpoint</span>.<span class="type">Port</span>.<span class="str">any</span>
+
+        <span class="comment">// TCP 파라미터</span>
+        <span class="kw">let</span> parameters = <span class="type">NWParameters</span>.tcp
+
+        <span class="comment">// TLS 활성화 (HTTPS)</span>
+        parameters.includeTLS = <span class="kw">true</span>
+
+        <span class="comment">// IPv4/IPv6 우선순위</span>
+        parameters.preferNoProxies = <span class="kw">true</span>
+        parameters.requiredInterfaceType = .wifi <span class="comment">// .wifi, .cellular, .loopback</span>
+
+        <span class="comment">// 연결 생성</span>
+        connection = <span class="type">NWConnection</span>(host: endpoint, port: port, using: parameters)
+
+        <span class="comment">// 상태 핸들러</span>
+        connection?.stateUpdateHandler = { [<span class="kw">weak self</span>] state <span class="kw">in</span>
+            <span class="kw">switch</span> state {
+            <span class="kw">case</span> .ready:
+                print(<span class="str">"✅ 연결 성공"</span>)
+                <span class="kw">self</span>?.isConnected = <span class="kw">true</span>
+                <span class="kw">self</span>?.receiveMessage()
+
+            <span class="kw">case</span> .waiting(<span class="kw">let</span> error):
+                print(<span class="str">"⏳ 연결 대기 중: \(error)"</span>)
+
+            <span class="kw">case</span> .failed(<span class="kw">let</span> error):
+                print(<span class="str">"❌ 연결 실패: \(error)"</span>)
+                <span class="kw">self</span>?.isConnected = <span class="kw">false</span>
+
+            <span class="kw">case</span> .cancelled:
+                print(<span class="str">"❌ 연결 취소됨"</span>)
+                <span class="kw">self</span>?.isConnected = <span class="kw">false</span>
+
+            <span class="kw">default</span>:
+                <span class="kw">break</span>
+            }
+        }
+
+        <span class="comment">// 연결 시작</span>
+        connection?.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+        print(<span class="str">"🔗 연결 시도: \(host):\(port)"</span>)
+    }
+
+    <span class="comment">// 메시지 전송</span>
+    <span class="kw">func</span> sendMessage(<span class="kw">_</span> message: <span class="type">String</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> connection = connection, isConnected <span class="kw">else</span> {
+            print(<span class="str">"⚠️ 연결되지 않음"</span>)
+            <span class="kw">return</span>
+        }
+
+        <span class="kw">guard</span> <span class="kw">let</span> data = message.data(using: .utf8) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        connection.send(
+            content: data,
+            completion: .contentProcessed { error <span class="kw">in</span>
+                <span class="kw">if</span> <span class="kw">let</span> error = error {
+                    print(<span class="str">"❌ 전송 실패: \(error)"</span>)
+                } <span class="kw">else</span> {
+                    print(<span class="str">"📤 전송 완료: \(message)"</span>)
+                }
+            }
+        )
+    }
+
+    <span class="comment">// 메시지 수신</span>
+    <span class="kw">private</span> <span class="kw">func</span> receiveMessage() {
+        connection?.receive(minimumIncompleteLength: <span class="str">1</span>, maximumLength: <span class="str">65536</span>) { [<span class="kw">weak self</span>] data, context, isComplete, error <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> error = error {
+                print(<span class="str">"❌ 수신 에러: \(error)"</span>)
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> data = data, !data.isEmpty {
+                <span class="kw">if</span> <span class="kw">let</span> message = <span class="type">String</span>(data: data, encoding: .utf8) {
+                    print(<span class="str">"📥 수신: \(message)"</span>)
+                    <span class="kw">self</span>?.receivedMessages.append(message)
+                }
+            }
+
+            <span class="comment">// 계속 수신 대기</span>
+            <span class="kw">if</span> !isComplete {
+                <span class="kw">self</span>?.receiveMessage()
+            }
+        }
+    }
+
+    <span class="comment">// 연결 종료</span>
+    <span class="kw">func</span> disconnect() {
+        connection?.cancel()
+        connection = <span class="kw">nil</span>
+        isConnected = <span class="kw">false</span>
+        print(<span class="str">"❌ 연결 종료"</span>)
+    }
+}</pre>
+</div>
+
+<h2>🎧 2. NWListener - TCP 서버</h2>
+<p>TCP 서버를 만들어 클라이언트 연결을 수신.</p>
+
+<div class="code-block">
+<div class="code-header">TCPServer.swift — TCP 서버</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Network</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">TCPServer</span> {
+    <span class="kw">private</span> <span class="kw">var</span> listener: <span class="type">NWListener</span>?
+    <span class="kw">private</span> <span class="kw">var</span> connections: [<span class="type">NWConnection</span>] = []
+    <span class="kw">var</span> isListening = <span class="kw">false</span>
+    <span class="kw">var</span> port: <span class="type">UInt16</span> = <span class="str">0</span>
+
+    <span class="comment">// 서버 시작</span>
+    <span class="kw">func</span> startServer(on port: <span class="type">UInt16</span>) {
+        <span class="kw">do</span> {
+            <span class="comment">// TCP 파라미터</span>
+            <span class="kw">let</span> parameters = <span class="type">NWParameters</span>.tcp
+            parameters.acceptLocalOnly = <span class="kw">true</span> <span class="comment">// 로컬 연결만 허용</span>
+
+            <span class="comment">// 리스너 생성</span>
+            <span class="kw">let</span> nwPort = <span class="type">NWEndpoint</span>.<span class="type">Port</span>(rawValue: port) ?? <span class="type">NWEndpoint</span>.<span class="type">Port</span>.<span class="str">any</span>
+            listener = <span class="kw">try</span> <span class="type">NWListener</span>(using: parameters, on: nwPort)
+
+            <span class="comment">// 상태 핸들러</span>
+            listener?.stateUpdateHandler = { [<span class="kw">weak self</span>] state <span class="kw">in</span>
+                <span class="kw">switch</span> state {
+                <span class="kw">case</span> .ready:
+                    print(<span class="str">"✅ 서버 시작됨"</span>)
+                    <span class="kw">self</span>?.isListening = <span class="kw">true</span>
+                    <span class="kw">if</span> <span class="kw">let</span> port = <span class="kw">self</span>?.listener?.port {
+                        <span class="kw">self</span>?.port = port.rawValue
+                        print(<span class="str">"  포트: \(port)"</span>)
+                    }
+
+                <span class="kw">case</span> .failed(<span class="kw">let</span> error):
+                    print(<span class="str">"❌ 서버 실패: \(error)"</span>)
+                    <span class="kw">self</span>?.isListening = <span class="kw">false</span>
+
+                <span class="kw">case</span> .cancelled:
+                    print(<span class="str">"❌ 서버 취소됨"</span>)
+                    <span class="kw">self</span>?.isListening = <span class="kw">false</span>
+
+                <span class="kw">default</span>:
+                    <span class="kw">break</span>
+                }
+            }
+
+            <span class="comment">// 새 연결 핸들러</span>
+            listener?.newConnectionHandler = { [<span class="kw">weak self</span>] newConnection <span class="kw">in</span>
+                print(<span class="str">"🔗 새 클라이언트 연결"</span>)
+                <span class="kw">self</span>?.handleConnection(newConnection)
+            }
+
+            <span class="comment">// 리스너 시작</span>
+            listener?.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+
+        } <span class="kw">catch</span> {
+            print(<span class="str">"❌ 서버 시작 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 클라이언트 연결 처리</span>
+    <span class="kw">private</span> <span class="kw">func</span> handleConnection(<span class="kw">_</span> connection: <span class="type">NWConnection</span>) {
+        connections.append(connection)
+
+        <span class="comment">// 상태 핸들러</span>
+        connection.stateUpdateHandler = { state <span class="kw">in</span>
+            <span class="kw">switch</span> state {
+            <span class="kw">case</span> .ready:
+                print(<span class="str">"  ✅ 클라이언트 준비됨"</span>)
+                <span class="kw">self</span>.receiveMessage(from: connection)
+
+            <span class="kw">case</span> .failed(<span class="kw">let</span> error):
+                print(<span class="str">"  ❌ 클라이언트 실패: \(error)"</span>)
+                <span class="kw">self</span>.removeConnection(connection)
+
+            <span class="kw">case</span> .cancelled:
+                print(<span class="str">"  ❌ 클라이언트 연결 해제"</span>)
+                <span class="kw">self</span>.removeConnection(connection)
+
+            <span class="kw">default</span>:
+                <span class="kw">break</span>
+            }
+        }
+
+        connection.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+    }
+
+    <span class="comment">// 메시지 수신</span>
+    <span class="kw">private</span> <span class="kw">func</span> receiveMessage(from connection: <span class="type">NWConnection</span>) {
+        connection.receive(minimumIncompleteLength: <span class="str">1</span>, maximumLength: <span class="str">65536</span>) { data, context, isComplete, error <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> error = error {
+                print(<span class="str">"  ❌ 수신 에러: \(error)"</span>)
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> data = data, !data.isEmpty {
+                <span class="kw">if</span> <span class="kw">let</span> message = <span class="type">String</span>(data: data, encoding: .utf8) {
+                    print(<span class="str">"  📥 수신: \(message)"</span>)
+
+                    <span class="comment">// Echo 응답</span>
+                    <span class="kw">let</span> response = <span class="str">"Echo: \(message)"</span>
+                    <span class="kw">self</span>.sendMessage(response, to: connection)
+                }
+            }
+
+            <span class="kw">if</span> !isComplete {
+                <span class="kw">self</span>.receiveMessage(from: connection)
+            }
+        }
+    }
+
+    <span class="comment">// 메시지 전송</span>
+    <span class="kw">private</span> <span class="kw">func</span> sendMessage(<span class="kw">_</span> message: <span class="type">String</span>, to connection: <span class="type">NWConnection</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> data = message.data(using: .utf8) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        connection.send(content: data, completion: .contentProcessed { error <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> error = error {
+                print(<span class="str">"  ❌ 전송 실패: \(error)"</span>)
+            } <span class="kw">else</span> {
+                print(<span class="str">"  📤 전송: \(message)"</span>)
+            }
+        })
+    }
+
+    <span class="comment">// 연결 제거</span>
+    <span class="kw">private</span> <span class="kw">func</span> removeConnection(<span class="kw">_</span> connection: <span class="type">NWConnection</span>) {
+        connections.removeAll { $0 === connection }
+    }
+
+    <span class="comment">// 서버 중지</span>
+    <span class="kw">func</span> stopServer() {
+        listener?.cancel()
+        listener = <span class="kw">nil</span>
+
+        connections.forEach { $0.cancel() }
+        connections.removeAll()
+
+        isListening = <span class="kw">false</span>
+        print(<span class="str">"⏹️ 서버 중지"</span>)
+    }
+}</pre>
+</div>
+
+<h2>📡 3. UDP 통신</h2>
+<p>UDP 프로토콜로 데이터그램을 주고받.</p>
+
+<div class="code-block">
+<div class="code-header">UDPClient.swift — UDP 클라이언트</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Network</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">UDPClient</span> {
+    <span class="kw">private</span> <span class="kw">var</span> connection: <span class="type">NWConnection</span>?
+    <span class="kw">var</span> isConnected = <span class="kw">false</span>
+
+    <span class="comment">// UDP 연결</span>
+    <span class="kw">func</span> connect(to host: <span class="type">String</span>, port: <span class="type">UInt16</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> endpoint = <span class="type">NWEndpoint</span>.<span class="type">Host</span>(host) <span class="kw">else</span> { <span class="kw">return</span> }
+        <span class="kw">let</span> port = <span class="type">NWEndpoint</span>.<span class="type">Port</span>(rawValue: port) ?? <span class="type">NWEndpoint</span>.<span class="type">Port</span>.<span class="str">any</span>
+
+        <span class="comment">// UDP 파라미터</span>
+        <span class="kw">let</span> parameters = <span class="type">NWParameters</span>.udp
+
+        connection = <span class="type">NWConnection</span>(host: endpoint, port: port, using: parameters)
+
+        connection?.stateUpdateHandler = { [<span class="kw">weak self</span>] state <span class="kw">in</span>
+            <span class="kw">switch</span> state {
+            <span class="kw">case</span> .ready:
+                print(<span class="str">"✅ UDP 준비됨"</span>)
+                <span class="kw">self</span>?.isConnected = <span class="kw">true</span>
+
+            <span class="kw">case</span> .failed(<span class="kw">let</span> error):
+                print(<span class="str">"❌ UDP 실패: \(error)"</span>)
+                <span class="kw">self</span>?.isConnected = <span class="kw">false</span>
+
+            <span class="kw">default</span>:
+                <span class="kw">break</span>
+            }
+        }
+
+        connection?.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+        print(<span class="str">"📡 UDP 연결: \(host):\(port)"</span>)
+    }
+
+    <span class="comment">// 데이터그램 전송</span>
+    <span class="kw">func</span> sendDatagram(<span class="kw">_</span> message: <span class="type">String</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> connection = connection, isConnected <span class="kw">else</span> { <span class="kw">return</span> }
+        <span class="kw">guard</span> <span class="kw">let</span> data = message.data(using: .utf8) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        connection.send(content: data, completion: .contentProcessed { error <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> error = error {
+                print(<span class="str">"❌ UDP 전송 실패: \(error)"</span>)
+            } <span class="kw">else</span> {
+                print(<span class="str">"📤 UDP 전송: \(message)"</span>)
+            }
+        })
+    }
+
+    <span class="comment">// 데이터그램 수신</span>
+    <span class="kw">func</span> receiveDatagram() {
+        connection?.receiveMessage { data, context, isComplete, error <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> error = error {
+                print(<span class="str">"❌ UDP 수신 에러: \(error)"</span>)
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> data = data, <span class="kw">let</span> message = <span class="type">String</span>(data: data, encoding: .utf8) {
+                print(<span class="str">"📥 UDP 수신: \(message)"</span>)
+            }
+
+            <span class="comment">// 계속 수신</span>
+            <span class="kw">self</span>.receiveDatagram()
+        }
+    }
+
+    <span class="comment">// 연결 종료</span>
+    <span class="kw">func</span> disconnect() {
+        connection?.cancel()
+        connection = <span class="kw">nil</span>
+        isConnected = <span class="kw">false</span>
+    }
+}</pre>
+</div>
+
+<h2>🔍 4. Bonjour 서비스 검색</h2>
+<p>로컬 네트워크에서 Bonjour 서비스를 검색.</p>
+
+<div class="code-block">
+<div class="code-header">BonjourBrowser.swift — Bonjour Discovery</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Network</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">BonjourBrowser</span> {
+    <span class="kw">private</span> <span class="kw">var</span> browser: <span class="type">NWBrowser</span>?
+    <span class="kw">var</span> discoveredServices: [<span class="type">NWBrowser</span>.<span class="type">Result</span>] = []
+    <span class="kw">var</span> isBrowsing = <span class="kw">false</span>
+
+    <span class="comment">// Bonjour 검색 시작</span>
+    <span class="kw">func</span> startBrowsing(serviceType: <span class="type">String</span> = <span class="str">"_http._tcp"</span>, domain: <span class="type">String</span> = <span class="str">"local."</span>) {
+        <span class="comment">// Browser 파라미터</span>
+        <span class="kw">let</span> parameters = <span class="type">NWParameters</span>()
+        parameters.includePeerToPeer = <span class="kw">true</span>
+
+        <span class="comment">// Bonjour 서비스 타입</span>
+        <span class="kw">let</span> bonjourType = <span class="type">NWBrowser</span>.<span class="type">Descriptor</span>.bonjour(type: serviceType, domain: domain)
+
+        <span class="comment">// Browser 생성</span>
+        browser = <span class="type">NWBrowser</span>(for: bonjourType, using: parameters)
+
+        <span class="comment">// 상태 핸들러</span>
+        browser?.stateUpdateHandler = { [<span class="kw">weak self</span>] state <span class="kw">in</span>
+            <span class="kw">switch</span> state {
+            <span class="kw">case</span> .ready:
+                print(<span class="str">"✅ Bonjour 검색 시작"</span>)
+                <span class="kw">self</span>?.isBrowsing = <span class="kw">true</span>
+
+            <span class="kw">case</span> .failed(<span class="kw">let</span> error):
+                print(<span class="str">"❌ 검색 실패: \(error)"</span>)
+                <span class="kw">self</span>?.isBrowsing = <span class="kw">false</span>
+
+            <span class="kw">case</span> .cancelled:
+                print(<span class="str">"❌ 검색 취소됨"</span>)
+                <span class="kw">self</span>?.isBrowsing = <span class="kw">false</span>
+
+            <span class="kw">default</span>:
+                <span class="kw">break</span>
+            }
+        }
+
+        <span class="comment">// 검색 결과 핸들러</span>
+        browser?.browseResultsChangedHandler = { [<span class="kw">weak self</span>] results, changes <span class="kw">in</span>
+            print(<span class="str">"🔍 서비스 변경: \(changes.count)개"</span>)
+
+            <span class="kw">for</span> change <span class="kw">in</span> changes {
+                <span class="kw">switch</span> change {
+                <span class="kw">case</span> .added(<span class="kw">let</span> result):
+                    print(<span class="str">"  ➕ 서비스 발견: \(result.endpoint)"</span>)
+                    <span class="kw">self</span>?.discoveredServices.append(result)
+
+                <span class="kw">case</span> .removed(<span class="kw">let</span> result):
+                    print(<span class="str">"  ➖ 서비스 사라짐: \(result.endpoint)"</span>)
+                    <span class="kw">self</span>?.discoveredServices.removeAll { $0.endpoint == result.endpoint }
+
+                <span class="kw">case</span> .changed(old: <span class="kw">let</span> old, new: <span class="kw">let</span> new, flags: <span class="kw">_</span>):
+                    print(<span class="str">"  🔄 서비스 변경: \(old.endpoint) -> \(new.endpoint)"</span>)
+
+                <span class="kw">case</span> .identical:
+                    <span class="kw">break</span>
+
+                <span class="kw">@unknown</span> <span class="kw">default</span>:
+                    <span class="kw">break</span>
+                }
+            }
+        }
+
+        <span class="comment">// 검색 시작</span>
+        browser?.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+    }
+
+    <span class="comment">// 검색 중지</span>
+    <span class="kw">func</span> stopBrowsing() {
+        browser?.cancel()
+        browser = <span class="kw">nil</span>
+        isBrowsing = <span class="kw">false</span>
+        discoveredServices.removeAll()
+        print(<span class="str">"⏹️ 검색 중지"</span>)
+    }
+}</pre>
+</div>
+
+<h2>📊 5. 네트워크 경로 모니터링</h2>
+<p>네트워크 상태와 경로 변화를 감지.</p>
+
+<div class="code-block">
+<div class="code-header">NetworkMonitor.swift — Network Monitoring</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Network</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">NetworkMonitor</span> {
+    <span class="kw">private</span> <span class="kw">let</span> monitor = <span class="type">NWPathMonitor</span>()
+    <span class="kw">var</span> isConnected = <span class="kw">false</span>
+    <span class="kw">var</span> connectionType: <span class="type">NWInterface</span>.<span class="type">InterfaceType</span>?
+    <span class="kw">var</span> isExpensive = <span class="kw">false</span>
+    <span class="kw">var</span> isConstrained = <span class="kw">false</span>
+
+    <span class="kw">init</span>() {
+        startMonitoring()
+    }
+
+    <span class="comment">// 모니터링 시작</span>
+    <span class="kw">func</span> startMonitoring() {
+        monitor.pathUpdateHandler = { [<span class="kw">weak self</span>] path <span class="kw">in</span>
+            <span class="kw">self</span>?.isConnected = path.status == .satisfied
+            <span class="kw">self</span>?.isExpensive = path.isExpensive
+            <span class="kw">self</span>?.isConstrained = path.isConstrained
+
+            <span class="comment">// 연결 타입 확인</span>
+            <span class="kw">if</span> path.usesInterfaceType(.wifi) {
+                <span class="kw">self</span>?.connectionType = .wifi
+                print(<span class="str">"📡 Wi-Fi 연결"</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> path.usesInterfaceType(.cellular) {
+                <span class="kw">self</span>?.connectionType = .cellular
+                print(<span class="str">"📱 셀룰러 연결"</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> path.usesInterfaceType(.wiredEthernet) {
+                <span class="kw">self</span>?.connectionType = .wiredEthernet
+                print(<span class="str">"🔌 유선 이더넷 연결"</span>)
+            } <span class="kw">else</span> {
+                <span class="kw">self</span>?.connectionType = <span class="kw">nil</span>
+                print(<span class="str">"❌ 연결 없음"</span>)
+            }
+
+            <span class="comment">// 연결 상태</span>
+            <span class="kw">switch</span> path.status {
+            <span class="kw">case</span> .satisfied:
+                print(<span class="str">"✅ 네트워크 연결됨"</span>)
+            <span class="kw">case</span> .unsatisfied:
+                print(<span class="str">"❌ 네트워크 연결 안 됨"</span>)
+            <span class="kw">case</span> .requiresConnection:
+                print(<span class="str">"⏳ 연결 필요"</span>)
+            <span class="kw">@unknown</span> <span class="kw">default</span>:
+                <span class="kw">break</span>
+            }
+
+            <span class="comment">// 비용 정보</span>
+            <span class="kw">if</span> path.isExpensive {
+                print(<span class="str">"💰 비용이 발생하는 네트워크 (셀룰러 데이터)"</span>)
+            }
+
+            <span class="kw">if</span> path.isConstrained {
+                print(<span class="str">"⚠️ 제한된 네트워크 (저전력 모드)"</span>)
+            }
+
+            <span class="comment">// 사용 가능한 인터페이스</span>
+            print(<span class="str">"  사용 가능한 인터페이스:"</span>)
+            <span class="kw">for</span> interface <span class="kw">in</span> path.availableInterfaces {
+                print(<span class="str">"    - \(interface.type): \(interface.name)"</span>)
+            }
+        }
+
+        monitor.start(queue: .<span class="type">global</span>(qos: .userInitiated))
+    }
+
+    <span class="comment">// 모니터링 중지</span>
+    <span class="kw">func</span> stopMonitoring() {
+        monitor.cancel()
+    }
+
+    <span class="kw">deinit</span> {
+        stopMonitoring()
+    }
+}</pre>
+</div>
+
+<h2>📱 6. SwiftUI Integration</h2>
+<p>네트워크 모니터링 UI implementation.</p>
+
+<div class="code-block">
+<div class="code-header">NetworkMonitorView.swift — Network Status UI</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">NetworkMonitorView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> networkMonitor = <span class="type">NetworkMonitor</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">Form</span> {
+                <span class="type">Section</span>(<span class="str">"연결 상태"</span>) {
+                    <span class="type">HStack</span> {
+                        <span class="type">Circle</span>()
+                            .fill(networkMonitor.isConnected ? <span class="type">Color</span>.green : <span class="type">Color</span>.red)
+                            .frame(width: <span class="str">16</span>, height: <span class="str">16</span>)
+
+                        <span class="type">Text</span>(networkMonitor.isConnected ? <span class="str">"연결됨"</span> : <span class="str">"연결 안 됨"</span>)
+                            .font(.headline)
+                    }
+
+                    <span class="kw">if</span> <span class="kw">let</span> type = networkMonitor.connectionType {
+                        <span class="type">HStack</span> {
+                            <span class="type">Text</span>(<span class="str">"연결 타입"</span>)
+                            <span class="type">Spacer</span>()
+                            <span class="type">Text</span>(connectionTypeString(type))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+
+                <span class="type">Section</span>(<span class="str">"네트워크 특성"</span>) {
+                    <span class="type">HStack</span> {
+                        <span class="type">Image</span>(systemName: networkMonitor.isExpensive ? <span class="str">"checkmark.circle.fill"</span> : <span class="str">"xmark.circle"</span>)
+                            .foregroundStyle(networkMonitor.isExpensive ? .orange : .secondary)
+                        <span class="type">Text</span>(<span class="str">"비용 발생"</span>)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(networkMonitor.isExpensive ? <span class="str">"예"</span> : <span class="str">"아니오"</span>)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    <span class="type">HStack</span> {
+                        <span class="type">Image</span>(systemName: networkMonitor.isConstrained ? <span class="str">"checkmark.circle.fill"</span> : <span class="str">"xmark.circle"</span>)
+                            .foregroundStyle(networkMonitor.isConstrained ? .orange : .secondary)
+                        <span class="type">Text</span>(<span class="str">"제한됨"</span>)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(networkMonitor.isConstrained ? <span class="str">"예"</span> : <span class="str">"아니오"</span>)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                <span class="type">Section</span> {
+                    <span class="type">Text</span>(<span class="str">"네트워크 상태를 실시간으로 모니터링합니다."</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle(<span class="str">"네트워크 모니터"</span>)
+        }
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> connectionTypeString(<span class="kw">_</span> type: <span class="type">NWInterface</span>.<span class="type">InterfaceType</span>) -> <span class="type">String</span> {
+        <span class="kw">switch</span> type {
+        <span class="kw">case</span> .wifi: <span class="kw">return</span> <span class="str">"Wi-Fi"</span>
+        <span class="kw">case</span> .cellular: <span class="kw">return</span> <span class="str">"셀룰러"</span>
+        <span class="kw">case</span> .wiredEthernet: <span class="kw">return</span> <span class="str">"유선 이더넷"</span>
+        <span class="kw">case</span> .loopback: <span class="kw">return</span> <span class="str">"로컬"</span>
+        <span class="kw">case</span> .other: <span class="kw">return</span> <span class="str">"기타"</span>
+        <span class="kw">@unknown</span> <span class="kw">default</span>: <span class="kw">return</span> <span class="str">"알 수 없음"</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Permission Settings:</strong> Add NSLocalNetworkUsageDescription to Info.plist</li>
+<li><strong>Bonjour 서비스:</strong> Specify service types in NSBonjourServices</li>
+<li><strong>TLS 사용:</strong> 민감한 데이터 전송 시 TLS 필수</li>
+<li><strong>네트워크 효율:</strong> Check isExpensive to optimize large downloads</li>
+<li><strong>Error Handling:</strong> 연결 실패, 타임아웃에 대한 적절한 처리</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>실시간 통신:</strong> 채팅, 게임 서버 연동</li>
+<li><strong>IoT 통신:</strong> Smart home device control</li>
+<li><strong>로컬 서버:</strong> 디버깅용 로컬 서버 구현</li>
+<li><strong>서비스 검색:</strong> 로컬 네트워크의 프린터, 미디어 서버 찾기</li>
+<li><strong>P2P 통신:</strong> 직접적인 기기 간 통신</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/network">Network Framework 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2018/715/">WWDC: Network Framework 세션</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/networking">HIG: Networking</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> <code>NWConnection</code> automatically selects the optimal network path. It supports both IPv4 and IPv6, seamlessly switching between Wi-Fi and cellular. UDP is fast but unreliable, while TCP is reliable but has overhead.
+</div>
+
+</article>
+</body></html>
