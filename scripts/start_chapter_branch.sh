@@ -6,30 +6,31 @@ usage() {
 Usage:
   scripts/start_chapter_branch.sh \
     --phase p1 \
-    --framework swiftui \
-    --chapter ch01
+    --framework widgetkit \
+    --unit setup
 
 Examples:
-  scripts/start_chapter_branch.sh --phase p1 --framework swiftui --chapter day2
-  scripts/start_chapter_branch.sh --phase p2 --framework cloudkit --chapter ch03
+  scripts/start_chapter_branch.sh --phase p1 --framework widgetkit --unit core
+  scripts/start_chapter_branch.sh --phase p2 --framework cloudkit --unit sync
 USAGE
 }
 
 PHASE=""
 FRAMEWORK=""
-CHAPTER=""
+UNIT=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --phase) PHASE="$2"; shift 2 ;;
     --framework) FRAMEWORK="$2"; shift 2 ;;
-    --chapter) CHAPTER="$2"; shift 2 ;;
+    --unit) UNIT="$2"; shift 2 ;;
+    --chapter) UNIT="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1"; usage; exit 1 ;;
   esac
 done
 
-for v in PHASE FRAMEWORK CHAPTER; do
+for v in PHASE FRAMEWORK UNIT; do
   if [[ -z "${!v}" ]]; then
     echo "Missing required argument: ${v}"
     usage
@@ -48,9 +49,9 @@ normalize() {
 
 PHASE_NORM="$(normalize "$PHASE")"
 FRAMEWORK_NORM="$(normalize "$FRAMEWORK")"
-CHAPTER_NORM="$(normalize "$CHAPTER")"
+UNIT_NORM="$(normalize "$UNIT")"
 
-BRANCH_NAME="practice/${PHASE_NORM}-${FRAMEWORK_NORM}-${CHAPTER_NORM}"
+BRANCH_NAME="practice/${PHASE_NORM}-${FRAMEWORK_NORM}-${UNIT_NORM}"
 
 CURRENT_BRANCH="$(git branch --show-current)"
 if [[ "$CURRENT_BRANCH" != "main" ]]; then
@@ -63,6 +64,6 @@ git switch -c "$BRANCH_NAME"
 
 echo "Created branch: $BRANCH_NAME"
 echo "Next steps:"
-echo "  1) Create chapter issue"
+echo "  1) Create learning issue"
 echo "  2) Implement scoped changes"
 echo "  3) Commit + push + PR"

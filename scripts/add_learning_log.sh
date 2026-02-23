@@ -9,19 +9,19 @@ Usage:
   scripts/add_learning_log.sh \
     --date YYYY-MM-DD \
     --phase "Phase 1" \
-    --framework "SwiftUI" \
-    --chapter "Chapter 1" \
+    --framework "WidgetKit" \
+    --scope "Core timeline" \
     --issue "#123" \
     --pr "#124" \
     --velog "https://velog.io/@..." \
-    --key "State flow from @State to child views"
+    --key "One key learning"
 USAGE
 }
 
 DATE=""
 PHASE=""
 FRAMEWORK=""
-CHAPTER=""
+SCOPE=""
 ISSUE=""
 PR=""
 VELOG=""
@@ -32,7 +32,8 @@ while [[ $# -gt 0 ]]; do
     --date) DATE="$2"; shift 2 ;;
     --phase) PHASE="$2"; shift 2 ;;
     --framework) FRAMEWORK="$2"; shift 2 ;;
-    --chapter) CHAPTER="$2"; shift 2 ;;
+    --scope) SCOPE="$2"; shift 2 ;;
+    --chapter) SCOPE="$2"; shift 2 ;;
     --issue) ISSUE="$2"; shift 2 ;;
     --pr) PR="$2"; shift 2 ;;
     --velog) VELOG="$2"; shift 2 ;;
@@ -42,7 +43,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for v in DATE PHASE FRAMEWORK CHAPTER ISSUE PR VELOG KEY; do
+for v in DATE PHASE FRAMEWORK SCOPE ISSUE PR VELOG KEY; do
   if [[ -z "${!v}" ]]; then
     echo "Missing required argument: ${v}"
     usage
@@ -55,7 +56,7 @@ if [[ ! -f "${LOG_FILE}" ]]; then
   exit 1
 fi
 
-ROW="| ${DATE} | ${PHASE} | ${FRAMEWORK} | ${CHAPTER} | ${ISSUE} | ${PR} | ${VELOG} | ${KEY} |"
+ROW="| ${DATE} | ${PHASE} | ${FRAMEWORK} | ${SCOPE} | ${ISSUE} | ${PR} | ${VELOG} | ${KEY} |"
 
 python3 - "${ROW}" <<'PY'
 import sys
