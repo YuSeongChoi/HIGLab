@@ -1,0 +1,247 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Scheduling Local Notifications") {
+        Local notifications are generated directly on the device without a server.
+        
+        Schedule notifications based on specific times, locations, or conditions
+        to ensure users never miss important moments.
+    }
+    
+    @Section(title: "Understanding UNNotificationRequest") {
+        @ContentAndMedia {
+            A notification request consists of three essential elements:
+            
+            1. **identifier**: Unique identifier (used for modification/deletion)
+            2. **content**: Notification content (title, body, sound, etc.)
+            3. **trigger**: Trigger condition (time, location, calendar)
+        }
+        
+        @Steps {
+            @Step {
+                **Request Structure**
+                
+                The basic pattern for creating UNNotificationRequest.
+                Using UUID for the identifier is recommended.
+                
+                @Code(name: "RequestStructure.swift", file: "02-request-structure.swift")
+            }
+            
+            @Step {
+                **Setting UNNotificationContent**
+                
+                Configure notification content with UNMutableNotificationContent.
+                title, body, sound are the most basic properties.
+                
+                @Code(name: "BasicContent.swift", file: "02-basic-content.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Time-Based Triggers") {
+        @ContentAndMedia {
+            UNTimeIntervalNotificationTrigger is the simplest trigger.
+            
+            It sets "notification after N seconds."
+            Useful for testing, but specifying exact times is more commonly used in practice.
+        }
+        
+        @Steps {
+            @Step {
+                **TimeInterval Trigger**
+                
+                The notification fires after the specified time (in seconds).
+                Can repeat with repeats: true, but must be at least 60 seconds.
+                
+                @Code(name: "TimeIntervalTrigger.swift", file: "02-timeinterval-trigger.swift")
+            }
+            
+            @Step {
+                **Implementing the Scheduler Method**
+                
+                Add a notification scheduling method to NotificationManager.
+                Include error handling.
+                
+                @Code(name: "ScheduleMethod.swift", file: "02-schedule-method.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Calendar-Based Triggers") {
+        @ContentAndMedia {
+            Schedule notifications for exact dates and times with UNCalendarNotificationTrigger.
+            
+            Use DateComponents to specify the desired moment.
+            This is the core functionality of a reminder app.
+        }
+        
+        @Steps {
+            @Step {
+                **Scheduling for Specific Times**
+                
+                Specify year, month, day, hour, minute with DateComponents.
+                Omitted components act like wildcards.
+                
+                @Code(name: "CalendarTrigger.swift", file: "02-calendar-trigger.swift")
+            }
+            
+            @Step {
+                **Converting Date to DateComponents**
+                
+                Convert a user-selected Date to DateComponents.
+                Use Calendar to extract the exact components.
+                
+                @Code(name: "DateConversion.swift", file: "02-date-conversion.swift")
+            }
+            
+            @Step {
+                **Implementing the Reminder Scheduling UI**
+                
+                Let users select notification times with DatePicker.
+                Schedule the notification for the selected time.
+                
+                @Code(name: "ReminderScheduleView.swift", file: "02-reminder-schedule-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Scheduled Notifications") {
+        @ContentAndMedia {
+            Scheduled notifications can be queried, modified, and deleted.
+            
+            Managing identifiers well allows selective control of specific notifications.
+            Scheduled notifications remain in the system even after the app is closed.
+        }
+        
+        @Steps {
+            @Step {
+                **Querying Scheduled Notifications**
+                
+                Retrieve pending notifications with getPendingNotificationRequests.
+                Handle cleanly with async/await.
+                
+                @Code(name: "GetPending.swift", file: "02-get-pending.swift")
+            }
+            
+            @Step {
+                **Canceling Specific Notifications**
+                
+                Cancel specific notifications by identifier.
+                Use removePendingNotificationRequests.
+                
+                @Code(name: "CancelNotification.swift", file: "02-cancel-notification.swift")
+            }
+            
+            @Step {
+                **Canceling All Notifications**
+                
+                Remove all scheduled notifications with removeAllPendingNotificationRequests.
+                Useful for app logout.
+                
+                @Code(name: "CancelAll.swift", file: "02-cancel-all.swift")
+            }
+            
+            @Step {
+                **Defining the Reminder Model**
+                
+                Define a model to manage reminder data.
+                Store the notification ID for later management.
+                
+                @Code(name: "ReminderModel.swift", file: "02-reminder-model.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the minimum interval for repeating notifications in UNTimeIntervalNotificationTrigger?
+            
+            @Choice(isCorrect: false) {
+                10 seconds
+                
+                @Justification(reaction: "Not quite") {
+                    Repeating notifications must be at least 60 seconds.
+                    This is a restriction to protect system resources.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                60 seconds
+                
+                @Justification(reaction: "Correct!") {
+                    When setting repeats: true, the timeInterval
+                    must be at least 60 seconds.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    The system restricts the repeat interval to at least 60 seconds
+                    to protect battery and resources.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Do scheduled local notifications work even after the app is completely closed?
+            
+            @Choice(isCorrect: true) {
+                Yes, the system manages notifications
+                
+                @Justification(reaction: "Correct!") {
+                    Scheduled notifications are managed at the system level.
+                    Notifications fire at the specified time regardless of app state.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No, the app must be running
+                
+                @Justification(reaction: "That's a misconception") {
+                    Local notifications are managed by the system,
+                    so they work regardless of whether the app is running.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only if background mode is enabled
+                
+                @Justification(reaction: "Not quite") {
+                    Notifications work without special background modes.
+                    The system triggers notifications directly.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the UNNotificationRequest identifier used for?
+            
+            @Choice(isCorrect: false) {
+                A key to encrypt notification content
+                
+                @Justification(reaction: "Not quite") {
+                    The identifier is unrelated to encryption.
+                    It's used for notification identification and management.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To identify notifications for querying, modifying, and deleting
+                
+                @Justification(reaction: "Correct!") {
+                    The identifier lets you find specific notifications to cancel or update.
+                    Using UUID ensures unique management without collisions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The notification title shown to users
+                
+                @Justification(reaction: "Don't confuse them") {
+                    The title is set in content.title.
+                    The identifier is for internal identification and not visible to users.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,239 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Accessibility & Privacy") {
+        Learn how to ensure accessibility so all users can use the app 
+        and follow privacy guidelines related to biometric data.
+    }
+    
+    @Section(title: "Accessibility Considerations") {
+        @ContentAndMedia {
+            Some users cannot use biometric authentication.
+            You must provide alternatives for all users.
+        }
+        
+        @Steps {
+            @Step {
+                **Provide Alternative Authentication Methods**
+                
+                Always provide passcode or PIN options 
+                for when biometric authentication is not possible.
+                
+                @Code(name: "AlternativeAuth.swift", file: "10-alternative-auth.swift")
+            }
+            
+            @Step {
+                **VoiceOver Support**
+                
+                Provide appropriate accessibility labels and hints 
+                for all elements on the lock screen.
+                
+                @Code(name: "VoiceOver.swift", file: "10-voiceover.swift")
+            }
+            
+            @Step {
+                **Dynamic Type Support**
+                
+                Ensure the lock screen displays correctly 
+                even with large text settings.
+                
+                @Code(name: "DynamicType.swift", file: "10-dynamic-type.swift")
+            }
+            
+            @Step {
+                **Visual Feedback**
+                
+                Display authentication results visually as well 
+                for users with hearing impairments.
+                
+                @Code(name: "VisualFeedback.swift", file: "10-visual-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Privacy Guidelines") {
+        @ContentAndMedia {
+            Biometric data is highly sensitive personal information.
+            You must comply with Apple guidelines and legal requirements.
+        }
+        
+        @Steps {
+            @Step {
+                **No Biometric Data Collection**
+                
+                LocalAuthentication doesn't access the biometric data itself.
+                Developers cannot collect face images or fingerprint data.
+                
+                @Code(name: "NoDataCollection.swift", file: "10-no-data-collection.swift")
+            }
+            
+            @Step {
+                **Clear Purpose Description**
+                
+                Clearly and honestly explain the authentication purpose 
+                in Info.plist's NSFaceIDUsageDescription.
+                
+                @Code(name: "UsageDescription.swift", file: "10-usage-description.swift")
+            }
+            
+            @Step {
+                **GDPR and Privacy Regulations**
+                
+                Apps targeting European users must obtain consent 
+                for biometric authentication usage.
+                
+                @Code(name: "GDPRCompliance.swift", file: "10-gdpr-compliance.swift")
+            }
+            
+            @Step {
+                **Update Privacy Policy**
+                
+                Your app's privacy policy must specify 
+                the use of biometric authentication.
+                
+                @Code(name: "PrivacyPolicy.swift", file: "10-privacy-policy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completing the Secure Vault App") {
+        @ContentAndMedia {
+            Integrate everything learned so far to create a polished app 
+            with accessibility and privacy protection.
+        }
+        
+        @Steps {
+            @Step {
+                **Implement Settings Screen**
+                
+                Let users choose authentication method, auto-lock, 
+                and whether to use biometric authentication.
+                
+                @Code(name: "SettingsView.swift", file: "10-settings-view.swift")
+            }
+            
+            @Step {
+                **Onboarding Flow**
+                
+                Guide biometric authentication setup on first app launch.
+                Also explain accessible alternatives.
+                
+                @Code(name: "Onboarding.swift", file: "10-onboarding.swift")
+            }
+            
+            @Step {
+                **Final App Structure**
+                
+                Review the overall app structure: 
+                App, ContentView, LockScreen, VaultList, etc.
+                
+                @Code(name: "FinalApp.swift", file: "10-final-app.swift")
+            }
+            
+            @Step {
+                **Test Checklist**
+                
+                Items to verify before release:
+                - Test both Face ID and Touch ID
+                - Test on devices without biometric enrollment
+                - Test entire flow with VoiceOver
+                - Test with various Dynamic Type settings
+                
+                @Code(name: "TestChecklist.swift", file: "10-test-checklist.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What can developers access in the LocalAuthentication framework?
+            
+            @Choice(isCorrect: true) {
+                Only authentication success/failure results
+                
+                @Justification(reaction: "Correct!") {
+                    For security, Apple doesn't allow access to the biometric data itself.
+                    Developers can only receive authentication results (success/failure).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                User's face image
+                
+                @Justification(reaction: "Not quite") {
+                    Face ID facial data is stored in the Secure Enclave 
+                    and cannot be accessed by apps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Fingerprint pattern data
+                
+                @Justification(reaction: "Not quite") {
+                    Touch ID fingerprint data is also protected in the Secure Enclave 
+                    and cannot be accessed by apps.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What must you provide in biometric authentication apps for accessibility?
+            
+            @Choice(isCorrect: true) {
+                Alternative authentication methods other than biometric
+                
+                @Justification(reaction: "Correct!") {
+                    Not all users can use biometric authentication.
+                    Always provide alternatives like passcode or PIN.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Voice guidance feature
+                
+                @Justification(reaction: "Not quite") {
+                    VoiceOver support is good, but 
+                    the key is providing alternative authentication methods.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Guidance for mandatory biometric use
+                
+                @Justification(reaction: "Not quite") {
+                    You shouldn't force it.
+                    Providing alternatives is the key to accessibility.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What must you test before releasing a secure vault app?
+            
+            @Choice(isCorrect: true) {
+                Behavior on devices without biometric enrollment
+                
+                @Justification(reaction: "Correct!") {
+                    Some real users may not have biometric authentication enrolled.
+                    The app must work correctly in these situations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Test only on the latest iOS version
+                
+                @Justification(reaction: "Not quite") {
+                    You should test on various iOS versions and devices.
+                    Unenrolled biometric cases are also important.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Test integration with actual banking apps
+                
+                @Justification(reaction: "Not quite") {
+                    Integration with other apps is unrelated.
+                    Test various scenarios of your own app.
+                }
+            }
+        }
+    }
+}

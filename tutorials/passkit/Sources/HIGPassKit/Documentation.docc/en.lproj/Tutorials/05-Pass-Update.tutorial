@@ -1,0 +1,218 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Pass Updates (Push)") {
+        Implement Web Service API for real-time
+        pass updates from the server.
+        
+        @Image(source: "pass-update.png", alt: "Pass Update")
+    }
+    
+    @Section(title: "Pass Update Overview") {
+        @ContentAndMedia {
+            Once a pass is added to Wallet, automatic updates are possible.
+            Reflect point accumulation, tier changes, etc. in real-time.
+            
+            **Update Flow:**
+            1. Device registers with server (deviceLibraryIdentifier)
+            2. Server sends push via APNs when update occurs
+            3. Device requests latest pass from server
+            4. Download new pass and auto-replace
+        }
+        
+        @Steps {
+            @Step {
+                Add webServiceURL and authenticationToken to pass.json.
+                Device communicates with server using this info.
+                
+                @Code(name: "WebServiceConfig.swift", file: "05-01-web-service-config.swift")
+            }
+            
+            @Step {
+                Check requirements for updatable passes.
+                serialNumber must be unique, and auth token securely generated.
+                
+                @Code(name: "UpdatablePass.swift", file: "05-02-updatable-pass.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Device Registration API") {
+        @ContentAndMedia {
+            When user adds a pass, the device automatically
+            requests registration with the server.
+            
+            **Endpoint:**
+            `POST /v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}`
+            
+            Server stores device-pass mapping and returns 201.
+        }
+        
+        @Steps {
+            @Step {
+                Implement API to handle registration requests.
+                Store pushToken to send notifications later.
+                
+                @Code(name: "RegisterDevice.swift", file: "05-03-register-device.swift")
+            }
+            
+            @Step {
+                Validate requests with Authorization header.
+                Format is `ApplePass {authenticationToken}`.
+                
+                @Code(name: "AuthValidation.swift", file: "05-04-auth-validation.swift")
+            }
+            
+            @Step {
+                Device unregistration must also be handled.
+                DELETE request comes when user removes pass.
+                
+                @Code(name: "UnregisterDevice.swift", file: "05-05-unregister.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Update Notifications (APNs)") {
+        @ContentAndMedia {
+            When pass data changes, send notifications
+            to devices via APNs.
+            
+            **Important**: APNs for pass updates differs from regular push.
+            - Topic: `pass.com.yourapp.membership` (Pass Type ID)
+            - Payload: empty object `{}`
+        }
+        
+        @Steps {
+            @Step {
+                Authentication setup for APNs connection.
+                Use Pass Type ID certificate or token-based auth.
+                
+                @Code(name: "APNsSetup.swift", file: "05-06-apns-setup.swift")
+            }
+            
+            @Step {
+                Send update notifications to registered devices.
+                Sending empty payload makes device request from server.
+                
+                @Code(name: "SendPush.swift", file: "05-07-send-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pass Delivery API") {
+        @ContentAndMedia {
+            When device receives notification, it requests the latest pass.
+            
+            **Endpoints:**
+            1. `GET /v1/devices/.../registrations/...` - List of updated passes
+            2. `GET /v1/passes/{passTypeIdentifier}/{serialNumber}` - Pass download
+        }
+        
+        @Steps {
+            @Step {
+                API that returns list of updated passes.
+                Filter by lastUpdated parameter for changed ones only.
+                
+                @Code(name: "GetSerials.swift", file: "05-08-get-serials.swift")
+            }
+            
+            @Step {
+                Provide latest version of specific pass.
+                Return signed .pkpass file in response.
+                
+                @Code(name: "GetPass.swift", file: "05-09-get-pass.swift")
+            }
+            
+            @Step {
+                Support If-Modified-Since header to prevent unnecessary downloads.
+                Return 304 Not Modified if unchanged.
+                
+                @Code(name: "ConditionalGet.swift", file: "05-10-conditional-get.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Detecting Updates in iOS App") {
+        @ContentAndMedia {
+            Detect pass updates and refresh UI within the app.
+            Subscribe to PKPassLibrary notifications.
+        }
+        
+        @Steps {
+            @Step {
+                Observe PKPassLibraryDidChange notification.
+                Fires when passes are added, removed, or updated.
+                
+                @Code(name: "PassNotification.swift", file: "05-11-pass-notification.swift")
+            }
+            
+            @Step {
+                Check change type from userInfo.
+                Identified by added, removed, replaced keys.
+                
+                @Code(name: "ChangeType.swift", file: "05-12-change-type.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the APNs payload when sending pass update notifications?
+            
+            @Choice(isCorrect: true) {
+                Empty object {}
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Pass update notifications are sent with empty payload.
+                    Device requests directly from server upon receiving notification.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Complete new pass data
+                
+                @Justification(reaction: "Not quite.") {
+                    Pass data is downloaded by device directly
+                    via Web Service API, not APNs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                JSON with only changed fields
+                
+                @Justification(reaction: "Incorrect.") {
+                    APNs only sends notification signal,
+                    actual data is provided via separate API.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What header format does device use to authenticate with pass server?
+            
+            @Choice(isCorrect: false) {
+                Bearer {token}
+                
+                @Justification(reaction: "Check again.") {
+                    Bearer is used for OAuth, etc.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ApplePass {authenticationToken}
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Apple Pass web service uses a unique auth format
+                    with the ApplePass prefix.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Basic {base64}
+                
+                @Justification(reaction: "Incorrect.") {
+                    Basic auth uses Base64 encoding of
+                    username:password.
+                }
+            }
+        }
+    }
+}

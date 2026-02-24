@@ -1,0 +1,127 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Conflict Resolution") {
+        Detect and resolve conflicts that occur during concurrent editing.
+        Implement various merge strategies.
+    }
+    
+    @Section(title: "Understanding Conflicts") {
+        @ContentAndMedia {
+            CloudKit uses Optimistic Locking.
+            A conflict occurs when the record's changeTag differs from the server.
+        }
+        @Steps {
+            @Step {
+                Understand scenarios where conflicts occur.
+                @Code(name: "ConflictScenario.swift", file: "09-01-scenario.swift")
+            }
+            @Step {
+                Detect CKError.serverRecordChanged.
+                @Code(name: "CloudKitManager.swift", file: "09-02-detectconflict.swift")
+            }
+            @Step {
+                Extract three records from the conflict information.
+                These are the ancestor, client, and server versions.
+                @Code(name: "CloudKitManager.swift", file: "09-03-extractrecords.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Merge Strategies") {
+        @ContentAndMedia {
+            Implement various strategies for conflict resolution.
+        }
+        @Steps {
+            @Step {
+                Implement the server-wins strategy.
+                The simplest approach but may lose local changes.
+                @Code(name: "ConflictResolver.swift", file: "09-04-serverwins.swift")
+            }
+            @Step {
+                Implement the client-wins strategy.
+                Overwrites other users' changes.
+                @Code(name: "ConflictResolver.swift", file: "09-05-clientwins.swift")
+            }
+            @Step {
+                Implement field-level merge strategy.
+                Select the latest value for each field.
+                @Code(name: "ConflictResolver.swift", file: "09-06-fieldmerge.swift")
+            }
+            @Step {
+                Implement user-choice strategy.
+                Let the user decide through UI.
+                @Code(name: "ConflictResolver.swift", file: "09-07-userchoice.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Automatic Retry") {
+        @ContentAndMedia {
+            Implement automatic retry logic after conflict resolution.
+        }
+        @Steps {
+            @Step {
+                Implement retry logic.
+                @Code(name: "CloudKitManager.swift", file: "09-08-retry.swift")
+            }
+            @Step {
+                Apply Exponential Backoff.
+                @Code(name: "CloudKitManager.swift", file: "09-09-backoff.swift")
+            }
+            @Step {
+                Integrate conflict resolution into the complete save flow.
+                @Code(name: "CloudKitManager.swift", file: "09-10-integrated.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which is NOT a record you can get from CKError.serverRecordChanged?
+            @Choice(isCorrect: false) {
+                ancestorRecord
+                @Justification(reaction: "Try again.") {
+                    This is the original record from the last sync.
+                }
+            }
+            @Choice(isCorrect: false) {
+                clientRecord
+                @Justification(reaction: "Try again.") {
+                    This is the record the client tried to modify.
+                }
+            }
+            @Choice(isCorrect: false) {
+                serverRecord
+                @Justification(reaction: "Try again.") {
+                    This is the current latest record on the server.
+                }
+            }
+            @Choice(isCorrect: true) {
+                mergedRecord
+                @Justification(reaction: "Correct!") {
+                    The merged record must be created by the developer. It is not automatically provided.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is the advantage of Optimistic Locking?
+            @Choice(isCorrect: true) {
+                Free concurrent reads and handling only on conflict
+                @Justification(reaction: "Correct!") {
+                    No upfront locking means high concurrency and efficiency when conflicts are rare.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Conflicts never occur
+                @Justification(reaction: "Try again.") {
+                    Optimistic locking can still have conflicts that need to be detected and resolved.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Cannot be used offline
+                @Justification(reaction: "Try again.") {
+                    Optimistic locking detects conflicts when syncing after offline work.
+                }
+            }
+        }
+    }
+}

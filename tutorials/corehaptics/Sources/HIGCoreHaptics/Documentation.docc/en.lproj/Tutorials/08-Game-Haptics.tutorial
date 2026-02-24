@@ -1,0 +1,233 @@
+@Tutorial(time: 35) {
+    @Intro(title: "Game Haptic Feedback") {
+        Build interactive haptic systems suitable for games 
+        and learn how to create immersive gaming experiences.
+        
+        @Image(source: "game-haptics.png", alt: "Game Haptic Feedback")
+    }
+    
+    @Section(title: "Special Requirements for Game Haptics") {
+        @ContentAndMedia {
+            Game haptics have different requirements than regular apps.
+            
+            - **Immediate response**: Delay breaks immersion
+            - **Various intensities**: From light touch to heavy impact
+            - **Continuous feedback**: Engine vibration, movement feel, etc.
+            - **Concurrent playback**: Multiple events can overlap
+            - **Battery consideration**: Should be manageable for long play sessions
+        }
+        
+        @Steps {
+            @Step {
+                Set up a haptic manager optimized for games.
+                Disable auto-shutdown and ensure immediate response.
+                
+                @Code(name: "GameHapticManager.swift", file: "08-01-game-manager.swift")
+            }
+            
+            @Step {
+                Preload frequently used patterns to 
+                prevent delay on first playback.
+                
+                @Code(name: "GameHapticManager.swift", file: "08-02-preload-patterns.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Collision and Physics Feedback") {
+        @ContentAndMedia {
+            The most common haptic in games is collision feedback.
+            Provide different feelings based on collision intensity, 
+            material, and direction.
+            
+            Build a system that converts physics engine collision data 
+            into haptic parameters.
+        }
+        
+        @Steps {
+            @Step {
+                Implement haptics based on collision intensity.
+                Map physics engine impulse values to intensity.
+                
+                @Code(name: "CollisionHaptics.swift", file: "08-03-collision-intensity.swift")
+            }
+            
+            @Step {
+                Express different tactile sensations based on material.
+                Metal feels sharp, rubber feels soft.
+                
+                @Code(name: "CollisionHaptics.swift", file: "08-04-material-haptics.swift")
+            }
+            
+            @Step {
+                Handle rapid successive collisions naturally.
+                Implement patterns for bullet rapid fire, dribbling, etc.
+                
+                @Code(name: "RapidCollisions.swift", file: "08-05-rapid-collisions.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Environmental Feedback") {
+        @ContentAndMedia {
+            Convey the environment the character experiences through haptics.
+            
+            - Engine/motor vibration
+            - Walking/running footsteps
+            - Water/mud resistance
+            - Wind/explosion impact
+        }
+        
+        @Steps {
+            @Step {
+                Simulate vehicle engine vibration.
+                Vibration frequency and intensity change based on RPM.
+                
+                @Code(name: "EngineHaptic.swift", file: "08-06-engine-vibration.swift")
+            }
+            
+            @Step {
+                Add haptics synced to character footsteps.
+                Varies based on ground material and speed.
+                
+                @Code(name: "FootstepHaptic.swift", file: "08-07-footsteps.swift")
+            }
+            
+            @Step {
+                Express explosion and shockwave based on distance.
+                Stronger when close, weaker when far.
+                
+                @Code(name: "ExplosionHaptic.swift", file: "08-08-explosion.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI Game Feedback") {
+        @ContentAndMedia {
+            Also utilize haptics for game UI interactions.
+            
+            - Menu navigation
+            - Item acquisition/use
+            - Level up/achievement unlock
+            - Countdown/timer
+        }
+        
+        @Steps {
+            @Step {
+                Design satisfying feedback for item collection.
+                Apply different patterns based on rarity.
+                
+                @Code(name: "ItemHaptics.swift", file: "08-09-item-collect.swift")
+            }
+            
+            @Step {
+                Create level up ceremony haptics.
+                Combine gradually building buildup with explosive peak.
+                
+                @Code(name: "LevelUpHaptic.swift", file: "08-10-level-up.swift")
+            }
+            
+            @Step {
+                Express timer countdown through haptics.
+                Increase urgency as remaining time decreases.
+                
+                @Code(name: "CountdownHaptic.swift", file: "08-11-countdown.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Haptic Optimization") {
+        @ContentAndMedia {
+            Haptics are called frequently in games.
+            Learn optimization strategies for performance and battery.
+        }
+        
+        @Steps {
+            @Step {
+                Prevent excessive haptic calls with throttling.
+                Maintain minimum interval during continuous playback.
+                
+                @Code(name: "HapticThrottling.swift", file: "08-12-throttling.swift")
+            }
+            
+            @Step {
+                Ensure important haptics with a priority system.
+                Lower priority haptics are skipped depending on situation.
+                
+                @Code(name: "HapticPriority.swift", file: "08-13-priority.swift")
+            }
+            
+            @Step {
+                Implement haptic intensity adjustment based on game state.
+                Automatically reduce intensity when battery is low.
+                
+                @Code(name: "AdaptiveHaptics.swift", file: "08-14-adaptive.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why disable auto-shutdown in games?
+            
+            @Choice(isCorrect: true) {
+                To ensure immediate haptic response without engine restart
+                
+                @Justification(reaction: "Correct! 🎮") {
+                    Even millisecond delays in games 
+                    can break immersion.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To create stronger haptics
+                
+                @Justification(reaction: "Not related.") {
+                    auto-shutdown is about response speed, 
+                    not haptic intensity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To save battery
+                
+                @Justification(reaction: "Actually the opposite.") {
+                    Disabling auto-shutdown increases battery consumption.
+                    It's a necessary trade-off during gameplay.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the recommended way to map collision intensity 
+            to haptic intensity?
+            
+            @Choice(isCorrect: false) {
+                Use physics engine values directly
+                
+                @Justification(reaction: "Dangerous.") {
+                    Physics engine values may not be in 0.0~1.0 range 
+                    and extreme values can occur.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Set min/max range and normalize the mapping
+                
+                @Justification(reaction: "Good approach! 📊") {
+                    Limiting range and smooth mapping 
+                    provides consistent experience.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always use maximum intensity
+                
+                @Justification(reaction: "Causes fatigue.") {
+                    Without intensity variation, meaning is lost 
+                    and users tire quickly.
+                }
+            }
+        }
+    }
+}

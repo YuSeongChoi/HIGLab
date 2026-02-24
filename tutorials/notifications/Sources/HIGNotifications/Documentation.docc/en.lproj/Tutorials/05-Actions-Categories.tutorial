@@ -1,0 +1,248 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Actions & Categories") {
+        Add interactive buttons to notifications.
+        
+        Enable users to quickly respond or complete tasks without opening the app.
+        Boost productivity with actions like "Complete", "Later", "Delete".
+    }
+    
+    @Section(title: "Understanding UNNotificationAction") {
+        @ContentAndMedia {
+            Actions are buttons that appear when you long-press or pull down on a notification.
+            
+            Each action has a unique identifier,
+            and when the user taps it, the app handles it with that identifier.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating Basic Actions**
+                
+                Create simple buttons with UNNotificationAction.
+                Specify identifier, title, and options.
+                
+                @Code(name: "BasicAction.swift", file: "05-basic-action.swift")
+            }
+            
+            @Step {
+                **Action Options**
+                
+                Control action behavior with options.
+                - .foreground: Brings the app to the foreground
+                - .destructive: Displayed in red (for delete, etc.)
+                - .authenticationRequired: Requires Face ID/Touch ID
+                
+                @Code(name: "ActionOptions.swift", file: "05-action-options.swift")
+            }
+            
+            @Step {
+                **Text Input Action**
+                
+                Receive text input with UNTextInputNotificationAction.
+                Useful for features like message replies.
+                
+                @Code(name: "TextInputAction.swift", file: "05-text-input-action.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UNNotificationCategory") {
+        @ContentAndMedia {
+            Categories group actions together and link them to notifications.
+            
+            Register categories your app will use in advance,
+            and connect them when creating notifications via categoryIdentifier.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Categories**
+                
+                Create action groups with UNNotificationCategory.
+                Identify categories by their identifier.
+                
+                @Code(name: "DefineCategory.swift", file: "05-define-category.swift")
+            }
+            
+            @Step {
+                **Registering Categories**
+                
+                Register all categories with UNUserNotificationCenter at app launch.
+                Usually done in AppDelegate or App initialization.
+                
+                @Code(name: "RegisterCategory.swift", file: "05-register-category.swift")
+            }
+            
+            @Step {
+                **Assigning Categories to Notifications**
+                
+                Assign a category to notifications via content.categoryIdentifier.
+                
+                @Code(name: "AssignCategory.swift", file: "05-assign-category.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing RemindMe App Actions") {
+        @ContentAndMedia {
+            Add practical actions to the reminder app.
+            
+            - **Complete**: Mark reminder as complete
+            - **Remind in 10 minutes**: Snooze feature
+            - **Delete**: Delete the reminder
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Reminder Category**
+                
+                Define categories for use in the RemindMe app.
+                
+                @Code(name: "ReminderCategory.swift", file: "05-reminder-category.swift")
+            }
+            
+            @Step {
+                **Managing Category Constants**
+                
+                Managing identifiers as constants prevents typos.
+                Organize with enums or structs.
+                
+                @Code(name: "NotificationConstants.swift", file: "05-notification-constants.swift")
+            }
+            
+            @Step {
+                **Registering Categories at App Launch**
+                
+                Register categories in the @main App.
+                
+                @Code(name: "AppSetup.swift", file: "05-app-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Action Responses") {
+        @ContentAndMedia {
+            When a user taps an action, UNUserNotificationCenterDelegate is called.
+            
+            Check which action was pressed and handle appropriately.
+            This is covered in more detail in Chapter 7.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Response Handling Structure**
+                
+                Check the action identifier in userNotificationCenter(_:didReceive:withCompletionHandler:).
+                
+                @Code(name: "HandleResponse.swift", file: "05-handle-response.swift")
+            }
+            
+            @Step {
+                **Handling Text Input**
+                
+                Receive user input with UNTextInputNotificationResponse.
+                
+                @Code(name: "HandleTextInput.swift", file: "05-handle-text-input.swift")
+            }
+            
+            @Step {
+                **Implementing Reminder Action Handler**
+                
+                Implement the logic to handle each action in the RemindMe app.
+                
+                @Code(name: "ReminderActionHandler.swift", file: "05-reminder-action-handler.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does the .foreground option do in notification actions?
+            
+            @Choice(isCorrect: true) {
+                Brings the app to the foreground and launches it
+                
+                @Justification(reaction: "Correct!") {
+                    With the .foreground option, the app opens when the action is tapped.
+                    Without it, processing happens in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Displays the action button prominently
+                
+                @Justification(reaction: "Not quite") {
+                    .foreground is unrelated to button display;
+                    it determines how the app launches.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Displays the action in red
+                
+                @Justification(reaction: "You're thinking of something else") {
+                    Red display is the .destructive option.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is the appropriate time to register categories with UNUserNotificationCenter?
+            
+            @Choice(isCorrect: true) {
+                At app launch (AppDelegate or @main App initialization)
+                
+                @Justification(reaction: "Correct!") {
+                    Categories must be registered before notifications arrive.
+                    It's best to register once at app launch.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Every time a notification is scheduled
+                
+                @Justification(reaction: "That's inefficient") {
+                    No need to register each time; register once at app launch.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When the user taps a notification
+                
+                @Justification(reaction: "That's too late") {
+                    Categories must be registered before notifications arrive
+                    for action buttons to display.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the maximum number of actions that can be registered for a single category?
+            
+            @Choice(isCorrect: false) {
+                2
+                
+                @Justification(reaction: "There can be more") {
+                    iOS supports up to 4 actions per category.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                4
+                
+                @Justification(reaction: "Correct!") {
+                    iOS displays up to 4 actions per category.
+                    Even if you register more, only the first 4 are shown.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    Up to 4 are displayed due to screen space constraints.
+                }
+            }
+        }
+    }
+}

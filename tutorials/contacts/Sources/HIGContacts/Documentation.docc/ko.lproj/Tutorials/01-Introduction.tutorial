@@ -1,0 +1,157 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Contacts 소개 및 권한") {
+        Contacts 프레임워크의 핵심 개념과 
+        연락처 접근을 위한 권한 설정 방법을 학습합니다.
+    }
+    
+    @Section(title: "Contacts 프레임워크란?") {
+        @ContentAndMedia {
+            Contacts는 iOS 및 macOS에서 
+            사용자 연락처 데이터에 접근할 수 있는 프레임워크입니다.
+            
+            사용자의 연락처 앱 데이터를 읽고 쓸 수 있어,
+            앱에 연락처 관리 기능을 통합할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Contacts 프레임워크의 주요 클래스를 살펴봅니다.
+                
+                - `CNContactStore`: 연락처 데이터베이스 접근
+                - `CNContact`: 연락처 객체 (불변)
+                - `CNMutableContact`: 수정 가능한 연락처
+                - `CNContactFetchRequest`: 조회 요청
+                
+                @Code(name: "ContactsOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                프로젝트에 Contacts를 import합니다.
+                
+                @Code(name: "ContactManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info.plist 권한 설정") {
+        @ContentAndMedia {
+            Contacts를 사용하려면 Info.plist에 
+            권한 요청 메시지를 추가해야 합니다.
+            
+            iOS 18부터 제한된 접근 옵션이 추가되었습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Info.plist에 연락처 접근 권한을 추가합니다.
+                
+                `NSContactsUsageDescription` 키를 사용합니다.
+                
+                @Code(name: "Info.plist", file: "01-03-plist.swift")
+            }
+            
+            @Step {
+                앱의 용도에 맞게 권한 메시지를 작성합니다.
+                
+                사용자가 왜 연락처 접근이 필요한지 이해할 수 있도록 합니다.
+                
+                @Code(name: "Info.plist", file: "01-04-plist-detail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 요청 구현") {
+        @ContentAndMedia {
+            앱 시작 시 사용자에게 
+            권한을 요청하는 코드를 작성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `CNContactStore`를 생성하고 인증 상태를 확인합니다.
+                
+                @Code(name: "ContactManager.swift", file: "01-05-auth-check.swift")
+            }
+            
+            @Step {
+                연락처 접근 권한을 요청하는 메서드를 추가합니다.
+                
+                `requestAccess(for:)` 메서드를 사용합니다.
+                
+                @Code(name: "ContactManager.swift", file: "01-06-request-auth.swift")
+            }
+            
+            @Step {
+                인증 상태에 따른 처리 로직을 완성합니다.
+                
+                @Code(name: "ContactManager.swift", file: "01-07-auth-complete.swift")
+            }
+            
+            @Step {
+                iOS 18의 제한된 접근 상태를 처리합니다.
+                
+                @Code(name: "ContactManager.swift", file: "01-08-limited-access.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Contacts 프레임워크에서 연락처 데이터베이스에 접근하는 데 사용하는 클래스는?
+            
+            @Choice(isCorrect: false) {
+                `CNContact`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `CNContact`는 개별 연락처를 나타내는 클래스입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `CNContactStore`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `CNContactStore`는 연락처 데이터베이스와의 
+                    연결을 관리하는 핵심 클래스입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CNMutableContact`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `CNMutableContact`는 수정 가능한 연락처를 나타내는 클래스입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            연락처 접근 권한을 요청하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `requestAccess(for: .contacts)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `requestAccess(for:)` 메서드로 
+                    연락처 접근 권한을 요청합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `requestContactsAccess()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `authorize()`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

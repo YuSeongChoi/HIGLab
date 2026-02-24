@@ -1,0 +1,229 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Battery & Performance Optimization") {
+        Learn strategies to minimize battery consumption 
+        and maintain app performance with efficient haptic implementation.
+        
+        @Image(source: "optimization.png", alt: "Battery & Performance Optimization")
+    }
+    
+    @Section(title: "Understanding Battery Impact") {
+        @ContentAndMedia {
+            The Taptic Engine is a physically moving component 
+            that consumes power.
+            
+            **Battery consumption factors:**
+            - Playback frequency (more calls = more consumption)
+            - Playback duration (Continuous consumes more than Transient)
+            - Intensity (higher = more power)
+            - Engine state (idle maintenance also consumes small amount)
+            
+            However, when used appropriately, the impact is minimal.
+        }
+        
+        @Steps {
+            @Step {
+                Implement adaptive haptics based on battery status.
+                Automatically reduce intensity when battery is low.
+                
+                @Code(name: "BatteryAwareHaptics.swift", file: "10-01-battery-check.swift")
+            }
+            
+            @Step {
+                Detect and respond to Low Power Mode.
+                Minimize haptics when system is in Low Power Mode.
+                
+                @Code(name: "LowPowerMode.swift", file: "10-02-low-power-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Engine Lifecycle Management") {
+        @ContentAndMedia {
+            Efficiently managing CHHapticEngine instances 
+            improves both performance and battery.
+            
+            - Use one shared engine
+            - Stop when unnecessary
+            - Link with app lifecycle
+        }
+        
+        @Steps {
+            @Step {
+                Start/stop engine based on app state.
+                Engine isn't needed in background.
+                
+                @Code(name: "EngineLifecycle.swift", file: "10-03-app-lifecycle.swift")
+            }
+            
+            @Step {
+                Set auto-shutdown appropriately for the situation.
+                Regular apps use true, games use false only during play.
+                
+                @Code(name: "AutoShutdownStrategy.swift", file: "10-04-auto-shutdown.swift")
+            }
+            
+            @Step {
+                Monitor and log engine state changes.
+                Use for debugging when issues occur.
+                
+                @Code(name: "EngineMonitoring.swift", file: "10-05-monitoring.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Player Reuse") {
+        @ContentAndMedia {
+            Creating new Players every time is inefficient.
+            Cache and reuse Players for frequently used patterns.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a Player cache system.
+                Pre-create Players for each pattern.
+                
+                @Code(name: "PlayerCache.swift", file: "10-06-player-cache.swift")
+            }
+            
+            @Step {
+                Preload major patterns at app startup.
+                Prevent delay on first playback.
+                
+                @Code(name: "Preloading.swift", file: "10-07-preloading.swift")
+            }
+            
+            @Step {
+                Clear cache on memory warnings.
+                Respond appropriately to system resource requests.
+                
+                @Code(name: "MemoryManagement.swift", file: "10-08-memory-warning.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Call Optimization") {
+        @ContentAndMedia {
+            Reducing unnecessary or excessive haptic calls 
+            improves both performance and user experience.
+        }
+        
+        @Steps {
+            @Step {
+                Limit consecutive calls with throttling.
+                Too rapid consecutive playback is meaningless.
+                
+                @Code(name: "Throttling.swift", file: "10-09-throttling.swift")
+            }
+            
+            @Step {
+                Prevent duplicate calls with debouncing.
+                Useful when same event occurs multiple times in short period.
+                
+                @Code(name: "Debouncing.swift", file: "10-10-debouncing.swift")
+            }
+            
+            @Step {
+                Combine similar haptics with coalescing.
+                Replace multiple weak haptics with one strong haptic.
+                
+                @Code(name: "Coalescing.swift", file: "10-11-coalescing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Profiling and Measurement") {
+        @ContentAndMedia {
+            Use Instruments to measure actual haptic impact 
+            and verify optimization effects.
+        }
+        
+        @Steps {
+            @Step {
+                Measure battery impact with Energy Log.
+                Compare energy consumption before and after haptic calls.
+                
+                @Code(name: "EnergyProfiling.swift", file: "10-12-energy-profiling.swift")
+            }
+            
+            @Step {
+                Implement custom analytics logging.
+                Track and analyze haptic usage patterns.
+                
+                @Code(name: "HapticAnalytics.swift", file: "10-13-analytics.swift")
+            }
+            
+            @Step {
+                The optimized final HapticManager.
+                Production-ready code with all optimization techniques applied.
+                
+                @Code(name: "OptimizedHapticManager.swift", file: "10-14-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the most effective strategy to reduce battery consumption?
+            
+            @Choice(isCorrect: false) {
+                Set all haptic intensities to minimum
+                
+                @Justification(reaction: "Degrades user experience.") {
+                    Weak haptics are hard to feel, 
+                    losing feedback meaning.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Use haptics only where needed and 
+                adjust adaptively based on battery status
+                
+                @Justification(reaction: "Balanced approach! 🔋") {
+                    Keeping meaningful haptics while 
+                    adjusting for situation is best.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always disable auto-shutdown
+                
+                @Justification(reaction: "Actually backfires.") {
+                    Disabling auto-shutdown keeps engine running, 
+                    increasing battery consumption.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the main benefit of Player caching?
+            
+            @Choice(isCorrect: true) {
+                Reduces overhead of creating new Players each time, 
+                preventing first playback delay
+                
+                @Justification(reaction: "Correct! ⚡") {
+                    Especially prevents noticeable delay 
+                    on first haptic playback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can create stronger haptics
+                
+                @Justification(reaction: "Not related.") {
+                    Caching is a performance optimization technique, 
+                    unrelated to haptic intensity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can play more concurrent haptics
+                
+                @Justification(reaction: "No direct relation.") {
+                    Concurrent playback depends on engine capability, 
+                    a different topic from caching.
+                }
+            }
+        }
+    }
+}

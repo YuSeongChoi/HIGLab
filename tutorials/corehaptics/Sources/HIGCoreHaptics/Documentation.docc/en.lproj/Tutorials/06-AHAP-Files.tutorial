@@ -1,0 +1,206 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Loading AHAP Files") {
+        Understand the Apple Haptic Audio Pattern (AHAP) file format 
+        and learn how to collaborate with designers to manage haptics.
+        
+        @Image(source: "ahap-files.png", alt: "AHAP File Structure")
+    }
+    
+    @Section(title: "Understanding AHAP File Format") {
+        @ContentAndMedia {
+            AHAP (Apple Haptic Audio Pattern) is a 
+            JSON-based haptic pattern definition file.
+            
+            **Advantages:**
+            - Modify haptics without code changes
+            - Designers can write haptic patterns directly
+            - Easy version control and A/B testing
+            - Fast iteration with live reload
+        }
+        
+        @Steps {
+            @Step {
+                Explore the basic structure of AHAP files.
+                Consists of Version, Pattern, and Event.
+                
+                @Code(name: "simple.ahap", file: "06-01-ahap-structure.json")
+            }
+            
+            @Step {
+                Define Transient events in AHAP.
+                Set Time, EventType, and EventParameters.
+                
+                @Code(name: "tap.ahap", file: "06-02-transient-ahap.json")
+            }
+            
+            @Step {
+                Continuous events can also be defined in AHAP.
+                EventDuration parameter is added.
+                
+                @Code(name: "vibration.ahap", file: "06-03-continuous-ahap.json")
+            }
+        }
+    }
+    
+    @Section(title: "Loading AHAP Files") {
+        @ContentAndMedia {
+            Load AHAP files included in the bundle 
+            and convert them to CHHapticPattern.
+            
+            Proper error handling for file load failures is important.
+        }
+        
+        @Steps {
+            @Step {
+                Load AHAP file from the bundle.
+                Specify the file path through URL.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-04-load-ahap.swift")
+            }
+            
+            @Step {
+                You can also pass AHAP directly as Data.
+                Useful when receiving haptics dynamically from a server.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-05-load-from-data.swift")
+            }
+            
+            @Step {
+                Method to create patterns directly from dictionaries.
+                Used when programmatically generating AHAP structures.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-06-from-dictionary.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complex AHAP Patterns") {
+        @ContentAndMedia {
+            Combine multiple events and parameter curves 
+            to define complex patterns in AHAP.
+            
+            Let's create polished patterns 
+            suitable for actual production use.
+        }
+        
+        @Steps {
+            @Step {
+                Compose multiple events as a sequence.
+                Define a heartbeat pattern in AHAP.
+                
+                @Code(name: "heartbeat.ahap", file: "06-07-heartbeat-ahap.json")
+            }
+            
+            @Step {
+                Include parameter curves in AHAP.
+                Define a buildup effect that gradually intensifies.
+                
+                @Code(name: "buildup.ahap", file: "06-08-curve-ahap.json")
+            }
+            
+            @Step {
+                AHAP that defines audio and haptic together.
+                Add AudioCustom events.
+                
+                @Code(name: "audio-haptic.ahap", file: "06-09-audio-ahap.json")
+            }
+        }
+    }
+    
+    @Section(title: "AHAP Management System") {
+        @ContentAndMedia {
+            Build a system to systematically manage 
+            all AHAP files in the app.
+            
+            Let's create a production-ready structure 
+            including caching, preloading, and error handling.
+        }
+        
+        @Steps {
+            @Step {
+                Create a HapticLibrary class to manage AHAP files.
+                Manage file names type-safely with enums.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-10-haptic-library.swift")
+            }
+            
+            @Step {
+                Cache loaded patterns to prevent repeated loading.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-11-caching.swift")
+            }
+            
+            @Step {
+                Preload frequently used patterns at app startup.
+                Minimize delay for the first haptic.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-12-preload.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the main advantage of using AHAP files?
+            
+            @Choice(isCorrect: false) {
+                Better performance than defining in code
+                
+                @Justification(reaction: "Performance difference is negligible.") {
+                    AHAP is eventually converted to CHHapticPattern, 
+                    so runtime performance is the same.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Modify haptics without code changes and 
+                easier collaboration with designers
+                
+                @Justification(reaction: "Correct! 🎨") {
+                    Just replacing the AHAP file can change 
+                    haptics without an app update.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can create stronger haptics
+                
+                @Justification(reaction: "Not related.") {
+                    AHAP is just a pattern definition method, 
+                    unrelated to physical haptic characteristics.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What parameter must be added when defining 
+            a Continuous event in AHAP?
+            
+            @Choice(isCorrect: true) {
+                EventDuration
+                
+                @Justification(reaction: "Correct! ⏱️") {
+                    Continuous events must specify duration.
+                    Transient doesn't need it as it's instantaneous.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EventWaveform
+                
+                @Justification(reaction: "No such parameter exists.") {
+                    Waveform is determined by EventType and parameter combinations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EventRepeat
+                
+                @Justification(reaction: "This parameter doesn't exist.") {
+                    Repetition is implemented by placing multiple events 
+                    or through code with repeat playback.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,209 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Audio and Haptic Synchronization") {
+        Learn how to perfectly synchronize sound and vibration 
+        to create immersive multimodal experiences.
+        
+        @Image(source: "audio-haptic-sync.png", alt: "Audio and Haptic Synchronization")
+    }
+    
+    @Section(title: "Adding Audio Events") {
+        @ContentAndMedia {
+            CoreHaptics supports not only haptics 
+            but also audio playback.
+            
+            Using CHHapticEvent.EventType.audioCustom, 
+            you can play custom audio files along with haptics.
+            
+            Precise timing synchronization is automatically guaranteed.
+        }
+        
+        @Steps {
+            @Step {
+                Add audio resources to the project 
+                and write code to load from the bundle.
+                
+                @Code(name: "AudioHaptics.swift", file: "05-01-audio-resource.swift")
+            }
+            
+            @Step {
+                Create an audioCustom event.
+                Set the audio file's resourceID and parameters.
+                
+                @Code(name: "AudioHaptics.swift", file: "05-02-audio-event.swift")
+            }
+            
+            @Step {
+                Include both audio and haptic events in the same pattern.
+                Using the same relativeTime ensures perfect synchronization.
+                
+                @Code(name: "AudioHaptics.swift", file: "05-03-combined-pattern.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Audio Parameter Control") {
+        @ContentAndMedia {
+            Audio events can also be controlled with various parameters.
+            
+            - `audioVolume`: Volume (0.0 ~ 1.0)
+            - `audioPitch`: Pitch adjustment (-1.0 ~ 1.0)
+            - `audioPan`: Left/right balance (-1.0 ~ 1.0)
+            - `audioBrightness`: Brightness/tone adjustment
+        }
+        
+        @Steps {
+            @Step {
+                Set audio volume.
+                Adjust relative volume independent of system volume.
+                
+                @Code(name: "AudioParameters.swift", file: "05-04-audio-volume.swift")
+            }
+            
+            @Step {
+                Adjust pitch to make the same sound different.
+                Changing pitch based on impact intensity is effective.
+                
+                @Code(name: "AudioParameters.swift", file: "05-05-audio-pitch.swift")
+            }
+            
+            @Step {
+                Express spatial awareness with left/right panning.
+                Useful in games to indicate enemy direction.
+                
+                @Code(name: "AudioParameters.swift", file: "05-06-audio-pan.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Practical: Button Sound & Haptic") {
+        @ContentAndMedia {
+            Let's create polished button feedback.
+            Visual changes, sound, and vibration should harmonize together.
+            
+            Design flexibly so individual elements can be 
+            turned on or off according to user settings.
+        }
+        
+        @Steps {
+            @Step {
+                Combine button tap sound and haptic.
+                A light "tick" sound paired with a sharp tap vibration.
+                
+                @Code(name: "ButtonFeedback.swift", file: "05-07-button-tap.swift")
+            }
+            
+            @Step {
+                Implement different feedback for toggle switch on/off states.
+                Distinguish state changes through audio and tactile feedback.
+                
+                @Code(name: "ToggleFeedback.swift", file: "05-08-toggle-feedback.swift")
+            }
+            
+            @Step {
+                Respect user's silent mode setting.
+                Provide option to play only haptics and skip audio.
+                
+                @Code(name: "FeedbackSettings.swift", file: "05-09-silent-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Audio Session Management") {
+        @ContentAndMedia {
+            CoreHaptics audio playback interacts 
+            with AVAudioSession.
+            
+            Appropriate settings are needed for 
+            coexistence with other apps' audio and system sounds.
+        }
+        
+        @Steps {
+            @Step {
+                Set the audio session category.
+                Ambient is suitable for not interrupting other apps' music.
+                
+                @Code(name: "AudioSession.swift", file: "05-10-session-category.swift")
+            }
+            
+            @Step {
+                Handle background audio interruptions.
+                Pause audio playback when a call comes in 
+                or Siri is activated.
+                
+                @Code(name: "AudioSession.swift", file: "05-11-interruption.swift")
+            }
+            
+            @Step {
+                The complete audio-haptic synchronization manager.
+                
+                @Code(name: "AudioHapticManager.swift", file: "05-12-complete-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you synchronize audio and haptics in CoreHaptics?
+            
+            @Choice(isCorrect: true) {
+                Place events with the same relativeTime 
+                in the same CHHapticPattern
+                
+                @Justification(reaction: "Correct! 🎵") {
+                    CoreHaptics automatically handles 
+                    precise timing synchronization of audio and haptics.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Play each separately with separate timers
+                
+                @Justification(reaction: "Inefficient.") {
+                    Precise millisecond-level synchronization is difficult with timers.
+                    Use CoreHaptics' built-in synchronization.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use AVAudioPlayer separately
+                
+                @Justification(reaction: "Not recommended.") {
+                    Synchronization is difficult with separate systems.
+                    Use CHHapticEvent's audioCustom.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How should the app behave when the user 
+            is in Silent Mode?
+            
+            @Choice(isCorrect: false) {
+                Play neither audio nor haptics
+                
+                @Justification(reaction: "Too restrictive.") {
+                    Haptics can be played regardless 
+                    of silent mode.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Skip audio and play only haptics
+                
+                @Justification(reaction: "Good approach! 🔇") {
+                    Respects user intent while 
+                    maintaining tactile feedback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Ignore silent mode and play everything
+                
+                @Justification(reaction: "Harms user experience.") {
+                    Silent mode is the user's explicit choice.
+                    Ignoring it loses trust.
+                }
+            }
+        }
+    }
+}

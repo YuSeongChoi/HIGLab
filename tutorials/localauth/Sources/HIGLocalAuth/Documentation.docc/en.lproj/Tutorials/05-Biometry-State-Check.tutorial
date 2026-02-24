@@ -1,0 +1,172 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Checking Biometry State") {
+        Learn how to check device biometric authentication availability 
+        and provide appropriate UI by distinguishing between Face ID and Touch ID.
+    }
+    
+    @Section(title: "biometryType Property") {
+        @ContentAndMedia {
+            The biometryType property of LAContext allows you to check 
+            what type of biometric authentication the current device supports.
+        }
+        
+        @Steps {
+            @Step {
+                **LABiometryType Enumeration**
+                
+                - `.none`: Biometric authentication not supported
+                - `.touchID`: Touch ID supported
+                - `.faceID`: Face ID supported
+                - `.opticID`: Optic ID supported (visionOS)
+                
+                @Code(name: "BiometryType.swift", file: "05-biometry-type.swift")
+            }
+            
+            @Step {
+                **Display Icons by Type**
+                
+                Face ID and Touch ID use different icons.
+                Use SF Symbols faceid and touchid.fill.
+                
+                @Code(name: "BiometryIcon.swift", file: "05-biometry-icon.swift")
+            }
+            
+            @Step {
+                **Provide Type-specific Text**
+                
+                Display appropriate guidance messages to users.
+                "Unlock with Face ID" vs "Unlock with Touch ID"
+                
+                @Code(name: "BiometryText.swift", file: "05-biometry-text.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Status Check Methods") {
+        @ContentAndMedia {
+            Create methods to systematically check various biometric authentication states.
+        }
+        
+        @Steps {
+            @Step {
+                **BiometryStatus Enumeration**
+                
+                Define all possible states as an enumeration.
+                - available: Can be used
+                - notEnrolled: Not registered
+                - lockout: Locked out
+                - unavailable: Cannot be used
+                
+                @Code(name: "BiometryStatus.swift", file: "05-biometry-status.swift")
+            }
+            
+            @Step {
+                **Status Check Logic**
+                
+                Combine canEvaluatePolicy and error codes to determine accurate status.
+                
+                @Code(name: "CheckStatus.swift", file: "05-check-status.swift")
+            }
+            
+            @Step {
+                **UI Branching by Status**
+                
+                Show appropriate UI for each status.
+                Guide to settings if not enrolled, passcode guidance if locked out, etc.
+                
+                @Code(name: "StatusUI.swift", file: "05-status-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Status Monitoring") {
+        @ContentAndMedia {
+            When the app returns from background to foreground,
+            biometric authentication status may have changed, so check again.
+        }
+        
+        @Steps {
+            @Step {
+                **Using ScenePhase**
+                
+                Detect SwiftUI's scenePhase and 
+                refresh the status every time the app becomes active.
+                
+                @Code(name: "ScenePhase.swift", file: "05-scene-phase.swift")
+            }
+            
+            @Step {
+                **Responding to State Changes**
+                
+                Handle cases where Face ID suddenly gets locked 
+                or is disabled in settings.
+                
+                @Code(name: "StateChange.swift", file: "05-state-change.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            On which device is LABiometryType.opticID used?
+            
+            @Choice(isCorrect: true) {
+                Apple Vision Pro
+                
+                @Justification(reaction: "Correct!") {
+                    Optic ID is a new biometric authentication method on Apple Vision Pro 
+                    that recognizes iris patterns in the eyes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iPhone 15 Pro
+                
+                @Justification(reaction: "Not quite") {
+                    iPhone uses Face ID or Touch ID.
+                    Optic ID is exclusive to Apple Vision Pro.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All Face ID supported devices
+                
+                @Justification(reaction: "Not quite") {
+                    Optic ID is a different technology from Face ID.
+                    It's only used on Apple Vision Pro.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When canEvaluatePolicy returns false and the error is biometryNotEnrolled, what guidance should you give the user?
+            
+            @Choice(isCorrect: true) {
+                Guide them to register Face ID/Touch ID in the Settings app
+                
+                @Justification(reaction: "Correct!") {
+                    biometryNotEnrolled means the device supports it but biometric data hasn't been registered.
+                    Users can use it after registering in Settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Guide them to replace their device
+                
+                @Justification(reaction: "Not quite") {
+                    The device already supports biometric authentication.
+                    They just need to register in Settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Guide them to reinstall the app
+                
+                @Justification(reaction: "Not quite") {
+                    It's not an app issue - the user hasn't registered biometric data.
+                    Guide them to the Settings app.
+                }
+            }
+        }
+    }
+}

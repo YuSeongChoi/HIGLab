@@ -1,0 +1,197 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Keychain Integration") {
+        Build a secure data store protected by biometric authentication 
+        by integrating LocalAuthentication with Keychain.
+    }
+    
+    @Section(title: "Keychain Basics") {
+        @ContentAndMedia {
+            Keychain is iOS's secure credential storage.
+            It stores sensitive data encrypted.
+        }
+        
+        @Steps {
+            @Step {
+                **Why Use Keychain?**
+                
+                - Hardware-level encryption
+                - Data persistence even after app deletion
+                - Cross-device synchronization support
+                - Natural integration with biometric authentication
+                
+                @Code(name: "WhyKeychain.swift", file: "08-why-keychain.swift")
+            }
+            
+            @Step {
+                **Import Security Framework**
+                
+                Keychain APIs are in the Security framework.
+                
+                @Code(name: "ImportSecurity.swift", file: "08-import-security.swift")
+            }
+            
+            @Step {
+                **Basic Save and Retrieve**
+                
+                Use SecItemAdd and SecItemCopyMatching.
+                It's complex, so creating a wrapper class is recommended.
+                
+                @Code(name: "BasicKeychain.swift", file: "08-basic-keychain.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Keychain Items Protected by Biometric Authentication") {
+        @ContentAndMedia {
+            Using the kSecAccessControlBiometryAny flag automatically 
+            requests biometric authentication when accessing keychain items.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating SecAccessControl**
+                
+                Create access control settings that require biometric authentication.
+                
+                @Code(name: "AccessControl.swift", file: "08-access-control.swift")
+            }
+            
+            @Step {
+                **Saving Protected Items**
+                
+                Set access control in the kSecAttrAccessControl attribute.
+                
+                @Code(name: "SecureSave.swift", file: "08-secure-save.swift")
+            }
+            
+            @Step {
+                **Retrieving Protected Items**
+                
+                The system automatically requests biometric authentication on retrieval.
+                Pass LAContext together to customize the message.
+                
+                @Code(name: "SecureLoad.swift", file: "08-secure-load.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing KeychainManager") {
+        @ContentAndMedia {
+            Create a clean manager class that wraps the complex Keychain API.
+        }
+        
+        @Steps {
+            @Step {
+                **KeychainManager Class**
+                
+                A simple interface providing save, retrieve, and delete methods.
+                
+                @Code(name: "KeychainManager.swift", file: "08-keychain-manager.swift")
+            }
+            
+            @Step {
+                **Generic Support**
+                
+                Save/retrieve any type that conforms to Codable.
+                
+                @Code(name: "GenericKeychain.swift", file: "08-generic-keychain.swift")
+            }
+            
+            @Step {
+                **Apply to Secure Vault App**
+                
+                Securely store VaultItems in keychain.
+                
+                @Code(name: "VaultItemStorage.swift", file: "08-vault-item-storage.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Error Handling") {
+        @ContentAndMedia {
+            Properly handle errors that can occur in keychain operations.
+        }
+        
+        @Steps {
+            @Step {
+                **OSStatus Error Codes**
+                
+                Keychain APIs return OSStatus.
+                Understand and handle key error codes.
+                
+                @Code(name: "OSStatusErrors.swift", file: "08-os-status-errors.swift")
+            }
+            
+            @Step {
+                **Authentication Cancellation Handling**
+                
+                If the user cancels biometric authentication, errSecAuthFailed is returned.
+                
+                @Code(name: "AuthCancelled.swift", file: "08-auth-cancelled.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What attribute should you use to apply biometric authentication protection to keychain?
+            
+            @Choice(isCorrect: true) {
+                Set SecAccessControl on kSecAttrAccessControl
+                
+                @Justification(reaction: "Correct!") {
+                    Create access control with SecAccessControlCreateWithFlags 
+                    and set it on kSecAttrAccessControl to apply biometric protection.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set kSecAttrBiometricProtected to true
+                
+                @Justification(reaction: "Not quite") {
+                    Such an attribute doesn't exist.
+                    You must use SecAccessControl.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set kSecAttrAccessible to kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+                
+                @Justification(reaction: "Not quite") {
+                    That setting only controls access timing.
+                    Biometric authentication requirement is set with SecAccessControl.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you customize the authentication message when retrieving a biometric-protected keychain item?
+            
+            @Choice(isCorrect: true) {
+                Configure LAContext and pass it to kSecUseAuthenticationContext
+                
+                @Justification(reaction: "Correct!") {
+                    Set localizedReason on LAContext 
+                    and pass it to kSecUseAuthenticationContext in the keychain query.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set the message in kSecAttrLabel
+                
+                @Justification(reaction: "Not quite") {
+                    kSecAttrLabel is for item identification.
+                    Authentication messages are set through LAContext.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Customization is not possible, only system default messages
+                
+                @Justification(reaction: "Not quite") {
+                    Message customization is possible using LAContext.
+                }
+            }
+        }
+    }
+}
