@@ -1,0 +1,258 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Metal-Based Filters") {
+        Learn how to implement high-performance image filters 
+        using Metal Performance Shaders and Metal.
+        
+        @Image(source: "metal-filters.png", alt: "Metal Filters")
+    }
+    
+    @Section(title: "Metal and CoreImage Integration") {
+        @ContentAndMedia {
+            Using Metal can maximize CoreImage filter performance.
+            Share Metal device and command queue with CIContext.
+            
+            Advantages:
+            - GPU pipeline optimization
+            - Zero-copy texture sharing
+            - Custom Metal shader integration
+            - Metal Performance Shaders utilization
+            
+            @Image(source: "metal-coreimage-integration.png", alt: "Metal Integration")
+        }
+        
+        @Steps {
+            @Step {
+                Create a CIContext that uses a Metal device.
+                Explicitly specify the MTLDevice.
+                
+                @Code(name: "MetalCIContext.swift", file: "07-01-metal-context.swift")
+            }
+            
+            @Step {
+                Implement conversion between MTLTexture and CIImage.
+                You can create CIImage directly from a texture.
+                
+                @Code(name: "TextureToCIImage.swift", file: "07-02-texture-to-ciimage.swift")
+            }
+            
+            @Step {
+                Render CIImage to MTLTexture.
+                Use CoreImage results in the Metal pipeline.
+                
+                @Code(name: "CIImageToTexture.swift", file: "07-03-ciimage-to-texture.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing Kernels in Metal Shading Language") {
+        @ContentAndMedia {
+            On iOS 11+, you can write CIKernels 
+            in Metal Shading Language (MSL).
+            
+            MSL advantages:
+            - Reuse existing Metal shaders
+            - IDE code completion support
+            - Compile-time error detection
+            - Full Metal feature utilization
+            
+            @Image(source: "msl-kernel.png", alt: "MSL Kernel")
+        }
+        
+        @Steps {
+            @Step {
+                Add a .ci.metal file to your project.
+                Define Metal kernel functions.
+                
+                @Code(name: "MetalKernelFile.metal", file: "07-04-metal-kernel-file.metal")
+            }
+            
+            @Step {
+                How to load Metal kernels.
+                Use CIKernel(functionName:fromMetalLibraryData:).
+                
+                @Code(name: "LoadMetalKernel.swift", file: "07-05-load-metal-kernel.swift")
+            }
+            
+            @Step {
+                How to pass parameters to kernels.
+                Connect Metal shader arguments with Swift values.
+                
+                @Code(name: "KernelParameters.swift", file: "07-06-kernel-parameters.swift")
+            }
+            
+            @Step {
+                Write kernels using multiple input textures.
+                Can be used for compositing or masking.
+                
+                @Code(name: "MultiTextureKernel.swift", file: "07-07-multi-texture-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using Metal Performance Shaders") {
+        @ContentAndMedia {
+            Metal Performance Shaders (MPS) is Apple's 
+            optimized GPU algorithm library.
+            
+            Key image filters:
+            - MPSImageGaussianBlur: High-performance Gaussian blur
+            - MPSImageSobel: Edge detection
+            - MPSImageHistogram: Histogram calculation
+            - MPSImageConvolution: Convolution filter
+        }
+        
+        @Steps {
+            @Step {
+                Implement high-speed Gaussian blur using MPS.
+                Can be faster than CIGaussianBlur in certain situations.
+                
+                @Code(name: "MPSGaussianBlur.swift", file: "07-08-mps-gaussian.swift")
+            }
+            
+            @Step {
+                Convert MPS results to CIImage and apply additional filters.
+                Mix MPS and CoreImage usage.
+                
+                @Code(name: "MPSToCoreImage.swift", file: "07-09-mps-to-coreimage.swift")
+            }
+            
+            @Step {
+                Implement histogram calculation and equalization.
+                Analyze and correct image brightness distribution.
+                
+                @Code(name: "MPSHistogram.swift", file: "07-10-mps-histogram.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced Metal Filter Implementation") {
+        @ContentAndMedia {
+            Implement advanced Metal filters for use in actual apps.
+            Utilize compute shaders and texture sampling.
+            
+            Effects to implement:
+            1. HDR tone mapping
+            2. God Rays effect
+            3. Depth-based blur
+        }
+        
+        @Steps {
+            @Step {
+                Implement an HDR tone mapping shader.
+                Compress wide dynamic range to SDR.
+                
+                @Code(name: "HDRToneMapping.swift", file: "07-11-hdr-tone-mapping.swift")
+            }
+            
+            @Step {
+                Implement a God Rays effect.
+                Express light rays emanating from a light source with radial blur.
+                
+                @Code(name: "GodRays.swift", file: "07-12-god-rays.swift")
+            }
+            
+            @Step {
+                Implement bokeh blur using depth maps.
+                Create the background blur effect of Portrait mode.
+                
+                @Code(name: "DepthBlur.swift", file: "07-13-depth-blur.swift")
+            }
+            
+            @Step {
+                Wrap Metal filters as CIFilter for reuse.
+                Integrate into the CoreImage pipeline.
+                
+                @Code(name: "MetalFilterWrapper.swift", file: "07-14-metal-filter-wrapper.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What are the advantages of CIContext using Metal?
+            
+            @Choice(isCorrect: true) {
+                GPU pipeline optimization and zero-copy texture sharing
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Sharing the Metal device enables efficient pipeline 
+                    construction without texture copying.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Saves battery by using only CPU
+                
+                @Justification(reaction: "Actually the opposite.") {
+                    Metal performs parallel processing using the GPU.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only works on simulator
+                
+                @Justification(reaction: "That's not the case.") {
+                    Metal performs best on actual devices.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What are the advantages of writing CIKernel with .ci.metal files?
+            
+            @Choice(isCorrect: true) {
+                Can detect errors at compile time
+                
+                @Justification(reaction: "Correct! ✨") {
+                    MSL files are compiled at build time,
+                    preventing runtime errors.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can only modify kernels at runtime
+                
+                @Justification(reaction: "Not an advantage.") {
+                    Pre-compiling is safer and faster.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                File size is smaller than strings
+                
+                @Justification(reaction: "Not the key advantage.") {
+                    The main advantages are type safety and IDE support.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What characterizes Metal Performance Shaders (MPS)?
+            
+            @Choice(isCorrect: true) {
+                High-performance algorithm library optimized by Apple for each GPU
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    MPS is optimized for each Apple GPU,
+                    so it can be faster than custom implementations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS only, not available on macOS
+                
+                @Justification(reaction: "That's not the case.") {
+                    MPS is available on iOS, macOS, and tvOS.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Completely replaces CoreImage filters
+                
+                @Justification(reaction: "They're complementary.") {
+                    MPS and CoreImage can be used together.
+                }
+            }
+        }
+    }
+}

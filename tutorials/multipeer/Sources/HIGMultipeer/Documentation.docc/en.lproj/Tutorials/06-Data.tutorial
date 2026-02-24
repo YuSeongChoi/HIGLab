@@ -1,0 +1,166 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Data Transfer") {
+        Use MCSession's send method to 
+        transfer data to connected peers.
+    }
+    
+    @Section(title: "Data Transfer Basics") {
+        @ContentAndMedia {
+            You can send Data objects to other peers using 
+            the send(_:toPeers:with:) method.
+            
+            You can choose between reliable and unreliable modes.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a basic data transfer method.
+                
+                @Code(name: "DataManager.swift", file: "06-01-send-basic.swift")
+            }
+            
+            @Step {
+                Understand the difference between transfer modes.
+                
+                - reliable: Order and delivery guaranteed (similar to TCP)
+                - unreliable: Order and delivery not guaranteed (similar to UDP)
+                
+                @Code(name: "DataManager.swift", file: "06-02-send-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Message Transfer") {
+        @ContentAndMedia {
+            To send strings or structured data, 
+            they must be converted to Data.
+            
+            Using Codable is convenient.
+        }
+        
+        @Steps {
+            @Step {
+                Send a string.
+                
+                @Code(name: "DataManager.swift", file: "06-03-send-string.swift")
+            }
+            
+            @Step {
+                Define a message model.
+                
+                Conform to Codable to enable serialization.
+                
+                @Code(name: "Message.swift", file: "06-04-message-model.swift")
+            }
+            
+            @Step {
+                Send a message object.
+                
+                Convert to Data with JSONEncoder.
+                
+                @Code(name: "DataManager.swift", file: "06-05-send-message.swift")
+            }
+            
+            @Step {
+                Decode received data into messages.
+                
+                @Code(name: "DataManager.swift", file: "06-06-receive-message.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing a Chat App") {
+        @ContentAndMedia {
+            Implement a simple chat feature 
+            using what we've learned so far.
+        }
+        
+        @Steps {
+            @Step {
+                Extend the chat message model.
+                
+                Include sender, time, and message type.
+                
+                @Code(name: "ChatMessage.swift", file: "06-07-chat-model.swift")
+            }
+            
+            @Step {
+                Implement a chat manager.
+                
+                @Code(name: "ChatManager.swift", file: "06-08-chat-manager.swift")
+            }
+            
+            @Step {
+                Implement the chat UI.
+                
+                @Code(name: "ChatView.swift", file: "06-09-chat-view.swift")
+            }
+            
+            @Step {
+                Add a message input component.
+                
+                @Code(name: "MessageInputView.swift", file: "06-10-input-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the characteristic of reliable transfer mode?
+            
+            @Choice(isCorrect: true) {
+                Order and delivery are guaranteed
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Reliable mode guarantees order and delivery like TCP.
+                    It's suitable for important data transfers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's faster
+                
+                @Justification(reaction: "Think again.") {
+                    Unreliable mode can be faster due to lower overhead.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Encryption is included
+                
+                @Justification(reaction: "Think again.") {
+                    Encryption is configured separately at the session level.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is unreliable transfer mode appropriate?
+            
+            @Choice(isCorrect: false) {
+                Important chat messages
+                
+                @Justification(reaction: "Think again.") {
+                    Reliable mode is more appropriate for chat messages.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Real-time location updates
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    For data that updates frequently and tolerates some loss,
+                    unreliable mode is suitable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                File transfer
+                
+                @Justification(reaction: "Think again.") {
+                    The resource API is better for file transfers.
+                }
+            }
+        }
+    }
+}

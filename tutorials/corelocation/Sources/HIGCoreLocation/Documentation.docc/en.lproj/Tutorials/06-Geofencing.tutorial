@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Geofencing (CLCircularRegion)") {
+        Implement geofencing to receive notifications when
+        entering or exiting specific areas.
+        
+        In a running tracker, use this for start/finish point notifications.
+    }
+    
+    @Section(title: "Understanding CLCircularRegion") {
+        @ContentAndMedia {
+            `CLCircularRegion` is a circular area defined by a center point and radius.
+            You can receive notifications when entering or exiting this region.
+            
+            You can monitor up to 20 regions simultaneously.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating CLCircularRegion**
+                
+                Create a region with center coordinates, radius (in meters), and a unique identifier.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-region-create.swift")
+            }
+            
+            @Step {
+                **Setting Entry/Exit Notifications**
+                
+                Use the `notifyOnEntry` and `notifyOnExit` properties
+                to configure which events trigger notifications.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-notify-settings.swift")
+            }
+            
+            @Step {
+                **Starting Region Monitoring**
+                
+                Start monitoring with the `startMonitoring(for:)` method.
+                The system will detect entry/exit for that region.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-start-monitoring.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Geofence Events") {
+        @ContentAndMedia {
+            Region entry/exit events are delivered through delegate methods.
+            In a running tracker, use these to record lap times
+            or provide voice guidance.
+        }
+        
+        @Steps {
+            @Step {
+                **Handling Entry Events**
+                
+                The `locationManager(_:didEnterRegion:)` method is called
+                when entering a region.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-did-enter.swift")
+            }
+            
+            @Step {
+                **Handling Exit Events**
+                
+                The `locationManager(_:didExitRegion:)` method is called
+                when exiting a region.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-did-exit.swift")
+            }
+            
+            @Step {
+                **Error Handling**
+                
+                Handle monitoring start failures or region state check failures.
+                
+                @Code(name: "GeofenceManager.swift", file: "06-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Running Course Checkpoints") {
+        @ContentAndMedia {
+            Use geofencing to set checkpoints on a running course
+            and record lap times when passing each checkpoint.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating the Checkpoint Model**
+                
+                Create a model to store checkpoint information.
+                Include name, coordinates, radius, and passage time.
+                
+                @Code(name: "Checkpoint.swift", file: "06-checkpoint-model.swift")
+            }
+            
+            @Step {
+                **Setting Up Checkpoint Geofences**
+                
+                Create CLCircularRegion for each checkpoint on the running course
+                and start monitoring.
+                
+                @Code(name: "CourseManager.swift", file: "06-course-setup.swift")
+            }
+            
+            @Step {
+                **Recording Lap Times**
+                
+                Record the current time when entering a checkpoint
+                to calculate segment duration.
+                
+                @Code(name: "CourseManager.swift", file: "06-lap-time.swift")
+            }
+            
+            @Step {
+                **Displaying Checkpoints on Map**
+                
+                Use MapKit to visualize checkpoints on a map.
+                
+                @Code(name: "CourseMapView.swift", file: "06-course-map.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the maximum number of CLCircularRegions that can be monitored?
+            
+            @Choice(isCorrect: true) {
+                20
+                
+                @Justification(reaction: "Correct!") {
+                    iOS allows monitoring up to 20 regions simultaneously.
+                    For more, you need to dynamically add/remove regions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Unlimited
+                
+                @Justification(reaction: "Not quite") {
+                    Due to system resource limitations, the maximum is 20.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                100
+                
+                @Justification(reaction: "Not quite") {
+                    The actual limit is 20.
+                    Dynamic management is needed for more regions.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Does geofencing work even when the app is terminated?
+            
+            @Choice(isCorrect: true) {
+                Yes, the system wakes the app to deliver events
+                
+                @Justification(reaction: "Correct!") {
+                    Geofencing operates at the system level,
+                    and the app is relaunched when entering/exiting regions even after termination.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No, the app must be running
+                
+                @Justification(reaction: "Not quite") {
+                    Geofencing works even after app termination.
+                    This is a major advantage of geofencing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only works in background
+                
+                @Justification(reaction: "Not quite") {
+                    Geofencing works in foreground, background, and terminated states.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the minimum radius for CLCircularRegion?
+            
+            @Choice(isCorrect: true) {
+                About 100 meters (varies by device and environment)
+                
+                @Justification(reaction: "Correct!") {
+                    Very small radii may not work properly due to accuracy issues.
+                    Apple recommends about 50m indoors and 100m or more outdoors.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 meter
+                
+                @Justification(reaction: "Not quite") {
+                    While technically possible to set, such small radii
+                    have very low reliability due to GPS accuracy limits.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    Too small a radius causes frequent
+                    false positives/negatives due to GPS errors.
+                }
+            }
+        }
+    }
+}

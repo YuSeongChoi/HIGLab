@@ -1,0 +1,188 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Single Photo Selection") {
+        Implement the complete flow of selecting a single photo
+        and displaying it on screen using PhotosPicker.
+    }
+    
+    @Section(title: "Single Selection PhotosPicker") {
+        @ContentAndMedia {
+            Single photo selection is the most basic use case.
+            It's useful for profile photos, background images, etc.
+            
+            Binding to a single PhotosPickerItem automatically enables single selection mode.
+        }
+        
+        @Steps {
+            @Step {
+                **Declaring State Variables**
+                
+                Declare a PhotosPickerItem? variable to store the selected item.
+                Since it's Optional, it can represent an unselected state.
+                
+                @Code(name: "SingleSelection.swift", file: "02-single-selection.swift")
+            }
+            
+            @Step {
+                **Implementing PhotosPicker**
+                
+                Bind a single PhotosPickerItem to selection.
+                When the user selects a photo, the value is automatically set.
+                
+                @Code(name: "SinglePicker.swift", file: "02-single-picker.swift")
+            }
+            
+            @Step {
+                **Detecting Selection Changes**
+                
+                Detect selection changes with onChange or task(id:).
+                Start image loading when the selection changes.
+                
+                @Code(name: "SelectionChange.swift", file: "02-selection-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading Image Data") {
+        @ContentAndMedia {
+            Load actual image data from PhotosPickerItem.
+            This uses asynchronous loading with the Transferable protocol.
+            
+            We'll also implement loading states and error handling.
+        }
+        
+        @Steps {
+            @Step {
+                **Loading as Data**
+                
+                The most basic approach is loading as Data type.
+                Use loadTransferable(type: Data.self).
+                
+                @Code(name: "LoadAsData.swift", file: "02-load-as-data.swift")
+            }
+            
+            @Step {
+                **Loading Directly as Image**
+                
+                You can also load directly as a SwiftUI Image.
+                However, since Image isn't Transferable, a custom type is needed.
+                
+                @Code(name: "TransferableImage.swift", file: "02-transferable-image.swift")
+            }
+            
+            @Step {
+                **Managing Loading State**
+                
+                Manage loading, success, and failure states with an enum.
+                Provide appropriate feedback to the user.
+                
+                @Code(name: "LoadingState.swift", file: "02-loading-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating a Profile Photo Picker") {
+        @ContentAndMedia {
+            Implement a profile photo picker for real app use.
+            
+            - Display circular profile image
+            - Edit button overlay
+            - Loading indicator
+            - Error handling
+        }
+        
+        @Steps {
+            @Step {
+                **ProfileImagePicker Component**
+                
+                Create a reusable profile image picker.
+                Bundle PhotosPicker and image display into a single component.
+                
+                @Code(name: "ProfileImagePicker.swift", file: "02-profile-image-picker.swift")
+            }
+            
+            @Step {
+                **Circle Clipping & Overlay**
+                
+                Clip the selected image as a circle
+                and overlay an edit icon.
+                
+                @Code(name: "CircleClipping.swift", file: "02-circle-clipping.swift")
+            }
+            
+            @Step {
+                **Completed Profile Screen**
+                
+                Integrate ProfileImagePicker into the profile screen.
+                It updates automatically when an image is selected.
+                
+                @Code(name: "ProfileView.swift", file: "02-profile-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you enable single photo selection mode?
+            
+            @Choice(isCorrect: true) {
+                Bind to a PhotosPickerItem? type
+                
+                @Justification(reaction: "Correct!") {
+                    Binding to a single PhotosPickerItem
+                    automatically enables single selection mode.
+                    Binding to an array enables multiple selection.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set maxSelectionCount: 1
+                
+                @Justification(reaction: "Not quite") {
+                    maxSelectionCount is used to limit the maximum count in multiple selection mode.
+                    Single selection is determined by the type.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set selectionMode: .single
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such parameter.
+                    It's automatically determined by whether the binding type is single or array.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if an error occurs while loading an image from PhotosPickerItem?
+            
+            @Choice(isCorrect: true) {
+                loadTransferable returns nil or throws an error
+                
+                @Justification(reaction: "Correct!") {
+                    loadTransferable is an async throws method.
+                    It can return nil or throw an error on failure.
+                    Handle safely with try? and nil checking.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The app crashes
+                
+                @Justification(reaction: "Not quite") {
+                    With proper error handling, you can prevent crashes.
+                    Use do-catch or try?.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A default placeholder image is returned
+                
+                @Justification(reaction: "Not quite") {
+                    A placeholder is not automatically returned.
+                    You need to implement fallback logic in your app.
+                }
+            }
+        }
+    }
+}

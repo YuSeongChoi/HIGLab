@@ -1,0 +1,247 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Live Photo Handling") {
+        Learn how to select and play Live Photos.
+        Use PHLivePhotoView in SwiftUI.
+    }
+    
+    @Section(title: "Understanding Live Photos") {
+        @ContentAndMedia {
+            Live Photos are a special media format that includes
+            1.5 seconds of video and audio before and after the photo is taken.
+            
+            Introduced in iOS 9, they play with 3D Touch or long press.
+        }
+        
+        @Steps {
+            @Step {
+                **Live Photo Components**
+                
+                A Live Photo consists of three files:
+                - HEIC/JPEG: Still image
+                - MOV: Short video
+                - Metadata: Links the two files
+                
+                @Code(name: "LivePhotoComponents.swift", file: "07-live-photo-components.swift")
+            }
+            
+            @Step {
+                **Live Photo Filter**
+                
+                Use the .livePhotos filter to select only
+                Live Photos in PhotosPicker.
+                
+                @Code(name: "LivePhotoFilter.swift", file: "07-live-photo-filter.swift")
+            }
+            
+            @Step {
+                **PHLivePhoto Class**
+                
+                Live Photo data is represented by PHLivePhoto objects.
+                It's a core type of the Photos framework.
+                
+                @Code(name: "PHLivePhotoClass.swift", file: "07-phlive-photo-class.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading Live Photos") {
+        @ContentAndMedia {
+            Load PHLivePhoto from PhotosPickerItem.
+            Implement Transferable for use in SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining LivePhotoTransferable**
+                
+                Create a Transferable type that wraps PHLivePhoto.
+                Handle Live Photo data with DataRepresentation.
+                
+                @Code(name: "LivePhotoTransferable.swift", file: "07-live-photo-transferable.swift")
+            }
+            
+            @Step {
+                **Implementing Live Photo Loading**
+                
+                Load with loadTransferable(type: LivePhotoTransferable.self).
+                Show loading state since it can take time.
+                
+                @Code(name: "LoadLivePhoto.swift", file: "07-load-live-photo.swift")
+            }
+            
+            @Step {
+                **Alternative: PHLivePhoto.request**
+                
+                You can also load directly from PHAsset instead of PhotosPickerItem.
+                Use when more control is needed.
+                
+                @Code(name: "PHLivePhotoRequest.swift", file: "07-phlive-photo-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing PHLivePhotoView") {
+        @ContentAndMedia {
+            Use UIKit's PHLivePhotoView in SwiftUI.
+            Wrap it with UIViewRepresentable.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating SwiftUI Wrapper**
+                
+                Implement UIViewRepresentable to use
+                PHLivePhotoView in SwiftUI.
+                
+                @Code(name: "LivePhotoViewWrapper.swift", file: "07-live-photo-view-wrapper.swift")
+            }
+            
+            @Step {
+                **Playback Control**
+                
+                Start playback with startPlayback(with:).
+                .full plays the entire video, .hint shows a short hint animation.
+                
+                @Code(name: "PlaybackControl.swift", file: "07-playback-control.swift")
+            }
+            
+            @Step {
+                **User Interaction**
+                
+                Implement interaction to play Live Photos
+                with a long press gesture.
+                
+                @Code(name: "UserInteraction.swift", file: "07-user-interaction.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Live Photo Gallery") {
+        @ContentAndMedia {
+            Implement a dedicated Live Photo gallery screen.
+            Integrate selection, loading, and playback.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing LivePhotoGalleryView**
+                
+                Display Live Photos in a grid and
+                play in full screen when tapped.
+                
+                @Code(name: "LivePhotoGalleryView.swift", file: "07-live-photo-gallery-view.swift")
+            }
+            
+            @Step {
+                **Live Photo Indicator**
+                
+                Display a badge indicating it's a Live Photo.
+                Use Apple's Live Photo icon.
+                
+                @Code(name: "LivePhotoBadge.swift", file: "07-live-photo-badge.swift")
+            }
+            
+            @Step {
+                **Full Screen Viewer**
+                
+                Show Live Photos in full screen and
+                support auto-play or touch-to-play.
+                
+                @Code(name: "FullScreenViewer.swift", file: "07-full-screen-viewer.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which UIKit class is used to play Live Photos?
+            
+            @Choice(isCorrect: true) {
+                PHLivePhotoView
+                
+                @Justification(reaction: "Correct!") {
+                    PHLivePhotoView is a dedicated UIKit view
+                    for displaying and playing Live Photos.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayerView
+                
+                @Justification(reaction: "Not quite") {
+                    AVPlayerView is for regular video playback.
+                    Live Photos use PHLivePhotoView.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UIImageView
+                
+                @Justification(reaction: "Not quite") {
+                    UIImageView only displays still images.
+                    PHLivePhotoView is needed for Live Photo playback.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which Live Photo playback style shows a short hint animation?
+            
+            @Choice(isCorrect: true) {
+                .hint
+                
+                @Justification(reaction: "Correct!") {
+                    .hint plays a short 1-2 second hint animation.
+                    .full plays the entire Live Photo.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .preview
+                
+                @Justification(reaction: "Not quite") {
+                    The correct option is .hint.
+                    PHLivePhotoViewPlaybackStyle has .hint and .full.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .short
+                
+                @Justification(reaction: "Not quite") {
+                    The correct option is .hint.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you select only Live Photos in PhotosPicker?
+            
+            @Choice(isCorrect: true) {
+                matching: .livePhotos
+                
+                @Justification(reaction: "Exactly right!") {
+                    Using the .livePhotos filter allows
+                    only Live Photos to be selected.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .live
+                
+                @Justification(reaction: "Not quite") {
+                    The correct filter name is .livePhotos.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .images(live: true)
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such API.
+                    Use the .livePhotos filter.
+                }
+            }
+        }
+    }
+}

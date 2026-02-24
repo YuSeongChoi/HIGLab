@@ -1,0 +1,178 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Image Classification (VNCoreMLRequest)") {
+        Integrate the Vision framework with Core ML
+        to implement real-time image classification.
+    }
+    
+    @Section(title: "Vision + Core ML Integration") {
+        @ContentAndMedia {
+            While you can use Core ML models directly,
+            using them with the **Vision framework**
+            automates image preprocessing.
+            
+            Vision handles resizing, cropping, and normalization automatically.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating VNCoreMLModel**
+                
+                Wrap the Core ML model for use with Vision.
+                
+                @Code(name: "VisionSetup.swift", file: "03-vision-model.swift")
+            }
+            
+            @Step {
+                **Creating VNCoreMLRequest**
+                
+                Create a classification request and define the result handler.
+                
+                @Code(name: "ClassificationRequest.swift", file: "03-classification-request.swift")
+            }
+            
+            @Step {
+                **Executing with VNImageRequestHandler**
+                
+                Execute the classification request on an image.
+                Supports CGImage, CIImage, URL, and Data.
+                
+                @Code(name: "RequestHandler.swift", file: "03-request-handler.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Parsing Results") {
+        @ContentAndMedia {
+            Extract the highest probability classification results
+            from the VNClassificationObservation array.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining the Result Model**
+                
+                Define a struct to hold classification results.
+                Include label, confidence, and top N results.
+                
+                @Code(name: "ClassificationResult.swift", file: "03-result-model.swift")
+            }
+            
+            @Step {
+                **Result Parsing Logic**
+                
+                Sort VNClassificationObservation by confidence
+                and extract the top results.
+                
+                @Code(name: "ResultParsing.swift", file: "03-result-parsing.swift")
+            }
+            
+            @Step {
+                **Setting Confidence Threshold**
+                
+                Treat results with too low confidence as "Unknown".
+                Generally, 50% or higher is considered a valid result.
+                
+                @Code(name: "ConfidenceThreshold.swift", file: "03-confidence-threshold.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI Integration") {
+        @ContentAndMedia {
+            Complete a screen in SwiftUI that selects images
+            and displays classification results.
+        }
+        
+        @Steps {
+            @Step {
+                **Selecting Images with PhotosPicker**
+                
+                Use iOS 16+'s PhotosPicker to
+                select images from the photo library.
+                
+                @Code(name: "ImagePicker.swift", file: "03-image-picker.swift")
+            }
+            
+            @Step {
+                **Classification Results UI**
+                
+                Display the top 5 classification results with probability bars.
+                
+                @Code(name: "ResultView.swift", file: "03-result-view.swift")
+            }
+            
+            @Step {
+                **Complete Screen Integration**
+                
+                Complete the entire flow from image selection
+                to classification and result display.
+                
+                @Code(name: "ClassifierScreen.swift", file: "03-classifier-screen.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the biggest benefit of using the Vision framework with Core ML?
+            
+            @Choice(isCorrect: true) {
+                Image preprocessing (resizing, normalization) is handled automatically
+                
+                @Justification(reaction: "Correct!") {
+                    Vision automatically converts images to the format
+                    required by the model. No manual preprocessing needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Faster inference speed
+                
+                @Justification(reaction: "Not quite") {
+                    Speed is similar. Vision's advantage is
+                    automatic preprocessing and convenient APIs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                More accurate results
+                
+                @Justification(reaction: "Not quite") {
+                    Accuracy is determined by the model.
+                    Vision's advantage is preprocessing automation.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you check first when parsing results from VNClassificationObservation?
+            
+            @Choice(isCorrect: true) {
+                The confidence value
+                
+                @Justification(reaction: "That's right!") {
+                    Results with low confidence cannot be trusted.
+                    Typically, 50% is used as the threshold.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The label string length
+                
+                @Justification(reaction: "Not quite") {
+                    Label length is not important.
+                    Confidence is the most important metric.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The size of the result array
+                
+                @Justification(reaction: "Not quite") {
+                    The confidence of each result is more important
+                    than the number of results.
+                }
+            }
+        }
+    }
+}

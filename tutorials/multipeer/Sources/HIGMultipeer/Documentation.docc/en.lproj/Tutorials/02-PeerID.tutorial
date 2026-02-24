@@ -1,0 +1,155 @@
+@Tutorial(time: 8) {
+    @Intro(title: "MCPeerID Setup") {
+        Use MCPeerID to identify devices and
+        set a unique ID that distinguishes you from other peers.
+    }
+    
+    @Section(title: "Understanding MCPeerID") {
+        @ContentAndMedia {
+            MCPeerID is an object that uniquely identifies 
+            each device in MultipeerConnectivity.
+            
+            It's shown to users via displayName and 
+            has a unique internal ID.
+        }
+        
+        @Steps {
+            @Step {
+                Let's examine the basic structure of MCPeerID.
+                
+                displayName is the name that will be displayed to users.
+                
+                @Code(name: "PeerManager.swift", file: "02-01-peerid-basic.swift")
+            }
+            
+            @Step {
+                Create an MCPeerID using the device name.
+                
+                On iOS, use `UIDevice.current.name`.
+                
+                @Code(name: "PeerManager.swift", file: "02-02-device-name.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PeerID Management") {
+        @ContentAndMedia {
+            MCPeerID must maintain consistency across sessions.
+            
+            If the same device uses a different PeerID each time,
+            other peers may not recognize the device.
+        }
+        
+        @Steps {
+            @Step {
+                Save MCPeerID to UserDefaults.
+                
+                This ensures the same PeerID is used even after app restart.
+                
+                @Code(name: "PeerManager.swift", file: "02-03-save-peerid.swift")
+            }
+            
+            @Step {
+                Load a saved MCPeerID or create a new one.
+                
+                @Code(name: "PeerManager.swift", file: "02-04-load-peerid.swift")
+            }
+            
+            @Step {
+                Implement logic to convert MCPeerID to Data and restore it.
+                
+                Use NSKeyedArchiver.
+                
+                @Code(name: "PeerManager.swift", file: "02-05-archive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Custom Name") {
+        @ContentAndMedia {
+            Allowing users to set their own display name 
+            provides a better UX.
+        }
+        
+        @Steps {
+            @Step {
+                Create an MCPeerID with user input.
+                
+                @Code(name: "PeerManager.swift", file: "02-06-custom-name.swift")
+            }
+            
+            @Step {
+                Create a name setting UI in SwiftUI View.
+                
+                @Code(name: "NameSettingView.swift", file: "02-07-name-view.swift")
+            }
+            
+            @Step {
+                Create and save a new MCPeerID when the name changes.
+                
+                @Code(name: "PeerManager.swift", file: "02-08-update-name.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the purpose of MCPeerID's displayName?
+            
+            @Choice(isCorrect: true) {
+                A name displayed to other peers
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    displayName is the name shown to users 
+                    in the nearby devices list, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Internal encryption key
+                
+                @Justification(reaction: "Think again.") {
+                    displayName is not related to encryption.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Network address
+                
+                @Justification(reaction: "Think again.") {
+                    displayName is not a network address.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What API is used to save MCPeerID?
+            
+            @Choice(isCorrect: false) {
+                JSONEncoder
+                
+                @Justification(reaction: "Think again.") {
+                    MCPeerID does not conform to Codable, 
+                    so JSONEncoder cannot be used.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                NSKeyedArchiver
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    MCPeerID conforms to NSSecureCoding, so it 
+                    can be serialized with NSKeyedArchiver.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PropertyListEncoder
+                
+                @Justification(reaction: "Think again.") {
+                    Use NSKeyedArchiver for MCPeerID.
+                }
+            }
+        }
+    }
+}

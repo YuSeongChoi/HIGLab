@@ -1,0 +1,248 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Photo Editing Extensions (PHContentEditingController)") {
+        Create photo editing extensions that work within the Photos app.
+        Implement the PHContentEditingController protocol.
+    }
+    
+    @Section(title: "Understanding Photo Editing Extensions") {
+        @ContentAndMedia {
+            Photo Editing Extensions are app extensions that allow
+            editing photos directly within the Photos app.
+            
+            You can provide various editing features like filters, effects, and markup.
+        }
+        
+        @Steps {
+            @Step {
+                **Extension Structure**
+                
+                A Photo Editing Extension consists of:
+                - PHContentEditingController protocol implementation
+                - Editing UI (ViewController)
+                - Info.plist configuration
+                
+                @Code(name: "ExtensionStructure.swift", file: "08-extension-structure.swift")
+            }
+            
+            @Step {
+                **Adding Extension in Xcode**
+                
+                Add a Photo Editing Extension by selecting
+                File > New > Target.
+                
+                @Code(name: "AddExtension.swift", file: "08-add-extension.swift")
+            }
+            
+            @Step {
+                **PHContentEditingController Protocol**
+                
+                This is the core protocol for Photo Editing.
+                It defines methods for starting, cancelling, and completing edits.
+                
+                @Code(name: "PHContentEditingController.swift", file: "08-phcontent-editing-controller.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Edit Input") {
+        @ContentAndMedia {
+            Process PHContentEditingInput passed from the Photos app.
+            Support various media including images, Live Photos, and videos.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing canHandle(adjustmentData:)**
+                
+                Check if previous edit data can be processed.
+                Continue editing results from other apps.
+                
+                @Code(name: "CanHandleAdjustment.swift", file: "08-can-handle-adjustment.swift")
+            }
+            
+            @Step {
+                **Implementing startContentEditing**
+                
+                Receive the content to edit and initialize the UI.
+                Get the image from displaySizeImage or fullSizeImageURL.
+                
+                @Code(name: "StartContentEditing.swift", file: "08-start-content-editing.swift")
+            }
+            
+            @Step {
+                **Loading and Displaying Images**
+                
+                Display the image to edit in the view.
+                Using CIImage makes filter application easy.
+                
+                @Code(name: "LoadAndDisplayImage.swift", file: "08-load-and-display-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Editing Features") {
+        @ContentAndMedia {
+            Implement actual editing features using Core Image filters.
+            Separate preview and final output to optimize performance.
+        }
+        
+        @Steps {
+            @Step {
+                **Applying Filters**
+                
+                Apply effects to images with CIFilter.
+                Use various filters like sepia, black & white, vignette, etc.
+                
+                @Code(name: "ApplyFilters.swift", file: "08-apply-filters.swift")
+            }
+            
+            @Step {
+                **Building the Editing UI**
+                
+                Create an editing interface with sliders, buttons, etc.
+                Provide real-time preview.
+                
+                @Code(name: "EditingUI.swift", file: "08-editing-ui.swift")
+            }
+            
+            @Step {
+                **Saving Edit Data**
+                
+                Save editing settings in PHAdjustmentData.
+                Can be restored when editing again later.
+                
+                @Code(name: "SaveAdjustmentData.swift", file: "08-save-adjustment-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completing Edits") {
+        @ContentAndMedia {
+            Implement finishContentEditing to save edit results.
+            The original image is preserved and only edit data is saved.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing finishContentEditing**
+                
+                Save the edited image to PHContentEditingOutput.
+                Also save adjustmentData to support undo.
+                
+                @Code(name: "FinishContentEditing.swift", file: "08-finish-content-editing.swift")
+            }
+            
+            @Step {
+                **JPEG Output**
+                
+                Encode the edited image as JPEG for saving.
+                Set your desired compression quality.
+                
+                @Code(name: "JPEGOutput.swift", file: "08-jpeg-output.swift")
+            }
+            
+            @Step {
+                **Handling Cancellation**
+                
+                Clean up resources in cancelContentEditing.
+                If the user cancels, the original is preserved.
+                
+                @Code(name: "CancelEditing.swift", file: "08-cancel-editing.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the core protocol for Photo Editing Extensions?
+            
+            @Choice(isCorrect: true) {
+                PHContentEditingController
+                
+                @Justification(reaction: "Correct!") {
+                    PHContentEditingController protocol defines
+                    methods for starting, completing, and cancelling edits.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHPhotoEditingProtocol
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such protocol.
+                    Use PHContentEditingController.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHImageEditController
+                
+                @Justification(reaction: "Not quite") {
+                    The correct name is PHContentEditingController.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class stores edit data for later restoration?
+            
+            @Choice(isCorrect: true) {
+                PHAdjustmentData
+                
+                @Justification(reaction: "Correct!") {
+                    Saving edit settings in PHAdjustmentData allows
+                    restoration when editing again later.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHEditingState
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such class.
+                    Use PHAdjustmentData.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UserDefaults
+                
+                @Justification(reaction: "Not quite") {
+                    Using PHAdjustmentData from the Photos framework
+                    saves edit data together with the photo.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class is used to save the edited image?
+            
+            @Choice(isCorrect: true) {
+                PHContentEditingOutput
+                
+                @Justification(reaction: "Exactly right!") {
+                    Save the edited image to
+                    PHContentEditingOutput's renderedContentURL.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHContentEditingInput
+                
+                @Justification(reaction: "Not quite") {
+                    Input is for receiving the original to edit.
+                    Saving is done to Output.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHPhotoLibrary
+                
+                @Justification(reaction: "Not quite") {
+                    In extensions, return edit results
+                    through PHContentEditingOutput.
+                }
+            }
+        }
+    }
+}

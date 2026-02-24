@@ -1,0 +1,67 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Key Exchange (ECDH)") {
+        Securely generate a shared secret using ECDH (Elliptic Curve Diffie-Hellman).
+        Two parties can exchange secret keys over a public channel.
+    }
+    
+    @Section(title: "ECDH Key Exchange") {
+        @ContentAndMedia {
+            Alice and Bob exchange only their public keys to generate an identical shared secret.
+            This shared secret is used to derive a symmetric key for encrypted communication.
+        }
+        @Steps {
+            @Step {
+                Generate key pairs for Alice and Bob.
+                @Code(name: "KeyExchange.swift", file: "07-01-keypairs.swift")
+            }
+            @Step {
+                Generate a shared secret using ECDH.
+                @Code(name: "KeyExchange.swift", file: "07-02-shared.swift")
+            }
+            @Step {
+                Derive a symmetric key from the shared secret (HKDF).
+                @Code(name: "KeyExchange.swift", file: "07-03-derive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "End-to-End Encryption") {
+        @ContentAndMedia {
+            Combine ECDH and AES-GCM to implement true E2E encryption.
+        }
+        @Steps {
+            @Step {
+                Integrate key exchange and message encryption.
+                @Code(name: "KeyExchange.swift", file: "07-04-e2e.swift")
+            }
+            @Step {
+                Implement E2E encrypted chat for the messaging app.
+                @Code(name: "KeyExchange.swift", file: "07-05-chat.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What do the two parties share in ECDH?
+            @Choice(isCorrect: true) {
+                Public keys
+                @Justification(reaction: "Correct!") {
+                    In ECDH, only public keys are exchanged. Each party calculates the same shared secret using the other's public key and their own private key.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Private keys
+                @Justification(reaction: "Think again.") {
+                    Private keys must never be shared!
+                }
+            }
+            @Choice(isCorrect: false) {
+                Symmetric keys
+                @Justification(reaction: "Think again.") {
+                    Symmetric keys are derived from the shared secret. They are not exchanged directly.
+                }
+            }
+        }
+    }
+}

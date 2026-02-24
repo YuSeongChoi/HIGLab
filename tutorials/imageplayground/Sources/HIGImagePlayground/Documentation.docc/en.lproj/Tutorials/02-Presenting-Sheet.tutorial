@@ -1,0 +1,171 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Presenting the ImagePlayground Sheet") {
+        Learn how to display the image generation UI 
+        using the imagePlaygroundSheet modifier.
+        
+        @Image(source: "presenting-sheet.png", alt: "ImagePlayground Sheet")
+    }
+    
+    @Section(title: "Basic Sheet Presentation") {
+        @ContentAndMedia {
+            ImagePlayground follows SwiftUI's sheet pattern.
+            Use the `imagePlaygroundSheet` modifier to display 
+            the image generation UI modally.
+            
+            When the sheet opens, users can:
+            - Enter text prompts
+            - Select suggested concepts
+            - Add reference images
+            
+            @Image(source: "sheet-overview.png", alt: "Sheet UI Overview")
+        }
+        
+        @Steps {
+            @Step {
+                First, declare a State variable to manage the sheet presentation state.
+                Also prepare a variable to store the generated image.
+                
+                @Code(name: "SheetState.swift", file: "02-01-state.swift")
+            }
+            
+            @Step {
+                Configure the sheet to appear when the button is tapped.
+                Attach the `imagePlaygroundSheet` modifier to the view.
+                
+                @Code(name: "BasicSheet.swift", file: "02-02-basic-sheet.swift")
+            }
+            
+            @Step {
+                Here's the complete basic implementation.
+                When the user selects an image, the closure is called,
+                and you can access the image through the generated URL.
+                
+                @Code(name: "CompleteBasic.swift", file: "02-03-complete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding Sheet Binding") {
+        @ContentAndMedia {
+            `imagePlaygroundSheet` controls the sheet's presentation state 
+            through the `isPresented` binding.
+            
+            - Setting to `true` shows the sheet
+            - Automatically changes to `false` when the user closes the sheet
+            - The sheet also closes automatically when an image is selected
+            
+            This pattern is identical to other sheet modifiers in SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                Manage the presentation state and generation result separately.
+                This allows you to access the result even after the sheet closes.
+                
+                @Code(name: "StateManagement.swift", file: "02-04-state-management.swift")
+            }
+            
+            @Step {
+                The generated image URL points to a temporary location.
+                To continue using it in the app, you must copy it to permanent storage.
+                
+                @Code(name: "ImageURL.swift", file: "02-05-image-url.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sheet on iPad and Mac") {
+        @ContentAndMedia {
+            On iPhone, the sheet appears as a card 
+            rising from the bottom of the screen.
+            
+            On iPad and Mac, it provides a larger editing space 
+            by utilizing the bigger screen.
+            
+            ImagePlayground automatically handles these platform differences,
+            so no additional code is needed.
+        }
+        
+        @Steps {
+            @Step {
+                The same code works across all platforms.
+                The system automatically handles platform-specific UI adjustments.
+                
+                @Code(name: "CrossPlatform.swift", file: "02-06-cross-platform.swift")
+            }
+            
+            @Step {
+                On macOS, it may appear as a window.
+                You can provide different entry points for each platform if needed.
+                
+                @Code(name: "PlatformSpecific.swift", file: "02-07-platform-specific.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What are the characteristics of the image URL generated in imagePlaygroundSheet?
+            
+            @Choice(isCorrect: true) {
+                It points to a temporary location and must be copied for permanent storage.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    The generated image URL points to a temporary directory,
+                    so you must copy it to Documents or 
+                    the photo album for continued use.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's a permanent URL that automatically syncs to iCloud.
+                
+                @Justification(reaction: "Incorrect.") {
+                    The URL points to a temporary location 
+                    and doesn't automatically sync.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's automatically saved to the app's Documents folder.
+                
+                @Justification(reaction: "Not quite.") {
+                    It's not saved automatically,
+                    and developers must explicitly implement saving logic.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the correct way to control the presentation state 
+            of an ImagePlayground sheet?
+            
+            @Choice(isCorrect: false) {
+                Directly call the `showSheet()` method.
+                
+                @Justification(reaction: "Incorrect.") {
+                    ImagePlayground follows declarative SwiftUI patterns,
+                    not imperative APIs.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Control it by passing a `@State` variable as a `Binding`.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    It uses the `isPresented` binding,
+                    same as SwiftUI's standard sheet pattern.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Control show/hide through NotificationCenter.
+                
+                @Justification(reaction: "Not quite.") {
+                    Declarative state management through bindings 
+                    is recommended in SwiftUI.
+                }
+            }
+        }
+    }
+}

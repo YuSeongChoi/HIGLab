@@ -1,0 +1,231 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Handling Results") {
+        Learn how to receive and utilize generated images 
+        from ImagePlayground in your app.
+        
+        @Image(source: "handling-results.png", alt: "Handling Results")
+    }
+    
+    @Section(title: "Understanding the Completion Handler") {
+        @ContentAndMedia {
+            The completion closure of `imagePlaygroundSheet` is called 
+            when the user selects an image.
+            
+            The closure receives a parameter of type `URL`,
+            which points to the generated image file.
+            
+            **Important:**
+            - The URL points to a file in a temporary directory
+            - The file may be deleted when the app terminates
+            - If permanent storage is needed, you must copy it yourself
+            
+            @Image(source: "completion-flow.png", alt: "Completion Flow")
+        }
+        
+        @Steps {
+            @Step {
+                Here's the basic completion handler structure.
+                Receive the URL and convert it to an image.
+                
+                @Code(name: "CompletionHandler.swift", file: "05-01-completion.swift")
+            }
+            
+            @Step {
+                Here's how to load image data from the URL.
+                You can convert it to `UIImage` or `Image`.
+                
+                @Code(name: "LoadImage.swift", file: "05-02-load-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading Images from URL") {
+        @ContentAndMedia {
+            There are several ways to load actual image data 
+            from the generated image URL.
+            
+            - **Data(contentsOf:)**: Synchronous loading
+            - **AsyncImage**: SwiftUI asynchronous loading
+            - **FileManager**: Direct file system access
+            
+            Each method has its pros and cons depending on the situation.
+        }
+        
+        @Steps {
+            @Step {
+                Here's a simple synchronous image loading method.
+                It may block if called from the UI thread.
+                
+                @Code(name: "SyncLoad.swift", file: "05-03-sync-load.swift")
+            }
+            
+            @Step {
+                Maintain UI responsiveness with asynchronous loading using Task.
+                
+                @Code(name: "AsyncLoad.swift", file: "05-04-async-load.swift")
+            }
+            
+            @Step {
+                Using AsyncImage also handles the loading state.
+                
+                @Code(name: "AsyncImageView.swift", file: "05-05-async-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Images") {
+        @ContentAndMedia {
+            Learn various ways to display loaded images 
+            in SwiftUI views.
+            
+            - Store in State variable and display
+            - Manage through ObservableObject
+            - Display multiple images in a gallery
+        }
+        
+        @Steps {
+            @Step {
+                Here's the most basic image display method.
+                Store in a State variable and display with Image view.
+                
+                @Code(name: "DisplayImage.swift", file: "05-06-display.swift")
+            }
+            
+            @Step {
+                Use a placeholder to show loading state.
+                
+                @Code(name: "PlaceholderImage.swift", file: "05-07-placeholder.swift")
+            }
+            
+            @Step {
+                Here's an example of generating multiple images and displaying them as a gallery.
+                
+                @Code(name: "GalleryView.swift", file: "05-08-gallery.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Cancellation") {
+        @ContentAndMedia {
+            When users close the sheet without selecting an image,
+            it should be handled as cancelled.
+            
+            In `imagePlaygroundSheet`:
+            - Image selection: Completion closure called + sheet closes
+            - Cancellation: Sheet closes without calling completion closure
+            
+            You can determine cancellation by checking the state 
+            when the sheet closes.
+        }
+        
+        @Steps {
+            @Step {
+                Use onChange to detect sheet closing and 
+                determine if it was cancelled.
+                
+                @Code(name: "HandleCancel.swift", file: "05-09-cancel.swift")
+            }
+            
+            @Step {
+                Here's a complete state management example.
+                Track generation, cancellation, and error states.
+                
+                @Code(name: "FullStateManagement.swift", file: "05-10-full-state.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What are the characteristics of the URL received in the imagePlaygroundSheet completion closure?
+            
+            @Choice(isCorrect: false) {
+                A permanent URL that automatically backs up to iCloud
+                
+                @Justification(reaction: "Incorrect.") {
+                    The URL points to a temporary directory 
+                    and doesn't automatically backup.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                A file in a temporary directory that may be deleted when the app terminates
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Generated images are saved to a temporary location,
+                    so you must copy them if permanent storage is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A file automatically saved to the app's Documents folder
+                
+                @Justification(reaction: "Not quite.") {
+                    It's not automatically saved to Documents,
+                    and developers must implement copying logic themselves.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when a user closes the sheet without selecting an image?
+            
+            @Choice(isCorrect: true) {
+                The sheet closes without calling the completion closure
+                
+                @Justification(reaction: "Correct! ✨") {
+                    On cancellation, the sheet closes without the completion closure,
+                    so you must detect this through changes in the isPresented binding.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The completion closure is called with a nil URL
+                
+                @Justification(reaction: "Incorrect.") {
+                    On cancellation, the completion closure itself is not called.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The completion closure is called with an error
+                
+                @Justification(reaction: "Not quite.") {
+                    Cancellation is not an error,
+                    and the closure is not called.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the best way to load images while maintaining UI responsiveness?
+            
+            @Choice(isCorrect: false) {
+                Use Data(contentsOf:) on the main thread
+                
+                @Justification(reaction: "Not recommended.") {
+                    Synchronous loading on the main thread 
+                    can block the UI.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Asynchronous loading using Task or AsyncImage
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Asynchronous processing doesn't block the main thread,
+                    providing a smooth user experience.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Load synchronously on DispatchQueue.main
+                
+                @Justification(reaction: "Incorrect.") {
+                    Synchronous operations on the main queue 
+                    block the UI.
+                }
+            }
+        }
+    }
+}

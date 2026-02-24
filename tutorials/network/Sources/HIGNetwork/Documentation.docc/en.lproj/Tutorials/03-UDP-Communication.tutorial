@@ -1,0 +1,199 @@
+@Tutorial(time: 20) {
+    @Intro(title: "UDP Communication") {
+        Learn how to use UDP when fast data transmission is needed.
+        
+        @Image(source: "udp-communication.png", alt: "UDP Communication Diagram")
+    }
+    
+    @Section(title: "Understanding UDP Characteristics") {
+        @ContentAndMedia {
+            UDP (User Datagram Protocol) is
+            a connectionless protocol.
+            
+            - **Connectionless**: Immediate transmission without handshake
+            - **Fast**: Low overhead
+            - **No order guarantee**: Packet arrival order may differ
+            - **Possible loss**: Packets may be lost
+            
+            @Image(source: "udp-vs-tcp.png", alt: "UDP vs TCP Comparison")
+        }
+        
+        @Steps {
+            @Step {
+                Understand use cases suitable for UDP.
+                
+                - Real-time games (position, state updates)
+                - VoIP / Video calls
+                - DNS queries
+                - IoT sensor data
+                
+                @Code(name: "UDPUseCases.swift", file: "03-01-udp-usecases.swift")
+            }
+            
+            @Step {
+                Configure UDP parameters.
+                `.udp` provides default UDP settings.
+                
+                @Code(name: "UDPParameters.swift", file: "03-02-udp-params.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UDP Message Transmission") {
+        @ContentAndMedia {
+            In UDP, each send() becomes a single datagram.
+            The maximum datagram size is typically 65,507 bytes,
+            but MTU (Maximum Transmission Unit) should be considered.
+        }
+        
+        @Steps {
+            @Step {
+                Create a UDP connection.
+                Unlike TCP, there's no connection establishment process.
+                
+                @Code(name: "UDPConnection.swift", file: "03-03-udp-connection.swift")
+            }
+            
+            @Step {
+                Send a datagram.
+                Each send call becomes an independent packet.
+                
+                @Code(name: "UDPSend.swift", file: "03-04-udp-send.swift")
+            }
+            
+            @Step {
+                Send multiple messages quickly.
+                Unlike TCP, each message is delivered independently.
+                
+                @Code(name: "UDPBurst.swift", file: "03-05-udp-burst.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UDP Message Reception") {
+        @ContentAndMedia {
+            UDP reception uses `receiveMessage()`.
+            Each call returns one datagram.
+        }
+        
+        @Steps {
+            @Step {
+                Receive a datagram.
+                You can check sender information from the context.
+                
+                @Code(name: "UDPReceive.swift", file: "03-06-udp-receive.swift")
+            }
+            
+            @Step {
+                Configure a loop for continuous reception.
+                Call receive again after each reception.
+                
+                @Code(name: "UDPReceiveLoop.swift", file: "03-07-udp-receive-loop.swift")
+            }
+            
+            @Step {
+                Implement timeout.
+                Since UDP doesn't guarantee responses, timeout handling is important.
+                
+                @Code(name: "UDPTimeout.swift", file: "03-08-udp-timeout.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Game State Synchronization Example") {
+        @ContentAndMedia {
+            Create a simple example of synchronizing
+            player positions in a real-time game.
+            
+            Utilize UDP's speed while adding
+            logic to handle loss.
+        }
+        
+        @Steps {
+            @Step {
+                Define a struct representing player state.
+                Manage order with sequence numbers.
+                
+                @Code(name: "PlayerState.swift", file: "03-09-player-state.swift")
+            }
+            
+            @Step {
+                Serialize and send state.
+                Using Codable is convenient.
+                
+                @Code(name: "StateSend.swift", file: "03-10-state-send.swift")
+            }
+            
+            @Step {
+                Check sequence numbers on the receiving side.
+                Ignore old packets and apply only the latest state.
+                
+                @Code(name: "StateReceive.swift", file: "03-11-state-receive.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why use sequence numbers in UDP?
+            
+            @Choice(isCorrect: false) {
+                To automatically recover from packet loss
+                
+                @Justification(reaction: "Think again.") {
+                    UDP doesn't retransmit packets.
+                    Sequence numbers are used for order determination.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To ignore late-arriving old packets
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Since UDP doesn't guarantee order,
+                    sequence numbers let you use only the latest data.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To use as a key for encryption
+                
+                @Justification(reaction: "Not quite.") {
+                    Sequence numbers are unrelated to encryption.
+                    Security is handled by DTLS.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is UDP more suitable than TCP?
+            
+            @Choice(isCorrect: false) {
+                File download
+                
+                @Justification(reaction: "Incorrect.") {
+                    File downloads require all data to be delivered accurately,
+                    so TCP is suitable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Chat message transmission
+                
+                @Justification(reaction: "Think again.") {
+                    Chat messages shouldn't be lost,
+                    so TCP is typically used.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Character position updates in real-time games
+                
+                @Justification(reaction: "Correct! ✨") {
+                    In real-time games, the latest position is important,
+                    and latency is more critical than some packet loss.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,259 @@
+@Tutorial(time: 25) {
+    @Intro(title: "PDF Editing (Add/Delete Pages)") {
+        Learn how to edit document structure by adding, 
+        deleting, and rearranging pages in PDFDocument.
+        
+        @Image(source: "pdf-editing.png", alt: "PDF Editing")
+    }
+    
+    @Section(title: "Adding Pages") {
+        @ContentAndMedia {
+            Add new pages to a PDFDocument.
+            
+            You can insert blank pages, image-based pages, 
+            or pages from other PDFs.
+        }
+        
+        @Steps {
+            @Step {
+                Add a blank page to a PDFDocument.
+                Create a PDFPage and call the insert method.
+                
+                @Code(name: "InsertBlankPage.swift", file: "10-01-insert-blank.swift")
+            }
+            
+            @Step {
+                Create a PDF page from an image and add it.
+                Convert UIImage to a PDF page.
+                
+                @Code(name: "InsertImagePage.swift", file: "10-02-insert-image.swift")
+            }
+            
+            @Step {
+                Copy pages from another PDF document and add them.
+                Merge multiple PDFs into one.
+                
+                @Code(name: "MergePDFs.swift", file: "10-03-merge.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Deleting Pages") {
+        @ContentAndMedia {
+            Delete pages from a document.
+            
+            Use removePage(at:) for index-based deletion, 
+            or batch delete pages matching certain conditions.
+        }
+        
+        @Steps {
+            @Step {
+                Delete a page at a specific index.
+                Note that indices are renumbered after deletion.
+                
+                @Code(name: "RemovePage.swift", file: "10-04-remove.swift")
+            }
+            
+            @Step {
+                Delete multiple pages at once.
+                Delete in reverse order to prevent index changes.
+                
+                @Code(name: "RemoveMultiple.swift", file: "10-05-remove-multiple.swift")
+            }
+            
+            @Step {
+                Show a confirmation dialog before deletion.
+                Prevent accidental data loss.
+                
+                @Code(name: "ConfirmDelete.swift", file: "10-06-confirm.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Reordering Pages") {
+        @ContentAndMedia {
+            Rearrange page order.
+            
+            Change page positions via drag and drop 
+            or programmatically.
+        }
+        
+        @Steps {
+            @Step {
+                Move a page to a different position.
+                Remove the page and insert it at the new location.
+                
+                @Code(name: "MovePage.swift", file: "10-07-move.swift")
+            }
+            
+            @Step {
+                Implement drag and drop in the thumbnail grid.
+                Use UICollectionViewDragDelegate and DropDelegate.
+                
+                @Code(name: "DragDropReorder.swift", file: "10-08-drag-drop.swift")
+            }
+            
+            @Step {
+                Reverse page order.
+                Invert the page order of the entire document.
+                
+                @Code(name: "ReversePages.swift", file: "10-09-reverse.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Rotating Pages") {
+        @ContentAndMedia {
+            Rotate pages in 90-degree increments.
+            
+            Useful for correcting misoriented pages 
+            in scanned documents.
+        }
+        
+        @Steps {
+            @Step {
+                Rotate a single page.
+                Modify the rotation property.
+                
+                @Code(name: "RotatePage.swift", file: "10-10-rotate.swift")
+            }
+            
+            @Step {
+                Rotate all pages at once.
+                Correct the orientation of the entire document.
+                
+                @Code(name: "RotateAll.swift", file: "10-11-rotate-all.swift")
+            }
+            
+            @Step {
+                Implement a rotation UI.
+                Control rotation with buttons or gestures.
+                
+                @Code(name: "RotateUI.swift", file: "10-12-rotate-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving Edits") {
+        @ContentAndMedia {
+            Save the edited document.
+            
+            Overwrite the original file or save as a new file, 
+            and consider undo/redo functionality.
+        }
+        
+        @Steps {
+            @Step {
+                Save the edited PDF to a file.
+                Use the write(to:) method.
+                
+                @Code(name: "SaveEdited.swift", file: "10-13-save.swift")
+            }
+            
+            @Step {
+                Save as a new file to preserve the original.
+                Implement "Save As" functionality.
+                
+                @Code(name: "SaveAsNew.swift", file: "10-14-save-as.swift")
+            }
+            
+            @Step {
+                Implement undo functionality with UndoManager.
+                Allow reversing page editing operations.
+                
+                @Code(name: "UndoSupport.swift", file: "10-15-undo.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which method inserts a page into PDFDocument?
+            
+            @Choice(isCorrect: true) {
+                insert(_:at:)
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Use document.insert(page, at: index) to 
+                    insert a page at a specific position.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                addPage(_:at:)
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the page insertion API in PDFDocument.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                append(_:)
+                
+                @Justification(reaction: "Not quite.") {
+                    There is a method that inserts at a specified position.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the best way to avoid index change issues when deleting pages?
+            
+            @Choice(isCorrect: false) {
+                Delete in order from the front.
+                
+                @Justification(reaction: "This will cause problems.") {
+                    Deleting front pages changes the indices of later pages, 
+                    which may result in deleting unintended pages.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Delete in reverse order from the back.
+                
+                @Justification(reaction: "That's right! ✨") {
+                    Deleting in reverse order keeps the indices 
+                    of pages to be deleted unchanged.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Delete all pages at once.
+                
+                @Justification(reaction: "Not practical.") {
+                    Selective deletion is needed in most cases.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property sets the rotation angle of a PDFPage?
+            
+            @Choice(isCorrect: true) {
+                rotation
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Use page.rotation = 90 to rotate 
+                    a page by 90 degrees.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                angle
+                
+                @Justification(reaction: "There is no such property.") {
+                    Check the rotation-related property name in PDFPage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                orientation
+                
+                @Justification(reaction: "Not quite.") {
+                    orientation has a different meaning. 
+                    Check the property for rotation angle.
+                }
+            }
+        }
+    }
+}

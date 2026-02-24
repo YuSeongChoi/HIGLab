@@ -1,0 +1,166 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Video Recording") {
+        Record video using AVCaptureMovieFileOutput.
+        Implement start/stop recording, timer, and file saving.
+    }
+    
+    @Section(title: "Movie File Output Setup") {
+        @ContentAndMedia {
+            AVCaptureMovieFileOutput records video and audio to a file.
+            It saves in QuickTime format (.mov) and can be converted to other formats later.
+        }
+        
+        @Steps {
+            @Step {
+                Add movieOutput property to CameraManager.
+                This is the output object for video recording.
+                
+                @Code(name: "CameraManager.swift", file: "04-movie-output-property.swift")
+            }
+            
+            @Step {
+                Add movieOutput to the session.
+                Audio input is also needed to capture both video and audio.
+                
+                @Code(name: "CameraManager.swift", file: "04-add-movie-output.swift")
+            }
+            
+            @Step {
+                Add audio input.
+                Capture audio from the microphone to record with video.
+                
+                @Code(name: "CameraManager.swift", file: "04-add-audio-input.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting and Stopping Recording") {
+        @ContentAndMedia {
+            Implement start and stop recording functionality.
+            Record to a temporary file and move to photo library on completion.
+        }
+        
+        @Steps {
+            @Step {
+                Implement AVCaptureFileOutputRecordingDelegate.
+                Receive recording start and completion events.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-delegate.swift")
+            }
+            
+            @Step {
+                Implement the start recording method.
+                Record to the temporary directory with a unique filename.
+                
+                @Code(name: "CameraManager.swift", file: "04-start-recording.swift")
+            }
+            
+            @Step {
+                Implement the stop recording method.
+                Calling stopRecording() triggers the delegate callback.
+                
+                @Code(name: "CameraManager.swift", file: "04-stop-recording.swift")
+            }
+            
+            @Step {
+                Implement recording completion handling.
+                Save the video to the photo library.
+                
+                @Code(name: "CameraManager.swift", file: "04-finish-recording.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Recording UI Implementation") {
+        @ContentAndMedia {
+            Implement recording button, timer, and status display with SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                Add property to track recording state.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-state.swift")
+            }
+            
+            @Step {
+                Implement recording timer.
+                Display recording time in real-time.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-timer.swift")
+            }
+            
+            @Step {
+                Implement recording button UI.
+                Display in red when recording.
+                
+                @Code(name: "CameraView.swift", file: "04-record-button.swift")
+            }
+            
+            @Step {
+                Add recording time display UI.
+                Display elapsed time in minutes:seconds format.
+                
+                @Code(name: "CameraView.swift", file: "04-timer-display.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the default file format for videos recorded with AVCaptureMovieFileOutput?
+            
+            @Choice(isCorrect: true) {
+                QuickTime (.mov)
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AVCaptureMovieFileOutput records in QuickTime format by default.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MP4 (.mp4)
+                
+                @Justification(reaction: "Think again.") {
+                    MP4 can be created through conversion later.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVI (.avi)
+                
+                @Justification(reaction: "Think again.") {
+                    AVFoundation doesn't support AVI format by default.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which delegate method is called when video recording is complete?
+            
+            @Choice(isCorrect: false) {
+                `fileOutput(_:didStartRecordingTo:from:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This method is called when recording starts.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `fileOutput(_:didFinishRecordingTo:from:error:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    This method is called when recording is complete, providing access to the saved video through the file URL.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `fileOutput(_:didOutputSampleBuffer:from:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This is a delegate method for AVCaptureVideoDataOutput.
+                }
+            }
+        }
+    }
+}

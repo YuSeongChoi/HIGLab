@@ -1,0 +1,191 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Saving & Loading Drawings") {
+        Learn various methods to save PKDrawing data 
+        to files and restore them.
+        
+        @Image(source: "save-load.png", alt: "Saving and Loading Drawings")
+    }
+    
+    @Section(title: "PKDrawing Serialization") {
+        @ContentAndMedia {
+            PKDrawing can be serialized to Data,
+            enabling file storage and network transmission.
+            
+            - **dataRepresentation()**: PKDrawing → Data
+            - **init(data:)**: Data → PKDrawing
+            
+            This data is in Apple's proprietary format,
+            but is compatible across all Apple platforms.
+        }
+        
+        @Steps {
+            @Step {
+                The basic method to convert PKDrawing to Data.
+                This Data can be saved to files or databases.
+                
+                @Code(name: "DrawingToData.swift", file: "04-01-to-data.swift")
+            }
+            
+            @Step {
+                Restore PKDrawing from Data.
+                Corrupted data may throw an error.
+                
+                @Code(name: "DataToDrawing.swift", file: "04-02-from-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving to the File System") {
+        @ContentAndMedia {
+            Save and load drawing data as local files.
+            Using the Documents directory also includes them 
+            in iCloud backups.
+        }
+        
+        @Steps {
+            @Step {
+                Use FileManager to save 
+                drawings to files.
+                
+                @Code(name: "SaveToFile.swift", file: "04-03-save-file.swift")
+            }
+            
+            @Step {
+                Load drawings from saved files.
+                Create an empty drawing if the file doesn't exist.
+                
+                @Code(name: "LoadFromFile.swift", file: "04-04-load-file.swift")
+            }
+            
+            @Step {
+                Create a DrawingDocument class 
+                for managing drawing files.
+                
+                @Code(name: "DrawingDocument.swift", file: "04-05-document.swift")
+            }
+        }
+    }
+    
+    @Section(title: "iCloud Synchronization") {
+        @ContentAndMedia {
+            You can sync drawings across multiple devices 
+            using iCloud.
+            
+            - **NSUbiquitousKeyValueStore**: Small data
+            - **CloudKit**: Large drawings
+            - **iCloud Drive**: File-based synchronization
+        }
+        
+        @Steps {
+            @Step {
+                Use NSUbiquitousKeyValueStore to 
+                sync simple drawings. (1MB limit)
+                
+                @Code(name: "iCloudKeyValue.swift", file: "04-06-icloud-kv.swift")
+            }
+            
+            @Step {
+                Use iCloud Drive for larger drawings.
+                Implement a UIDocument subclass.
+                
+                @Code(name: "iCloudDocument.swift", file: "04-07-icloud-doc.swift")
+            }
+            
+            @Step {
+                Implement auto-save functionality.
+                Save whenever the drawing changes.
+                
+                @Code(name: "AutoSave.swift", file: "04-08-autosave.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Core Data Integration") {
+        @ContentAndMedia {
+            Using Core Data allows you to efficiently manage 
+            drawings along with metadata.
+            
+            Store PKDrawing as a Binary Data attribute.
+        }
+        
+        @Steps {
+            @Step {
+                Add a drawing attribute to the Core Data entity.
+                Enabling External Storage option 
+                efficiently stores large files.
+                
+                @Code(name: "DrawingEntity.swift", file: "04-09-core-data.swift")
+            }
+            
+            @Step {
+                Create an NSManagedObject extension for 
+                convenient PKDrawing access.
+                
+                @Code(name: "DrawingEntityExtension.swift", file: "04-10-entity-ext.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What format does PKDrawing.dataRepresentation() return?
+            
+            @Choice(isCorrect: true) {
+                Apple proprietary binary format
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    PKDrawing uses its own binary format,
+                    which is compatible across all Apple platforms.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                JSON
+                
+                @Justification(reaction: "No.") {
+                    PKDrawing uses a binary format.
+                    JSON conversion requires separate handling.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                SVG
+                
+                @Justification(reaction: "Incorrect.") {
+                    SVG conversion is not supported.
+                    Export to image is possible though.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the most appropriate delegate method for implementing auto-save?
+            
+            @Choice(isCorrect: true) {
+                canvasViewDrawingDidChange
+                
+                @Justification(reaction: "Correct! ✨") {
+                    This method is called whenever the drawing changes,
+                    making it suitable as an auto-save trigger.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                canvasViewDidBeginUsingTool
+                
+                @Justification(reaction: "Not suitable.") {
+                    Starting to use a tool is different from completing a drawing.
+                    This could save too frequently.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                viewDidAppear
+                
+                @Justification(reaction: "No.") {
+                    View appearance and drawing changes are separate.
+                }
+            }
+        }
+    }
+}

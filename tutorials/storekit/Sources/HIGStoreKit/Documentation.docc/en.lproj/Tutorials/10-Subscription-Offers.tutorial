@@ -1,0 +1,218 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Subscription Discount Offers") {
+        Implement new user acquisition and churn prevention strategies
+        using Introductory Offers, Promotional Offers, and Offer Codes.
+    }
+    
+    @Section(title: "Introductory Offers") {
+        @ContentAndMedia {
+            Learn how to offer first-payment discounts, free trials,
+            and upfront discounts to new subscribers.
+            
+            Offer Types:
+            - **Free Trial**: Free trial period
+            - **Pay As You Go**: Start with a discounted price
+            - **Pay Up Front**: Discounted upfront payment
+            
+            Eligibility: Users subscribing to the subscription group for the first time
+        }
+        
+        @Steps {
+            @Step {
+                Implement logic to check and display Introductory Offer eligibility.
+                @Code(name: "IntroOfferManager.swift", file: "10-intro-offer-manager.swift")
+            }
+            @Step {
+                Implement UI to display offer information on the paywall.
+                @Code(name: "IntroOfferView.swift", file: "10-intro-offer-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Promotional Offers") {
+        @ContentAndMedia {
+            Provide special discounts to existing or churned subscribers.
+            Security is enhanced as signatures must be generated on the server.
+            
+            Use Cases:
+            - Retention offers before subscription cancellation
+            - Re-acquisition of expired subscribers
+            - Win-back campaigns
+        }
+        
+        @Steps {
+            @Step {
+                Load Promotional Offers configured in App Store Connect.
+                @Code(name: "PromoOfferManager.swift", file: "10-promo-offer-manager.swift")
+            }
+            @Step {
+                Implement code to generate offer signatures on the server.
+                @Code(name: "OfferSigner.swift", file: "10-offer-signer.swift")
+            }
+            @Step {
+                Proceed with the purchase using the signed offer.
+                @Code(name: "PromoOfferPurchase.swift", file: "10-promo-purchase.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Offer Codes") {
+        @ContentAndMedia {
+            Distribute codes generated in App Store Connect to users
+            and accept code input within the app to apply discounts.
+            
+            Distribution Channels:
+            - Email marketing campaigns
+            - Partnership promotions
+            - Influencer collaborations
+        }
+        
+        @Steps {
+            @Step {
+                Implement offer code input UI and processing logic.
+                @Code(name: "OfferCodeView.swift", file: "10-offer-code-view.swift")
+            }
+            @Step {
+                Display the system code input sheet using presentOfferCodeRedeemSheet.
+                @Code(name: "OfferCodeRedemption.swift", file: "10-offer-code-redemption.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Offer Strategy & HIG Guidelines") {
+        @ContentAndMedia {
+            Learn effective offer strategies and UX design methods
+            that comply with Apple HIG guidelines.
+            
+            HIG Core Principles:
+            - Clearly display offer terms
+            - Provide comparison between regular and discounted prices
+            - Inform price after offer ends
+        }
+        
+        @Steps {
+            @Step {
+                Implement an HIG-compliant offer display component.
+                @Code(name: "OfferBadgeView.swift", file: "10-offer-badge-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Who can receive an Introductory Offer?
+            
+            @Choice(isCorrect: true) {
+                Users subscribing to the subscription group for the first time
+                
+                @Justification(reaction: "Correct!") {
+                    Introductory Offers can only be used once per subscription group.
+                    Users must not have previously subscribed to the same group.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All users who install the app for the first time
+                
+                @Justification(reaction: "Think again!") {
+                    Eligibility is determined by subscription group history, not app installation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Users who cancelled their subscription
+                
+                @Justification(reaction: "Not quite!") {
+                    For previous subscribers, you should use Promotional Offers instead.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is required for a Promotional Offer purchase?
+            
+            @Choice(isCorrect: false) {
+                Only the offer ID is needed.
+                
+                @Justification(reaction: "Think again!") {
+                    Additional verification is required for security.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                A signature generated on the server
+                
+                @Justification(reaction: "Excellent!") {
+                    Promotional Offers require a server-generated signature
+                    to prevent abuse.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The user's Apple ID password
+                
+                @Justification(reaction: "Not quite!") {
+                    Payment authentication is handled automatically by StoreKit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you use an Offer Code in the app?
+            
+            @Choice(isCorrect: false) {
+                Validate the code directly and apply the discount.
+                
+                @Justification(reaction: "Think again!") {
+                    Code validation and application are handled by Apple.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Call presentOfferCodeRedeemSheet.
+                
+                @Justification(reaction: "Correct!") {
+                    Use the system sheet to securely receive code input,
+                    and Apple handles validation and application.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can only be applied in App Store Connect.
+                
+                @Justification(reaction: "Not quite!") {
+                    You can also provide a code input UI within the app.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the correct way to display offers according to HIG guidelines?
+            
+            @Choice(isCorrect: false) {
+                Display only the discounted price prominently.
+                
+                @Justification(reaction: "Think again!") {
+                    Regular price and comparison information should also be provided.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Clearly show the regular price, discounted price, and price after offer ends.
+                
+                @Justification(reaction: "Excellent!") {
+                    HIG requires transparent price information.
+                    Users must be able to clearly understand the offer terms.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Offer period doesn't need to be displayed.
+                
+                @Justification(reaction: "Not quite!") {
+                    Offer period and terms must be clearly stated.
+                }
+            }
+        }
+    }
+}

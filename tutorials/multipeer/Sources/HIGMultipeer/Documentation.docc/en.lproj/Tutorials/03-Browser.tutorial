@@ -1,0 +1,169 @@
+@Tutorial(time: 12) {
+    @Intro(title: "MCNearbyServiceBrowser (Discovery)") {
+        Use MCNearbyServiceBrowser to 
+        discover nearby peers that are advertising.
+    }
+    
+    @Section(title: "Understanding MCNearbyServiceBrowser") {
+        @ContentAndMedia {
+            MCNearbyServiceBrowser discovers nearby devices 
+            advertising the same service type.
+            
+            You can send connection invitations to discovered peers.
+        }
+        
+        @Steps {
+            @Step {
+                Let's examine the basic structure of MCNearbyServiceBrowser.
+                
+                Initialize with PeerID and service type.
+                
+                @Code(name: "BrowserManager.swift", file: "03-01-browser-basic.swift")
+            }
+            
+            @Step {
+                Implement MCNearbyServiceBrowserDelegate.
+                
+                Handle peer discovery and loss events.
+                
+                @Code(name: "BrowserManager.swift", file: "03-02-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Peer Discovery") {
+        @ContentAndMedia {
+            Start the browser to discover nearby peers,
+            and manage the list of discovered peers.
+        }
+        
+        @Steps {
+            @Step {
+                Create an array to store discovered peers.
+                
+                Automate UI updates with @Published property.
+                
+                @Code(name: "BrowserManager.swift", file: "03-03-peers-array.swift")
+            }
+            
+            @Step {
+                Implement a method to start browsing.
+                
+                @Code(name: "BrowserManager.swift", file: "03-04-start-browsing.swift")
+            }
+            
+            @Step {
+                Implement the peer discovery callback.
+                
+                discoveryInfo contains additional information sent by the advertiser.
+                
+                @Code(name: "BrowserManager.swift", file: "03-05-found-peer.swift")
+            }
+            
+            @Step {
+                Implement the peer loss callback.
+                
+                Remove peers that stopped advertising or moved out of range.
+                
+                @Code(name: "BrowserManager.swift", file: "03-06-lost-peer.swift")
+            }
+            
+            @Step {
+                Implement a method to stop browsing.
+                
+                @Code(name: "BrowserManager.swift", file: "03-07-stop-browsing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Discovery UI") {
+        @ContentAndMedia {
+            Display discovered peers in a SwiftUI list,
+            allowing selection to send connection invitations.
+        }
+        
+        @Steps {
+            @Step {
+                Create a View to display the peer list.
+                
+                @Code(name: "BrowserView.swift", file: "03-08-browser-view.swift")
+            }
+            
+            @Step {
+                Create a peer row component.
+                
+                Display discovery info and connection status.
+                
+                @Code(name: "PeerRow.swift", file: "03-09-peer-row.swift")
+            }
+            
+            @Step {
+                Add functionality to send connection invitations.
+                
+                Implement the invitePeer method.
+                
+                @Code(name: "BrowserManager.swift", file: "03-10-invite.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What delegate method is called when MCNearbyServiceBrowser discovers a peer?
+            
+            @Choice(isCorrect: true) {
+                `browser(_:foundPeer:withDiscoveryInfo:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    When a new peer is discovered, this method is called 
+                    with peer information and discovery info.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `browser(_:didDiscover:)`
+                
+                @Justification(reaction: "Think again.") {
+                    That's not the correct method name.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `didFindPeer(_:)`
+                
+                @Justification(reaction: "Think again.") {
+                    Such a method does not exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does the discoveryInfo parameter contain?
+            
+            @Choice(isCorrect: false) {
+                The peer's IP address
+                
+                @Justification(reaction: "Think again.") {
+                    IP addresses are managed internally by the framework.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                An additional information dictionary set by the advertiser
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The discoveryInfo set when creating MCNearbyServiceAdvertiser 
+                    is passed through the foundPeer callback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Connection encryption key
+                
+                @Justification(reaction: "Think again.") {
+                    Encryption keys are different from discoveryInfo.
+                }
+            }
+        }
+    }
+}

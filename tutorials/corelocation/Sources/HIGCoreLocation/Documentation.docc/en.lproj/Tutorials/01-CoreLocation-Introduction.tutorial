@@ -1,0 +1,223 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Introduction to CoreLocation & Permissions") {
+        Understand the core concepts of the CoreLocation framework
+        and iOS's location permission system.
+    }
+    
+    @Section(title: "What is CoreLocation?") {
+        @ContentAndMedia {
+            CoreLocation is Apple's location services framework.
+            It determines the device's geographic location by combining
+            GPS, Wi-Fi, cellular, and Bluetooth.
+            
+            In a running tracker, we use it to record routes
+            and calculate distance and speed.
+        }
+        
+        @Steps {
+            @Step {
+                **Core Features of CoreLocation**
+                
+                - Current location retrieval (one-shot)
+                - Continuous location updates
+                - Background location tracking
+                - Geofencing (region monitoring)
+                - iBeacon detection
+                - Visit monitoring
+                
+                @Code(name: "CoreLocationFeatures.swift", file: "01-features.swift")
+            }
+            
+            @Step {
+                **Location Accuracy Options**
+                
+                CoreLocation provides various accuracy levels.
+                Higher accuracy consumes more battery, so choose based on your needs.
+                
+                - `kCLLocationAccuracyBestForNavigation`: Best for navigation
+                - `kCLLocationAccuracyBest`: Best accuracy (suitable for running)
+                - `kCLLocationAccuracyNearestTenMeters`: 10-meter accuracy
+                - `kCLLocationAccuracyHundredMeters`: 100-meter accuracy
+                
+                @Code(name: "AccuracyOptions.swift", file: "01-accuracy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding Location Permissions") {
+        @ContentAndMedia {
+            iOS strictly manages location permissions for user privacy.
+            Apps must request permission and obtain user consent.
+        }
+        
+        @Steps {
+            @Step {
+                **Permission Levels**
+                
+                iOS location permissions consist of 3 levels:
+                
+                1. **Not Determined**: Not yet requested
+                2. **When In Use**: Allowed only while using the app
+                3. **Always**: Allowed even in background
+                
+                A running tracker needs "Always" permission
+                for background tracking.
+                
+                @Code(name: "AuthorizationStatus.swift", file: "01-auth-status.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                To request location permissions, you must specify
+                the usage purpose in Info.plist.
+                
+                - `NSLocationWhenInUseUsageDescription`
+                - `NSLocationAlwaysAndWhenInUseUsageDescription`
+                
+                Clearly explain **why** location access is needed.
+                
+                @Code(name: "Info.plist", file: "01-info-plist.swift")
+            }
+            
+            @Step {
+                **Permission Request Best Practices**
+                
+                - Don't request permissions at app launch
+                - Request when the user needs location-based features
+                - Show a pre-permission screen explaining why it's needed
+                - Request "Always" only after obtaining "When In Use"
+                
+                @Code(name: "BestPractices.swift", file: "01-best-practices.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating the Running Tracker Project") {
+        @ContentAndMedia {
+            Now let's create the actual Xcode project and
+            prepare to use CoreLocation.
+        }
+        
+        @Steps {
+            @Step {
+                Create a new project in Xcode.
+                Select **App** template and **SwiftUI** for the interface.
+                Name the project `RunningTracker`.
+                
+                @Code(name: "RunningTrackerApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                Add location permission descriptions to Info.plist.
+                
+                Add the "Location When In Use Usage Description" and
+                "Location Always and When In Use Usage Description" keys
+                with user-facing descriptions.
+                
+                @Code(name: "LocationPermission.swift", file: "01-permission-strings.swift")
+            }
+            
+            @Step {
+                Create the basic app structure.
+                Display the location service status in `ContentView`
+                and add a permission request button.
+                
+                @Code(name: "ContentView.swift", file: "01-content-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What permission level is required for background location tracking in iOS?
+            
+            @Choice(isCorrect: false) {
+                When In Use
+                
+                @Justification(reaction: "Not quite") {
+                    "When In Use" only allows location access when the app is in the foreground.
+                    Background tracking requires "Always" permission.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Always
+                
+                @Justification(reaction: "Correct!") {
+                    "Always" permission is needed for the app to
+                    continuously track location in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No permission needed
+                
+                @Justification(reaction: "Not quite") {
+                    Location services in iOS always require user consent.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if you don't add location permission descriptions to Info.plist?
+            
+            @Choice(isCorrect: true) {
+                The app crashes or the permission request is ignored
+                
+                @Justification(reaction: "Correct!") {
+                    iOS rejects permission requests or force-terminates the app
+                    if the usage purpose is not specified in Info.plist.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A default description is automatically shown
+                
+                @Justification(reaction: "Not quite") {
+                    iOS does not provide default descriptions.
+                    Developers must specify them.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Permission is automatically granted
+                
+                @Justification(reaction: "Not quite") {
+                    Location permissions always require explicit user consent.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What location accuracy is appropriate for a running tracker app?
+            
+            @Choice(isCorrect: true) {
+                kCLLocationAccuracyBest
+                
+                @Justification(reaction: "Correct!") {
+                    To accurately record running routes, the best accuracy is needed.
+                    kCLLocationAccuracyBest maximizes GPS usage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                kCLLocationAccuracyHundredMeters
+                
+                @Justification(reaction: "Not quite") {
+                    100-meter accuracy is too imprecise for recording running routes.
+                    Routes may appear blurry.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                kCLLocationAccuracyKilometer
+                
+                @Justification(reaction: "Not quite") {
+                    1km accuracy is used for rough area identification.
+                    It's not suitable for running tracking at all.
+                }
+            }
+        }
+    }
+}

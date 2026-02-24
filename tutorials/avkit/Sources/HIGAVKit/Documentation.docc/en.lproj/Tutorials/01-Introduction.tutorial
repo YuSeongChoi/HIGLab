@@ -1,0 +1,175 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to AVKit") {
+        Understand the core concepts of the AVKit framework 
+        and its relationship with AVFoundation.
+        
+        @Image(source: "avkit-intro.png", alt: "AVKit Overview")
+    }
+    
+    @Section(title: "What is AVKit?") {
+        @ContentAndMedia {
+            AVKit is a high-level UI framework for 
+            media playback on Apple platforms.
+            
+            - **System Consistency**: Provides native player UI
+            - **Automatic Features**: Built-in PiP, AirPlay support
+            - **Accessibility**: Default VoiceOver, Dynamic Type support
+            
+            @Image(source: "avkit-architecture.png", alt: "AVKit Architecture")
+        }
+        
+        @Steps {
+            @Step {
+                Import AVKit into your project.
+                Both frameworks are needed as AVKit 
+                internally uses AVFoundation.
+                
+                @Code(name: "AVKitImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Explore the main components of AVKit.
+                
+                - `AVPlayerViewController`: iOS/tvOS video player
+                - `AVPlayerView`: macOS video player
+                - `AVRoutePickerView`: AirPlay device selection
+                - `AVPictureInPictureController`: PiP control
+                
+                @Code(name: "AVKitComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Relationship with AVFoundation") {
+        @ContentAndMedia {
+            AVFoundation is the core engine for media processing,
+            and AVKit is the UI layer that wraps it.
+            
+            | Framework | Role | Usage Examples |
+            |-----------|------|----------------|
+            | AVFoundation | Media loading, decoding, playback | AVPlayer, AVAsset |
+            | AVKit | UI and user interaction | AVPlayerViewController |
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayer is the core playback engine of AVFoundation.
+                It loads media files and manages playback state.
+                
+                @Code(name: "AVPlayer.swift", file: "01-03-avplayer.swift")
+            }
+            
+            @Step {
+                AVPlayerItem represents a media item to be played.
+                Multiple AVPlayerItems can be swapped on a single AVPlayer.
+                
+                @Code(name: "AVPlayerItem.swift", file: "01-04-playeritem.swift")
+            }
+            
+            @Step {
+                AVAsset contains metadata and track information of media files.
+                You can retrieve information like video duration, resolution, and subtitles.
+                
+                @Code(name: "AVAsset.swift", file: "01-05-avasset.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Supported Media Formats") {
+        @ContentAndMedia {
+            AVKit can play various video and audio formats 
+            supported on Apple platforms.
+            
+            - **Video**: H.264, HEVC (H.265), ProRes
+            - **Audio**: AAC, MP3, ALAC, FLAC
+            - **Containers**: MP4, MOV, M4V, HLS
+        }
+        
+        @Steps {
+            @Step {
+                The most basic way to play local files.
+                Load a video file included in the Bundle.
+                
+                @Code(name: "LocalPlayback.swift", file: "01-06-local.swift")
+            }
+            
+            @Step {
+                Streaming playback from remote URLs is also possible.
+                HTTP Live Streaming (HLS) provides adaptive streaming.
+                
+                @Code(name: "RemotePlayback.swift", file: "01-07-remote.swift")
+            }
+            
+            @Step {
+                Check for unsupported formats and 
+                implement appropriate error handling.
+                
+                @Code(name: "FormatCheck.swift", file: "01-08-format-check.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which best describes the relationship between AVKit and AVFoundation?
+            
+            @Choice(isCorrect: false) {
+                AVKit is for audio only, AVFoundation is for video only.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Both frameworks handle audio and video.
+                    AVFoundation handles low-level processing, AVKit handles UI.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                AVFoundation is the media engine, AVKit is the UI layer.
+                
+                @Justification(reaction: "Exactly right! 🎬") {
+                    AVFoundation loads and decodes media,
+                    AVKit provides the UI to present it to users.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They are completely independent frameworks.
+                
+                @Justification(reaction: "Think again.") {
+                    AVKit internally uses AVFoundation's AVPlayer.
+                    They are closely related.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the biggest advantage of using AVPlayerViewController?
+            
+            @Choice(isCorrect: false) {
+                It provides faster video decoding performance.
+                
+                @Justification(reaction: "Not quite.") {
+                    Decoding performance is handled by AVFoundation.
+                    AVPlayerViewController only provides UI.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It provides system-consistent UI and automatic features (PiP, AirPlay).
+                
+                @Justification(reaction: "Correct! ✨") {
+                    AVPlayerViewController provides UI consistent with the OS
+                    and automatically supports features like PiP and AirPlay.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's easier to create custom UI.
+                
+                @Justification(reaction: "It's actually the opposite.") {
+                    For custom UI, you need to use AVPlayerLayer directly.
+                    AVPlayerViewController provides standard UI.
+                }
+            }
+        }
+    }
+}

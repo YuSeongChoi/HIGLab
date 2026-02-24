@@ -1,0 +1,197 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Audio Session Management") {
+        Manage your app's audio behavior with AVAudioSession.
+        Implement categories, modes, and interruption handling.
+    }
+    
+    @Section(title: "AVAudioSession Basics") {
+        @ContentAndMedia {
+            AVAudioSession manages the interaction between app and system audio.
+            Determines how to coexist with other apps' audio.
+            
+            **Main Categories:**
+            - `.playback`: Music playback, mutes other apps
+            - `.record`: Recording only
+            - `.playAndRecord`: Simultaneous playback and recording
+            - `.ambient`: Mixing with other app audio
+        }
+        
+        @Steps {
+            @Step {
+                Get the AVAudioSession singleton.
+                Access shared instance with sharedInstance().
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-shared-instance.swift")
+            }
+            
+            @Step {
+                Set category and mode.
+                Camera apps typically use .playAndRecord.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-set-category.swift")
+            }
+            
+            @Step {
+                Activate the session.
+                Claim audio hardware with setActive(true).
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-activate-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Categories and Options") {
+        @ContentAndMedia {
+            Combine categories and options for the situation.
+            Control Bluetooth headset, speaker output, etc.
+        }
+        
+        @Steps {
+            @Step {
+                Understand category options.
+                - `.mixWithOthers`: Mix with other apps
+                - `.allowBluetooth`: Allow Bluetooth input
+                - `.defaultToSpeaker`: Output to speaker
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-category-options.swift")
+            }
+            
+            @Step {
+                Set up session for video recording.
+                Enable both microphone input and speaker output.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-video-recording-session.swift")
+            }
+            
+            @Step {
+                Set up session for voice memo.
+                Apply settings optimized for recording.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-voice-memo-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Interruption Handling") {
+        @ContentAndMedia {
+            Handle interruptions from phone calls, alarms, etc.
+            Respond appropriately to interruption start and end.
+        }
+        
+        @Steps {
+            @Step {
+                Register for interruption notification.
+                Detect interruption events with NotificationCenter.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-interruption-observer.swift")
+            }
+            
+            @Step {
+                Handle interruption start.
+                Pause recording/playback.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-begin.swift")
+            }
+            
+            @Step {
+                Handle interruption end.
+                Check shouldResume option and resume.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-end.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Route Change Handling") {
+        @ContentAndMedia {
+            Respond to audio route changes like headphone connect/disconnect.
+        }
+        
+        @Steps {
+            @Step {
+                Register for route change notification.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-route-change-observer.swift")
+            }
+            
+            @Step {
+                Check route change reason.
+                Pause playback when headphones are disconnected.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-route-change.swift")
+            }
+            
+            @Step {
+                Check current audio route.
+                Get input/output device information.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-current-route.swift")
+            }
+            
+            @Step {
+                Display audio route in UI.
+                Show connected device icons.
+                
+                @Code(name: "AudioRouteView.swift", file: "09-route-ui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which AVAudioSession category is for simultaneous recording and playback?
+            
+            @Choice(isCorrect: false) {
+                `.playback`
+                
+                @Justification(reaction: "Think again.") {
+                    .playback supports playback only.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.playAndRecord`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The .playAndRecord category enables simultaneous playback and recording.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.record`
+                
+                @Justification(reaction: "Think again.") {
+                    .record supports recording only.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which category option is for playing along with other apps' audio?
+            
+            @Choice(isCorrect: true) {
+                `.mixWithOthers`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The mixWithOthers option mixes with other apps' audio.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.duckOthers`
+                
+                @Justification(reaction: "Think again.") {
+                    duckOthers lowers other apps' volume.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.allowBluetooth`
+                
+                @Justification(reaction: "Think again.") {
+                    allowBluetooth is an option to allow Bluetooth input.
+                }
+            }
+        }
+    }
+}

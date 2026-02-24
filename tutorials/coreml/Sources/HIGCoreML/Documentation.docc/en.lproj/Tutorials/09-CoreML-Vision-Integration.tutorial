@@ -1,0 +1,207 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Core ML + Vision Integration") {
+        Combine Vision's high-level APIs with Core ML to implement
+        complex vision tasks like object detection and segmentation.
+    }
+    
+    @Section(title: "Vision High-Level APIs") {
+        @ContentAndMedia {
+            Vision provides various features beyond image classification,
+            including face detection, barcode recognition, and text recognition.
+        }
+        
+        @Steps {
+            @Step {
+                **Vision Request Types**
+                
+                - VNDetectFaceRectanglesRequest: Face detection
+                - VNRecognizeTextRequest: OCR (text recognition)
+                - VNDetectBarcodesRequest: Barcode/QR recognition
+                - VNCoreMLRequest: Custom Core ML models
+                
+                @Code(name: "VisionRequestTypes.swift", file: "09-vision-requests.swift")
+            }
+            
+            @Step {
+                **Request Chaining**
+                
+                Execute multiple Vision requests simultaneously
+                for compound analysis.
+                
+                @Code(name: "RequestChaining.swift", file: "09-request-chaining.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Object Detection") {
+        @ContentAndMedia {
+            Find multiple objects in an image
+            and return their locations (Bounding Box) and labels.
+        }
+        
+        @Steps {
+            @Step {
+                **Preparing Object Detection Model**
+                
+                Convert object detection models like YOLO or SSD
+                to Core ML format for use.
+                
+                @Code(name: "ObjectDetectionModel.swift", file: "09-object-model.swift")
+            }
+            
+            @Step {
+                **Parsing VNRecognizedObjectObservation**
+                
+                Extract boundingBox, labels, and confidence
+                from detected objects. Note coordinate system conversion.
+                
+                @Code(name: "ObjectObservation.swift", file: "09-object-observation.swift")
+            }
+            
+            @Step {
+                **Drawing Bounding Boxes**
+                
+                Draw boxes around detected objects
+                for visual display.
+                
+                @Code(name: "BoundingBoxView.swift", file: "09-bounding-box.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Image Segmentation") {
+        @ContentAndMedia {
+            Classify images at the pixel level to implement
+            background removal, person isolation, and more.
+        }
+        
+        @Steps {
+            @Step {
+                **Segmentation Models**
+                
+                Segmentation models like DeepLab and U-Net
+                predict a class for each pixel.
+                
+                @Code(name: "SegmentationModel.swift", file: "09-seg-model.swift")
+            }
+            
+            @Step {
+                **VNGeneratePersonSegmentationRequest**
+                
+                Apple's built-in person segmentation feature
+                available in iOS 15+.
+                
+                @Code(name: "PersonSegmentation.swift", file: "09-person-seg.swift")
+            }
+            
+            @Step {
+                **Applying Masks**
+                
+                Apply segmentation masks to original images
+                to make backgrounds transparent or add effects.
+                
+                @Code(name: "ApplyMask.swift", file: "09-apply-mask.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Camera Analysis") {
+        @ContentAndMedia {
+            Integrate AVCaptureSession with Vision
+            to analyze real-time camera feeds.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting up Camera Session**
+                
+                Configure AVCaptureSession
+                and prepare to receive video output.
+                
+                @Code(name: "CameraSession.swift", file: "09-camera-session.swift")
+            }
+            
+            @Step {
+                **Using VNSequenceRequestHandler**
+                
+                Use VNSequenceRequestHandler when analyzing
+                consecutive frames. Better for object tracking.
+                
+                @Code(name: "SequenceHandler.swift", file: "09-sequence-handler.swift")
+            }
+            
+            @Step {
+                **Camera Preview + Overlay**
+                
+                Display camera preview and analysis result
+                overlays together in SwiftUI.
+                
+                @Code(name: "CameraOverlay.swift", file: "09-camera-overlay.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What handler is recommended for analyzing consecutive video frames?
+            
+            @Choice(isCorrect: true) {
+                VNSequenceRequestHandler — maintains state between frames
+                
+                @Justification(reaction: "Correct!") {
+                    VNSequenceRequestHandler maintains state between
+                    consecutive frames, which is advantageous for object tracking.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VNImageRequestHandler — for single images
+                
+                @Justification(reaction: "Not quite") {
+                    VNImageRequestHandler is suitable for single image analysis.
+                    VNSequenceRequestHandler is recommended for video frames.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use MLModel directly
+                
+                @Justification(reaction: "Not quite") {
+                    Using Vision automates preprocessing
+                    and frame management.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What segmentation feature does Apple provide by default in iOS 15+?
+            
+            @Choice(isCorrect: true) {
+                VNGeneratePersonSegmentationRequest
+                
+                @Justification(reaction: "That's right!") {
+                    Apple provides person segmentation
+                    by default with a pre-trained model.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only VNCoreMLRequest is available
+                
+                @Justification(reaction: "Not quite") {
+                    Starting iOS 15, VNGeneratePersonSegmentationRequest
+                    provides built-in person segmentation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Segmentation is not supported
+                
+                @Justification(reaction: "Not quite") {
+                    Person segmentation is provided by default in iOS 15+.
+                    Used for background blur and similar effects.
+                }
+            }
+        }
+    }
+}

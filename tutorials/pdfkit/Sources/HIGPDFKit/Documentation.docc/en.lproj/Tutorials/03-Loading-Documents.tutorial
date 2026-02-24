@@ -1,0 +1,239 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Loading PDF Documents") {
+        Learn how to load PDF documents from various sources 
+        and properly handle loading states and errors.
+        
+        @Image(source: "loading-documents.png", alt: "Loading PDF Documents")
+    }
+    
+    @Section(title: "Loading from Bundle") {
+        @ContentAndMedia {
+            This is the simplest way to load PDF files included in your app.
+            
+            Get the URL with Bundle.main.url(forResource:withExtension:) 
+            and create a document with PDFDocument(url:).
+        }
+        
+        @Steps {
+            @Step {
+                Get the URL of a PDF file from the Bundle.
+                Use guard let to handle cases where the file doesn't exist.
+                
+                @Code(name: "LoadFromBundle.swift", file: "03-01-bundle.swift")
+            }
+            
+            @Step {
+                Handle cases with different extensions or files in subdirectories.
+                Use the subdirectory parameter.
+                
+                @Code(name: "BundleSubdirectory.swift", file: "03-02-subdirectory.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading from URL") {
+        @ContentAndMedia {
+            You can load PDFs from remote servers or cloud storage.
+            
+            Download asynchronously using URLSession 
+            and create a PDFDocument from the Data.
+        }
+        
+        @Steps {
+            @Step {
+                Download PDF data asynchronously with URLSession.
+                Use the async/await pattern.
+                
+                @Code(name: "LoadFromURL.swift", file: "03-03-remote-url.swift")
+            }
+            
+            @Step {
+                Display download progress.
+                Implement URLSessionDownloadDelegate or 
+                use the bytes(from:) method.
+                
+                @Code(name: "DownloadProgress.swift", file: "03-04-progress.swift")
+            }
+            
+            @Step {
+                Save downloaded PDFs to cache 
+                for offline access.
+                
+                @Code(name: "CacheDocument.swift", file: "03-05-cache.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading from File Picker") {
+        @ContentAndMedia {
+            Allow users to select PDF files directly.
+            
+            Use UIDocumentPickerViewController or 
+            SwiftUI's fileImporter.
+        }
+        
+        @Steps {
+            @Step {
+                Use UIDocumentPickerViewController in UIKit.
+                Specify the public.pdf UTI to select only PDFs.
+                
+                @Code(name: "DocumentPicker.swift", file: "03-06-document-picker.swift")
+            }
+            
+            @Step {
+                Use the fileImporter modifier in SwiftUI.
+                Implement the same functionality with more concise code.
+                
+                @Code(name: "FileImporter.swift", file: "03-07-file-importer.swift")
+            }
+            
+            @Step {
+                Handle security-scoped URL access for selected files.
+                You must call startAccessingSecurityScopedResource().
+                
+                @Code(name: "SecurityScopedAccess.swift", file: "03-08-security-scope.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading from Data") {
+        @ContentAndMedia {
+            You can create a PDFDocument from a Data object in memory.
+            
+            Useful for processing data from network responses, 
+            clipboard, or shared from other apps.
+        }
+        
+        @Steps {
+            @Step {
+                Create a PDFDocument directly from Data.
+                
+                @Code(name: "LoadFromData.swift", file: "03-09-from-data.swift")
+            }
+            
+            @Step {
+                Process Base64-encoded PDF data.
+                A format commonly used in web API responses.
+                
+                @Code(name: "Base64PDF.swift", file: "03-10-base64.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Error Handling and Validation") {
+        @ContentAndMedia {
+            Proper error handling for PDF loading failures is essential.
+            
+            Inform users about various failure causes such as 
+            corrupted files, unsupported versions, encryption, etc.
+        }
+        
+        @Steps {
+            @Step {
+                Validate document loading results and 
+                display appropriate error messages.
+                
+                @Code(name: "ValidateDocument.swift", file: "03-11-validate.swift")
+            }
+            
+            @Step {
+                Request password input for encrypted PDFs.
+                Check the isEncrypted and isLocked states.
+                
+                @Code(name: "HandleEncrypted.swift", file: "03-12-encrypted.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which method must be called before reading a file from a security-scoped URL?
+            
+            @Choice(isCorrect: true) {
+                startAccessingSecurityScopedResource()
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    URLs obtained from Document Picker are security-scoped URLs, 
+                    and you must call this method to access the file.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                requestFileAccess()
+                
+                @Justification(reaction: "There is no such method.") {
+                    iOS uses a specific method name for 
+                    security-scoped URL access.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                grantReadPermission()
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact API related to 
+                    URL security-scoped access.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which modifier allows users to select a PDF file in SwiftUI?
+            
+            @Choice(isCorrect: false) {
+                .documentPicker
+                
+                @Justification(reaction: "Not quite.") {
+                    SwiftUI has a modifier with a different name.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .fileImporter
+                
+                @Justification(reaction: "That's right! ✨") {
+                    The fileImporter modifier displays a file selection UI 
+                    and returns the URL of the selected file.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .filePicker
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact SwiftUI modifier name.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property checks if a PDFDocument is password-protected?
+            
+            @Choice(isCorrect: false) {
+                isProtected
+                
+                @Justification(reaction: "There is no such property.") {
+                    Check the exact property name in PDFDocument.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                isEncrypted
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    isEncrypted indicates whether the document is encrypted, 
+                    and isLocked indicates whether it's currently locked.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                hasPassword
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the exact terminology used 
+                    in the PDFDocument API.
+                }
+            }
+        }
+    }
+}

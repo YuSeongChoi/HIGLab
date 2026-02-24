@@ -1,0 +1,206 @@
+@Tutorial(time: 20) {
+    @Intro(title: "TCP Connection") {
+        Learn how to create reliable TCP connections with NWConnection
+        and send/receive data.
+        
+        @Image(source: "tcp-connection.png", alt: "TCP Connection Diagram")
+    }
+    
+    @Section(title: "Creating a TCP Connection") {
+        @ContentAndMedia {
+            TCP (Transmission Control Protocol) is a protocol that
+            guarantees reliable data transmission.
+            
+            - **Connection-oriented**: Establishes connection via 3-way handshake
+            - **Order guaranteed**: Packets arrive in order
+            - **Error recovery**: Automatic retransmission of lost packets
+            - **Flow control**: Prevents receiver buffer overflow
+            
+            @Image(source: "tcp-handshake.png", alt: "TCP 3-way handshake")
+        }
+        
+        @Steps {
+            @Step {
+                Configure NWParameters for TCP connection.
+                `.tcp` provides default TCP parameters.
+                
+                @Code(name: "TCPParameters.swift", file: "02-01-tcp-params.swift")
+            }
+            
+            @Step {
+                Create an NWConnection and register a state handler.
+                You can monitor connection state changes.
+                
+                @Code(name: "TCPConnection.swift", file: "02-02-tcp-connection.swift")
+            }
+            
+            @Step {
+                Start the connection and specify a DispatchQueue.
+                All callbacks execute on the specified queue.
+                
+                @Code(name: "TCPStart.swift", file: "02-03-tcp-start.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sending Data") {
+        @ContentAndMedia {
+            Once a TCP connection is established, use the `send()` method to transmit data.
+            
+            The Network framework supports various forms including Data, DispatchData,
+            and custom protocol messages.
+        }
+        
+        @Steps {
+            @Step {
+                Convert a string to Data and send it.
+                Using UTF-8 encoding is common.
+                
+                @Code(name: "SendString.swift", file: "02-04-send-string.swift")
+            }
+            
+            @Step {
+                You can specify the message meaning with `contentContext`.
+                `.finalMessage` means the connection will close after this message.
+                
+                @Code(name: "SendContext.swift", file: "02-05-send-context.swift")
+            }
+            
+            @Step {
+                Handle errors in the send completion callback.
+                Appropriate retry logic is needed for network errors.
+                
+                @Code(name: "SendCompletion.swift", file: "02-06-send-completion.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Receiving Data") {
+        @ContentAndMedia {
+            Use the `receive()` method to receive data sent by the peer.
+            
+            There are two receiving methods:
+            - `receive(minimumIncompleteLength:maximumLength:)`: Byte-based
+            - `receiveMessage()`: Message-based (when using framing)
+        }
+        
+        @Steps {
+            @Step {
+                Receive data in bytes.
+                minimum is the minimum wait amount, maximum is the maximum receive amount.
+                
+                @Code(name: "ReceiveBytes.swift", file: "02-07-receive-bytes.swift")
+            }
+            
+            @Step {
+                Call receive recursively for continuous reception.
+                You can keep receiving data while the connection is maintained.
+                
+                @Code(name: "ReceiveLoop.swift", file: "02-08-receive-loop.swift")
+            }
+            
+            @Step {
+                Convert received data to a string.
+                You must use the same encoding as the peer.
+                
+                @Code(name: "ReceiveString.swift", file: "02-09-receive-string.swift")
+            }
+        }
+    }
+    
+    @Section(title: "P2P Chat Client") {
+        @ContentAndMedia {
+            Combine everything learned so far to
+            create a simple chat client.
+            
+            Encapsulate connection, sending, and receiving into a single class.
+        }
+        
+        @Steps {
+            @Step {
+                Create the basic structure of the ChatClient class.
+                Manage NWConnection as a property.
+                
+                @Code(name: "ChatClient.swift", file: "02-10-chat-client.swift")
+            }
+            
+            @Step {
+                Use Combine or callbacks for UI updates
+                based on connection state.
+                
+                @Code(name: "ChatClientCallback.swift", file: "02-11-chat-callback.swift")
+            }
+            
+            @Step {
+                Clean up resources when disconnecting.
+                Set connection to nil after calling `cancel()`.
+                
+                @Code(name: "ChatClientDisconnect.swift", file: "02-12-chat-disconnect.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the role of the isComplete parameter in NWConnection's send method?
+            
+            @Choice(isCorrect: false) {
+                It indicates that data transmission is complete.
+                
+                @Justification(reaction: "Think again.") {
+                    Transmission completion is known via the completion handler.
+                    isComplete indicates the end of the message.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It indicates that this data is the last of the current message.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    isComplete: true means the current message is complete.
+                    If framing is set, it's recognized as a message boundary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's a signal to close the connection.
+                
+                @Justification(reaction: "Not quite.") {
+                    Use the cancel() method or
+                    .finalMessage contentContext to close the connection.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is TCP more suitable than UDP?
+            
+            @Choice(isCorrect: true) {
+                When all data like chat messages must arrive in order
+                
+                @Justification(reaction: "Correct! ✨") {
+                    TCP has order guarantee and retransmission features,
+                    making it suitable when all data must be delivered accurately.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When fast position updates are needed in real-time games
+                
+                @Justification(reaction: "Incorrect.") {
+                    Real-time games value the latest data and latency is critical,
+                    so UDP is often more suitable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When some data loss is acceptable in live streaming
+                
+                @Justification(reaction: "Think again.") {
+                    UDP is more suitable when data loss is acceptable.
+                    TCP's retransmission can actually cause delays.
+                }
+            }
+        }
+    }
+}

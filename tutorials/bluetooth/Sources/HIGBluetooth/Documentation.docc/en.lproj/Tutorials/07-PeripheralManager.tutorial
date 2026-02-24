@@ -1,0 +1,203 @@
+@Tutorial(time: 25) {
+    @Intro(title: "CBPeripheralManager (Peripheral Role)") {
+        Learn how to make your app act as a BLE Peripheral
+        and advertise services to other devices.
+    }
+    
+    @Section(title: "Setting Up CBPeripheralManager") {
+        @ContentAndMedia {
+            CBPeripheralManager allows your app to function as a BLE Peripheral.
+            It defines services, advertises them, and responds to Central requests.
+            
+            **Use Cases:**
+            - App-to-app BLE communication
+            - Custom BLE accessory simulation
+            - iBeacon advertising
+        }
+        
+        @Steps {
+            @Step {
+                Create a CBPeripheralManager instance.
+                The pattern is similar to CBCentralManager.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-01-peripheral-manager.swift")
+            }
+            
+            @Step {
+                Implement the Delegate to detect state changes.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-02-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Services & Characteristics") {
+        @ContentAndMedia {
+            Define custom GATT services using
+            CBMutableService and CBMutableCharacteristic.
+            
+            **Characteristic Configuration:**
+            - properties: Supported operations (read, write, notify, etc.)
+            - permissions: Access permissions
+            - value: Initial value (nil for dynamic values)
+        }
+        
+        @Steps {
+            @Step {
+                Define custom service UUIDs.
+                Use 128-bit UUIDs.
+                
+                @Code(name: "ServiceDefinition.swift", file: "07-03-service-definition.swift")
+            }
+            
+            @Step {
+                Create Characteristics and add them to the service.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-04-create-characteristic.swift")
+            }
+            
+            @Step {
+                Register the service with PeripheralManager.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-05-add-service.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting Advertisement") {
+        @ContentAndMedia {
+            Advertise the service with `startAdvertising`.
+            Centrals can detect this advertisement and connect.
+        }
+        
+        @Steps {
+            @Step {
+                Start advertising.
+                Include service UUID and local name.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-06-start-advertising.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Central Requests") {
+        @ContentAndMedia {
+            When a Central connects and sends read/write requests,
+            handle them in delegate callbacks.
+        }
+        
+        @Steps {
+            @Step {
+                Handle read requests.
+                Send the current value as a response.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-07-read-request.swift")
+            }
+            
+            @Step {
+                Handle write requests.
+                Store the received data and respond.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-08-write-request.swift")
+            }
+            
+            @Step {
+                Detect subscription state changes and
+                send notifications when values change.
+                
+                @Code(name: "PeripheralManager.swift", file: "07-09-update-value.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How can a Central discover a service created with CBPeripheralManager?
+            
+            @Choice(isCorrect: false) {
+                It's automatically discovered when the service is added
+                
+                @Justification(reaction: "Advertising is required.") {
+                    After service registration, you must call startAdvertising
+                    for other devices to discover it.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                You must call startAdvertising
+                
+                @Justification(reaction: "Correct! 📢") {
+                    After adding services, start advertising with startAdvertising
+                    so Centrals can discover it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Central connects directly via IP
+                
+                @Justification(reaction: "BLE doesn't use IP.") {
+                    BLE discovers devices through advertising and scanning.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when you set value to nil when creating CBMutableCharacteristic?
+            
+            @Choice(isCorrect: true) {
+                You provide the value dynamically for each read request
+                
+                @Justification(reaction: "Correct! 🔄") {
+                    When value is nil, you generate and respond with
+                    the value in the didReceiveRead callback.
+                    Suitable for real-time sensor data.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An error occurs
+                
+                @Justification(reaction: "nil is a valid value.") {
+                    nil is intentionally used for dynamic value provision.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Empty Data is returned
+                
+                @Justification(reaction: "You must provide it in the callback.") {
+                    Provide the value using respond() in didReceiveRead.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is updateValue(_:for:onSubscribedCentrals:) used for?
+            
+            @Choice(isCorrect: false) {
+                Update the Characteristic definition
+                
+                @Justification(reaction: "Incorrect.") {
+                    To change service structure, you need to re-add the service.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Send notifications to subscribed Centrals
+                
+                @Justification(reaction: "Correct! 🔔") {
+                    Sends a push notification with the new value
+                    to Centrals that have subscribed to notify.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only change the local value
+                
+                @Justification(reaction: "Notifications are also sent.") {
+                    It changes the value and notifies subscribers.
+                }
+            }
+        }
+    }
+}

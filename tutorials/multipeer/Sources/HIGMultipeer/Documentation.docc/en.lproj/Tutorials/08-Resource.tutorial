@@ -1,0 +1,189 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Resource Transfer (Files)") {
+        Use MCSession's sendResource method to 
+        transfer files to other peers.
+    }
+    
+    @Section(title: "Understanding Resource Transfer") {
+        @ContentAndMedia {
+            sendResource transfers files specified by URL.
+            
+            Large files can be transferred efficiently,
+            and you can track transfer progress.
+        }
+        
+        @Steps {
+            @Step {
+                Let's examine the structure of the sendResource method.
+                
+                @Code(name: "ResourceManager.swift", file: "08-01-resource-basic.swift")
+            }
+            
+            @Step {
+                Track progress with the Progress object.
+                
+                @Code(name: "ResourceManager.swift", file: "08-02-progress.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing File Transfer") {
+        @ContentAndMedia {
+            Transfer files from the documents directory or 
+            images from the photo library.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a file transfer method.
+                
+                @Code(name: "ResourceManager.swift", file: "08-03-send-file.swift")
+            }
+            
+            @Step {
+                Transfer an image.
+                
+                Save to a temporary file before sending.
+                
+                @Code(name: "ResourceManager.swift", file: "08-04-send-image.swift")
+            }
+            
+            @Step {
+                Send to multiple peers simultaneously.
+                
+                @Code(name: "ResourceManager.swift", file: "08-05-send-multiple.swift")
+            }
+            
+            @Step {
+                Implement a progress UI.
+                
+                @Code(name: "TransferProgressView.swift", file: "08-06-progress-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing File Reception") {
+        @ContentAndMedia {
+            Handle file reception in the session delegate.
+            
+            There are callbacks for reception start, progress, and completion.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the reception start callback.
+                
+                Check resourceName and Progress.
+                
+                @Code(name: "ResourceManager.swift", file: "08-07-receive-start.swift")
+            }
+            
+            @Step {
+                Implement the reception completion callback.
+                
+                Move the file from localURL to permanent storage.
+                
+                @Code(name: "ResourceManager.swift", file: "08-08-receive-finish.swift")
+            }
+            
+            @Step {
+                Handle reception errors.
+                
+                @Code(name: "ResourceManager.swift", file: "08-09-receive-error.swift")
+            }
+            
+            @Step {
+                Save the received file to the documents directory.
+                
+                @Code(name: "ResourceManager.swift", file: "08-10-save-file.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completing the File Sharing App") {
+        @ContentAndMedia {
+            Integrate file selection, transfer, and reception 
+            to implement complete file sharing functionality.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a file selection UI.
+                
+                @Code(name: "FilePickerView.swift", file: "08-11-file-picker.swift")
+            }
+            
+            @Step {
+                Manage transfer/reception history.
+                
+                @Code(name: "TransferHistory.swift", file: "08-12-history.swift")
+            }
+            
+            @Step {
+                Complete the file sharing main View.
+                
+                @Code(name: "FileShareView.swift", file: "08-13-share-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What object does the sendResource method return?
+            
+            @Choice(isCorrect: true) {
+                Progress
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The Progress object allows you to track transfer progress 
+                    and cancel the transfer.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bool
+                
+                @Justification(reaction: "Think again.") {
+                    sendResource returns Progress.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Data
+                
+                @Justification(reaction: "Think again.") {
+                    It returns Progress, not file data.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you be careful about with localURL upon reception completion?
+            
+            @Choice(isCorrect: false) {
+                It persists permanently
+                
+                @Justification(reaction: "Think again.") {
+                    localURL is a temporary location, so you must move it.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It's a temporary location, so you must move it to permanent storage
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    localURL is in a temporary directory,
+                    so you must move it to the documents directory to preserve it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's automatically saved to the app bundle
+                
+                @Justification(reaction: "Think again.") {
+                    The app bundle is read-only.
+                }
+            }
+        }
+    }
+}

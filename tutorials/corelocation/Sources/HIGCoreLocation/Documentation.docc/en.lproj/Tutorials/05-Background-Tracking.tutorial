@@ -1,0 +1,229 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Background Location Tracking") {
+        Implement background location tracking to continue
+        recording running routes even when the app is in the background.
+    }
+    
+    @Section(title: "Background Permission Setup") {
+        @ContentAndMedia {
+            To track location in the background,
+            additional configuration is needed along with "Always" permission.
+            
+            You must enable Background Modes in Xcode project settings.
+        }
+        
+        @Steps {
+            @Step {
+                **Enabling Background Modes**
+                
+                In Project Target → Signing & Capabilities,
+                click "+ Capability" and add "Background Modes".
+                
+                Check "Location updates".
+                
+                @Code(name: "Info.plist", file: "05-background-modes.swift")
+            }
+            
+            @Step {
+                **Verify Info.plist**
+                
+                Enabling Background Modes automatically adds
+                the `UIBackgroundModes` key to Info.plist.
+                
+                Verify that `location` value is included.
+                
+                @Code(name: "BackgroundConfig.swift", file: "05-info-plist.swift")
+            }
+            
+            @Step {
+                **Always Permission Request Timing**
+                
+                Before background tracking, check if "Always" permission exists,
+                and request permission upgrade if not.
+                
+                @Code(name: "LocationManager.swift", file: "05-always-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Background Location Tracking") {
+        @ContentAndMedia {
+            Setting `allowsBackgroundLocationUpdates` to true
+            allows location updates to continue when the app goes to background.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting allowsBackgroundLocationUpdates**
+                
+                Set this property to true when starting location updates.
+                Background Modes **must** be enabled for this to work.
+                
+                @Code(name: "LocationManager.swift", file: "05-allows-background.swift")
+            }
+            
+            @Step {
+                **showsBackgroundLocationIndicator**
+                
+                Setting this property to true shows a blue location indicator
+                in the status bar, informing the user that
+                background tracking is active.
+                
+                Apple recommends this for transparency.
+                
+                @Code(name: "LocationManager.swift", file: "05-indicator.swift")
+            }
+            
+            @Step {
+                **pausesLocationUpdatesAutomatically**
+                
+                The system can automatically pause location updates
+                when it determines the user has stopped.
+                
+                It's recommended to disable this for running apps.
+                
+                @Code(name: "LocationManager.swift", file: "05-pauses.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Battery Efficiency and App Lifecycle") {
+        @ContentAndMedia {
+            Background location tracking consumes a lot of battery.
+            You must manage tracking appropriately based on the app lifecycle.
+        }
+        
+        @Steps {
+            @Step {
+                **Monitoring App State**
+                
+                Use NotificationCenter to detect when the app
+                transitions between background and foreground.
+                
+                @Code(name: "AppLifecycle.swift", file: "05-app-lifecycle.swift")
+            }
+            
+            @Step {
+                **Adjusting Accuracy on Background Transition**
+                
+                You can slightly reduce accuracy in the background
+                to reduce battery consumption.
+                
+                @Code(name: "LocationManager.swift", file: "05-bg-accuracy.swift")
+            }
+            
+            @Step {
+                **Cleanup When Run Ends**
+                
+                When the run ends, always disable background tracking
+                and stop location updates.
+                
+                @Code(name: "LocationManager.swift", file: "05-cleanup.swift")
+            }
+            
+            @Step {
+                **Displaying Background Tracking Status**
+                
+                Clearly show the user whether background tracking
+                is currently active.
+                
+                @Code(name: "TrackingStatusView.swift", file: "05-status-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What Background Mode is required for background location tracking?
+            
+            @Choice(isCorrect: true) {
+                Location updates
+                
+                @Justification(reaction: "Correct!") {
+                    The "Location updates" Background Mode must be enabled
+                    for the app to receive location updates in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Background fetch
+                
+                @Justification(reaction: "Not quite") {
+                    Background fetch is for periodically downloading content.
+                    "Location updates" is needed for location tracking.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Remote notifications
+                
+                @Justification(reaction: "Not quite") {
+                    Remote notifications is for push notification handling.
+                    It's not related to location tracking.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of showsBackgroundLocationIndicator?
+            
+            @Choice(isCorrect: true) {
+                Displays a blue location indicator in the status bar
+                
+                @Justification(reaction: "Correct!") {
+                    This indicator informs users that the app is
+                    tracking location in the background, increasing transparency.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Increases location accuracy
+                
+                @Justification(reaction: "Not quite") {
+                    This property only affects UI display.
+                    It's not related to accuracy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Reduces battery consumption
+                
+                @Justification(reaction: "Not quite") {
+                    The indicator is just a user interface element.
+                    It doesn't affect battery consumption.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why set pausesLocationUpdatesAutomatically to false?
+            
+            @Choice(isCorrect: true) {
+                To prevent tracking from stopping when the user pauses momentarily
+                
+                @Justification(reaction: "Correct!") {
+                    During a run, users may stop briefly at traffic lights, etc.
+                    If tracking stops then, the route could be broken.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To save more battery
+                
+                @Justification(reaction: "Not quite") {
+                    Setting to false means continuous tracking, which uses more battery.
+                    However, it's necessary for accurate route recording.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To increase accuracy
+                
+                @Justification(reaction: "Not quite") {
+                    This setting is not directly related to accuracy.
+                    It affects tracking continuity.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,214 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Picture in Picture") {
+        Support PiP mode so videos can be watched
+        during multitasking.
+        
+        @Image(source: "pip-overview.png", alt: "Picture in Picture")
+    }
+    
+    @Section(title: "PiP Basic Setup") {
+        @ContentAndMedia {
+            Picture in Picture (PiP) is a feature that plays
+            video in a small floating window.
+            
+            - iOS 14+ iPad and iPhone support
+            - Continue watching on home screen or other apps
+            - AVPlayerViewController has built-in support
+            
+            @Image(source: "pip-modes.png", alt: "PiP Modes")
+        }
+        
+        @Steps {
+            @Step {
+                Add Background Modes to Info.plist.
+                Enable "Audio, AirPlay, and Picture in Picture".
+                
+                @Code(name: "InfoPlist.swift", file: "04-01-info-plist.swift")
+            }
+            
+            @Step {
+                Configure the audio session appropriately.
+                Set to playback category for background playback.
+                
+                @Code(name: "AudioSession.swift", file: "04-02-audio-session.swift")
+            }
+            
+            @Step {
+                AVPlayerViewController's allowsPictureInPicturePlayback
+                is true by default. Disable if needed.
+                
+                @Code(name: "EnablePiP.swift", file: "04-03-enable-pip.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVPictureInPictureController") {
+        @ContentAndMedia {
+            To support PiP in custom players,
+            use AVPictureInPictureController directly.
+            
+            - For AVPlayerLayer-based custom players
+            - Programmatic PiP control
+            - State management through delegate
+        }
+        
+        @Steps {
+            @Step {
+                Check PiP support on current device with
+                AVPictureInPictureController.isPictureInPictureSupported().
+                
+                @Code(name: "CheckPiPSupport.swift", file: "04-04-check-support.swift")
+            }
+            
+            @Step {
+                Create an AVPictureInPictureController instance
+                and connect it to AVPlayerLayer.
+                
+                @Code(name: "CreatePiPController.swift", file: "04-05-create-controller.swift")
+            }
+            
+            @Step {
+                Control PiP programmatically with
+                startPictureInPicture() and stopPictureInPicture().
+                
+                @Code(name: "StartStopPiP.swift", file: "04-06-start-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PiP Delegate") {
+        @ContentAndMedia {
+            Implement AVPictureInPictureControllerDelegate
+            to respond to PiP state changes.
+            
+            - Detect PiP start/end
+            - Handle restoration
+            - Error handling
+        }
+        
+        @Steps {
+            @Step {
+                Adopt AVPictureInPictureControllerDelegate
+                and set the delegate.
+                
+                @Code(name: "PiPDelegate.swift", file: "04-07-pip-delegate.swift")
+            }
+            
+            @Step {
+                Detect start timing with
+                pictureInPictureControllerWillStartPictureInPicture and
+                didStartPictureInPicture.
+                
+                @Code(name: "PiPStart.swift", file: "04-08-pip-start.swift")
+            }
+            
+            @Step {
+                restoreUserInterfaceForPictureInPicture is called
+                when user taps the restore button in the PiP window.
+                
+                @Code(name: "PiPRestore.swift", file: "04-09-pip-restore.swift")
+            }
+            
+            @Step {
+                Update UI appropriately when PiP ends.
+                
+                @Code(name: "PiPStop.swift", file: "04-10-pip-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Automatic PiP Transition") {
+        @ContentAndMedia {
+            Automatically start PiP mode when
+            the app transitions to background.
+            
+            - canStartPictureInPictureAutomaticallyFromInline
+            - iOS 14.2+ support
+        }
+        
+        @Steps {
+            @Step {
+                Setting canStartPictureInPictureAutomaticallyFromInline to true
+                automatically starts PiP when going to home screen.
+                
+                @Code(name: "AutoPiP.swift", file: "04-11-auto-pip.swift")
+            }
+            
+            @Step {
+                Auto PiP works even when video is inline,
+                not fullscreen.
+                
+                @Code(name: "InlinePiP.swift", file: "04-12-inline-pip.swift")
+            }
+            
+            @Step {
+                There are cases where auto PiP should be disabled.
+                Consider for live streaming or ad playback.
+                
+                @Code(name: "DisableAutoPiP.swift", file: "04-13-disable-auto.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What Background Mode is required for PiP to work?
+            
+            @Choice(isCorrect: false) {
+                Background fetch
+                
+                @Justification(reaction: "Incorrect.") {
+                    Background fetch is for periodic data fetching.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Audio, AirPlay, and Picture in Picture
+                
+                @Justification(reaction: "Exactly right! 🎬") {
+                    This mode must be enabled for audio
+                    and PiP to work in background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Location updates
+                
+                @Justification(reaction: "Not quite.") {
+                    Location updates is for location tracking.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is restoreUserInterfaceForPictureInPicture called?
+            
+            @Choice(isCorrect: true) {
+                When user taps the restore button in the PiP window
+                
+                @Justification(reaction: "Correct! ✨") {
+                    In this method, you should restore the app's 
+                    fullscreen player UI and call the completion handler.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When PiP starts
+                
+                @Justification(reaction: "Check again.") {
+                    pictureInPictureControllerWillStartPictureInPicture
+                    is called when PiP starts.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When closing the PiP window
+                
+                @Justification(reaction: "Distinction needed.") {
+                    Closing PiP and restoring to app are different.
+                    Restore means returning to the app's player.
+                }
+            }
+        }
+    }
+}

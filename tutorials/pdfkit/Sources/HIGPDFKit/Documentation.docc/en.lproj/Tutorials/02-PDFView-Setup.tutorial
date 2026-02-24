@@ -1,0 +1,228 @@
+@Tutorial(time: 20) {
+    @Intro(title: "PDFView Setup") {
+        Integrate PDFView into your app and configure various display options 
+        to provide an optimal PDF reading experience.
+        
+        @Image(source: "pdfview-setup.png", alt: "PDFView Setup")
+    }
+    
+    @Section(title: "Using PDFView in UIKit") {
+        @ContentAndMedia {
+            PDFView is a subclass of UIView 
+            that can be used directly in UIKit apps.
+            
+            Place it using Auto Layout or frame-based layout, 
+            and assign a PDFDocument to the document property to display it immediately.
+        }
+        
+        @Steps {
+            @Step {
+                Add PDFView to a ViewController.
+                Set constraints to fill the entire screen.
+                
+                @Code(name: "PDFViewController.swift", file: "02-01-uikit-setup.swift")
+            }
+            
+            @Step {
+                Configure the basic properties of PDFView.
+                Set autoScales, displayMode, displayDirection, and more.
+                
+                @Code(name: "ConfigurePDFView.swift", file: "02-02-configure.swift")
+            }
+            
+            @Step {
+                Customize the appearance with backgroundColor and pageShadowsEnabled.
+                Use system colors for dark mode support.
+                
+                @Code(name: "PDFViewAppearance.swift", file: "02-03-appearance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Integrating PDFView in SwiftUI") {
+        @ContentAndMedia {
+            To use PDFView in SwiftUI, 
+            you need to wrap it with UIViewRepresentable.
+            
+            You can also handle PDFView delegate events using the Coordinator pattern.
+        }
+        
+        @Steps {
+            @Step {
+                Implement UIViewRepresentable to 
+                use PDFView in SwiftUI.
+                
+                @Code(name: "PDFKitView.swift", file: "02-04-swiftui-wrapper.swift")
+            }
+            
+            @Step {
+                Use @Binding to synchronize with SwiftUI state.
+                Bind the current page number bidirectionally.
+                
+                @Code(name: "PDFKitViewBinding.swift", file: "02-05-binding.swift")
+            }
+            
+            @Step {
+                Implement PDFViewDelegate with a Coordinator.
+                Handle events like page changes, scale changes, and more.
+                
+                @Code(name: "PDFViewCoordinator.swift", file: "02-06-coordinator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Display Mode Settings") {
+        @ContentAndMedia {
+            PDFView supports various display modes.
+            
+            - **singlePage**: Display one page at a time
+            - **singlePageContinuous**: Continuous vertical scrolling
+            - **twoUp**: Display two pages side by side
+            - **twoUpContinuous**: Continuous scrolling with two pages
+        }
+        
+        @Steps {
+            @Step {
+                Set the displayMode to determine page layout.
+                singlePage is suitable for book reading apps, continuous for document viewers.
+                
+                @Code(name: "DisplayMode.swift", file: "02-07-display-mode.swift")
+            }
+            
+            @Step {
+                Set the scroll direction with displayDirection.
+                Choose vertical (default) or horizontal.
+                
+                @Code(name: "DisplayDirection.swift", file: "02-08-direction.swift")
+            }
+            
+            @Step {
+                Enable autoScales to automatically zoom to fit the view size.
+                Limit the range with minScaleFactor and maxScaleFactor.
+                
+                @Code(name: "ScaleSettings.swift", file: "02-09-scale.swift")
+            }
+        }
+    }
+    
+    @Section(title: "User Interaction Settings") {
+        @ContentAndMedia {
+            PDFView supports various user interactions including 
+            pinch zoom, text selection, link clicking, and more.
+            
+            Each feature can be enabled/disabled individually.
+        }
+        
+        @Steps {
+            @Step {
+                Use enableDataDetectors to automatically detect 
+                phone numbers, URLs, etc. and make them tappable.
+                
+                @Code(name: "DataDetectors.swift", file: "02-10-data-detectors.swift")
+            }
+            
+            @Step {
+                Add gestures for interaction customization.
+                Double tap to zoom in/out, long press to show menu, etc.
+                
+                @Code(name: "CustomGestures.swift", file: "02-11-gestures.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which protocol is required to use PDFView in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                UIViewRepresentable
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    By implementing UIViewRepresentable, 
+                    you can use UIKit views in SwiftUI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                View
+                
+                @Justification(reaction: "Not quite.") {
+                    The View protocol is used for SwiftUI native views.
+                    A different protocol is needed for wrapping UIKit views.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ObservableObject
+                
+                @Justification(reaction: "Incorrect.") {
+                    ObservableObject is used for data models 
+                    and is not related to view wrapping.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which displayMode should you use to display two pages side by side 
+            with continuous scrolling?
+            
+            @Choice(isCorrect: false) {
+                twoUp
+                
+                @Justification(reaction: "Close but not quite.") {
+                    twoUp displays two pages side by side 
+                    but does not support continuous scrolling.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                twoUpContinuous
+                
+                @Justification(reaction: "That's right! ✨") {
+                    twoUpContinuous displays two pages side by side 
+                    with continuous scrolling capability.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                singlePageContinuous
+                
+                @Justification(reaction: "Incorrect.") {
+                    singlePageContinuous displays one page at a time 
+                    with continuous scrolling.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property in PDFView automatically detects phone numbers 
+            and URLs to make them tappable?
+            
+            @Choice(isCorrect: false) {
+                autoDetectLinks
+                
+                @Justification(reaction: "There is no such property.") {
+                    Please check the exact property name.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                enableDataDetectors
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Setting enableDataDetectors to true 
+                    automatically detects phone numbers, URLs, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isUserInteractionEnabled
+                
+                @Justification(reaction: "Not quite.") {
+                    This is a basic UIView property 
+                    with a different function from data detection.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,163 @@
+@Tutorial(time: 30) {
+    @Intro(title: "App Store Server API") {
+        Validate subscription status from the server side
+        and handle real-time events with App Store Server Notifications.
+    }
+    
+    @Section(title: "Server API Overview") {
+        @ContentAndMedia {
+            The App Store Server API allows you to query subscription status
+            and receive real-time events like refunds and renewals from your server.
+            
+            Key Endpoints:
+            - Get Transaction History
+            - Get All Subscription Statuses
+            - Request a Test Notification
+            
+            Authentication: App Store Connect API Key + JWT
+        }
+        
+        @Steps {
+            @Step {
+                Generate a JWT on the server to handle API authentication.
+                @Code(name: "AppStoreJWT.swift", file: "09-appstore-jwt.swift")
+            }
+            @Step {
+                Call the subscription status query API.
+                @Code(name: "AppStoreAPI.swift", file: "09-appstore-api.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Server Notifications V2") {
+        @ContentAndMedia {
+            App Store Server Notifications V2 delivers
+            subscription events in real-time using JWS format.
+            
+            Key Notification Types:
+            - `SUBSCRIBED`: New subscription
+            - `DID_RENEW`: Renewal success
+            - `DID_FAIL_TO_RENEW`: Renewal failure
+            - `EXPIRED`: Expiration
+            - `REFUND`: Refund
+        }
+        
+        @Steps {
+            @Step {
+                Parse the Server Notification payload.
+                @Code(name: "NotificationHandler.swift", file: "09-notification-handler.swift")
+            }
+            @Step {
+                Implement business logic based on notification types.
+                @Code(name: "SubscriptionEventProcessor.swift", file: "09-event-processor.swift")
+            }
+        }
+    }
+    
+    @Section(title: "JWS Verification") {
+        @ContentAndMedia {
+            Verify the JWS (JSON Web Signature) sent by App Store
+            to prevent tampering.
+            
+            Verification is possible on both client and server:
+            - Client: StoreKit 2 verifies automatically
+            - Server: Apple certificate chain verification required
+        }
+        
+        @Steps {
+            @Step {
+                Decode the JWS payload and verify the signature.
+                @Code(name: "JWSVerifier.swift", file: "09-jws-verifier.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the data format of App Store Server Notifications V2?
+            
+            @Choice(isCorrect: false) {
+                Plain JSON
+                
+                @Justification(reaction: "Not quite!") {
+                    V2 uses a signed format for security.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                JWS (JSON Web Signature)
+                
+                @Justification(reaction: "Correct!") {
+                    V2 is transmitted signed in JWS format,
+                    verified using Apple's certificate chain.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Encrypted binary
+                
+                @Justification(reaction: "Think again!") {
+                    JWS is a Base64URL encoded text format.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you do when receiving a DID_FAIL_TO_RENEW notification?
+            
+            @Choice(isCorrect: false) {
+                Immediately block user access.
+                
+                @Justification(reaction: "That's too hasty!") {
+                    Apple retries multiple times during the billing retry period.
+                    Immediate blocking leads to poor user experience.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Apply a grace period and guide the user to update payment information.
+                
+                @Justification(reaction: "Excellent!") {
+                    According to HIG guidelines, provide a grace period
+                    and guide users to update their payment information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Take no action.
+                
+                @Justification(reaction: "Think again!") {
+                    Users need appropriate guidance when renewal fails.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is required for App Store Server API authentication?
+            
+            @Choice(isCorrect: false) {
+                App Store Connect login session
+                
+                @Justification(reaction: "Think again!") {
+                    The server API uses token-based authentication, not sessions.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                JWT generated with App Store Connect API Key
+                
+                @Justification(reaction: "Correct!") {
+                    Include a JWT signed with your Private Key in the Authorization header for authentication.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                User's Apple ID
+                
+                @Justification(reaction: "Not quite!") {
+                    The Server API authenticates with developer credentials.
+                }
+            }
+        }
+    }
+}

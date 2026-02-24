@@ -1,0 +1,210 @@
+@Tutorial(time: 20) {
+    @Intro(title: "AirPlay Support") {
+        Stream video to Apple TV or AirPlay-compatible devices
+        via AirPlay.
+        
+        @Image(source: "airplay-overview.png", alt: "AirPlay")
+    }
+    
+    @Section(title: "AirPlay Basic Setup") {
+        @ContentAndMedia {
+            AirPlay is a technology that wirelessly streams
+            media to compatible devices on your local network.
+            
+            - Apple TV
+            - AirPlay-compatible smart TVs
+            - HomePod (audio)
+            - Mac (display)
+            
+            @Image(source: "airplay-devices.png", alt: "AirPlay Devices")
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayerViewController supports AirPlay
+                by default. The AirPlay button appears
+                automatically in the controls.
+                
+                @Code(name: "DefaultAirPlay.swift", file: "05-01-default-airplay.swift")
+            }
+            
+            @Step {
+                Control AirPlay support with AVPlayer's
+                allowsExternalPlayback property.
+                
+                @Code(name: "AllowExternal.swift", file: "05-02-allow-external.swift")
+            }
+            
+            @Step {
+                For DRM-protected content, use externalProtectionEnabled
+                to support AirPlay while maintaining security.
+                
+                @Code(name: "ExternalProtection.swift", file: "05-03-protection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVRoutePickerView") {
+        @ContentAndMedia {
+            To add AirPlay device selection UI to custom players,
+            use AVRoutePickerView.
+            
+            - System-style AirPlay button
+            - Automatic device selection popup
+            - Active state indicator
+        }
+        
+        @Steps {
+            @Step {
+                Add AVRoutePickerView to your UI.
+                Tapping shows the AirPlay device selection menu.
+                
+                @Code(name: "RoutePickerView.swift", file: "05-04-route-picker.swift")
+            }
+            
+            @Step {
+                To use AVRoutePickerView in SwiftUI,
+                wrap it with UIViewRepresentable.
+                
+                @Code(name: "SwiftUIRoutePicker.swift", file: "05-05-swiftui-picker.swift")
+            }
+            
+            @Step {
+                Detect device selection UI show/dismiss events
+                with AVRoutePickerViewDelegate.
+                
+                @Code(name: "RoutePickerDelegate.swift", file: "05-06-picker-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Detecting External Playback") {
+        @ContentAndMedia {
+            Detect when playing via AirPlay
+            and adjust app UI appropriately.
+            
+            - Show placeholder on local screen
+            - Enable battery saving mode
+            - Display additional information
+        }
+        
+        @Steps {
+            @Step {
+                Observe the isExternalPlaybackActive property
+                to detect AirPlay playback state.
+                
+                @Code(name: "DetectExternal.swift", file: "05-07-detect-external.swift")
+            }
+            
+            @Step {
+                Display a message like "Playing on TV"
+                on the local screen during AirPlay.
+                
+                @Code(name: "AirPlayMessage.swift", file: "05-08-airplay-message.swift")
+            }
+            
+            @Step {
+                Use Combine to handle external playback
+                state changes reactively.
+                
+                @Code(name: "CombineExternal.swift", file: "05-09-combine-external.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Audio Routing") {
+        @ContentAndMedia {
+            You can also stream audio only via AirPlay without video.
+            Utilize AVAudioSession's routing features.
+            
+            - Bluetooth speakers
+            - HomePod
+            - Wired audio output
+        }
+        
+        @Steps {
+            @Step {
+                Check the current audio output route.
+                
+                @Code(name: "AudioRoute.swift", file: "05-10-audio-route.swift")
+            }
+            
+            @Step {
+                Observe audio route change notifications.
+                Detect earphone connect/disconnect, AirPlay transitions, etc.
+                
+                @Code(name: "RouteChange.swift", file: "05-11-route-change.swift")
+            }
+            
+            @Step {
+                Set usesExternalPlaybackWhileExternalScreenIsActive
+                to prefer external playback over mirroring.
+                
+                @Code(name: "PreferExternal.swift", file: "05-12-prefer-external.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the role of AVRoutePickerView?
+            
+            @Choice(isCorrect: true) {
+                A button that provides AirPlay device selection UI
+                
+                @Justification(reaction: "Exactly right! 📺") {
+                    AVRoutePickerView provides a system-style AirPlay button,
+                    and shows the device selection menu when tapped.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An engine that transmits video via AirPlay
+                
+                @Justification(reaction: "Incorrect.") {
+                    Actual transmission is handled by AVPlayer.
+                    AVRoutePickerView only provides UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A class that discovers AirPlay devices on the network
+                
+                @Justification(reaction: "Not quite.") {
+                    Device discovery is handled automatically by the system.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you do when isExternalPlaybackActive is true?
+            
+            @Choice(isCorrect: false) {
+                Pause playback
+                
+                @Justification(reaction: "Unnecessary.") {
+                    Playback continues during AirPlay.
+                    No need to pause.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Display an appropriate placeholder on the local screen
+                
+                @Justification(reaction: "Correct! ✨") {
+                    It's good to provide feedback like
+                    "Playing on TV" to the user.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Disconnect the AirPlay connection
+                
+                @Justification(reaction: "That harms user experience.") {
+                    The user started AirPlay intentionally,
+                    so you shouldn't disconnect arbitrarily.
+                }
+            }
+        }
+    }
+}

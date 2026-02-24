@@ -1,0 +1,215 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Loading 3D Models (USDZ)") {
+        Learn how to load USDZ files and add 3D models to AR scenes.
+        We'll also cover asynchronous loading and error handling.
+        
+        @Image(source: "chapter4-usdz.png", alt: "USDZ Model Loading")
+    }
+    
+    @Section(title: "USDZ File Format") {
+        @ContentAndMedia {
+            USDZ is a 3D file format adopted by Apple that packages
+            meshes, textures, and animations into a single file.
+            
+            @Image(source: "usdz-format.png", alt: "USDZ File Format")
+        }
+        
+        @Steps {
+            @Step {
+                Understand the advantages of USDZ.
+                
+                - All resources included in a single file
+                - Fast loading speed
+                - Supports iOS, iPadOS, macOS, visionOS
+                - Compatible with Reality Composer Pro
+                
+                @Code(name: "USDZOverview.swift", file: "04-model-01.swift")
+            }
+            
+            @Step {
+                Download free USDZ models from Apple's AR Quick Look.
+                
+                @Image(source: "ar-quicklook-gallery.png", alt: "AR Quick Look Gallery")
+            }
+        }
+    }
+    
+    @Section(title: "Synchronous Loading") {
+        @ContentAndMedia {
+            Small models can be loaded quickly and synchronously.
+            
+            @Image(source: "sync-loading.png", alt: "Synchronous Loading")
+        }
+        
+        @Steps {
+            @Step {
+                Load a USDZ file synchronously from the bundle.
+                
+                @Code(name: "SyncLoading.swift", file: "04-model-02.swift")
+            }
+            
+            @Step {
+                Adjust the size and position of the loaded model.
+                
+                @Code(name: "AdjustModel.swift", file: "04-model-03.swift")
+            }
+            
+            @Step {
+                Handle loading errors with do-catch.
+                
+                @Code(name: "ErrorHandling.swift", file: "04-model-04.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Asynchronous Loading") {
+        @ContentAndMedia {
+            Load large models asynchronously to prevent UI freezing.
+            Use Swift's async/await.
+            
+            @Image(source: "async-loading.png", alt: "Asynchronous Loading")
+        }
+        
+        @Steps {
+            @Step {
+                Load models asynchronously with async/await.
+                
+                @Code(name: "AsyncLoading.swift", file: "04-model-05.swift")
+            }
+            
+            @Step {
+                Display loading state in the UI.
+                
+                @Code(name: "LoadingState.swift", file: "04-model-06.swift")
+            }
+            
+            @Step {
+                Load multiple models concurrently.
+                
+                @Code(name: "ConcurrentLoading.swift", file: "04-model-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Remote USDZ Loading") {
+        @ContentAndMedia {
+            Download and load USDZ files from a URL.
+            
+            @Image(source: "remote-loading.png", alt: "Remote USDZ Loading")
+        }
+        
+        @Steps {
+            @Step {
+                Download a USDZ file from a URL.
+                
+                @Code(name: "DownloadUSDZ.swift", file: "04-model-08.swift")
+            }
+            
+            @Step {
+                Cache the downloaded file.
+                
+                @Code(name: "CachingModel.swift", file: "04-model-09.swift")
+            }
+            
+            @Step {
+                Complete remote loading implementation.
+                
+                @Code(name: "CompleteRemoteLoading.swift", file: "04-model-10.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the biggest advantage of USDZ files?
+            
+            @Choice(isCorrect: true) {
+                Includes mesh, textures, and animations in a single file
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    USDZ packages all 3D assets into a single file,
+                    making distribution and loading simple.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Smallest file size
+                
+                @Justification(reaction: "Think again.") {
+                    While USDZ is efficient, minimizing file size
+                    isn't its main advantage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Editable in all 3D software
+                
+                @Justification(reaction: "Think again.") {
+                    USDZ is primarily a distribution format;
+                    the original USD files are used for editing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the correct way to handle errors when using Entity.load(named:)?
+            
+            @Choice(isCorrect: false) {
+                Use if let syntax
+                
+                @Justification(reaction: "Not quite.") {
+                    load(named:) is a throws function, so you need
+                    do-catch, not optional binding.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Use do-catch syntax
+                
+                @Justification(reaction: "Correct! ✅") {
+                    Entity.load(named:) is declared as throws,
+                    so you must handle errors with do-catch.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No error handling needed
+                
+                @Justification(reaction: "Think again.") {
+                    Errors can occur if the file is missing or corrupted,
+                    so error handling is essential.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which Swift keywords are used to load 3D models asynchronously?
+            
+            @Choice(isCorrect: false) {
+                @escaping
+                
+                @Justification(reaction: "Not quite.") {
+                    @escaping is needed when closures are used beyond the function,
+                    but it's not directly related to async loading.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                async/await
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Swift's async/await allows you to write
+                    asynchronous code as cleanly as synchronous code.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                defer
+                
+                @Justification(reaction: "Not quite.") {
+                    defer is a keyword that defines code to run when a scope exits.
+                }
+            }
+        }
+    }
+}

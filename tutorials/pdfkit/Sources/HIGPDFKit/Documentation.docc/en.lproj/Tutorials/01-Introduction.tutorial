@@ -1,0 +1,199 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to PDFKit") {
+        Understand the core concepts of the PDFKit framework and 
+        the basic architecture for building a PDF reader app.
+        
+        @Image(source: "pdfkit-intro.png", alt: "PDFKit Overview")
+    }
+    
+    @Section(title: "What is PDFKit?") {
+        @ContentAndMedia {
+            PDFKit is a PDF processing framework provided by Apple that allows 
+            you to display and manipulate PDF documents on macOS and iOS.
+            
+            - **Cross-platform**: Supports iOS, macOS, Mac Catalyst
+            - **Full-featured**: Supports rendering, search, annotations, and editing
+            - **UIKit/SwiftUI integration**: Easy UI integration
+            
+            @Image(source: "pdfkit-architecture.png", alt: "PDFKit Architecture")
+        }
+        
+        @Steps {
+            @Step {
+                Import PDFKit into your project.
+                You can use it directly without any CocoaPods or SPM dependencies.
+                
+                @Code(name: "ImportPDFKit.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Explore the main class hierarchy of PDFKit.
+                
+                - `PDFView`: A view that displays PDFs on screen
+                - `PDFDocument`: An object that loads a PDF file into memory
+                - `PDFPage`: An individual page of a document
+                - `PDFAnnotation`: Annotations added to a page
+                
+                @Code(name: "PDFKitClasses.swift", file: "01-02-classes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PDFDocument Basics") {
+        @ContentAndMedia {
+            PDFDocument is the in-memory representation of a PDF file.
+            It contains information such as document metadata, page list, and encryption status.
+            
+            PDFDocument can be created from a file URL, Data, or CGPDFDocument.
+        }
+        
+        @Steps {
+            @Step {
+                This is the most basic way to load a PDF document from the Bundle.
+                
+                @Code(name: "LoadDocument.swift", file: "01-03-load-document.swift")
+            }
+            
+            @Step {
+                Access the basic properties of the document.
+                You can check page count, encryption status, metadata, and more.
+                
+                @Code(name: "DocumentProperties.swift", file: "01-04-properties.swift")
+            }
+            
+            @Step {
+                Encrypted PDFs require unlocking.
+                Handle this with the `unlock(withPassword:)` method.
+                
+                @Code(name: "UnlockDocument.swift", file: "01-05-unlock.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding PDFPage") {
+        @ContentAndMedia {
+            PDFPage represents an individual page of a document.
+            Each page has its own size, rotation, and list of annotations.
+            
+            You can extract text from a page or render it as an image.
+        }
+        
+        @Steps {
+            @Step {
+                Access a specific page by index.
+                The index starts from 0.
+                
+                @Code(name: "AccessPage.swift", file: "01-06-access-page.swift")
+            }
+            
+            @Step {
+                Check the page's size and rotation information.
+                PDF pages have several "box" types: mediaBox, cropBox, bleedBox, etc.
+                
+                @Code(name: "PageBounds.swift", file: "01-07-page-bounds.swift")
+            }
+            
+            @Step {
+                Extract the text content of a page.
+                Use the `string` property for plain text, and `attributedString` for formatted text.
+                
+                @Code(name: "ExtractText.swift", file: "01-08-extract-text.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which of the main PDFKit classes is responsible for displaying PDFs on screen?
+            
+            @Choice(isCorrect: false) {
+                PDFDocument
+                
+                @Justification(reaction: "Think again.") {
+                    PDFDocument is the in-memory representation of a PDF file.
+                    A different class handles screen display.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFView
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    PDFView is the view that renders PDFs on screen 
+                    and handles user interaction.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPage
+                
+                @Justification(reaction: "Not quite.") {
+                    PDFPage represents an individual page of a document 
+                    and is not displayed directly on screen.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which method is used to open an encrypted PDF document?
+            
+            @Choice(isCorrect: false) {
+                decrypt(password:)
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the exact method name used for password unlocking 
+                    in PDFDocument.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                unlock(withPassword:)
+                
+                @Justification(reaction: "That's right! ✨") {
+                    unlock(withPassword:) unlocks an encrypted PDF 
+                    and returns true/false.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                open(password:)
+                
+                @Justification(reaction: "Incorrect.") {
+                    PDF loading and password unlocking are separate operations.
+                    You call unlock on an already loaded document.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which box type in PDFPage is used as the reference for the print area?
+            
+            @Choice(isCorrect: false) {
+                mediaBox
+                
+                @Justification(reaction: "Close but not exact.") {
+                    mediaBox is the total physical size of the page.
+                    The area that gets clipped during printing is a different box type.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                cropBox
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    cropBox defines the area to be displayed on screen or printed.
+                    This is the reference box in most cases.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                artBox
+                
+                @Justification(reaction: "Not quite.") {
+                    artBox represents the meaningful content area 
+                    and is different from the print reference box.
+                }
+            }
+        }
+    }
+}

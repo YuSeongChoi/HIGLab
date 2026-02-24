@@ -1,0 +1,257 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Applying Built-in Filters") {
+        Explore the over 200 built-in filters provided by CoreImage
+        and learn how to apply various image effects.
+        
+        @Image(source: "builtin-filters.png", alt: "Built-in Filters")
+    }
+    
+    @Section(title: "Understanding Filter Categories") {
+        @ContentAndMedia {
+            CoreImage filters are classified into several categories by purpose.
+            Using categories makes it convenient to find the desired effect.
+            
+            - **CICategoryColorEffect**: Color effects like sepia, black and white
+            - **CICategoryBlur**: Gaussian, motion blur, etc.
+            - **CICategoryDistortionEffect**: Distortion, warping effects
+            - **CICategorySharpen**: Sharpness enhancement
+            - **CICategoryStylize**: Pixelation, edge emphasis, and other style effects
+            
+            @Image(source: "filter-categories.png", alt: "Filter Categories")
+        }
+        
+        @Steps {
+            @Step {
+                Query all filters belonging to a specific category.
+                Use CIFilter.filterNames(inCategory:).
+                
+                @Code(name: "FilterCategories.swift", file: "03-01-categories.swift")
+            }
+            
+            @Step {
+                Check the input parameters of a filter.
+                You can see which values can be adjusted.
+                
+                @Code(name: "FilterAttributes.swift", file: "03-02-attributes.swift")
+            }
+            
+            @Step {
+                Use the type-safe filter API.
+                On iOS 13+, you can leverage CIFilter extension methods.
+                
+                @Code(name: "TypeSafeFilters.swift", file: "03-03-type-safe.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Color Adjustment Filters") {
+        @ContentAndMedia {
+            These are the most commonly used color adjustment filters in photo editing apps.
+            You can adjust brightness, contrast, saturation, color temperature, and more.
+            
+            Key color adjustment filters:
+            - CIColorControls: Adjust brightness, contrast, saturation
+            - CIExposureAdjust: Exposure adjustment
+            - CITemperatureAndTint: Color temperature and tint adjustment
+            - CIVibrance: Natural saturation increase
+        }
+        
+        @Steps {
+            @Step {
+                Adjust brightness, contrast, and saturation at once with CIColorControls.
+                This is the most versatile color adjustment filter.
+                
+                @Code(name: "ColorControls.swift", file: "03-04-color-controls.swift")
+            }
+            
+            @Step {
+                Adjust exposure with CIExposureAdjust.
+                Adjust brightness in EV (Exposure Value) units.
+                
+                @Code(name: "ExposureAdjust.swift", file: "03-05-exposure.swift")
+            }
+            
+            @Step {
+                Adjust color temperature with CITemperatureAndTint.
+                You can give a warm or cool feeling.
+                
+                @Code(name: "TemperatureAndTint.swift", file: "03-06-temperature.swift")
+            }
+            
+            @Step {
+                Naturally increase saturation with CIVibrance.
+                Areas that are already highly saturated are less affected, making it natural.
+                
+                @Code(name: "Vibrance.swift", file: "03-07-vibrance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Blur and Sharpness Filters") {
+        @ContentAndMedia {
+            Blur is used for background blurring, privacy protection, etc.
+            Sharpness filters are used to enhance details.
+            
+            - CIGaussianBlur: Uniform circular blur
+            - CIBoxBlur: Fast box-shaped blur
+            - CIMaskedVariableBlur: Mask-based variable blur
+            - CISharpenLuminance: Luminance-based sharpening
+            - CIUnsharpMask: Unsharp mask sharpening
+        }
+        
+        @Steps {
+            @Step {
+                Apply a soft blur effect with CIGaussianBlur.
+                Control blur intensity with the radius value.
+                
+                @Code(name: "GaussianBlur.swift", file: "03-08-gaussian-blur.swift")
+            }
+            
+            @Step {
+                Solve the problem of image edges being cropped after applying blur.
+                Use clampedToExtent() to extend the edges.
+                
+                @Code(name: "BlurEdgeFix.swift", file: "03-09-blur-edge.swift")
+            }
+            
+            @Step {
+                Sharpen the image with CIUnsharpMask.
+                Be careful as excessive application increases noise.
+                
+                @Code(name: "UnsharpMask.swift", file: "03-10-unsharp.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Style Filters and Effects") {
+        @ContentAndMedia {
+            There are various style filters that can implement 
+            filter effects like Instagram.
+            
+            - CISepiaTone: Sepia tone (vintage)
+            - CIPhotoEffectNoir: Black and white film effect
+            - CIPhotoEffectChrome: Chrome effect
+            - CIVignette: Vignette effect (darkening edges)
+            - CIPixellate: Pixelation (mosaic)
+        }
+        
+        @Steps {
+            @Step {
+                Create a vintage feel with CISepiaTone.
+                Control the effect intensity with intensity.
+                
+                @Code(name: "SepiaTone.swift", file: "03-11-sepia.swift")
+            }
+            
+            @Step {
+                Apply various film looks with the CIPhotoEffect series.
+                Options include Noir, Chrome, Fade, Instant, and more.
+                
+                @Code(name: "PhotoEffects.swift", file: "03-12-photo-effects.swift")
+            }
+            
+            @Step {
+                Naturally darken edges with CIVignette.
+                It adds focus to the photo.
+                
+                @Code(name: "Vignette.swift", file: "03-13-vignette.swift")
+            }
+            
+            @Step {
+                Combine multiple filters to create custom presets.
+                Build filter sets that can be used in actual apps.
+                
+                @Code(name: "FilterPreset.swift", file: "03-14-preset.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why are image edges cropped after applying CIGaussianBlur?
+            
+            @Choice(isCorrect: true) {
+                Because blur extends beyond the image boundaries.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Blur samples surrounding pixels, so the extent expands 
+                    at the edges. This can be solved with clampedToExtent().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Edges are lost due to memory shortage.
+                
+                @Justification(reaction: "That's not the case.") {
+                    This is a characteristic of filter behavior, not a memory issue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's a phenomenon due to a CIContext bug.
+                
+                @Justification(reaction: "It's not a bug.") {
+                    This is the normal behavior of blur filters.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What can't be adjusted with the CIColorControls filter?
+            
+            @Choice(isCorrect: false) {
+                Brightness
+                
+                @Justification(reaction: "It can be adjusted.") {
+                    Adjusted with the inputBrightness parameter.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Saturation
+                
+                @Justification(reaction: "It can be adjusted.") {
+                    Adjusted with the inputSaturation parameter.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Temperature
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Color temperature requires the CITemperatureAndTint filter.
+                    CIColorControls only adjusts brightness, contrast, and saturation.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the difference between CIVibrance and regular saturation adjustment?
+            
+            @Choice(isCorrect: true) {
+                CIVibrance affects already saturated areas less.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Thanks to this characteristic, skin tones are naturally preserved
+                    while achieving vibrant colors overall.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIVibrance also adjusts brightness.
+                
+                @Justification(reaction: "That's not the case.") {
+                    CIVibrance only intelligently adjusts saturation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Both produce completely identical results.
+                
+                @Justification(reaction: "There are differences.") {
+                    CIVibrance provides more natural results.
+                }
+            }
+        }
+    }
+}

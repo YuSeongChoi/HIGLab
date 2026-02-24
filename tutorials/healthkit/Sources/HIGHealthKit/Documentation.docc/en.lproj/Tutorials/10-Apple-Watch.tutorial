@@ -1,0 +1,281 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Apple Watch Integration") {
+        Create a watchOS app to query health data directly on Apple Watch.
+        Cover data synchronization between iPhone and Watch via Watch Connectivity.
+    }
+    
+    @Section(title: "Adding watchOS Target") {
+        @ContentAndMedia {
+            Add an Apple Watch app and configure HealthKit.
+            HealthKit works even more powerfully on watchOS.
+        }
+        
+        @Steps {
+            @Step {
+                **Add Watch App Target**
+                
+                Select "watchOS App" from File > New > Target.
+                Check "Watch App for Existing iOS App".
+                
+                @Code(name: "WatchTarget.swift", file: "10-watch-target.swift")
+            }
+            
+            @Step {
+                **HealthKit Capability**
+                
+                Add HealthKit capability to the watchOS target as well.
+                "Clinical Health Records" is not supported on watchOS.
+                
+                @Code(name: "WatchCapability.swift", file: "10-watch-capability.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                Add health data usage description for watchOS.
+                
+                @Code(name: "WatchInfoPlist.swift", file: "10-watch-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "watchOS HealthKit Characteristics") {
+        @ContentAndMedia {
+            HealthKit on watchOS has slightly different characteristics than iPhone.
+            Apple Watch is a **primary data source** for heart rate, workouts, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Watch-Only Data**
+                
+                Some data can only be measured by Apple Watch:
+                - Real-time heart rate (wrist sensor)
+                - Blood oxygen (Series 6+)
+                - ECG (Series 4+)
+                - Fall detection
+                
+                @Code(name: "WatchOnlyData.swift", file: "10-watch-only-data.swift")
+            }
+            
+            @Step {
+                **Automatic Permission Sync**
+                
+                HealthKit permissions approved on iPhone are
+                automatically applied to the paired Apple Watch.
+                
+                @Code(name: "PermissionSync.swift", file: "10-permission-sync.swift")
+            }
+            
+            @Step {
+                **Standalone vs Paired**
+                
+                watchOS apps can run independently without iPhone.
+                Cellular Watch can operate completely independently.
+                
+                @Code(name: "IndependentMode.swift", file: "10-independent-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Watch Dashboard UI") {
+        @ContentAndMedia {
+            Create a concise dashboard optimized for Apple Watch screen.
+            Display only key information on the small screen.
+        }
+        
+        @Steps {
+            @Step {
+                **WatchHealthManager**
+                
+                Write a HealthManager for watchOS.
+                Almost identical to iOS but with some adjustments needed.
+                
+                @Code(name: "WatchHealthManager.swift", file: "10-watch-health-manager.swift")
+            }
+            
+            @Step {
+                **Watch Dashboard View**
+                
+                Create a concise view displaying steps and heart rate.
+                Support Digital Crown scrolling.
+                
+                @Code(name: "WatchDashboardView.swift", file: "10-watch-dashboard-view.swift")
+            }
+            
+            @Step {
+                **Ring Progress**
+                
+                Implement Activity app-style rings.
+                Optimize for watchOS small screen.
+                
+                @Code(name: "WatchProgressRing.swift", file: "10-watch-progress-ring.swift")
+            }
+            
+            @Step {
+                **Real-time Heart Rate Display**
+                
+                Implement current heart rate and heart icon animation.
+                
+                @Code(name: "WatchHeartRateView.swift", file: "10-watch-heartrate-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Watch Connectivity") {
+        @ContentAndMedia {
+            Use **WatchConnectivity** to send and receive
+            real-time data between iPhone and Apple Watch.
+        }
+        
+        @Steps {
+            @Step {
+                **WCSession Setup**
+                
+                Activate WCSession on both iPhone and Watch.
+                
+                @Code(name: "WCSessionSetup.swift", file: "10-wcsession-setup.swift")
+            }
+            
+            @Step {
+                **Send Data**
+                
+                Send data with sendMessage or updateApplicationContext.
+                
+                @Code(name: "SendData.swift", file: "10-send-data.swift")
+            }
+            
+            @Step {
+                **Receive Data**
+                
+                Handle received data with WCSessionDelegate.
+                
+                @Code(name: "ReceiveData.swift", file: "10-receive-data.swift")
+            }
+            
+            @Step {
+                **HealthKit vs WatchConnectivity**
+                
+                HealthKit data syncs automatically,
+                so use WatchConnectivity for app-specific data (goals, settings).
+                
+                @Code(name: "DataStrategy.swift", file: "10-data-strategy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complications") {
+        @ContentAndMedia {
+            Make health data always visible with Complications
+            displayed on Watch Face.
+        }
+        
+        @Steps {
+            @Step {
+                **Complication Types**
+                
+                Support various Complication Families:
+                - circularSmall: Small circular
+                - modularSmall: Modular small square
+                - graphicCircular: Graphic circular
+                
+                @Code(name: "ComplicationTypes.swift", file: "10-complication-types.swift")
+            }
+            
+            @Step {
+                **Steps Complication**
+                
+                Display current step count and progress toward goal.
+                
+                @Code(name: "StepsComplication.swift", file: "10-steps-complication.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What data can only be measured on Apple Watch?
+            
+            @Choice(isCorrect: true) {
+                Real-time heart rate, blood oxygen, ECG
+                
+                @Justification(reaction: "Correct!") {
+                    This data can only be measured with Apple Watch sensors.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Step count
+                
+                @Justification(reaction: "Not quite") {
+                    Step count can be measured on iPhone too.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Weight
+                
+                @Justification(reaction: "Not quite") {
+                    Weight is measured via manual input or smart scale.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens to HealthKit permissions approved on iPhone on Apple Watch?
+            
+            @Choice(isCorrect: true) {
+                Automatically synchronized
+                
+                @Justification(reaction: "Correct!") {
+                    Paired Apple Watch automatically follows iPhone permission settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Must be requested separately
+                
+                @Justification(reaction: "Not quite") {
+                    Permissions sync automatically.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only valid on Watch
+                
+                @Justification(reaction: "Not quite") {
+                    Syncs bidirectionally.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the appropriate use of WatchConnectivity with HealthKit?
+            
+            @Choice(isCorrect: true) {
+                Sync app-specific data (goals, settings)
+                
+                @Justification(reaction: "Correct!") {
+                    HealthKit data syncs automatically,
+                    so use WatchConnectivity for app settings, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Send step count from iPhone to Watch
+                
+                @Justification(reaction: "Not quite") {
+                    HealthKit data syncs automatically.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Send heart rate from Watch to iPhone
+                
+                @Justification(reaction: "Not quite") {
+                    Syncs automatically through HealthKit.
+                }
+            }
+        }
+    }
+}

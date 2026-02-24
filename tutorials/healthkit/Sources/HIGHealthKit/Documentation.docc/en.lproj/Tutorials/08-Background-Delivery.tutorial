@@ -1,0 +1,239 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Background Delivery (enableBackgroundDelivery)") {
+        Learn how to receive notifications in the background when HealthKit data changes.
+        Keep data up to date even when the app is not running.
+    }
+    
+    @Section(title: "Understanding Background Delivery") {
+        @ContentAndMedia {
+            Using **enableBackgroundDelivery**, the system wakes your app
+            when HealthKit data changes.
+            Useful for widget updates, sending notifications, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **How It Works**
+                
+                1. Register enableBackgroundDelivery in your app
+                2. Another app/device changes HealthKit data
+                3. System wakes your app in the background
+                4. HKObserverQuery callback executes
+                5. Perform necessary tasks (widget refresh, notifications, etc.)
+                
+                @Code(name: "BackgroundFlow.swift", file: "08-background-flow.swift")
+            }
+            
+            @Step {
+                **Frequency Settings**
+                
+                Set notification frequency with HKUpdateFrequency:
+                - .immediate: Immediately (watch battery consumption)
+                - .hourly: Maximum once per hour
+                - .daily: Maximum once per day
+                - .weekly: Maximum once per week
+                
+                @Code(name: "UpdateFrequency.swift", file: "08-update-frequency.swift")
+            }
+            
+            @Step {
+                **Background Modes Setup**
+                
+                Add Background Modes capability in Xcode and
+                enable "Background fetch".
+                
+                @Code(name: "BackgroundModes.swift", file: "08-background-modes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing HKObserverQuery") {
+        @ContentAndMedia {
+            **HKObserverQuery** is a long-running query that detects data changes.
+            When used with background delivery, it receives notifications even when the app is closed.
+        }
+        
+        @Steps {
+            @Step {
+                **Create ObserverQuery**
+                
+                Create an Observer that detects changes to a specific data type.
+                
+                @Code(name: "ObserverQuery.swift", file: "08-observer-query.swift")
+            }
+            
+            @Step {
+                **completionHandler Call Required**
+                
+                When woken up in the background, you must call completionHandler.
+                This notifies the system that the task is complete.
+                
+                @Code(name: "CompletionHandler.swift", file: "08-completion-handler.swift")
+            }
+            
+            @Step {
+                **Call enableBackgroundDelivery**
+                
+                Enable background delivery at app startup.
+                Usually called in AppDelegate or @main App.
+                
+                @Code(name: "EnableDelivery.swift", file: "08-enable-delivery.swift")
+            }
+            
+            @Step {
+                **Register Multiple Data Types**
+                
+                You can register for multiple types like steps, heart rate, etc.
+                
+                @Code(name: "MultipleTypes.swift", file: "08-multiple-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Practical Application: Widget Refresh") {
+        @ContentAndMedia {
+            Implement a pattern that automatically refreshes widgets
+            when health data changes using background delivery.
+        }
+        
+        @Steps {
+            @Step {
+                **Request WidgetCenter Refresh**
+                
+                Call WidgetCenter.shared.reloadTimelines when data changes.
+                
+                @Code(name: "WidgetRefresh.swift", file: "08-widget-refresh.swift")
+            }
+            
+            @Step {
+                **Integrate into HealthManager**
+                
+                Integrate background delivery settings into HealthManager.
+                
+                @Code(name: "HealthManager.swift", file: "08-health-manager-background.swift")
+            }
+            
+            @Step {
+                **Initialize in App**
+                
+                Set up background delivery at app startup.
+                
+                @Code(name: "AppSetup.swift", file: "08-app-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Considerations & Optimization") {
+        @ContentAndMedia {
+            Background delivery uses battery and system resources.
+            Appropriate frequency settings and efficient processing are important.
+        }
+        
+        @Steps {
+            @Step {
+                **Battery Optimization**
+                
+                Using .hourly or .daily instead of .immediate
+                can significantly reduce battery consumption.
+                
+                @Code(name: "BatteryOptimization.swift", file: "08-battery-optimization.swift")
+            }
+            
+            @Step {
+                **Simulator Limitations**
+                
+                Background delivery is difficult to test in the simulator.
+                Test on a real device.
+                
+                @Code(name: "SimulatorNote.swift", file: "08-simulator-note.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What setup is required to use enableBackgroundDelivery?
+            
+            @Choice(isCorrect: true) {
+                Enable "Background fetch" in Background Modes capability
+                
+                @Justification(reaction: "Correct!") {
+                    Without this setting, the app won't wake up in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Push Notifications setup
+                
+                @Justification(reaction: "Not quite") {
+                    HealthKit background delivery is separate from Push.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Location Updates setup
+                
+                @Justification(reaction: "Not quite") {
+                    It detects health data updates, not location.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the downside of HKUpdateFrequency.immediate?
+            
+            @Choice(isCorrect: true) {
+                High battery consumption
+                
+                @Justification(reaction: "Correct!") {
+                    Immediate notifications consume a lot of battery.
+                    Recommend hourly or daily unless necessary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Lower accuracy
+                
+                @Justification(reaction: "Not quite") {
+                    immediate is the fastest and most accurate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only works in simulator
+                
+                @Justification(reaction: "Not quite") {
+                    Rather, it's difficult to test in the simulator.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What must you do in the HKObserverQuery callback?
+            
+            @Choice(isCorrect: true) {
+                Call completionHandler()
+                
+                @Justification(reaction: "Correct!") {
+                    You must notify the system that the task is complete so the app can return to suspended state.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                healthStore.stop(query)
+                
+                @Justification(reaction: "Not quite") {
+                    The Observer should continue running.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Save to UserDefaults
+                
+                @Justification(reaction: "Not quite") {
+                    Not required.
+                }
+            }
+        }
+    }
+}

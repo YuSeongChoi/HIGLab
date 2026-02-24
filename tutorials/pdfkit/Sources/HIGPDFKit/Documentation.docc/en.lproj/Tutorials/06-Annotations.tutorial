@@ -1,0 +1,258 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Adding Annotations (PDFAnnotation)") {
+        Use PDFAnnotation to add various annotations to PDFs 
+        including highlights, notes, shapes, and freehand drawing.
+        
+        @Image(source: "annotations.png", alt: "PDF Annotations")
+    }
+    
+    @Section(title: "PDFAnnotation Basics") {
+        @ContentAndMedia {
+            PDFAnnotation is metadata and visual elements 
+            added to PDF pages.
+            
+            Annotations are a way to add information 
+            without modifying the original content of the document.
+            
+            - **Highlight**: Text emphasis
+            - **Note**: Popup memos
+            - **Shapes**: Rectangles, circles, lines
+            - **Freehand drawing**: Handwriting
+        }
+        
+        @Steps {
+            @Step {
+                Understand the basic structure of PDFAnnotation.
+                Set required properties such as bounds, type, and page.
+                
+                @Code(name: "AnnotationBasics.swift", file: "06-01-basics.swift")
+            }
+            
+            @Step {
+                Add an annotation to a page.
+                Use the addAnnotation method.
+                
+                @Code(name: "AddAnnotation.swift", file: "06-02-add.swift")
+            }
+            
+            @Step {
+                Remove annotations.
+                Use removeAnnotation or delete only annotations that match specific conditions.
+                
+                @Code(name: "RemoveAnnotation.swift", file: "06-03-remove.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Highlight Annotations") {
+        @ContentAndMedia {
+            Select text and convert it to a highlight annotation.
+            
+            Highlights use the .highlight type 
+            and can create various marker effects by specifying colors.
+        }
+        
+        @Steps {
+            @Step {
+                Convert PDFSelection to highlight annotations.
+                Use selectionsByLine to get line-by-line selections.
+                
+                @Code(name: "HighlightAnnotation.swift", file: "06-04-highlight.swift")
+            }
+            
+            @Step {
+                Customize highlight colors.
+                Offer various colors like yellow, pink, blue, etc.
+                
+                @Code(name: "HighlightColors.swift", file: "06-05-colors.swift")
+            }
+            
+            @Step {
+                Add underline and strikeOut annotations.
+                Apply other text markup types in the same way.
+                
+                @Code(name: "TextMarkup.swift", file: "06-06-markup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Note Annotations") {
+        @ContentAndMedia {
+            Note annotations add memos at specific locations.
+            They are displayed as icons and show a popup when clicked.
+            
+            Use .text or .freeText type.
+        }
+        
+        @Steps {
+            @Step {
+                Add a popup note annotation.
+                The .text type shows as an icon with a popup memo.
+                
+                @Code(name: "NoteAnnotation.swift", file: "06-07-note.swift")
+            }
+            
+            @Step {
+                Add an inline text annotation.
+                The .freeText type displays text directly on the page.
+                
+                @Code(name: "FreeTextAnnotation.swift", file: "06-08-free-text.swift")
+            }
+            
+            @Step {
+                Customize font and text style.
+                Set font and fontColor properties.
+                
+                @Code(name: "TextStyle.swift", file: "06-09-text-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Shape Annotations") {
+        @ContentAndMedia {
+            Add shapes like rectangles, circles, lines, and arrows.
+            
+            - .circle, .square: Closed shapes
+            - .line: Straight lines
+            - .ink: Freehand drawing
+        }
+        
+        @Steps {
+            @Step {
+                Add rectangle and circle annotations.
+                Set border, color, and interiorColor.
+                
+                @Code(name: "ShapeAnnotation.swift", file: "06-10-shapes.swift")
+            }
+            
+            @Step {
+                Add line and arrow annotations.
+                Set startPoint, endPoint, and lineEndingStyles.
+                
+                @Code(name: "LineAnnotation.swift", file: "06-11-lines.swift")
+            }
+            
+            @Step {
+                Implement ink (freehand drawing) annotations.
+                Store the user's touch path in paths.
+                
+                @Code(name: "InkAnnotation.swift", file: "06-12-ink.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving and Loading Annotations") {
+        @ContentAndMedia {
+            Save PDFs with annotations included 
+            and reload the saved annotations.
+            
+            When saving to a file with PDFDocument.write(to:), 
+            annotations are saved along with the document.
+        }
+        
+        @Steps {
+            @Step {
+                Save a document with annotations.
+                Overwrite the existing file or save as a new file.
+                
+                @Code(name: "SaveAnnotations.swift", file: "06-13-save.swift")
+            }
+            
+            @Step {
+                Get all annotations on a page.
+                Access via the annotations array.
+                
+                @Code(name: "ListAnnotations.swift", file: "06-14-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the PDFAnnotationSubtype for text highlight annotations?
+            
+            @Choice(isCorrect: true) {
+                .highlight
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    The .highlight type is used to create 
+                    text highlight annotations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .markup
+                
+                @Justification(reaction: "There is no such type.") {
+                    Check the exact subtype for highlighting.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .textHighlight
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the exact PDFAnnotationSubtype value.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which type is used for freehand drawing (handwriting) annotations?
+            
+            @Choice(isCorrect: false) {
+                .freehand
+                
+                @Justification(reaction: "There is no such type.") {
+                    Check the exact type name for handwriting annotations.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .ink
+                
+                @Justification(reaction: "That's right! ✨") {
+                    Use the .ink type to create freehand drawing annotations, 
+                    storing paths in the paths property.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .drawing
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the terminology used in PDFKit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which method adds an annotation to a PDFPage?
+            
+            @Choice(isCorrect: true) {
+                addAnnotation(_:)
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Use page.addAnnotation(annotation) to 
+                    add an annotation to a page.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                insertAnnotation(_:)
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the annotation-related API in PDFPage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                appendAnnotation(_:)
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the exact method name.
+                }
+            }
+        }
+    }
+}

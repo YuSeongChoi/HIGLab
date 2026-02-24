@@ -1,0 +1,118 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Saving Records (CKRecord)") {
+        Learn how to save data to CloudKit using CKRecord.
+        Store and manage note data in the cloud.
+    }
+    
+    @Section(title: "Understanding CKRecord") {
+        @ContentAndMedia {
+            CKRecord is the basic data unit in CloudKit.
+            It stores data as key-value pairs and supports various types.
+        }
+        @Steps {
+            @Step {
+                Check the data types supported by CKRecord.
+                It supports String, Number, Date, Data, Location, Asset, and more.
+                @Code(name: "RecordTypes.swift", file: "03-01-recordtypes.swift")
+            }
+            @Step {
+                Define the note record type.
+                Manage record type names and field names as constants.
+                @Code(name: "NoteRecord.swift", file: "03-02-noterecord.swift")
+            }
+            @Step {
+                Add a method to create CKRecord from Note model.
+                @Code(name: "Note.swift", file: "03-03-notetorecord.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving Records") {
+        @ContentAndMedia {
+            Save records using CKDatabase's save method.
+            Use the async/await pattern.
+        }
+        @Steps {
+            @Step {
+                Create a method to save a single record.
+                @Code(name: "CloudKitManager.swift", file: "03-04-saverecord.swift")
+            }
+            @Step {
+                Add a high-level method to save notes.
+                @Code(name: "CloudKitManager.swift", file: "03-05-savenote.swift")
+            }
+            @Step {
+                Handle save results and errors.
+                @Code(name: "CloudKitManager.swift", file: "03-06-saveerror.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Batch Saving") {
+        @ContentAndMedia {
+            Save multiple records at once using CKModifyRecordsOperation.
+        }
+        @Steps {
+            @Step {
+                Configure a batch save operation.
+                @Code(name: "CloudKitManager.swift", file: "03-07-batchsave.swift")
+            }
+            @Step {
+                Set the save policy.
+                Control behavior when conflicts occur.
+                @Code(name: "CloudKitManager.swift", file: "03-08-savepolicy.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which type cannot be stored directly in CKRecord?
+            @Choice(isCorrect: false) {
+                CLLocation
+                @Justification(reaction: "Think again.") {
+                    CLLocation is a type directly supported by CKRecord.
+                }
+            }
+            @Choice(isCorrect: false) {
+                CKAsset
+                @Justification(reaction: "Think again.") {
+                    CKAsset is a supported type used for file/image storage.
+                }
+            }
+            @Choice(isCorrect: true) {
+                UIImage
+                @Justification(reaction: "Correct!") {
+                    UIImage cannot be stored directly. You need to convert it to CKAsset.
+                }
+            }
+            @Choice(isCorrect: false) {
+                [String]
+                @Justification(reaction: "Think again.") {
+                    Array types are also supported.
+                }
+            }
+        }
+        @MultipleChoice {
+            What does .ifServerRecordUnchanged mean in CKModifyRecordsOperation's savePolicy?
+            @Choice(isCorrect: true) {
+                Save only if the server record hasn't changed
+                @Justification(reaction: "Correct!") {
+                    This uses optimistic locking to detect conflicts.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Always overwrite the server record
+                @Justification(reaction: "Think again.") {
+                    That's the .allKeys policy.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Update only changed fields
+                @Justification(reaction: "Think again.") {
+                    That's the .changedKeys policy.
+                }
+            }
+        }
+    }
+}

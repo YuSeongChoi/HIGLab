@@ -1,0 +1,173 @@
+@Tutorial(time: 25) {
+    @Intro(title: "StoreKit Testing") {
+        Thoroughly test in-app purchase functionality using
+        Xcode's StoreKit Testing and Sandbox environment.
+    }
+    
+    @Section(title: "StoreKit Configuration File") {
+        @ContentAndMedia {
+            Simulate in-app purchases locally with
+            a StoreKit Configuration file.
+            
+            Advantages:
+            - Test without App Store Connect setup
+            - Works without network
+            - Can reproduce various scenarios
+        }
+        
+        @Steps {
+            @Step {
+                Create a StoreKit Configuration file and define products.
+                @Code(name: "Products.storekit", file: "11-storekit-config.json")
+            }
+            @Step {
+                Connect the StoreKit Configuration in the Xcode scheme.
+                @Code(name: "TestScheme.md", file: "11-scheme-setup.md")
+            }
+        }
+    }
+    
+    @Section(title: "Writing Unit Tests") {
+        @ContentAndMedia {
+            Using SKTestSession, you can verify various scenarios
+            like purchases, renewals, and refunds with automated tests.
+        }
+        
+        @Steps {
+            @Step {
+                Set up the StoreKit test environment.
+                @Code(name: "StoreKitTests.swift", file: "11-test-setup.swift")
+            }
+            @Step {
+                Test the purchase flow.
+                @Code(name: "PurchaseTests.swift", file: "11-purchase-tests.swift")
+            }
+            @Step {
+                Test subscription renewal and expiration scenarios.
+                @Code(name: "SubscriptionTests.swift", file: "11-subscription-tests.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sandbox Testing") {
+        @ContentAndMedia {
+            Test actual App Store Connect products in the Sandbox environment
+            before production deployment.
+            
+            Sandbox Features:
+            - Test the entire flow without actual payments
+            - Shortened subscription renewal cycles (1 month → 5 minutes)
+            - Repeatable testing with tester accounts
+        }
+        
+        @Steps {
+            @Step {
+                Set up a Sandbox tester account and check subscription renewal cycles.
+                @Code(name: "SandboxTesting.md", file: "11-sandbox-guide.md")
+            }
+        }
+    }
+    
+    @Section(title: "Error Scenario Testing") {
+        @ContentAndMedia {
+            Simulate edge cases like payment failures,
+            network errors, and refunds.
+        }
+        
+        @Steps {
+            @Step {
+                Test various failure scenarios.
+                @Code(name: "ErrorTests.swift", file: "11-error-tests.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the biggest advantage of a StoreKit Configuration file?
+            
+            @Choice(isCorrect: true) {
+                Test locally without App Store Connect setup
+                
+                @Justification(reaction: "Correct!") {
+                    Using a Configuration file, you can quickly develop and test
+                    without network or App Store Connect connection.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Actual payments are made.
+                
+                @Justification(reaction: "Not quite!") {
+                    Configuration files are simulations with no real payments.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's 100% identical to the production environment.
+                
+                @Justification(reaction: "Think again!") {
+                    You should also perform Sandbox and production testing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the renewal cycle for a monthly subscription in Sandbox?
+            
+            @Choice(isCorrect: false) {
+                1 hour
+                
+                @Justification(reaction: "Think again!") {
+                    Testing can be done with an even shorter cycle.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                5 minutes
+                
+                @Justification(reaction: "Correct!") {
+                    In Sandbox, 1 month = 5 minutes, 1 year = 1 hour.
+                    This enables fast renewal testing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 day
+                
+                @Justification(reaction: "Not quite!") {
+                    Sandbox provides faster renewal cycles.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What can't you do with SKTestSession?
+            
+            @Choice(isCorrect: false) {
+                Simulate purchases
+                
+                @Justification(reaction: "You can do that!") {
+                    Use SKTestSession.buyProduct() to simulate purchases.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Simulate refunds
+                
+                @Justification(reaction: "You can do that!") {
+                    Use SKTestSession.refundTransaction() to test refunds.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Test actual Apple server responses
+                
+                @Justification(reaction: "Correct!") {
+                    SKTestSession is local simulation.
+                    Actual server responses must be tested in Sandbox or Production.
+                }
+            }
+        }
+    }
+}

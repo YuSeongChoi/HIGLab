@@ -1,0 +1,204 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Requesting Authorization") {
+        Learn how to request health data access permissions from users.
+        Understand the difference between read and write permissions and handle them correctly.
+    }
+    
+    @Section(title: "Authorization Request Basics") {
+        @ContentAndMedia {
+            The **requestAuthorization** method displays the
+            HealthKit permission UI to the user.
+            Specify read (toShare) and write (read) permissions separately.
+        }
+        
+        @Steps {
+            @Step {
+                **Define Data Types to Request**
+                
+                First, define the data types your app needs as a Set.
+                Use HKQuantityType, HKCategoryType, etc.
+                
+                @Code(name: "DataTypes.swift", file: "03-data-types.swift")
+            }
+            
+            @Step {
+                **Call requestAuthorization**
+                
+                Pass write permissions to toShare and read permissions to read.
+                You can choose between async/await or completion handler patterns.
+                
+                @Code(name: "RequestAuth.swift", file: "03-request-auth.swift")
+            }
+            
+            @Step {
+                **Handle Authorization Result**
+                
+                Even if success is true, it doesn't mean all permissions were granted!
+                It simply means the system UI was displayed successfully.
+                
+                @Code(name: "HandleResult.swift", file: "03-handle-result.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Checking Authorization Status") {
+        @ContentAndMedia {
+            Write permission status can be checked,
+            but read permission status **cannot be checked**.
+            This is Apple's privacy policy.
+        }
+        
+        @Steps {
+            @Step {
+                **Check Write Permission Status**
+                
+                Use authorizationStatus(for:) to check write permission status.
+                Returns one of .notDetermined, .sharingAuthorized, or .sharingDenied.
+                
+                @Code(name: "WriteStatus.swift", file: "03-write-status.swift")
+            }
+            
+            @Step {
+                **Read Permission Cannot Be Checked**
+                
+                Whether read permission was denied cannot be determined.
+                If query results are empty, it could be either "no data" or "permission denied".
+                
+                @Code(name: "ReadStatus.swift", file: "03-read-status.swift")
+            }
+            
+            @Step {
+                **Appropriate UI Feedback**
+                
+                Provide appropriate guidance to users based on permission status.
+                Providing a button to navigate to the Settings app is also a good approach.
+                
+                @Code(name: "UIFeedback.swift", file: "03-ui-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Authorization Request Timing") {
+        @ContentAndMedia {
+            It's best to request permissions **when needed**.
+            Requesting immediately at app launch can degrade user experience.
+        }
+        
+        @Steps {
+            @Step {
+                **Just-in-time Permission Request**
+                
+                Request permission when the user first uses that feature.
+                Example: Request when the "View Steps" button is tapped
+                
+                @Code(name: "JustInTime.swift", file: "03-just-in-time.swift")
+            }
+            
+            @Step {
+                **Explain Then Request During Onboarding**
+                
+                Explain why permission is needed first,
+                then request when the user is ready to increase approval rates.
+                
+                @Code(name: "Onboarding.swift", file: "03-onboarding.swift")
+            }
+            
+            @Step {
+                **Integrate into HealthManager**
+                
+                Integrate authorization request logic into HealthManager.
+                Manage permission status with @Published properties.
+                
+                @Code(name: "HealthManager.swift", file: "03-health-manager-auth.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does it mean when requestAuthorization's success is true?
+            
+            @Choice(isCorrect: true) {
+                The permission UI was displayed successfully
+                
+                @Justification(reaction: "Correct!") {
+                    success indicates whether the UI was displayed,
+                    not whether permissions were actually approved.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All permissions were approved
+                
+                @Justification(reaction: "Not quite") {
+                    What permissions the user approved cannot be determined from the success value.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Read permission was approved
+                
+                @Justification(reaction: "Not quite") {
+                    Read permission approval status cannot be verified via API.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How to check if read permission was denied?
+            
+            @Choice(isCorrect: true) {
+                It cannot be checked — this is Apple's privacy policy
+                
+                @Justification(reaction: "Correct!") {
+                    Apple designed it so that apps cannot know whether
+                    read permission was denied to protect user privacy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check with authorizationStatus(for:)
+                
+                @Justification(reaction: "Not quite") {
+                    This method only returns write permission status.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check with getRequestStatusForAuthorization
+                
+                @Justification(reaction: "Not quite") {
+                    This method also doesn't reveal read permission denial.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the best practice for requesting permissions?
+            
+            @Choice(isCorrect: true) {
+                Request when needed and provide explanation beforehand
+                
+                @Justification(reaction: "Excellent!") {
+                    Just-in-time requests and prior explanations increase approval rates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Request all permissions at once at app launch
+                
+                @Justification(reaction: "Not quite") {
+                    If users don't understand why permission is needed, they're likely to deny.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Quit the app when permission is denied
+                
+                @Justification(reaction: "Not quite") {
+                    It's better to provide features that work without permissions.
+                }
+            }
+        }
+    }
+}

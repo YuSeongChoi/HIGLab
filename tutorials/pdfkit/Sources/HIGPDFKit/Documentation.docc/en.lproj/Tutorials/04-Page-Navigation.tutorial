@@ -1,0 +1,230 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Page Navigation") {
+        Implement page navigation, jumping to specific pages, 
+        and navigation history management in PDF documents.
+        
+        @Image(source: "page-navigation.png", alt: "Page Navigation")
+    }
+    
+    @Section(title: "Basic Page Navigation") {
+        @ContentAndMedia {
+            PDFView provides various methods for 
+            programmatic page navigation.
+            
+            - `goToFirstPage()` / `goToLastPage()`
+            - `goToNextPage()` / `goToPreviousPage()`
+            - `go(to:)` - Navigate to a specific page
+        }
+        
+        @Steps {
+            @Step {
+                Implement buttons to navigate to previous/next pages.
+                Check the state with canGoToNextPage and canGoToPreviousPage.
+                
+                @Code(name: "BasicNavigation.swift", file: "04-01-basic-nav.swift")
+            }
+            
+            @Step {
+                Navigate directly to a specific page number.
+                Get the page with page(at:) from PDFDocument and call go(to:).
+                
+                @Code(name: "GoToPage.swift", file: "04-02-go-to-page.swift")
+            }
+            
+            @Step {
+                Get current page information.
+                Use currentPage and document.index(for:).
+                
+                @Code(name: "CurrentPageInfo.swift", file: "04-03-current-page.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Page Number Input UI") {
+        @ContentAndMedia {
+            Allow users to enter a page number directly 
+            to navigate to the desired page.
+            
+            Implement using TextField combined with validation.
+        }
+        
+        @Steps {
+            @Step {
+                Create a page number input field and navigation button.
+                Validate that the input value is within a valid range.
+                
+                @Code(name: "PageNumberInput.swift", file: "04-04-page-input.swift")
+            }
+            
+            @Step {
+                Navigate directly with the keyboard Return key.
+                Use onSubmit or textFieldShouldReturn.
+                
+                @Code(name: "KeyboardSubmit.swift", file: "04-05-keyboard-submit.swift")
+            }
+            
+            @Step {
+                Quickly browse pages with a slider.
+                Implement with real-time preview.
+                
+                @Code(name: "PageSlider.swift", file: "04-06-slider.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using PDFDestination") {
+        @ContentAndMedia {
+            PDFDestination represents a specific location within a document.
+            It includes not just the page but also coordinates within the page and zoom level.
+            
+            It's mainly used in bookmarks and table of contents links.
+        }
+        
+        @Steps {
+            @Step {
+                Navigate to a specific location on a page using PDFDestination.
+                
+                @Code(name: "PDFDestination.swift", file: "04-07-destination.swift")
+            }
+            
+            @Step {
+                Save the current location as a PDFDestination.
+                This is the foundation for implementing bookmark functionality.
+                
+                @Code(name: "SaveDestination.swift", file: "04-08-save-destination.swift")
+            }
+            
+            @Step {
+                Extract destinations from the PDF document's outline (table of contents).
+                Navigate through PDFOutline to create a navigation menu.
+                
+                @Code(name: "OutlineNavigation.swift", file: "04-09-outline.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Navigation History") {
+        @ContentAndMedia {
+            Implement "back/forward" navigation like a web browser.
+            
+            PDFView provides canGoBack, canGoForward properties 
+            and goBack(), goForward() methods.
+        }
+        
+        @Steps {
+            @Step {
+                Implement back/forward buttons.
+                Navigate through the history of pages the user has visited.
+                
+                @Code(name: "BackForward.swift", file: "04-10-back-forward.swift")
+            }
+            
+            @Step {
+                Detect page changes with Notifications.
+                Subscribe to PDFViewPageChanged notification.
+                
+                @Code(name: "PageChangeNotification.swift", file: "04-11-notification.swift")
+            }
+            
+            @Step {
+                Observe page changes using Combine in SwiftUI.
+                Convert to Publisher to update state.
+                
+                @Code(name: "CombinePageChange.swift", file: "04-12-combine.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which property in PDFView checks if navigation to the next page is possible?
+            
+            @Choice(isCorrect: true) {
+                canGoToNextPage
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    If canGoToNextPage is true, you can 
+                    call goToNextPage().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                hasNextPage
+                
+                @Justification(reaction: "There is no such property.") {
+                    Check the exact PDFView API.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isLastPage
+                
+                @Justification(reaction: "Not quite.") {
+                    Whether it's the last page and whether you can navigate forward 
+                    are different concepts.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class represents a specific location (page + coordinates + zoom) within a PDF document?
+            
+            @Choice(isCorrect: false) {
+                PDFLocation
+                
+                @Justification(reaction: "There is no such class.") {
+                    Check the location-related class name in PDFKit.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFDestination
+                
+                @Justification(reaction: "That's right! ✨") {
+                    PDFDestination represents a location within a document 
+                    including page, coordinates, and zoom level.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFBookmark
+                
+                @Justification(reaction: "Incorrect.") {
+                    Bookmarks need to be implemented separately, 
+                    and location information is handled by a different class.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the Notification name to subscribe to for detecting page changes?
+            
+            @Choice(isCorrect: true) {
+                PDFViewPageChanged
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Subscribe to Notification.Name.PDFViewPageChanged 
+                    to receive page change events.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFDocumentPageChanged
+                
+                @Justification(reaction: "Not quite.") {
+                    Notifications are sent from PDFView. 
+                    Check the exact name.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                pageDidChange
+                
+                @Justification(reaction: "Incorrect.") {
+                    This is not the format for Notification names.
+                    Check the PDFKit notification naming convention.
+                }
+            }
+        }
+    }
+}

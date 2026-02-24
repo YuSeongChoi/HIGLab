@@ -1,0 +1,157 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Managing Reminders") {
+        Learn how to create, fetch, and complete 
+        reminders using EventKit.
+    }
+    
+    @Section(title: "Reminder Permissions") {
+        @ContentAndMedia {
+            Reminders require separate permission from calendars.
+            Starting with iOS 17, use `requestFullAccessToReminders()`.
+        }
+        
+        @Steps {
+            @Step {
+                Request reminder access permission.
+                
+                @Code(name: "CalendarManager.swift", file: "08-01-auth.swift")
+            }
+            
+            @Step {
+                Fetch reminder calendars.
+                
+                @Code(name: "CalendarManager.swift", file: "08-02-calendars.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Reminders") {
+        @ContentAndMedia {
+            Create new reminders with `EKReminder`. 
+            You can set the title, due date, and priority.
+        }
+        
+        @Steps {
+            @Step {
+                Create a new reminder.
+                
+                @Code(name: "ReminderManager.swift", file: "08-03-create.swift")
+            }
+            
+            @Step {
+                Set the due date.
+                
+                Reminders use DateComponents.
+                
+                @Code(name: "ReminderManager.swift", file: "08-04-due.swift")
+            }
+            
+            @Step {
+                Set the priority.
+                
+                @Code(name: "ReminderManager.swift", file: "08-05-priority.swift")
+            }
+            
+            @Step {
+                Save the reminder.
+                
+                @Code(name: "ReminderManager.swift", file: "08-06-save.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Fetching and Completing Reminders") {
+        @ContentAndMedia {
+            Fetch incomplete/completed reminders and 
+            change completion status.
+        }
+        
+        @Steps {
+            @Step {
+                Fetch incomplete reminders.
+                
+                Use `predicateForIncompleteReminders()`.
+                
+                @Code(name: "ReminderManager.swift", file: "08-07-fetch.swift")
+            }
+            
+            @Step {
+                Fetch completed reminders.
+                
+                @Code(name: "ReminderManager.swift", file: "08-08-completed.swift")
+            }
+            
+            @Step {
+                Mark a reminder as complete.
+                
+                @Code(name: "ReminderManager.swift", file: "08-09-complete.swift")
+            }
+            
+            @Step {
+                Implement a reminder list View.
+                
+                @Code(name: "ReminderListView.swift", file: "08-10-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What property is used to set the due date of an EKReminder?
+            
+            @Choice(isCorrect: false) {
+                `dueDate`
+                
+                @Justification(reaction: "Try again.") {
+                    `dueDate` exists but is read-only.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `dueDateComponents`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Reminder due dates are set with `DateComponents`.
+                    This allows timezone-independent settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `deadline`
+                
+                @Justification(reaction: "Try again.") {
+                    This property doesn't exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How does fetching reminders differ from fetching events?
+            
+            @Choice(isCorrect: true) {
+                It runs asynchronously and uses a completion handler
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    `fetchReminders(matching:completion:)` 
+                    runs asynchronously and returns results via a completion handler.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It runs synchronously and returns an array
+                
+                @Justification(reaction: "Try again.") {
+                    Events are synchronous, but reminders are asynchronous.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                There's no difference
+                
+                @Justification(reaction: "Try again.") {
+                    The fetching methods for events and reminders are different.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,78 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Widget Extension Setup") {
+        Add a Widget Extension to your Xcode project and
+        understand the core architecture of WidgetKit.
+    }
+    
+    @Section(title: "Project Preparation") {
+        @ContentAndMedia {
+            Create a new iOS project and add a Widget Extension target.
+            Check "Include Configuration App Intent" to start with 
+            a configurable widget.
+        }
+        
+        @Steps {
+            @Step {
+                Create a new project in Xcode.
+                Select **App** template and **SwiftUI** for Interface.
+                Name the project `WeatherWidgetApp`.
+                
+                @Code(name: "WeatherWidgetApp.swift", file: "02-app-entry.swift")
+            }
+            
+            @Step {
+                Go to File → New → Target and select **Widget Extension**.
+                
+                Name it `WeatherWidgetExtension` and 
+                check **Include Configuration App Intent**.
+                
+                @Code(name: "WeatherWidget.swift", file: "02-widget-skeleton.swift")
+            }
+            
+            @Step {
+                Clean up the generated boilerplate code.
+                Create a weather data model to define the structure for your widget.
+                
+                @Code(name: "WeatherData.swift", file: "02-weather-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding TimelineProvider") {
+        @ContentAndMedia {
+            The core of WidgetKit is the **TimelineProvider**.
+            The system receives the timeline in advance and renders views at the appropriate times.
+            
+            You must implement 3 required methods:
+            - `placeholder`: Widget gallery preview
+            - `getSnapshot`: Snapshot when adding widget
+            - `getTimeline`: Actual timeline generation
+        }
+        
+        @Steps {
+            @Step {
+                Define `WeatherEntry`.
+                It adopts the `TimelineEntry` protocol and
+                must have a `date` property.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-entry.swift")
+            }
+            
+            @Step {
+                Implement `placeholder` and `getSnapshot`.
+                Both return preview data.
+                
+                HIG Tip: Use actual preview data instead of loading spinners.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-placeholder.swift")
+            }
+            
+            @Step {
+                Implement `getTimeline`.
+                Fetch weather data and set it to refresh every 15 minutes.
+                
+                @Code(name: "WeatherProvider.swift", file: "02-timeline.swift")
+            }
+        }
+    }
+}

@@ -1,0 +1,269 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CloudKit Sync: Connected Across All Devices") {
+        Use the same task list on iPhone, iPad, and Mac
+        with iCloud integration.
+        Surprisingly, only a few lines of configuration are needed.
+    }
+    
+    @Section(title: "CloudKit Basic Setup") {
+        @ContentAndMedia {
+            When you integrate SwiftData with CloudKit, data syncs automatically.
+            No separate sync code needs to be written.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudKit Requirements**
+                
+                Check prerequisites for CloudKit sync.
+                Apple Developer account and provisioning setup required.
+                
+                @Code(name: "CloudKitRequirements.swift", file: "10-requirements.swift")
+            }
+            
+            @Step {
+                **Adding Capabilities**
+                
+                Add iCloud and CloudKit capabilities in Xcode.
+                Enable Background Modes for background sync.
+                
+                @Code(name: "Capabilities.swift", file: "10-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Model CloudKit Compatibility") {
+        @ContentAndMedia {
+            Models must follow specific rules to be CloudKit compatible.
+            Check precautions like using optionals and setting defaults.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudKit Compatible Model Rules**
+                
+                All properties must be optional or have defaults.
+                CloudKit can create records partially.
+                
+                @Code(name: "CloudKitModel.swift", file: "10-model-rules.swift")
+            }
+            
+            @Step {
+                **Relationship CloudKit Compatibility**
+                
+                @Relationship is also CloudKit compatible.
+                Understand sync behavior according to delete rules.
+                
+                @Code(name: "CloudKitRelationships.swift", file: "10-relationship-rules.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ModelContainer CloudKit Setup") {
+        @ContentAndMedia {
+            Set up CloudKit container in ModelConfiguration.
+            This alone enables auto sync.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic CloudKit Container**
+                
+                Set cloudKitContainerIdentifier.
+                Must match the app's iCloud Container ID.
+                
+                @Code(name: "CloudKitContainer.swift", file: "10-container-basic.swift")
+            }
+            
+            @Step {
+                **Using Private Database**
+                
+                User's Private Database is used by default.
+                Personal data only the user can access.
+                
+                @Code(name: "PrivateDatabase.swift", file: "10-private-db.swift")
+            }
+            
+            @Step {
+                **App Entry Point Setup**
+                
+                Apply CloudKit setup to TaskMasterApp.
+                Distinguish dev/production environment settings.
+                
+                @Code(name: "AppEntry.swift", file: "10-app-entry.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Monitoring Sync Status") {
+        @ContentAndMedia {
+            Display sync status to users.
+            Handle network errors and conflicts.
+        }
+        
+        @Steps {
+            @Step {
+                **Checking Sync Status**
+                
+                Observe NSPersistentCloudKitContainer events.
+                Track import/export progress.
+                
+                @Code(name: "SyncStatus.swift", file: "10-sync-status.swift")
+            }
+            
+            @Step {
+                **Conflict Resolution**
+                
+                Conflicts occur when same data is modified on multiple devices.
+                Understand SwiftData/CloudKit's default conflict resolution policy.
+                
+                @Code(name: "ConflictResolution.swift", file: "10-conflict.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Shared Database (Optional)") {
+        @ContentAndMedia {
+            Use Shared Database to share data with other users.
+            Useful for family sharing or collaboration features.
+        }
+        
+        @Steps {
+            @Step {
+                **Understanding CKShare**
+                
+                Understand CloudKit's sharing mechanism.
+                Grasp concepts of owner, participants, and permissions.
+                
+                @Code(name: "CKShareBasics.swift", file: "10-ckshare-basics.swift")
+            }
+            
+            @Step {
+                **Implementing Sharing in SwiftData**
+                
+                Currently SwiftData has limited sharing API.
+                Introduce methods for directly accessing Core Data layer.
+                
+                @Code(name: "SharingImplementation.swift", file: "10-sharing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CloudKit Debugging") {
+        @ContentAndMedia {
+            Methods for diagnosing and resolving CloudKit sync issues.
+            Use CloudKit Dashboard and console logs.
+        }
+        
+        @Steps {
+            @Step {
+                **Using CloudKit Dashboard**
+                
+                Check data in the web-based CloudKit Dashboard.
+                Query, modify, and delete records.
+                
+                @Code(name: "Dashboard.swift", file: "10-dashboard.swift")
+            }
+            
+            @Step {
+                **Debugging Tips**
+                
+                Summary of common CloudKit errors and solutions.
+                Cover log analysis, network simulation, etc.
+                
+                @Code(name: "DebuggingTips.swift", file: "10-debugging.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Model requirements for SwiftData CloudKit sync?
+            
+            @Choice(isCorrect: true) {
+                All properties must be optional or have default values
+                
+                @Justification(reaction: "Correct!") {
+                    CloudKit can create records partially,
+                    so situations where nil is possible must be handled.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Mark with @CloudKit macro
+                
+                @Justification(reaction: "Not quite") {
+                    No such macro exists. Just follow property rules.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Adopt Codable protocol
+                
+                @Justification(reaction: "Not quite") {
+                    Codable is not required. Optional/default value rules are important.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Minimum work needed for CloudKit sync setup?
+            
+            @Choice(isCorrect: true) {
+                Add iCloud capability + set cloudKitContainerIdentifier
+                
+                @Justification(reaction: "Exactly right!") {
+                    Add capability in Xcode and set container ID
+                    in ModelConfiguration—that's it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Write separate sync code
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData handles it automatically. Just configure.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Create CloudKit server instance
+                
+                @Justification(reaction: "Not quite") {
+                    Uses CloudKit infrastructure provided by Apple.
+                    No separate server creation needed.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When same data is modified simultaneously on multiple devices?
+            
+            @Choice(isCorrect: true) {
+                Automatically handled by CloudKit's conflict resolution policy
+                
+                @Justification(reaction: "Correct!") {
+                    "Last writer wins" policy applies by default;
+                    custom conflict resolution logic can be added if needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Error occurs and manual resolution required
+                
+                @Justification(reaction: "Not quite") {
+                    Auto-resolved without error. Default is last change priority.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Both changes are merged
+                
+                @Justification(reaction: "Not quite") {
+                    Default is "last change wins," not merge.
+                    Custom implementation needed for field-level merge.
+                }
+            }
+        }
+    }
+}

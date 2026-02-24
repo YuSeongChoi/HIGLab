@@ -1,0 +1,220 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Setting Up CLLocationManager") {
+        Learn how to configure CLLocationManager, the core of CoreLocation,
+        and request location permissions.
+    }
+    
+    @Section(title: "CLLocationManager Basics") {
+        @ContentAndMedia {
+            `CLLocationManager` is the entry point for all location services.
+            All operations including requesting location updates, managing permissions,
+            and setting accuracy are done through this object.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating the LocationManager Class**
+                
+                Create a LocationManager class that adopts ObservableObject
+                to integrate with SwiftUI.
+                
+                @Code(name: "LocationManager.swift", file: "02-location-manager-base.swift")
+            }
+            
+            @Step {
+                **Implementing CLLocationManagerDelegate**
+                
+                Use the delegate pattern to receive
+                location updates and permission changes.
+                
+                @Code(name: "LocationManager.swift", file: "02-delegate-setup.swift")
+            }
+            
+            @Step {
+                **NSObject Inheritance and Delegate Connection**
+                
+                Since CLLocationManagerDelegate is an Objective-C protocol,
+                you must inherit from NSObject.
+                
+                @Code(name: "LocationManager.swift", file: "02-nsobject.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Permission Requests") {
+        @ContentAndMedia {
+            It's best to request location permissions progressively.
+            First request "When In Use," then upgrade to "Always" when needed.
+        }
+        
+        @Steps {
+            @Step {
+                **Tracking Permission Status**
+                
+                Expose `authorizationStatus` as a @Published property
+                to show different screens based on permission status in the UI.
+                
+                @Code(name: "LocationManager.swift", file: "02-auth-tracking.swift")
+            }
+            
+            @Step {
+                **Requesting When In Use Permission**
+                
+                Calling `requestWhenInUseAuthorization()` makes
+                the system display a permission request alert.
+                
+                @Code(name: "LocationManager.swift", file: "02-when-in-use.swift")
+            }
+            
+            @Step {
+                **Upgrading to Always Permission**
+                
+                You can only request "Always" permission
+                after receiving "When In Use" permission.
+                This order is enforced since iOS 13.
+                
+                @Code(name: "LocationManager.swift", file: "02-always-auth.swift")
+            }
+            
+            @Step {
+                **Handling Permission Changes**
+                
+                Detect and respond to permission changes in the
+                `locationManagerDidChangeAuthorization` delegate method.
+                
+                @Code(name: "LocationManager.swift", file: "02-auth-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI Integration") {
+        @ContentAndMedia {
+            Use LocationManager in SwiftUI views to
+            display permission status and create permission request UI.
+        }
+        
+        @Steps {
+            @Step {
+                **Sharing as Environment Object**
+                
+                Use @StateObject and environmentObject
+                to share LocationManager throughout the app.
+                
+                @Code(name: "RunningTrackerApp.swift", file: "02-app-environment.swift")
+            }
+            
+            @Step {
+                **Creating the Permission Request View**
+                
+                Create an onboarding view that explains why location permission
+                is needed and requests permission from the user.
+                
+                @Code(name: "PermissionView.swift", file: "02-permission-view.swift")
+            }
+            
+            @Step {
+                **Screen Transitions Based on Permission Status**
+                
+                Modify ContentView to show the onboarding screen or main screen
+                based on the permission status.
+                
+                @Code(name: "ContentView.swift", file: "02-content-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which class must you inherit from to use CLLocationManagerDelegate?
+            
+            @Choice(isCorrect: true) {
+                NSObject
+                
+                @Justification(reaction: "Correct!") {
+                    Since CLLocationManagerDelegate is an Objective-C protocol,
+                    you must inherit from NSObject for delegate methods to be called.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UIViewController
+                
+                @Justification(reaction: "Not quite") {
+                    While UIViewController inherits from NSObject and would work,
+                    in SwiftUI, inheriting only from NSObject is appropriate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can be used without inheritance
+                
+                @Justification(reaction: "Not quite") {
+                    Swift classes must inherit from NSObject
+                    to implement Objective-C delegates.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the correct way to request "Always" permission since iOS 13?
+            
+            @Choice(isCorrect: true) {
+                Request "Always" after first receiving "When In Use"
+                
+                @Justification(reaction: "Correct!") {
+                    Since iOS 13, "Always" permission starts as provisional,
+                    and the user must finalize approval later in Settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Request "Always" directly
+                
+                @Justification(reaction: "Not quite") {
+                    Since iOS 13, even if you directly request "Always,"
+                    "When In Use" is granted first.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Request both permissions simultaneously
+                
+                @Justification(reaction: "Not quite") {
+                    Permissions must be requested progressively.
+                    Simultaneous requests are not possible.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which delegate method detects permission changes?
+            
+            @Choice(isCorrect: true) {
+                locationManagerDidChangeAuthorization(_:)
+                
+                @Justification(reaction: "Correct!") {
+                    Since iOS 14, this method notifies of permission changes.
+                    The previous locationManager(_:didChangeAuthorization:) is deprecated.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                locationManager(_:didUpdateLocations:)
+                
+                @Justification(reaction: "Not quite") {
+                    This method is called when receiving location updates.
+                    It's not related to permission changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                authorizationStatusDidChange()
+                
+                @Justification(reaction: "Not quite") {
+                    There is no method with this name.
+                    Use locationManagerDidChangeAuthorization.
+                }
+            }
+        }
+    }
+}

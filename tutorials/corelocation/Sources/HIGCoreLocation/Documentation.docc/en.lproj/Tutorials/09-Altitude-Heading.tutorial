@@ -1,0 +1,230 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Altitude & Heading Data") {
+        Use altitude information from CLLocation and heading data from CLHeading.
+        Display uphill/downhill information and direction during running.
+    }
+    
+    @Section(title: "Using Altitude Data") {
+        @ContentAndMedia {
+            The `altitude` property of CLLocation provides altitude (in meters) above sea level.
+            In a running tracker, you can calculate cumulative elevation gain/loss.
+        }
+        
+        @Steps {
+            @Step {
+                **Reading Altitude Data**
+                
+                Check altitude and verticalAccuracy from CLLocation.
+                If verticalAccuracy is negative, the altitude data is invalid.
+                
+                @Code(name: "AltitudeTracker.swift", file: "09-read-altitude.swift")
+            }
+            
+            @Step {
+                **Calculating Cumulative Elevation Gain**
+                
+                Calculate altitude differences between consecutive locations
+                and accumulate total ascent/descent.
+                
+                @Code(name: "AltitudeTracker.swift", file: "09-elevation-gain.swift")
+            }
+            
+            @Step {
+                **Storing Elevation Profile**
+                
+                Store altitude by distance as an array
+                to draw an elevation graph later.
+                
+                @Code(name: "AltitudeTracker.swift", file: "09-elevation-profile.swift")
+            }
+            
+            @Step {
+                **Elevation Chart UI**
+                
+                Use Swift Charts to visualize
+                the elevation profile of the running course.
+                
+                @Code(name: "ElevationChartView.swift", file: "09-elevation-chart.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Heading Data") {
+        @ContentAndMedia {
+            Using heading updates from CLLocationManager,
+            you can know the direction the device is facing.
+            
+            This provides compass direction (magnetic/true heading).
+        }
+        
+        @Steps {
+            @Step {
+                **Starting Heading Updates**
+                
+                Calling `startUpdatingHeading()` provides notifications
+                whenever the device's direction changes.
+                
+                @Code(name: "HeadingTracker.swift", file: "09-start-heading.swift")
+            }
+            
+            @Step {
+                **Understanding CLHeading Data**
+                
+                `magneticHeading` is relative to magnetic north,
+                `trueHeading` is relative to true north.
+                For running apps, using trueHeading is recommended.
+                
+                @Code(name: "HeadingTracker.swift", file: "09-heading-data.swift")
+            }
+            
+            @Step {
+                **Setting headingFilter**
+                
+                Setting `headingFilter` sends updates only when
+                the heading changes by more than the specified degrees.
+                
+                @Code(name: "HeadingTracker.swift", file: "09-heading-filter.swift")
+            }
+            
+            @Step {
+                **Travel Direction vs Device Direction**
+                
+                CLLocation's `course` property shows travel direction,
+                while CLHeading shows where the device is pointing.
+                During running, course is more useful.
+                
+                @Code(name: "DirectionTracker.swift", file: "09-course-vs-heading.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Extending Running Statistics") {
+        @ContentAndMedia {
+            Integrate altitude and heading data into the running dashboard
+            to provide richer running statistics.
+        }
+        
+        @Steps {
+            @Step {
+                **Extending Altitude Statistics Model**
+                
+                Add altitude-related statistics to RunSession.
+                Cumulative ascent, cumulative descent, highest altitude, lowest altitude, etc.
+                
+                @Code(name: "RunSession+Altitude.swift", file: "09-session-altitude.swift")
+            }
+            
+            @Step {
+                **Direction Compass UI**
+                
+                Visualize the current travel direction as a compass.
+                Also display N/S/E/W direction text.
+                
+                @Code(name: "CompassView.swift", file: "09-compass-view.swift")
+            }
+            
+            @Step {
+                **Integrated Dashboard**
+                
+                Complete an integrated dashboard showing distance, time, pace
+                along with altitude information and current direction.
+                
+                @Code(name: "FullDashboardView.swift", file: "09-full-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does a negative verticalAccuracy in CLLocation mean?
+            
+            @Choice(isCorrect: true) {
+                The altitude data is invalid
+                
+                @Justification(reaction: "Correct!") {
+                    Negative verticalAccuracy means the system could not determine altitude.
+                    The altitude value should not be used in this case.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Below sea level
+                
+                @Justification(reaction: "Not quite") {
+                    Below sea level is represented by negative altitude.
+                    verticalAccuracy represents accuracy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Very accurate altitude
+                
+                @Justification(reaction: "Not quite") {
+                    Negative values indicate an error.
+                    Higher accuracy means smaller positive values.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the difference between magneticHeading and trueHeading?
+            
+            @Choice(isCorrect: true) {
+                magneticHeading is relative to magnetic north, trueHeading is relative to true north
+                
+                @Justification(reaction: "Correct!") {
+                    Magnetic north and true north differ by location.
+                    Use trueHeading to match with maps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                magneticHeading is more accurate
+                
+                @Justification(reaction: "Not quite") {
+                    The difference is in reference point, not accuracy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No difference
+                
+                @Justification(reaction: "Not quite") {
+                    The two values have different reference points.
+                    They can differ by more than 10 degrees depending on region.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which CLLocation property shows the travel direction during running?
+            
+            @Choice(isCorrect: true) {
+                course
+                
+                @Justification(reaction: "Correct!") {
+                    course shows travel direction in degrees.
+                    North is 0 degrees, east is 90 degrees, south is 180 degrees.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                heading
+                
+                @Justification(reaction: "Not quite") {
+                    CLLocation doesn't have a heading property.
+                    CLHeading is received through separate updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                direction
+                
+                @Justification(reaction: "Not quite") {
+                    CLLocation doesn't have a direction property.
+                    Use the course property for travel direction.
+                }
+            }
+        }
+    }
+}

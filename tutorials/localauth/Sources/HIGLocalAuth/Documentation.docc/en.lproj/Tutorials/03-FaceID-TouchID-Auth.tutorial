@@ -1,0 +1,184 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Implementing Face ID / Touch ID Authentication") {
+        Learn how to actually request biometric authentication and handle results.
+        Implement the lock screen of the secure vault app.
+    }
+    
+    @Section(title: "canEvaluatePolicy Method") {
+        @ContentAndMedia {
+            Before requesting authentication, you must first check if the device supports biometric authentication.
+            The canEvaluatePolicy method does this.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic canEvaluatePolicy Usage**
+                
+                This method runs synchronously and
+                returns a Bool indicating biometric authentication availability.
+                
+                @Code(name: "CanEvaluate.swift", file: "03-can-evaluate.swift")
+            }
+            
+            @Step {
+                **LAPolicy Options**
+                
+                - `.deviceOwnerAuthenticationWithBiometrics`: Biometrics only
+                - `.deviceOwnerAuthentication`: Biometrics + passcode fallback
+                
+                @Code(name: "Policies.swift", file: "03-policies.swift")
+            }
+            
+            @Step {
+                **Using Error Pointer**
+                
+                When canEvaluatePolicy returns false,
+                you can check the specific failure reason through NSErrorPointer.
+                
+                @Code(name: "ErrorPointer.swift", file: "03-error-pointer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "evaluatePolicy Method") {
+        @ContentAndMedia {
+            This is the method that requests actual authentication.
+            It runs asynchronously and displays the system authentication UI.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Authentication Request**
+                
+                evaluatePolicy is an asynchronous method.
+                You can use completion handler or async/await.
+                
+                @Code(name: "EvaluateBasic.swift", file: "03-evaluate-basic.swift")
+            }
+            
+            @Step {
+                **async/await Version**
+                
+                Using Swift Concurrency makes the code cleaner.
+                Errors can be handled with try/catch.
+                
+                @Code(name: "EvaluateAsync.swift", file: "03-evaluate-async.swift")
+            }
+            
+            @Step {
+                **Handling Authentication Success**
+                
+                When authentication succeeds, unlock the app and display protected content.
+                
+                @Code(name: "AuthSuccess.swift", file: "03-auth-success.swift")
+            }
+            
+            @Step {
+                **Handling Authentication Failure**
+                
+                Different responses are needed depending on the failure reason.
+                Distinguish between user cancellation, attempt limit exceeded, system error, etc.
+                
+                @Code(name: "AuthFailure.swift", file: "03-auth-failure.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Lock Screen UI") {
+        @ContentAndMedia {
+            Build the secure vault app's lock screen with SwiftUI.
+            Place Face ID icon and authentication button.
+        }
+        
+        @Steps {
+            @Step {
+                **LockScreenView Basic Layout**
+                
+                Compose with vault icon, welcome message, and authentication button.
+                
+                @Code(name: "LockScreen.swift", file: "03-lock-screen.swift")
+            }
+            
+            @Step {
+                **Connect Authentication Button Action**
+                
+                Call AuthenticationManager's authenticate method when button is tapped.
+                
+                @Code(name: "AuthButton.swift", file: "03-auth-button.swift")
+            }
+            
+            @Step {
+                **Auto Authentication Request**
+                
+                Automatically requesting authentication at app launch improves user experience.
+                Trigger in onAppear.
+                
+                @Code(name: "AutoAuth.swift", file: "03-auto-auth.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is correct about the evaluatePolicy method?
+            
+            @Choice(isCorrect: true) {
+                It runs asynchronously and displays system authentication UI
+                
+                @Justification(reaction: "Correct!") {
+                    evaluatePolicy displays system UI and waits for user interaction,
+                    so it must run asynchronously.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It runs synchronously and returns results immediately
+                
+                @Justification(reaction: "Not quite") {
+                    evaluatePolicy waits for user input, so it cannot run synchronously.
+                    Don't confuse it with canEvaluatePolicy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It authenticates in the background without separate UI
+                
+                @Justification(reaction: "Not quite") {
+                    Biometric authentication is always performed through system UI.
+                    Apps cannot directly access the camera or sensors for security.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the difference between .deviceOwnerAuthentication and .deviceOwnerAuthenticationWithBiometrics?
+            
+            @Choice(isCorrect: true) {
+                The former includes passcode fallback, the latter only allows biometrics
+                
+                @Justification(reaction: "Correct!") {
+                    deviceOwnerAuthentication allows passcode entry when biometrics fail.
+                    WithBiometrics uses purely biometric authentication.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They are identical, just with different names
+                
+                @Justification(reaction: "Not quite") {
+                    The two policies are different.
+                    The key difference is whether fallback is allowed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The former is for Face ID, the latter is for Touch ID
+                
+                @Justification(reaction: "Not quite") {
+                    Both policies can be used with Face ID and Touch ID.
+                    The difference is whether passcode fallback is allowed.
+                }
+            }
+        }
+    }
+}

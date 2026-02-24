@@ -1,0 +1,147 @@
+@Tutorial(time: 10) {
+    @Intro(title: "EventKit Introduction & Permissions") {
+        Learn the core concepts of the EventKit framework and 
+        how to set up permissions for calendar/reminder access.
+    }
+    
+    @Section(title: "What is EventKit?") {
+        @ContentAndMedia {
+            EventKit is a framework that provides access to calendar events 
+            and reminders on iOS and macOS.
+            
+            You can read and write data from the user's Calendar app, 
+            allowing you to integrate scheduling features into your app.
+        }
+        
+        @Steps {
+            @Step {
+                Let's explore the main classes in EventKit.
+                
+                @Code(name: "EventKitOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                Import EventKit into your project.
+                
+                @Code(name: "CalendarManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info.plist Permission Settings") {
+        @ContentAndMedia {
+            To use EventKit, you need to add permission request messages 
+            to Info.plist.
+            
+            Starting with iOS 17, calendar and reminder permissions 
+            are more granular.
+        }
+        
+        @Steps {
+            @Step {
+                Add calendar access permission to Info.plist.
+                
+                Use the `NSCalendarsFullAccessUsageDescription` key.
+                
+                @Code(name: "Info.plist", file: "01-03-plist.swift")
+            }
+            
+            @Step {
+                Also add reminder permissions.
+                
+                Use the `NSRemindersFullAccessUsageDescription` key.
+                
+                @Code(name: "Info.plist", file: "01-04-plist-reminder.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Permission Requests") {
+        @ContentAndMedia {
+            Write code to request permissions from the user 
+            when the app launches.
+        }
+        
+        @Steps {
+            @Step {
+                Create an `EKEventStore` and check the authorization status.
+                
+                @Code(name: "CalendarManager.swift", file: "01-05-auth-check.swift")
+            }
+            
+            @Step {
+                Add a method to request calendar access permission.
+                
+                On iOS 17 and later, use `requestFullAccessToEvents()`.
+                
+                @Code(name: "CalendarManager.swift", file: "01-06-request-auth.swift")
+            }
+            
+            @Step {
+                Complete the logic for handling authorization status.
+                
+                @Code(name: "CalendarManager.swift", file: "01-07-auth-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which class is used to access the calendar database in EventKit?
+            
+            @Choice(isCorrect: false) {
+                `EKCalendar`
+                
+                @Justification(reaction: "Try again.") {
+                    `EKCalendar` is a class that represents an individual calendar.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `EKEventStore`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    `EKEventStore` is the core class that manages 
+                    connections to the calendar database.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `EKEvent`
+                
+                @Justification(reaction: "Try again.") {
+                    `EKEvent` is a class that represents an individual event.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which method requests full calendar access in iOS 17?
+            
+            @Choice(isCorrect: false) {
+                `requestAccess(to:)`
+                
+                @Justification(reaction: "Try again.") {
+                    This method was used in iOS versions before iOS 17.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `requestFullAccessToEvents()`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Starting with iOS 17, use `requestFullAccessToEvents()` 
+                    to request full calendar access.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `requestCalendarAccess()`
+                
+                @Justification(reaction: "Try again.") {
+                    This method doesn't exist.
+                }
+            }
+        }
+    }
+}

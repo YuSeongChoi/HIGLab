@@ -1,0 +1,193 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Background BLE") {
+        Implement methods to maintain BLE communication
+        even when the app is in the background.
+    }
+    
+    @Section(title: "Background Mode Configuration") {
+        @ContentAndMedia {
+            To use background BLE on iOS,
+            you need to add background modes to Info.plist.
+            
+            **Background Modes:**
+            - `bluetooth-central`: Central role
+            - `bluetooth-peripheral`: Peripheral role
+            
+            A valid reason for use is required for App Store submission.
+        }
+        
+        @Steps {
+            @Step {
+                Add background modes to Info.plist.
+                
+                @Code(name: "BackgroundModes.swift", file: "08-01-background-modes.swift")
+            }
+            
+            @Step {
+                You can also configure this in Xcode's Signing & Capabilities.
+                
+                @Code(name: "CapabilitiesSetup.swift", file: "08-02-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "State Restoration") {
+        @ContentAndMedia {
+            You can restore BLE connections even when
+            the app is terminated by the system.
+            
+            By specifying a restoration identifier when creating CBCentralManager,
+            the system maintains the connection state.
+        }
+        
+        @Steps {
+            @Step {
+                Set up options for State Restoration.
+                
+                @Code(name: "BluetoothManager.swift", file: "08-03-restoration-id.swift")
+            }
+            
+            @Step {
+                Handle the restoration callback when the app restarts.
+                
+                @Code(name: "BluetoothManager.swift", file: "08-04-will-restore.swift")
+            }
+            
+            @Step {
+                Process the restored Peripheral state.
+                
+                @Code(name: "BluetoothManager.swift", file: "08-05-handle-restored.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Background Scanning") {
+        @ContentAndMedia {
+            There are limitations when scanning in the background.
+            
+            **Background Scan Limitations:**
+            - Service UUIDs must be specified
+            - Scan intervals are longer
+            - `allowDuplicates` option is ignored
+        }
+        
+        @Steps {
+            @Step {
+                Implement background-compatible scanning.
+                
+                @Code(name: "BluetoothManager.swift", file: "08-06-background-scan.swift")
+            }
+            
+            @Step {
+                Change scan strategy based on app state.
+                
+                @Code(name: "BluetoothManager.swift", file: "08-07-adaptive-scan.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Background Notifications") {
+        @ContentAndMedia {
+            Notify users with local notifications
+            when BLE events occur in the background.
+        }
+        
+        @Steps {
+            @Step {
+                Display a notification when a device is discovered in the background.
+                
+                @Code(name: "BackgroundNotification.swift", file: "08-08-local-notification.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is required when scanning BLE in the background?
+            
+            @Choice(isCorrect: true) {
+                Specifying serviceUUIDs
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    In the background, you cannot scan all devices with nil.
+                    You must specify the service UUIDs you're interested in.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                allowDuplicates: true
+                
+                @Justification(reaction: "It's ignored in the background.") {
+                    This option is automatically treated as false in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No special requirements
+                
+                @Justification(reaction: "There are limitations.") {
+                    serviceUUIDs are required and scan intervals are limited.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why is State Restoration needed?
+            
+            @Choice(isCorrect: true) {
+                To restore connections even when the app is terminated by the system
+                
+                @Justification(reaction: "Correct! 🔄") {
+                    Even when the app is terminated due to memory pressure,
+                    the system maintains the BLE connection and
+                    restores it when the app restarts.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To save battery
+                
+                @Justification(reaction: "That's not the direct purpose.") {
+                    Connection restoration is the main purpose.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To improve scan speed
+                
+                @Justification(reaction: "It's not related to scanning.") {
+                    The purpose is connection state restoration.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is an appropriate value for CBCentralManagerOptionRestoreIdentifierKey?
+            
+            @Choice(isCorrect: false) {
+                nil
+                
+                @Justification(reaction: "A unique string is needed.") {
+                    If nil, State Restoration is disabled.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                An app-unique string (e.g., "com.myapp.bluetooth")
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Any string unique within the app works.
+                    If using multiple CentralManagers, each needs a different ID.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID().uuidString (newly generated each time)
+                
+                @Justification(reaction: "It must be a fixed value.") {
+                    Restoration is impossible if the value differs each time.
+                }
+            }
+        }
+    }
+}

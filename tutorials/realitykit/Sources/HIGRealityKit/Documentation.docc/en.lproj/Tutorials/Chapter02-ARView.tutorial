@@ -1,0 +1,194 @@
+@Tutorial(time: 20) {
+    @Intro(title: "ARView Setup") {
+        ARView is the core view that renders AR content in RealityKit.
+        In this tutorial, you'll learn how to create and configure an ARView with various options.
+        
+        @Image(source: "chapter2-arview.png", alt: "ARView Setup")
+    }
+    
+    @Section(title: "Basic ARView Setup") {
+        @ContentAndMedia {
+            ARView is a subclass of UIView that displays AR content
+            and renders 3D objects on top of the camera feed.
+            
+            @Image(source: "arview-basics.png", alt: "ARView Basic Structure")
+        }
+        
+        @Steps {
+            @Step {
+                Implement UIViewRepresentable to use ARView in SwiftUI.
+                
+                @Code(name: "ARViewContainer.swift", file: "02-arview-01.swift")
+            }
+            
+            @Step {
+                You can initialize ARView with various frame options.
+                
+                @Code(name: "ARViewInit.swift", file: "02-arview-02.swift")
+            }
+            
+            @Step {
+                Let's explore the main properties of ARView.
+                
+                - `scene`: The RealityKit Scene to render
+                - `cameraMode`: AR or non-AR mode
+                - `renderOptions`: Rendering options
+                
+                @Code(name: "ARViewProperties.swift", file: "02-arview-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AR Session Configuration") {
+        @ContentAndMedia {
+            ARView internally manages an ARSession.
+            You can set tracking modes through various AR configurations.
+            
+            @Image(source: "ar-session.png", alt: "AR Session Configuration")
+        }
+        
+        @Steps {
+            @Step {
+                Set up world tracking with ARWorldTrackingConfiguration.
+                
+                @Code(name: "WorldTracking.swift", file: "02-arview-04.swift")
+            }
+            
+            @Step {
+                Enable plane detection.
+                You can detect horizontal planes, vertical planes, or both.
+                
+                @Code(name: "PlaneDetection.swift", file: "02-arview-05.swift")
+            }
+            
+            @Step {
+                Set up environment texturing for realistic reflections.
+                
+                @Code(name: "EnvironmentTexturing.swift", file: "02-arview-06.swift")
+            }
+            
+            @Step {
+                Enable people occlusion.
+                This allows virtual objects to appear behind people.
+                
+                @Code(name: "PeopleOcclusion.swift", file: "02-arview-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Debug Options") {
+        @ContentAndMedia {
+            You can enable various debug options useful during development.
+            
+            @Image(source: "debug-options.png", alt: "Debug Options")
+        }
+        
+        @Steps {
+            @Step {
+                Use debugOptions to enable various visualizations.
+                
+                @Code(name: "DebugOptions.swift", file: "02-arview-08.swift")
+            }
+            
+            @Step {
+                Display statistics information on screen.
+                
+                @Code(name: "Statistics.swift", file: "02-arview-09.swift")
+            }
+            
+            @Step {
+                Here's the complete ARView setup code.
+                
+                @Code(name: "CompleteARView.swift", file: "02-arview-10.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which cameraMode should you use to render only 3D content without an AR camera feed?
+            
+            @Choice(isCorrect: false) {
+                .ar
+                
+                @Justification(reaction: "Think again.") {
+                    .ar mode uses the camera feed as background for AR mode.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .nonAR
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    .nonAR mode performs pure 3D rendering without a camera feed.
+                    It's suitable for games or 3D viewers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .automatic
+                
+                @Justification(reaction: "Think again.") {
+                    .automatic automatically selects the mode based on device capabilities.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you configure plane detection to detect both horizontal and vertical planes?
+            
+            @Choice(isCorrect: false) {
+                planeDetection = .horizontal
+                
+                @Justification(reaction: "Not quite.") {
+                    .horizontal only detects horizontal planes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                planeDetection = .vertical
+                
+                @Justification(reaction: "Not quite.") {
+                    .vertical only detects vertical planes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                planeDetection = [.horizontal, .vertical]
+                
+                @Justification(reaction: "Correct! ✅") {
+                    You can combine multiple options as an array to detect both horizontal and vertical planes.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which frame semantic is needed to enable people occlusion?
+            
+            @Choice(isCorrect: true) {
+                .personSegmentationWithDepth
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Using personSegmentationWithDepth enables natural occlusion
+                    by segmenting people with depth information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .bodyDetection
+                
+                @Justification(reaction: "Think again.") {
+                    bodyDetection is for body tracking, not occlusion.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .faceTracking
+                
+                @Justification(reaction: "Think again.") {
+                    faceTracking is for face recognition.
+                }
+            }
+        }
+    }
+}

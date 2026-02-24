@@ -1,0 +1,274 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Mastering the Layout System") {
+        Understand the differences between VStack, HStack, and ZStack,
+        and create precise layouts with Grid.
+        Complete ChefBook's recipe card UI.
+    }
+    
+    @Section(title: "The World of Stacks") {
+        @ContentAndMedia {
+            SwiftUI layouts start with **Stacks**.
+            
+            - **VStack**: Stack vertically (Vertical)
+            - **HStack**: Stack horizontally (Horizontal)
+            - **ZStack**: Stack overlapping (Z-axis)
+            
+            With just these three, you can create most layouts!
+        }
+        
+        @Steps {
+            @Step {
+                **VStack — Vertical Layout**
+                
+                VStack arranges child views from top to bottom.
+                
+                `alignment` parameter controls horizontal alignment.
+                (.leading, .center, .trailing)
+                
+                `spacing` parameter controls gaps.
+                
+                @Code(name: "VStackExample.swift", file: "03-vstack.swift")
+            }
+            
+            @Step {
+                **HStack — Horizontal Layout**
+                
+                HStack arranges child views from left to right.
+                
+                `alignment` parameter controls vertical alignment.
+                (.top, .center, .bottom, .firstTextBaseline)
+                
+                @Code(name: "HStackExample.swift", file: "03-hstack.swift")
+            }
+            
+            @Step {
+                **ZStack — Overlapping Layout**
+                
+                ZStack overlaps child views front to back.
+                First declared view goes behind, later ones in front.
+                
+                Often used to place text over a background image.
+                
+                @Code(name: "ZStackExample.swift", file: "03-zstack.swift")
+            }
+            
+            @Step {
+                **Combining Stacks**
+                
+                Real UIs are made by nesting Stacks.
+                
+                Let's make ChefBook's recipe info row:
+                Icon | Title + Value (vertical) | Spacer | Additional info
+                
+                @Code(name: "NestedStacks.swift", file: "03-nested-stacks.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Spacer and Alignment") {
+        @ContentAndMedia {
+            **Spacer** is a flexible view that takes up remaining space.
+            Using Spacer, you can push views to desired positions.
+            
+            Combined with Alignment,
+            you can create any layout.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Spacer Usage**
+                
+                Spacer() tries to expand as much as possible.
+                Multiple Spacers divide space equally.
+                
+                @Code(name: "SpacerBasic.swift", file: "03-spacer-basic.swift")
+            }
+            
+            @Step {
+                **Setting Minimum Length with minLength**
+                
+                You can specify minimum length like `Spacer(minLength: 20)`.
+                
+                This ensures at least this much space even when space is limited.
+                
+                @Code(name: "SpacerMinLength.swift", file: "03-spacer-minlength.swift")
+            }
+            
+            @Step {
+                **Controlling Size with frame**
+                
+                Directly specify view size with `.frame()`.
+                
+                - `width`, `height`: Fixed size
+                - `minWidth`, `maxWidth`: Min/max
+                - `alignment`: Alignment within frame
+                
+                @Code(name: "FrameExample.swift", file: "03-frame.swift")
+            }
+            
+            @Step {
+                **Adding Margins with padding**
+                
+                `.padding()` adds margins around the view.
+                
+                - `.padding()`: All directions default
+                - `.padding(.horizontal, 20)`: Left-right 20
+                - `.padding(.top, 10)`: Top only 10
+                
+                @Code(name: "PaddingExample.swift", file: "03-padding.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Precise Arrangement with Grid") {
+        @ContentAndMedia {
+            **Grid** is a 2D layout with rows and columns.
+            
+            More complex than Stack,
+            but powerful when table-style alignment is needed.
+            
+            Available in iOS 16+.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Grid Structure**
+                
+                Create rows with GridRow inside Grid.
+                Put the same number of views in each row to align columns.
+                
+                @Code(name: "GridBasic.swift", file: "03-grid-basic.swift")
+            }
+            
+            @Step {
+                **Merging Cells with gridCellColumns**
+                
+                Merge multiple columns with `.gridCellColumns(2)`.
+                Works like Excel's cell merge.
+                
+                @Code(name: "GridSpan.swift", file: "03-grid-span.swift")
+            }
+            
+            @Step {
+                **LazyVGrid and LazyHGrid**
+                
+                When displaying many items in a grid,
+                use **LazyVGrid** or **LazyHGrid**.
+                
+                "Lazy" means only visible items are rendered.
+                
+                @Code(name: "LazyGridExample.swift", file: "03-lazy-grid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: Creating Recipe Card") {
+        @ContentAndMedia {
+            Using everything we've learned,
+            create ChefBook's core UI—the **recipe card**!
+            
+            This card is the component showing each recipe in the list.
+        }
+        
+        @Steps {
+            @Step {
+                **Card Structure Design**
+                
+                Elements in the recipe card:
+                - Top: Food image (ZStack with favorites badge)
+                - Bottom: Name, description, time/difficulty
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-structure.swift")
+            }
+            
+            @Step {
+                **Implementing Image Area**
+                
+                Overlap favorites icon over image with ZStack.
+                Create rounded corners with .clipShape().
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-image.swift")
+            }
+            
+            @Step {
+                **Implementing Info Area**
+                
+                Construct text area with VStack + HStack combination.
+                Push elements to sides with Spacer.
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-info.swift")
+            }
+            
+            @Step {
+                **Final Styling**
+                
+                Complete the card feel with
+                .background(), .clipShape(), .shadow().
+                
+                @Code(name: "RecipeCard.swift", file: "03-recipe-card-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the stacking order in ZStack?
+            
+            @Choice(isCorrect: true) {
+                First declared goes behind, later ones in front
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    ZStack stacks from back to front in code order.
+                    The last declared view appears in front.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Later declared goes behind
+                
+                @Justification(reaction: "Not quite") {
+                    It's the opposite. Later declared comes in front.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Random regardless of order
+                
+                @Justification(reaction: "Not quite") {
+                    It's determined by code order.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is Spacer's role?
+            
+            @Choice(isCorrect: true) {
+                Takes up remaining space to push other views
+                
+                @Justification(reaction: "Perfect! ✨") {
+                    Spacer is a "flexible empty space".
+                    Use it to align views to desired positions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Creates fixed gaps between views
+                
+                @Justification(reaction: "Not quite") {
+                    Fixed gaps use spacing parameter or padding.
+                    Spacer takes up "all" remaining space.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Draws a transparent rectangle
+                
+                @Justification(reaction: "Not quite") {
+                    Spacer isn't a rendered view but
+                    "space" for layout purposes.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,205 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Server Validation") {
+        Implement server-side Identity Token verification 
+        and create secure sessions.
+        
+        @Image(source: "server-validation.png", alt: "Server Validation Flow")
+    }
+    
+    @Section(title: "Understanding Identity Token") {
+        @ContentAndMedia {
+            Identity Token is in JWT (JSON Web Token) format.
+            
+            JWT Structure:
+            - **Header**: Algorithm information (RS256)
+            - **Payload**: User info, app info, expiration time
+            - **Signature**: Signed with Apple's private key
+            
+            Verify the signature on the server with Apple's public key.
+        }
+        
+        @Steps {
+            @Step {
+                Convert the Identity Token to a 
+                Base64 string on the client.
+                
+                @Code(name: "EncodeToken.swift", file: "07-01-encode-token.swift")
+            }
+            
+            @Step {
+                Send the token to the server.
+                HTTPS must be used.
+                
+                @Code(name: "SendToken.swift", file: "07-02-send-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Fetching Apple Public Keys") {
+        @ContentAndMedia {
+            Apple's JWT verification public keys are provided 
+            at the JWKS (JSON Web Key Set) endpoint.
+            
+            URL: `https://appleid.apple.com/auth/keys`
+            
+            Keys rotate periodically, so set a TTL when caching.
+        }
+        
+        @Steps {
+            @Step {
+                Fetch public keys from the Apple JWKS endpoint.
+                Node.js/Python server example.
+                
+                @Code(name: "FetchJWKS.swift", file: "07-03-fetch-jwks.swift")
+            }
+            
+            @Step {
+                Select the public key that matches the 
+                kid (Key ID) in the token header.
+                
+                @Code(name: "SelectKey.swift", file: "07-04-select-key.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Token Verification Steps") {
+        @ContentAndMedia {
+            Items to verify for Identity Token:
+            
+            1. **Signature verification**: Verify signature with Apple public key
+            2. **iss check**: Is it "https://appleid.apple.com"
+            3. **aud check**: Does it match the app's Bundle ID
+            4. **exp check**: Has the token not expired
+            5. **nonce check**: Does it match the nonce sent in the request
+        }
+        
+        @Steps {
+            @Step {
+                Decode the token and verify the signature 
+                with a JWT library.
+                
+                @Code(name: "VerifySignature.swift", file: "07-05-verify-signature.swift")
+            }
+            
+            @Step {
+                Verify the issuer (iss) claim.
+                It must be the Apple domain.
+                
+                @Code(name: "VerifyIssuer.swift", file: "07-06-verify-issuer.swift")
+            }
+            
+            @Step {
+                Verify that the audience (aud) claim 
+                matches the app's Bundle ID.
+                
+                @Code(name: "VerifyAudience.swift", file: "07-07-verify-audience.swift")
+            }
+            
+            @Step {
+                Verify that the nonce claim matches 
+                the value set in the request.
+                
+                @Code(name: "VerifyNonce.swift", file: "07-08-verify-nonce.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Token Exchange with Authorization Code") {
+        @ContentAndMedia {
+            Exchange the Authorization Code with Apple servers 
+            to receive Refresh Token and Access Token.
+            
+            Token Endpoint: `https://appleid.apple.com/auth/token`
+            
+            Refresh Token can be used to renew the session.
+        }
+        
+        @Steps {
+            @Step {
+                Generate a Client Secret JWT.
+                Sign it with the key from Apple Developer portal.
+                
+                @Code(name: "ClientSecret.swift", file: "07-09-client-secret.swift")
+            }
+            
+            @Step {
+                Send a request to the Token endpoint.
+                Include Authorization Code and Client Secret.
+                
+                @Code(name: "TokenExchange.swift", file: "07-10-token-exchange.swift")
+            }
+            
+            @Step {
+                Safely store the Refresh Token from the response.
+                Used for session renewal.
+                
+                @Code(name: "StoreRefreshToken.swift", file: "07-11-store-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which claims must be verified 
+            during Identity Token verification?
+            
+            @Choice(isCorrect: false) {
+                Only name and email need to be verified.
+                
+                @Justification(reaction: "Security vulnerability.") {
+                    Security-related claims like iss, aud, exp, nonce 
+                    must also be verified.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                All of iss, aud, exp, and nonce must be verified.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Verify issuer, audience, expiration, and nonce 
+                    to prevent forged tokens.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only sub (user ID) needs to be verified.
+                
+                @Justification(reaction: "Insufficient.") {
+                    Sub verification alone cannot 
+                    prevent token forgery.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Where do you get Apple's JWT verification public keys?
+            
+            @Choice(isCorrect: true) {
+                https://appleid.apple.com/auth/keys (JWKS endpoint)
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Get the public key set from 
+                    Apple's official JWKS endpoint.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Download from Apple Developer portal.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Portal provides keys for Client Secret generation; 
+                    verification public keys are provided via JWKS.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Included within the Identity Token.
+                
+                @Justification(reaction: "Security impossibility.") {
+                    Public keys must be fetched externally 
+                    to prevent token forgery.
+                }
+            }
+        }
+    }
+}

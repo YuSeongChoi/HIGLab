@@ -1,0 +1,229 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Web Integration (Sign in with Apple JS)") {
+        Provide a consistent Apple login experience between 
+        websites and apps, and implement cross-platform authentication.
+        
+        @Image(source: "web-integration.png", alt: "Web Integration")
+    }
+    
+    @Section(title: "Introduction to Sign in with Apple JS") {
+        @ContentAndMedia {
+            Sign in with Apple JS is a JavaScript SDK 
+            for implementing Apple login on the web.
+            
+            - Login with the same Apple ID on websites
+            - Share the same User Identifier with the app
+            - Verify tokens via REST API
+            
+            Touch ID is also supported on macOS Safari.
+        }
+        
+        @Steps {
+            @Step {
+                Create a Services ID in the 
+                Apple Developer portal.
+                
+                Register the web domain and redirect URL.
+                
+                @Code(name: "ServicesID.swift", file: "10-01-services-id.swift")
+            }
+            
+            @Step {
+                Add the Apple JS SDK to your webpage.
+                
+                @Code(name: "AddSDK.swift", file: "10-02-add-sdk.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Web Login Button") {
+        @ContentAndMedia {
+            Display a standardized login button 
+            with Apple-provided JavaScript.
+            
+            Button style and size can be customized.
+        }
+        
+        @Steps {
+            @Step {
+                Add a login button container to your HTML.
+                Set options with data attributes.
+                
+                @Code(name: "ButtonHTML.swift", file: "10-03-button-html.swift")
+            }
+            
+            @Step {
+                Initialize the SDK with AppleID.auth.init().
+                Set clientId, scope, and redirectURI.
+                
+                @Code(name: "InitSDK.swift", file: "10-04-init-sdk.swift")
+            }
+            
+            @Step {
+                Handle login success/failure events.
+                
+                @Code(name: "EventHandlers.swift", file: "10-05-event-handlers.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Server-Side Processing") {
+        @ContentAndMedia {
+            Web login results are delivered to the redirect URL.
+            
+            Data delivered via POST:
+            - code: Authorization Code
+            - id_token: Identity Token (JWT)
+            - state: CSRF prevention state value
+            - user: User information (first login only)
+        }
+        
+        @Steps {
+            @Step {
+                Parse POST data at the redirect endpoint.
+                
+                @Code(name: "ParseRedirect.swift", file: "10-06-parse-redirect.swift")
+            }
+            
+            @Step {
+                Validate the state value 
+                to prevent CSRF attacks.
+                
+                @Code(name: "ValidateState.swift", file: "10-07-validate-state.swift")
+            }
+            
+            @Step {
+                Verify the Identity Token the same way 
+                as in the app.
+                
+                @Code(name: "ValidateWebToken.swift", file: "10-08-validate-web-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App-Web Account Synchronization") {
+        @ContentAndMedia {
+            Logging in with the same Apple ID returns 
+            the same User Identifier for app and web.
+            
+            However, the Services ID and App ID must 
+            belong to the same Team.
+        }
+        
+        @Steps {
+            @Step {
+                Verify that the Team ID of App ID 
+                and Services ID match.
+                
+                @Code(name: "TeamID.swift", file: "10-09-team-id.swift")
+            }
+            
+            @Step {
+                Match app and web users 
+                with the sub claim (User Identifier).
+                
+                @Code(name: "MatchUsers.swift", file: "10-10-match-users.swift")
+            }
+            
+            @Step {
+                Share sessions so logging in from the app 
+                maintains login state on the web.
+                
+                @Code(name: "SharedSession.swift", file: "10-11-shared-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Universal Links Integration") {
+        @ContentAndMedia {
+            Setting up Universal Links allows natural 
+            transition from web login to the app.
+            
+            - Open app when web login completes
+            - Continue on web if app is not installed
+            - Navigate to specific screen via deep link
+        }
+        
+        @Steps {
+            @Step {
+                Add applinks to the 
+                apple-app-site-association.
+                
+                @Code(name: "UniversalLinks.swift", file: "10-12-universal-links.swift")
+            }
+            
+            @Step {
+                Handle Universal Links in the app.
+                Navigate to the appropriate screen after login completes.
+                
+                @Code(name: "HandleUniversalLink.swift", file: "10-13-handle-link.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is required to implement 
+            Sign in with Apple on the web?
+            
+            @Choice(isCorrect: true) {
+                Create a Services ID in the Apple Developer portal.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Services ID identifies the web client 
+                    and registers domain and redirect URL.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                App ID alone can be used on the web.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Web requires a separate Services ID.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Sign in with Apple cannot be used on the web.
+                
+                @Justification(reaction: "It can be used.") {
+                    It can be implemented the same way 
+                    with the JavaScript SDK.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What condition is required to receive the same 
+            User Identifier from app and web?
+            
+            @Choice(isCorrect: false) {
+                Must use the same Bundle ID.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Web uses Services ID, 
+                    not Bundle ID.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                App ID and Services ID must belong to the same Team.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Apps and services from the same Team 
+                    share the same User Identifier.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Different User Identifiers are returned 
+                and cannot be connected.
+                
+                @Justification(reaction: "They can be connected.") {
+                    Same Team means same 
+                    User Identifier.
+                }
+            }
+        }
+    }
+}

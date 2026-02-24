@@ -1,0 +1,196 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Saving Generated Images") {
+        Learn how to permanently save images generated from ImagePlayground 
+        to the Photos app or file system.
+        
+        @Image(source: "saving-images.png", alt: "Saving Images")
+    }
+    
+    @Section(title: "Understanding Temporary Files") {
+        @ContentAndMedia {
+            The URL returned by ImagePlayground 
+            points to a file in a temporary directory.
+            
+            **Characteristics of Temporary Files:**
+            - System can delete them at any time
+            - May not be accessible after app restart
+            - First to be deleted when storage is low
+            
+            Therefore, images that users want to keep 
+            must be copied to permanent storage.
+        }
+        
+        @Steps {
+            @Step {
+                Here's the basic pattern for copying files 
+                from temporary URL to permanent storage.
+                
+                @Code(name: "CopyFile.swift", file: "06-01-copy.swift")
+            }
+            
+            @Step {
+                Here's a complete implementation example 
+                for saving to the app's Documents directory.
+                
+                @Code(name: "SaveToDocuments.swift", file: "06-02-documents.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving to Photos App") {
+        @ContentAndMedia {
+            The most common saving method is 
+            saving to the device's Photos app.
+            
+            **Required Permissions:**
+            - `NSPhotoLibraryAddUsageDescription`: Write only
+            - `NSPhotoLibraryUsageDescription`: Read/Write
+            
+            Write-only permission is sufficient for adding photos,
+            and a more limited permission request can earn user trust.
+        }
+        
+        @Steps {
+            @Step {
+                Add the photo library permission description to Info.plist.
+                
+                @Code(name: "InfoPlist.plist", file: "06-03-plist.swift")
+            }
+            
+            @Step {
+                Save images to the Photos app 
+                using PHPhotoLibrary.
+                
+                @Code(name: "SaveToPhotos.swift", file: "06-04-photos.swift")
+            }
+            
+            @Step {
+                You can implement it more cleanly with async/await pattern.
+                
+                @Code(name: "SaveToPhotosAsync.swift", file: "06-05-photos-async.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving to File System") {
+        @ContentAndMedia {
+            Images used only within the app can be saved 
+            to the app's Documents directory.
+            
+            **Storage Location Options:**
+            - Documents: iCloud backup target, user data
+            - Library/Caches: Regenerable cache data
+            - Application Support: App-related data
+            
+            Generated images are user data, 
+            so Documents is appropriate.
+        }
+        
+        @Steps {
+            @Step {
+                Save to Documents using FileManager.
+                Generate unique filenames to prevent duplicates.
+                
+                @Code(name: "FileManagerSave.swift", file: "06-06-filemanager.swift")
+            }
+            
+            @Step {
+                Here's how to load saved images later.
+                Record file paths in UserDefaults or Core Data.
+                
+                @Code(name: "LoadSaved.swift", file: "06-07-load-saved.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Adding Share Functionality") {
+        @ContentAndMedia {
+            It's also useful to share generated images 
+            with other apps or social media.
+            
+            Using ShareLink makes it easy to display 
+            the system share sheet.
+        }
+        
+        @Steps {
+            @Step {
+                Here's sharing implementation using SwiftUI's ShareLink.
+                
+                @Code(name: "ShareImage.swift", file: "06-08-share.swift")
+            }
+            
+            @Step {
+                Here's a complete UI example providing 
+                both save and share buttons.
+                
+                @Code(name: "SaveShareUI.swift", file: "06-09-save-share.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What Info.plist key is required to save images 
+            from ImagePlayground to the Photos app?
+            
+            @Choice(isCorrect: true) {
+                NSPhotoLibraryAddUsageDescription
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    The write-only Add key is sufficient for 
+                    adding photos, and a more limited permission 
+                    can earn user trust.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSCameraUsageDescription
+                
+                @Justification(reaction: "Incorrect.") {
+                    Camera permission is needed for taking photos,
+                    not for saving photos.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSAppleMusicUsageDescription
+                
+                @Justification(reaction: "Completely unrelated.") {
+                    This key is used for Apple Music access.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the most appropriate directory for saving 
+            user-generated images within the app?
+            
+            @Choice(isCorrect: false) {
+                Library/Caches - Temporary cache data
+                
+                @Justification(reaction: "Not appropriate.") {
+                    Caches can be deleted by the system when space is low,
+                    making it unsuitable for user data.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Documents - iCloud backup target, user data
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Documents is appropriate for user-generated data 
+                    and also supports iCloud backup.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                tmp - Temporary file directory
+                
+                @Justification(reaction: "Incorrect.") {
+                    tmp is just as unstable as the temporary location 
+                    that ImagePlayground already uses.
+                }
+            }
+        }
+    }
+}

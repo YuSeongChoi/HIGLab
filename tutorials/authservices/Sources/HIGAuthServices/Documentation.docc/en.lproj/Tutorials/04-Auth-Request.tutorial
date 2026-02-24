@@ -1,0 +1,203 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Handling Authentication Requests") {
+        Learn how to initiate authentication requests and properly 
+        handle Authorization Code, Identity Token, and other results.
+        
+        @Image(source: "auth-flow.png", alt: "Authentication Flow Diagram")
+    }
+    
+    @Section(title: "Starting Authentication Request") {
+        @ContentAndMedia {
+            Authentication requests are configured through ASAuthorizationAppleIDRequest,
+            and you can specify the scope of information to request.
+            
+            - `requestedScopes`: Scope of user information to request
+            - `.fullName`: User's name
+            - `.email`: User's email
+        }
+        
+        @Steps {
+            @Step {
+                Create an authentication request and set the scope.
+                Without specifying a scope, you only receive the User Identifier.
+                
+                @Code(name: "CreateRequest.swift", file: "04-01-create-request.swift")
+            }
+            
+            @Step {
+                Generate a nonce and include it in the request.
+                It's used when verifying the Identity Token on the server.
+                
+                @Code(name: "NonceGeneration.swift", file: "04-02-nonce.swift")
+            }
+            
+            @Step {
+                Hash the nonce with SHA256 and set it in the request.
+                Keep the original nonce for server verification.
+                
+                @Code(name: "NonceHash.swift", file: "04-03-nonce-hash.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding ASAuthorizationAppleIDCredential") {
+        @ContentAndMedia {
+            The Credential received on successful authentication 
+            contains various information.
+            
+            | Property | Description | Notes |
+            |-----|------|---------|
+            | user | Unique user identifier | Always provided |
+            | email | Email address | First authentication only |
+            | fullName | User's name | First authentication only |
+            | identityToken | JWT token | For server verification |
+            | authorizationCode | Authorization code | For server token exchange |
+        }
+        
+        @Steps {
+            @Step {
+                Extract the user identifier from the Credential.
+                This value is unique for the app-user combination.
+                
+                @Code(name: "ExtractUser.swift", file: "04-04-extract-user.swift")
+            }
+            
+            @Step {
+                Decode the identityToken to a String.
+                This JWT must be verified on the server.
+                
+                @Code(name: "IdentityToken.swift", file: "04-05-identity-token.swift")
+            }
+            
+            @Step {
+                Extract the authorizationCode.
+                Used to obtain a refresh token on the server.
+                
+                @Code(name: "AuthCode.swift", file: "04-06-auth-code.swift")
+            }
+        }
+    }
+    
+    @Section(title: "First Authentication vs Re-authentication") {
+        @ContentAndMedia {
+            Important: email and fullName are only provided 
+            during the first authentication.
+            On re-authentication, you can only receive the user (identifier).
+            
+            Therefore, you must save the information 
+            received during first authentication.
+        }
+        
+        @Steps {
+            @Step {
+                Check if it's the first authentication and save user information.
+                It's the first authentication when email and fullName are not nil.
+                
+                @Code(name: "FirstAuth.swift", file: "04-07-first-auth.swift")
+            }
+            
+            @Step {
+                Safely store user information in the Keychain.
+                UserDefaults is not suitable for sensitive information.
+                
+                @Code(name: "SaveCredentials.swift", file: "04-08-save-credentials.swift")
+            }
+            
+            @Step {
+                On re-authentication, match the stored information 
+                with the user identifier.
+                
+                @Code(name: "ReAuthentication.swift", file: "04-09-re-auth.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real User Status") {
+        @ContentAndMedia {
+            realUserStatus is Apple's determination 
+            of whether the user is a real person.
+            
+            - `.likelyReal`: Likely a real person
+            - `.unknown`: Cannot determine
+            - `.unsupported`: Not supported
+            
+            Can be utilized in anti-bot logic.
+        }
+        
+        @Steps {
+            @Step {
+                Check realUserStatus to filter bot accounts.
+                
+                @Code(name: "RealUserStatus.swift", file: "04-10-real-user.swift")
+            }
+            
+            @Step {
+                Consider additional verification for unknown status.
+                Use CAPTCHA or email verification.
+                
+                @Code(name: "AdditionalVerification.swift", file: "04-11-additional-verify.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When are email and fullName provided?
+            
+            @Choice(isCorrect: true) {
+                Only during the first authentication.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    For user privacy protection, 
+                    they're only provided on first authentication.
+                    Make sure to save them.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Provided on every authentication.
+                
+                @Justification(reaction: "Incorrect.") {
+                    On re-authentication, only the user identifier is provided.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always provided when included in scope.
+                
+                @Justification(reaction: "Not quite.") {
+                    Even with scope requested, they're nil on re-authentication.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the main purpose of using a nonce?
+            
+            @Choice(isCorrect: false) {
+                User interface customization.
+                
+                @Justification(reaction: "Unrelated.") {
+                    Nonce is a security-related feature.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Verifying the validity of the Identity Token on the server.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Nonce prevents replay attacks and 
+                    verifies token integrity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Used for generating user identifiers.
+                
+                @Justification(reaction: "Incorrect.") {
+                    User identifiers are automatically generated by Apple.
+                }
+            }
+        }
+    }
+}

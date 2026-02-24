@@ -1,0 +1,122 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Advanced Subscription Management") {
+        Implement all subscription management features needed for a real service,
+        including subscription renewal, upgrades/downgrades, cancellation, and restoration.
+    }
+    
+    @Section(title: "Subscription Groups and Levels") {
+        @ContentAndMedia {
+            Learn how to effectively manage subscription groups and service levels
+            configured in App Store Connect from your code.
+            
+            - Subscription Group: A collection of mutually exclusive subscription options
+            - Service Level: Priority for upgrades/downgrades
+        }
+        
+        @Steps {
+            @Step {
+                Implement a SubscriptionManager that defines and manages subscription groups.
+                @Code(name: "SubscriptionManager.swift", file: "07-subscription-manager.swift")
+            }
+            @Step {
+                Check current active subscription and expiration information.
+                @Code(name: "SubscriptionManager.swift", file: "07-subscription-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Subscription Upgrades & Downgrades") {
+        @ContentAndMedia {
+            When users change plans, StoreKit 2 automatically
+            handles proration.
+            
+            HIG Guidelines:
+            - Provide clear cost information when changing
+            - Offer options for immediate vs. next renewal application
+        }
+        
+        @Steps {
+            @Step {
+                Implement the subscription change UI.
+                @Code(name: "SubscriptionChangeView.swift", file: "07-subscription-change.swift")
+            }
+            @Step {
+                Add an upgrade confirmation dialog.
+                @Code(name: "UpgradeConfirmView.swift", file: "07-upgrade-confirm.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Subscription Renewal Status") {
+        @ContentAndMedia {
+            Track subscription auto-renewal status and expiration timing
+            to display appropriate retention messages to users.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a view that displays renewal status and expiration information.
+                @Code(name: "RenewalStatusView.swift", file: "07-renewal-status.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when a user changes to a different plan within a subscription group?
+            
+            @Choice(isCorrect: false) {
+                Both subscriptions become active simultaneously.
+                
+                @Justification(reaction: "Think again!") {
+                    Plans within the same subscription group are mutually exclusive.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                The existing subscription is replaced with the new subscription.
+                
+                @Justification(reaction: "Correct!") {
+                    Only one subscription can be active within a subscription group.
+                    Upgrades apply immediately, while downgrades apply at the next renewal.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The change is rejected.
+                
+                @Justification(reaction: "Think again!") {
+                    Users can change to a different plan within a subscription group at any time.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you check if subscription auto-renewal has been turned off?
+            
+            @Choice(isCorrect: false) {
+                Check Transaction.currentEntitlements
+                
+                @Justification(reaction: "Not quite!") {
+                    currentEntitlements shows current entitlements but not renewal intent.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Check Product.SubscriptionInfo.RenewalState
+                
+                @Justification(reaction: "Excellent!") {
+                    RenewalState lets you check states like .willRenew, .expired, .revoked, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can only be checked in App Store Connect
+                
+                @Justification(reaction: "Think again!") {
+                    StoreKit 2 API allows you to check renewal status directly within the app.
+                }
+            }
+        }
+    }
+}

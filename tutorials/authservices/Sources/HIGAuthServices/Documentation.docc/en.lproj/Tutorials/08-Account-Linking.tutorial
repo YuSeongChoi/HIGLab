@@ -1,0 +1,193 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Account Linking") {
+        Link existing accounts in iCloud Keychain with Sign in with Apple 
+        to implement smooth account migration.
+        
+        @Image(source: "account-linking.png", alt: "Account Linking")
+    }
+    
+    @Section(title: "Requesting Password Credentials") {
+        @ContentAndMedia {
+            Using ASAuthorizationPasswordProvider, you can offer 
+            existing account information stored in iCloud Keychain 
+            alongside Sign in with Apple.
+            
+            Options users can choose:
+            - Sign in with Apple (new method)
+            - iCloud Keychain stored account (existing method)
+        }
+        
+        @Steps {
+            @Step {
+                Create both Apple ID and Password 
+                requests together.
+                
+                @Code(name: "DualRequest.swift", file: "08-01-dual-request.swift")
+            }
+            
+            @Step {
+                Pass both requests as an array to ASAuthorizationController.
+                The system displays a unified UI.
+                
+                @Code(name: "CombinedController.swift", file: "08-02-combined-controller.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Distinguishing Credential Types") {
+        @ContentAndMedia {
+            Process differently based on the Credential type 
+            returned on authentication success.
+            
+            - `ASAuthorizationAppleIDCredential`: Apple ID login
+            - `ASPasswordCredential`: Existing account login
+        }
+        
+        @Steps {
+            @Step {
+                Check the type of authorization.credential 
+                to execute the appropriate processing logic.
+                
+                @Code(name: "TypeCheck.swift", file: "08-03-type-check.swift")
+            }
+            
+            @Step {
+                Extract username and password 
+                from ASPasswordCredential.
+                
+                @Code(name: "PasswordCredential.swift", file: "08-04-password-credential.swift")
+            }
+            
+            @Step {
+                After logging in with an existing account, 
+                you can suggest Apple ID connection.
+                
+                @Code(name: "SuggestAppleID.swift", file: "08-05-suggest-appleid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Account Migration Strategy") {
+        @ContentAndMedia {
+            Strategy for migrating existing accounts to Apple ID:
+            
+            1. Log in with existing account first
+            2. Encourage Apple ID connection
+            3. Store both account information linked
+            4. Allow login only with Apple ID afterward
+        }
+        
+        @Steps {
+            @Step {
+                Link the existing account with Apple User ID on the server.
+                
+                @Code(name: "LinkAccounts.swift", file: "08-06-link-accounts.swift")
+            }
+            
+            @Step {
+                Notify the user when linking is complete.
+                Now they can log in quickly with Apple ID.
+                
+                @Code(name: "MigrationComplete.swift", file: "08-07-migration-complete.swift")
+            }
+            
+            @Step {
+                Optionally suggest deleting the existing password.
+                Encourage using only Apple ID.
+                
+                @Code(name: "RemovePassword.swift", file: "08-08-remove-password.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Existing Account Preference") {
+        @ContentAndMedia {
+            Using the .preferImmediatelyAvailableCredentials option 
+            with performRequests(options:) prioritizes existing credentials.
+            
+            If there's an account stored in keychain, log in quickly; 
+            if not, show Sign in with Apple.
+        }
+        
+        @Steps {
+            @Step {
+                Check for stored credentials first 
+                with the preferImmediatelyAvailableCredentials option.
+                
+                @Code(name: "PreferExisting.swift", file: "08-09-prefer-existing.swift")
+            }
+            
+            @Step {
+                If no stored credentials exist, 
+                display all login options.
+                
+                @Code(name: "FallbackToFull.swift", file: "08-10-fallback-full.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you offer both iCloud Keychain existing accounts 
+            and Apple ID together?
+            
+            @Choice(isCorrect: true) {
+                Request ASAuthorizationAppleIDRequest and 
+                ASAuthorizationPasswordRequest together.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Pass both requests as an array and 
+                    the system displays a unified UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Call ASAuthorizationController twice.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Multiple requests should be passed 
+                    as an array to one controller.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A separate UI must be implemented manually.
+                
+                @Justification(reaction: "Unnecessary.") {
+                    The system automatically provides a unified UI.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What information can be obtained from ASPasswordCredential?
+            
+            @Choice(isCorrect: true) {
+                user (username) and password.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Retrieves account information stored 
+                    in iCloud Keychain.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple User ID and Identity Token.
+                
+                @Justification(reaction: "Different Credential.") {
+                    That's provided by 
+                    ASAuthorizationAppleIDCredential.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Email and phone number.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Password Credential provides only 
+                    username and password.
+                }
+            }
+        }
+    }
+}

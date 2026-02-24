@@ -1,0 +1,159 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Async Operations and Observation") {
+        Learn how to use Observation with async/await and Task.
+        Master async state management for network requests, data loading, etc.
+    }
+    
+    @Section(title: "Async State Management Basics") {
+        @ContentAndMedia {
+            Learn the basic patterns for performing async operations
+            in Observable objects and reflecting results in state.
+        }
+        
+        @Steps {
+            @Step {
+                The basic structure of async operations.
+                Use Task to perform async operations and store results.
+                
+                @Code(name: "AsyncBasic.swift", file: "08-async-basic.swift")
+            }
+            
+            @Step {
+                Loading state management pattern.
+                Manage states like isLoading and error together.
+                
+                @Code(name: "LoadingState.swift", file: "08-loading-state.swift")
+            }
+            
+            @Step {
+                A better pattern: State management with enum
+                Explicitly represent all possible states.
+                
+                @Code(name: "EnumState.swift", file: "08-enum-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MainActor and Observation") {
+        @ContentAndMedia {
+            Use @MainActor to safely handle UI updates.
+            Learn how to balance thread safety and performance.
+        }
+        
+        @Steps {
+            @Step {
+                Apply @MainActor to the entire class.
+                All property access happens on the main thread.
+                
+                @Code(name: "MainActorClass.swift", file: "08-main-actor-class.swift")
+            }
+            
+            @Step {
+                Method-level @MainActor usage.
+                Separate background work from UI updates.
+                
+                @Code(name: "MainActorMethod.swift", file: "08-main-actor-method.swift")
+            }
+            
+            @Step {
+                Task cancellation handling.
+                Cancel in-progress work when the view disappears.
+                
+                @Code(name: "TaskCancellation.swift", file: "08-task-cancellation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Loading Product List") {
+        @ContentAndMedia {
+            Add functionality to load the product list from the network
+            in the CartFlow app. Apply async state management in practice.
+        }
+        
+        @Steps {
+            @Step {
+                Create ProductLoader to manage product loading state.
+                
+                @Code(name: "ProductLoader.swift", file: "08-product-loader.swift")
+            }
+            
+            @Step {
+                Implement UI based on loading state.
+                Switch between skeleton, error, and result screens.
+                
+                @Code(name: "ProductListAsync.swift", file: "08-product-list-async.swift")
+            }
+            
+            @Step {
+                Add pull-to-refresh and pagination.
+                Additional features that improve user experience.
+                
+                @Code(name: "PullToRefresh.swift", file: "08-pull-to-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the recommended way to update properties after async operations in @Observable classes?
+            
+            @Choice(isCorrect: true) {
+                Use @MainActor to update on the main thread
+                
+                @Justification(reaction: "Correct!") {
+                    @MainActor ensures property updates happen on the main thread,
+                    safely handling UI updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Wrap with DispatchQueue.main.async
+                
+                @Justification(reaction: "Not quite") {
+                    GCD works too, but in Swift Concurrency,
+                    @MainActor is the more modern and safe approach.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Update directly without any handling
+                
+                @Justification(reaction: "Not quite") {
+                    Changing UI-related state from background threads
+                    can cause warnings or unexpected behavior.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the best pattern for managing loading state?
+            
+            @Choice(isCorrect: true) {
+                Use enum to explicitly represent idle/loading/loaded/error states
+                
+                @Justification(reaction: "Perfect!") {
+                    Using enum prevents impossible state combinations at compile time
+                    and allows exhaustive handling of all cases.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Manage Bool isLoading and optional error separately
+                
+                @Justification(reaction: "Not quite") {
+                    This approach allows impossible state combinations (isLoading=true, error=exists)
+                    which can cause bugs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Just show results without loading state management
+                
+                @Justification(reaction: "Not quite") {
+                    Without loading feedback to users,
+                    the app can appear frozen.
+                }
+            }
+        }
+    }
+}

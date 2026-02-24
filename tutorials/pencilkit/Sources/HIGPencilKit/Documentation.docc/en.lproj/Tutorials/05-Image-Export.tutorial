@@ -1,0 +1,204 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Converting Drawings to Images") {
+        Learn how to convert PKDrawing to UIImage 
+        and share it in various ways.
+        
+        @Image(source: "image-export.png", alt: "Image Export")
+    }
+    
+    @Section(title: "Converting PKDrawing to UIImage") {
+        @ContentAndMedia {
+            Use PKDrawing's image(from:scale:) method to 
+            convert drawings to UIImage.
+            
+            - **from**: The area to render (CGRect)
+            - **scale**: Image scale (1.0, 2.0, 3.0, etc.)
+            
+            You can set a transparent background or custom background color.
+        }
+        
+        @Steps {
+            @Step {
+                Use PKDrawing's bounds to convert 
+                the entire drawing to an image.
+                
+                @Code(name: "BasicImageExport.swift", file: "05-01-basic-export.swift")
+            }
+            
+            @Step {
+                Extract only a specific area as an image.
+                Useful when implementing crop functionality.
+                
+                @Code(name: "CroppedExport.swift", file: "05-02-cropped.swift")
+            }
+            
+            @Step {
+                Adjust the scale value for high-resolution images.
+                For printing, 3.0 or higher is recommended.
+                
+                @Code(name: "HighResExport.swift", file: "05-03-high-res.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Adding Background Color") {
+        @ContentAndMedia {
+            PKDrawing.image() generates a transparent background by default.
+            You can add background color using Core Graphics.
+        }
+        
+        @Steps {
+            @Step {
+                Use UIGraphicsImageRenderer to 
+                generate images with background color.
+                
+                @Code(name: "BackgroundColor.swift", file: "05-04-background.swift")
+            }
+            
+            @Step {
+                Add gradient backgrounds to create 
+                more sophisticated images.
+                
+                @Code(name: "GradientBackground.swift", file: "05-05-gradient.swift")
+            }
+            
+            @Step {
+                Composite the drawing on top of a background image.
+                Useful when saving doodles drawn on photos.
+                
+                @Code(name: "CompositeImage.swift", file: "05-06-composite.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sharing and Saving Images") {
+        @ContentAndMedia {
+            Save generated images to the photo album 
+            or share them with other apps.
+            
+            UIActivityViewController allows you to 
+            provide various sharing options.
+        }
+        
+        @Steps {
+            @Step {
+                Use UIImageWriteToSavedPhotosAlbum to 
+                save images to the photo album.
+                
+                @Code(name: "SaveToPhotos.swift", file: "05-07-save-photos.swift")
+            }
+            
+            @Step {
+                Display a share sheet with 
+                UIActivityViewController.
+                
+                @Code(name: "ShareSheet.swift", file: "05-08-share.swift")
+            }
+            
+            @Step {
+                Share drawing images using ShareLink in SwiftUI.
+                
+                @Code(name: "SwiftUIShare.swift", file: "05-09-swiftui-share.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Exporting in Various Formats") {
+        @ContentAndMedia {
+            Export drawings in various formats like 
+            PNG, JPEG, and PDF.
+            
+            | Format | Features | Use Case |
+            |--------|----------|----------|
+            | PNG | Supports transparent background | Web, Apps |
+            | JPEG | Small file size | Photo sharing |
+            | PDF | Vector output | Printing, Documents |
+        }
+        
+        @Steps {
+            @Step {
+                Export as PNG format.
+                Maintains transparent background.
+                
+                @Code(name: "ExportPNG.swift", file: "05-10-export-png.swift")
+            }
+            
+            @Step {
+                Export with compression as JPEG format.
+                Quality can be adjusted.
+                
+                @Code(name: "ExportJPEG.swift", file: "05-11-export-jpeg.swift")
+            }
+            
+            @Step {
+                Exporting as PDF maintains quality even when scaled.
+                Use UIGraphicsPDFRenderer.
+                
+                @Code(name: "ExportPDF.swift", file: "05-12-export-pdf.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does the scale parameter in PKDrawing.image(from:scale:) mean?
+            
+            @Choice(isCorrect: true) {
+                The pixel density of the output image (1.0 = 1x, 2.0 = 2x)
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Higher scale values produce higher resolution images.
+                    Use 2.0 or higher for Retina displays.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Percentage of image size (0.5 = 50%)
+                
+                @Justification(reaction: "No.") {
+                    Size adjustment is done through the CGRect in the from parameter.
+                    scale is about pixel density.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Zoom ratio of the drawing
+                
+                @Justification(reaction: "Incorrect.") {
+                    It determines the output image resolution,
+                    not the drawing's own size.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What format is most suitable for generating high-quality images for printing?
+            
+            @Choice(isCorrect: false) {
+                JPEG (quality 0.8)
+                
+                @Justification(reaction: "Not the best choice.") {
+                    JPEG uses lossy compression which can degrade quality.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDF
+                
+                @Justification(reaction: "Correct! ✨") {
+                    PDF is a vector format that maintains 
+                    quality at any print size.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PNG (scale 1.0)
+                
+                @Justification(reaction: "Scale is too low.") {
+                    For printing, scale 3.0 or higher 
+                    or PDF is more suitable.
+                }
+            }
+        }
+    }
+}

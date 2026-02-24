@@ -1,0 +1,280 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Complete SwiftUI Integration: Finishing the Entire UI") {
+        Maximize the synergy between SwiftData and SwiftUI.
+        Complete the entire TaskMaster app UI including
+        lists, detail views, edit sheets, and swipe actions.
+    }
+    
+    @Section(title: "Completing the Main List View") {
+        @ContentAndMedia {
+            Complete the main list view displaying tasks.
+            Consider section grouping, empty states, and loading states.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic List Structure**
+                
+                Basic structure combining NavigationStack and List.
+                Place an add button in the toolbar.
+                
+                @Code(name: "TaskListView.swift", file: "08-list-basic.swift")
+            }
+            
+            @Step {
+                **Grouping with Sections**
+                
+                Divide sections by complete/incomplete or by category.
+                Use SwiftUI's Section and ForEach.
+                
+                @Code(name: "SectionedList.swift", file: "08-list-sectioned.swift")
+            }
+            
+            @Step {
+                **Empty State Handling**
+                
+                Display a guidance message when there are no tasks.
+                Use ContentUnavailableView.
+                
+                @Code(name: "EmptyState.swift", file: "08-empty-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Task Row View") {
+        @ContentAndMedia {
+            Design the Row view displaying each list item.
+            Include priority indicator, due date, category badge, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **TaskRowView Basic Structure**
+                
+                Display title, completion checkbox, and priority indicator.
+                Arrange elements with HStack.
+                
+                @Code(name: "TaskRowView.swift", file: "08-task-row.swift")
+            }
+            
+            @Step {
+                **Displaying Due Date and Category**
+                
+                Show due date if available, highlight if imminent.
+                Add category badge as well.
+                
+                @Code(name: "TaskRowView.swift", file: "08-task-row-full.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Detail View") {
+        @ContentAndMedia {
+            Create a view showing detailed information of the selected task.
+            Connect inline editing with navigation.
+        }
+        
+        @Steps {
+            @Step {
+                **TaskDetailView Basic Structure**
+                
+                Arrange all task information nicely.
+                Structure with Form and Section.
+                
+                @Code(name: "TaskDetailView.swift", file: "08-detail-view.swift")
+            }
+            
+            @Step {
+                **Inline Edit Mode**
+                
+                Add a mode for direct editing in the detail view.
+                Bind directly with @Bindable.
+                
+                @Code(name: "TaskDetailView.swift", file: "08-detail-editable.swift")
+            }
+            
+            @Step {
+                **Navigation Connection**
+                
+                Implement navigation from list to detail view.
+                Use NavigationLink and navigationDestination.
+                
+                @Code(name: "Navigation.swift", file: "08-navigation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Edit Sheet") {
+        @ContentAndMedia {
+            Implement a sheet UI for modifying tasks.
+            Include save/cancel buttons and input validation.
+        }
+        
+        @Steps {
+            @Step {
+                **Complete AddTaskSheet**
+                
+                A sheet for adding new tasks.
+                Include required input validation and category selection.
+                
+                @Code(name: "AddTaskSheet.swift", file: "08-add-sheet.swift")
+            }
+            
+            @Step {
+                **Complete EditTaskSheet**
+                
+                A sheet for modifying existing tasks.
+                Apply a pattern for rolling back changes on cancel.
+                
+                @Code(name: "EditTaskSheet.swift", file: "08-edit-sheet.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Swipe Actions") {
+        @ContentAndMedia {
+            Add swipe actions familiar to iOS users.
+            Perform completion toggle, delete, edit via swipe.
+        }
+        
+        @Steps {
+            @Step {
+                **swipeActions Basics**
+                
+                Add swipe buttons with .swipeActions modifier.
+                Distinguish leading (left→right) and trailing (right→left).
+                
+                @Code(name: "SwipeActions.swift", file: "08-swipe-basic.swift")
+            }
+            
+            @Step {
+                **Complete Swipe Actions**
+                
+                Implement completion toggle (leading) and delete (trailing).
+                Set destructive delete that executes immediately without confirmation.
+                
+                @Code(name: "SwipeActions.swift", file: "08-swipe-complete.swift")
+            }
+            
+            @Step {
+                **Adding Context Menu**
+                
+                Add a context menu appearing on long press.
+                Can provide more options.
+                
+                @Code(name: "ContextMenu.swift", file: "08-context-menu.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Assembling the Complete App") {
+        @ContentAndMedia {
+            Assemble all components created so far
+            to complete the TaskMaster app.
+        }
+        
+        @Steps {
+            @Step {
+                **Complete ContentView**
+                
+                Configure list and settings screens with TabView.
+                Connect all components.
+                
+                @Code(name: "ContentView.swift", file: "08-content-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            To delete immediately without confirmation on swipe delete in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                Set Button's role to .destructive in swipeActions
+                
+                @Justification(reaction: "Correct!") {
+                    Setting role: .destructive displays it in red,
+                    and full swipe executes without confirmation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Call delete directly without .confirmationDialog
+                
+                @Justification(reaction: "Not quite") {
+                    User still needs to swipe intentionally.
+                    role: .destructive enables full swipe delete.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Pass allowsFullSwipe: true parameter
+                
+                @Justification(reaction: "Not quite") {
+                    swipeActions' allowsFullSwipe defaults to true;
+                    role: .destructive is key.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What SwiftUI component displays empty list state?
+            
+            @Choice(isCorrect: true) {
+                ContentUnavailableView
+                
+                @Justification(reaction: "Exactly right!") {
+                    ContentUnavailableView available in iOS 17+
+                    is suitable for displaying empty state, no search results, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EmptyView
+                
+                @Justification(reaction: "Not quite") {
+                    EmptyView renders nothing.
+                    ContentUnavailableView is appropriate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PlaceholderView
+                
+                @Justification(reaction: "Not quite") {
+                    No such standard component exists.
+                    Use ContentUnavailableView.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Advantage of binding SwiftData objects with @Bindable?
+            
+            @Choice(isCorrect: true) {
+                Property changes are automatically saved
+                
+                @Justification(reaction: "Correct!") {
+                    Property changes on @Bindable bound objects
+                    are automatically saved by SwiftData's autosave.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Cancellation is automatic
+                
+                @Justification(reaction: "Not quite") {
+                    Cancellation is not automatic. Implement manually if needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Network sync happens automatically
+                
+                @Justification(reaction: "Not quite") {
+                    Network sync requires separate CloudKit setup.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,116 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Push Notification Integration") {
+        Handle push notifications from CloudKit subscriptions.
+        Implement background synchronization with Silent Push.
+    }
+    
+    @Section(title: "Push Notification Setup") {
+        @ContentAndMedia {
+            To receive CloudKit push notifications, you need to register for remote notifications in your app.
+        }
+        @Steps {
+            @Step {
+                Add Push Notifications capability in Xcode.
+                Also enable Remote notifications in Background Modes.
+                @Code(name: "Setup.md", file: "06-01-capability.md")
+            }
+            @Step {
+                Register for remote notifications in AppDelegate.
+                @Code(name: "AppDelegate.swift", file: "06-02-registernotification.swift")
+            }
+            @Step {
+                Handle device token.
+                CloudKit automatically manages tokens, but verify for logging purposes.
+                @Code(name: "AppDelegate.swift", file: "06-03-devicetoken.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling CloudKit Notifications") {
+        @ContentAndMedia {
+            Parse CKNotification to synchronize changed data.
+        }
+        @Steps {
+            @Step {
+                Handle CloudKit notifications in didReceiveRemoteNotification.
+                @Code(name: "AppDelegate.swift", file: "06-04-receivenotification.swift")
+            }
+            @Step {
+                Process by distinguishing CKNotification types.
+                @Code(name: "CloudKitManager.swift", file: "06-05-parsenotification.swift")
+            }
+            @Step {
+                Extract change information from CKQueryNotification.
+                @Code(name: "CloudKitManager.swift", file: "06-06-querynotification.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Silent Push and Background Sync") {
+        @ContentAndMedia {
+            Synchronize data in the background without notifying the user.
+            Implement Silent Push using content-available.
+        }
+        @Steps {
+            @Step {
+                Configure NotificationInfo for Silent Push.
+                @Code(name: "CloudKitManager.swift", file: "06-07-silentpush.swift")
+            }
+            @Step {
+                Fetch data in the background.
+                You must call completionHandler appropriately.
+                @Code(name: "AppDelegate.swift", file: "06-08-backgroundfetch.swift")
+            }
+            @Step {
+                Manage synchronization state.
+                Track the last synchronization time.
+                @Code(name: "SyncManager.swift", file: "06-09-syncstate.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What CKNotificationInfo setting is required for CloudKit Silent Push?
+            @Choice(isCorrect: false) {
+                alertBody setting
+                @Justification(reaction: "Think again.") {
+                    alertBody is for user-visible notifications.
+                }
+            }
+            @Choice(isCorrect: true) {
+                shouldSendContentAvailable = true
+                @Justification(reaction: "Correct!") {
+                    Silent Push requires sending content-available: 1.
+                }
+            }
+            @Choice(isCorrect: false) {
+                soundName setting
+                @Justification(reaction: "Think again.") {
+                    Sound is for user notifications.
+                }
+            }
+        }
+        @MultipleChoice {
+            What must be called after background fetch completion?
+            @Choice(isCorrect: true) {
+                completionHandler(.newData) or similar result
+                @Justification(reaction: "Correct!") {
+                    You must notify the system of task completion for proper app management.
+                }
+            }
+            @Choice(isCorrect: false) {
+                UIApplication.shared.endBackgroundTask
+                @Justification(reaction: "Think again.") {
+                    That's used in pair with beginBackgroundTask.
+                }
+            }
+            @Choice(isCorrect: false) {
+                NotificationCenter.post
+                @Justification(reaction: "Think again.") {
+                    That's unrelated to local notifications.
+                }
+            }
+        }
+    }
+}

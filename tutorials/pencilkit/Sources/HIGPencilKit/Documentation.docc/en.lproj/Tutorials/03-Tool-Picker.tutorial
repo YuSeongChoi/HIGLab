@@ -1,0 +1,176 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Tool Palette (PKToolPicker)") {
+        Learn how to integrate PKToolPicker to provide users 
+        with tools like pens, markers, and erasers.
+        
+        @Image(source: "tool-picker.png", alt: "PKToolPicker Tool Palette")
+    }
+    
+    @Section(title: "Basic PKToolPicker Setup") {
+        @ContentAndMedia {
+            PKToolPicker is a system-provided tool selection UI.
+            It provides various drawing tools in a floating palette form.
+            
+            - **Pen**: Standard ballpoint style
+            - **Marker**: Highlighter style
+            - **Pencil**: Pencil texture
+            - **Eraser**: Bitmap/vector eraser
+            - **Lasso**: Selection tool
+            - **Ruler**: Straight line guide
+            
+            @Image(source: "tool-picker-items.png", alt: "Tool Types")
+        }
+        
+        @Steps {
+            @Step {
+                Get a PKToolPicker instance and 
+                connect it to the canvas.
+                
+                @Code(name: "ToolPickerSetup.swift", file: "03-01-setup.swift")
+            }
+            
+            @Step {
+                Learn how to show and hide PKToolPicker.
+                It automatically appears based on First Responder status.
+                
+                @Code(name: "ToolPickerVisibility.swift", file: "03-02-visibility.swift")
+            }
+            
+            @Step {
+                Implement PKToolPickerObserver to 
+                detect tool changes.
+                
+                @Code(name: "ToolPickerObserver.swift", file: "03-03-observer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Programmatic Tool Configuration") {
+        @ContentAndMedia {
+            In addition to PKToolPicker, you can 
+            set tools directly from code.
+            
+            Change the currently selected tool through 
+            PKCanvasView's tool property.
+        }
+        
+        @Steps {
+            @Step {
+                Use PKInkingTool to configure 
+                pen, marker, and pencil tools.
+                
+                @Code(name: "InkingToolSetup.swift", file: "03-04-inking-tool.swift")
+            }
+            
+            @Step {
+                Set eraser type with PKEraserTool.
+                Understand the difference between bitmap and vector erasers.
+                
+                @Code(name: "EraserToolSetup.swift", file: "03-05-eraser-tool.swift")
+            }
+            
+            @Step {
+                Activate the selection tool with PKLassoTool.
+                You can move, copy, or delete selected areas.
+                
+                @Code(name: "LassoToolSetup.swift", file: "03-06-lasso-tool.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating a Custom Tool UI") {
+        @ContentAndMedia {
+            Instead of PKToolPicker, you can create a custom UI 
+            to build a tool palette that matches your app's design.
+            
+            Implement custom tool selectors in both 
+            SwiftUI and UIKit.
+        }
+        
+        @Steps {
+            @Step {
+                Create a custom tool palette with SwiftUI.
+                Manage the selected tool state.
+                
+                @Code(name: "CustomToolPicker.swift", file: "03-07-custom-picker.swift")
+            }
+            
+            @Step {
+                Add a color picker to allow 
+                users to change pen colors.
+                
+                @Code(name: "ColorPicker.swift", file: "03-08-color-picker.swift")
+            }
+            
+            @Step {
+                Add a pen thickness slider.
+                Display a real-time preview.
+                
+                @Code(name: "WidthSlider.swift", file: "03-09-width-slider.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What condition is required to display PKToolPicker on screen?
+            
+            @Choice(isCorrect: false) {
+                Just call toolPicker.show() method
+                
+                @Justification(reaction: "That's not quite enough.") {
+                    setVisible and addObserver are also needed,
+                    but the canvas must be First Responder.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                The canvas must become First Responder
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    PKToolPicker is only displayed when 
+                    the connected canvas is First Responder.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's always displayed without any conditions
+                
+                @Justification(reaction: "Incorrect.") {
+                    First Responder status and connection are required.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the difference between PKEraserTool's vector and bitmap types?
+            
+            @Choice(isCorrect: true) {
+                vector deletes entire strokes, bitmap deletes only touched parts
+                
+                @Justification(reaction: "Correct! ✨") {
+                    The vector eraser deletes strokes as whole units,
+                    while the bitmap eraser erases at the pixel level.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                vector erases color, bitmap erases black and white only
+                
+                @Justification(reaction: "That's not it.") {
+                    Both types can erase all colors.
+                    The difference is in the deletion method.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only performance differs, results are the same
+                
+                @Justification(reaction: "Incorrect.") {
+                    The deletion results are different. vector deletes entire strokes,
+                    while bitmap only removes portions.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,67 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Sealed Box") {
+        Sealed Box is a container that securely packages encrypted data.
+        It bundles the Nonce, ciphertext, and authentication tag into a single structure for easy management.
+    }
+    
+    @Section(title: "Understanding Sealed Box") {
+        @ContentAndMedia {
+            Sealed Box encapsulates encryption results using the AES.GCM.SealedBox type.
+            The combined property provides a single Data suitable for transmission or storage.
+        }
+        @Steps {
+            @Step {
+                Create a Sealed Box and examine its structure.
+                @Code(name: "SealedBox.swift", file: "05-01-create.swift")
+            }
+            @Step {
+                Restore a Sealed Box from combined data.
+                @Code(name: "SealedBox.swift", file: "05-02-restore.swift")
+            }
+            @Step {
+                Also try using ChaChaPoly's Sealed Box.
+                @Code(name: "SealedBox.swift", file: "05-03-chacha.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Message Transmission") {
+        @ContentAndMedia {
+            Use Sealed Box to encrypt messages and transmit them over the network.
+        }
+        @Steps {
+            @Step {
+                Encrypt a message into a Sealed Box and encode it as Base64.
+                @Code(name: "SealedBox.swift", file: "05-04-transmit.swift")
+            }
+            @Step {
+                Decrypt the received message.
+                @Code(name: "SealedBox.swift", file: "05-05-receive.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is NOT included in the Sealed Box's combined property?
+            @Choice(isCorrect: false) {
+                Nonce
+                @Justification(reaction: "Think again.") {
+                    The Nonce is included in combined.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Ciphertext
+                @Justification(reaction: "Think again.") {
+                    The ciphertext is a core element of combined.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Encryption key
+                @Justification(reaction: "Correct!") {
+                    The encryption key is never included in the Sealed Box. It must be managed separately and securely.
+                }
+            }
+        }
+    }
+}

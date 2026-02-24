@@ -1,0 +1,201 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Connection Management & Reconnection") {
+        Learn patterns for handling disconnections, automatic reconnection,
+        and multi-device management.
+    }
+    
+    @Section(title: "Handling Disconnection") {
+        @ContentAndMedia {
+            BLE connections can be lost for various reasons.
+            
+            **Disconnection Causes:**
+            - Device moved out of range
+            - Device powered off
+            - Explicit disconnection from app
+            - BLE interference or errors
+            
+            Provide appropriate feedback to users.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the disconnection callback.
+                Determine the cause from the error parameter.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-01-disconnect-callback.swift")
+            }
+            
+            @Step {
+                Display disconnect reasons in a user-friendly way.
+                
+                @Code(name: "DisconnectReason.swift", file: "09-02-disconnect-reason.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Automatic Reconnection") {
+        @ContentAndMedia {
+            iOS 17+ added the `enableAutoReconnect` option.
+            For earlier versions, you need to implement manual reconnection logic.
+        }
+        
+        @Steps {
+            @Step {
+                Use the iOS 17+ auto-reconnect option.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-03-auto-reconnect-ios17.swift")
+            }
+            
+            @Step {
+                Implement manual reconnection for legacy versions.
+                Use exponential backoff to adjust retry intervals.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-04-manual-reconnect.swift")
+            }
+            
+            @Step {
+                Use retrievePeripherals to find previously connected devices.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-05-retrieve-peripherals.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Multi-Device Management") {
+        @ContentAndMedia {
+            Patterns for managing multiple BLE devices simultaneously.
+            
+            **Considerations:**
+            - Maximum simultaneous connections on iOS (varies by device, usually 7-8)
+            - Track state for each device
+            - Connection priorities
+        }
+        
+        @Steps {
+            @Step {
+                Create a structure to manage connected device lists.
+                
+                @Code(name: "DeviceManager.swift", file: "09-06-device-manager.swift")
+            }
+            
+            @Step {
+                Track connection state per device.
+                
+                @Code(name: "DeviceState.swift", file: "09-07-device-state.swift")
+            }
+            
+            @Step {
+                Implement multi-device UI.
+                
+                @Code(name: "DeviceListView.swift", file: "09-08-device-list-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Connection Timeout") {
+        @ContentAndMedia {
+            connect() has no timeout and can wait indefinitely.
+            Proper timeout handling is necessary.
+        }
+        
+        @Steps {
+            @Step {
+                Implement connection timeout logic.
+                
+                @Code(name: "BluetoothManager.swift", file: "09-09-connection-timeout.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does it mean when the error in didDisconnectPeripheral is nil?
+            
+            @Choice(isCorrect: true) {
+                The app explicitly disconnected
+                
+                @Justification(reaction: "Correct! ✅") {
+                    Normal disconnection like cancelPeripheralConnection
+                    results in nil error.
+                    Unexpected disconnections include an error.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The device went out of range
+                
+                @Justification(reaction: "That case has an error.") {
+                    Unexpected disconnections include an error.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Error information is unavailable
+                
+                @Justification(reaction: "nil has meaning.") {
+                    nil means normal disconnection.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is retrievePeripherals(withIdentifiers:) used for?
+            
+            @Choice(isCorrect: false) {
+                Get all device list without scanning
+                
+                @Justification(reaction: "You need the UUID.") {
+                    You need the UUID of previously discovered devices.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Get reference to previously discovered device by UUID
+                
+                @Justification(reaction: "Correct! 🔄") {
+                    With a saved Peripheral UUID,
+                    you can get the device reference without scanning.
+                    Useful for reconnection.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Get only the list of connected devices
+                
+                @Justification(reaction: "It's not related to connection state.") {
+                    With just the UUID, you get the device regardless of connection state.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the advantage of exponential backoff retry strategy?
+            
+            @Choice(isCorrect: false) {
+                Always reconnects quickly
+                
+                @Justification(reaction: "Speed isn't the goal.") {
+                    Retry intervals increase gradually.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Reduces unnecessary retries to save battery
+                
+                @Justification(reaction: "Correct! 🔋") {
+                    When failures repeat, increasing intervals
+                    reduces battery consumption and
+                    gives the device time to come back in range.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can connect to more devices
+                
+                @Justification(reaction: "It's not related to connection count.") {
+                    The goal is adjusting retry intervals.
+                }
+            }
+        }
+    }
+}

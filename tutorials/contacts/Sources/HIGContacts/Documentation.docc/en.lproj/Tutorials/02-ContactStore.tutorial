@@ -1,0 +1,142 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Setting Up CNContactStore") {
+        Learn how to properly set up and manage 
+        a CNContactStore for use throughout your app.
+    }
+    
+    @Section(title: "Creating CNContactStore") {
+        @ContentAndMedia {
+            `CNContactStore` represents a connection to the contacts database,
+            and it's recommended to maintain only one instance in your app.
+        }
+        
+        @Steps {
+            @Step {
+                Create a ContactManager class using the singleton pattern.
+                
+                @Code(name: "ContactManager.swift", file: "02-01-singleton.swift")
+            }
+            
+            @Step {
+                Declare a `CNContactStore` instance as a property.
+                
+                @Code(name: "ContactManager.swift", file: "02-02-store.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Detecting Database Changes") {
+        @ContentAndMedia {
+            When contact data changes from another app or the system,
+            you need to receive notifications to update the UI.
+        }
+        
+        @Steps {
+            @Step {
+                Subscribe to the `CNContactStoreDidChange` notification.
+                
+                @Code(name: "ContactManager.swift", file: "02-03-notification.swift")
+            }
+            
+            @Step {
+                Implement a more modern approach using Combine.
+                
+                @Code(name: "ContactManager.swift", file: "02-04-combine.swift")
+            }
+            
+            @Step {
+                Refresh data when receiving a change notification.
+                
+                @Code(name: "ContactManager.swift", file: "02-05-refresh.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Integration with SwiftUI") {
+        @ContentAndMedia {
+            Inject ContactManager as an Environment 
+            in your SwiftUI app.
+        }
+        
+        @Steps {
+            @Step {
+                Implement using the `@Observable` macro.
+                
+                @Code(name: "ContactManager.swift", file: "02-06-observable.swift")
+            }
+            
+            @Step {
+                Inject as an Environment at the app entry point.
+                
+                @Code(name: "ContactsApp.swift", file: "02-07-app.swift")
+            }
+            
+            @Step {
+                Use ContactManager in a View.
+                
+                @Code(name: "ContentView.swift", file: "02-08-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How many CNContactStore instances are recommended to maintain in an app?
+            
+            @Choice(isCorrect: true) {
+                One (singleton)
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    CNContactStore uses resources, so it's best 
+                    to maintain only one in your app.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                One for each View
+                
+                @Justification(reaction: "Try again.") {
+                    Creating multiple CNContactStores 
+                    wastes unnecessary resources.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Create a new one whenever needed
+                
+                @Justification(reaction: "Try again.") {
+                    Creating a CNContactStore is a costly operation.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What notification should you subscribe to for detecting contact data changes?
+            
+            @Choice(isCorrect: false) {
+                `CNContactChanged`
+                
+                @Justification(reaction: "Try again.") {
+                    This notification name does not exist.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `CNContactStoreDidChange`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The `CNContactStoreDidChange` notification 
+                    can detect contact data changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `ContactsDidUpdate`
+                
+                @Justification(reaction: "Try again.") {
+                    This notification does not exist.
+                }
+            }
+        }
+    }
+}

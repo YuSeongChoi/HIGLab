@@ -1,0 +1,167 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Reading Data with the Magic of @Query") {
+        @Query is the crown jewel of SwiftData.
+        Query data declaratively without NSFetchRequest,
+        automatically synchronizing with SwiftUI.
+    }
+    
+    @Section(title: "@Query Basics") {
+        @ContentAndMedia {
+            The @Query property wrapper automatically fetches data in SwiftUI views.
+            When data changes, the view updates automatically too.
+        }
+        
+        @Steps {
+            @Step {
+                **The Simplest @Query**
+                
+                Just specify the type to get all data of that model.
+                No separate fetch code needed!
+                
+                @Code(name: "TaskListView.swift", file: "04-query-basic.swift")
+            }
+            
+            @Step {
+                **Adding Sorting**
+                
+                Sort results with SortDescriptor.
+                You can combine multiple sorting criteria.
+                
+                @Code(name: "TaskListView.swift", file: "04-query-sort.swift")
+            }
+            
+            @Step {
+                **Basic Filtering**
+                
+                Apply type-safe filters with the #Predicate macro.
+                Unlike string-based NSPredicate, compile-time verification is possible.
+                
+                @Code(name: "TaskListView.swift", file: "04-query-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced @Query") {
+        @ContentAndMedia {
+            @Query supports various options including sorting, filtering, and animation.
+            More complex queries are possible using FetchDescriptor.
+        }
+        
+        @Steps {
+            @Step {
+                **Compound Sorting**
+                
+                Combining multiple SortDescriptors enables multi-level sorting.
+                Let's sort by priority → creation date.
+                
+                @Code(name: "TaskListView.swift", file: "04-query-multi-sort.swift")
+            }
+            
+            @Step {
+                **Dynamic Filtering**
+                
+                @Query's filter is a fixed value.
+                For dynamic filtering, change conditions from the parent view.
+                
+                @Code(name: "DynamicFilter.swift", file: "04-query-dynamic.swift")
+            }
+            
+            @Step {
+                **Applying Animation**
+                
+                Add animation on data changes with the animation parameter.
+                List item additions/deletions display smoothly.
+                
+                @Code(name: "AnimatedList.swift", file: "04-query-animation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying @Query to TaskMaster") {
+        @ContentAndMedia {
+            Apply @Query to the main list of the TaskMaster app.
+            Display the task list and filter by completion status.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing TaskListView**
+                
+                Get all tasks with @Query and display as a list.
+                We'll implement CRUD in the next chapter.
+                
+                @Code(name: "TaskListView.swift", file: "04-tasklist-view.swift")
+            }
+            
+            @Step {
+                **Complete/Incomplete Filter**
+                
+                Select a filter with segments and display only matching items.
+                Apply the dynamic filtering pattern.
+                
+                @Code(name: "FilteredTaskList.swift", file: "04-filtered-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When @Query data changes, what happens to the SwiftUI view?
+            
+            @Choice(isCorrect: true) {
+                Updates automatically
+                
+                @Justification(reaction: "Correct!") {
+                    @Query uses the Observable pattern to
+                    automatically update the view when data changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Manual refresh() call required
+                
+                @Justification(reaction: "Not quite") {
+                    @Query integrates automatically with SwiftUI.
+                    No separate refresh code needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                App restart required to reflect
+                
+                @Justification(reaction: "Not quite") {
+                    @Query detects data changes in real-time and updates the view.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What macro creates type-safe filters in SwiftData?
+            
+            @Choice(isCorrect: true) {
+                #Predicate
+                
+                @Justification(reaction: "Exactly right!") {
+                    The #Predicate macro validates types at compile time,
+                    making it safer than string-based NSPredicate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                #Filter
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData uses the #Predicate macro.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Where
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData uses the #Predicate macro.
+                }
+            }
+        }
+    }
+}

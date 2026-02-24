@@ -1,0 +1,170 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Offline Maps") {
+        Utilize iOS 17+ offline map capabilities.
+        Enable the restaurant map to work without internet.
+    }
+    
+    @Section(title: "Introduction to Offline Maps") {
+        @ContentAndMedia {
+            Starting with iOS 17, users can download offline maps 
+            from Settings > Maps.
+            Guide and utilize this feature in your app.
+        }
+        
+        @Steps {
+            @Step {
+                **How Offline Maps Work**
+                
+                Regions downloaded by users allow 
+                map tiles and search without internet.
+                MapKit automatically uses offline data.
+                
+                @Code(name: "OfflineGuide.swift", file: "10-offline-intro.swift")
+            }
+            
+            @Step {
+                **Guiding to Settings App**
+                
+                Provide a link to navigate to the offline map download screen.
+                Utilize UIApplication.openSettingsURLString.
+                
+                @Code(name: "OfflineGuide.swift", file: "10-settings-link.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Offline Strategy") {
+        @ContentAndMedia {
+            Detect network status and provide 
+            appropriate UX when offline.
+        }
+        
+        @Steps {
+            @Step {
+                **Monitoring Network Status**
+                
+                Detect real-time network status with NWPathMonitor.
+                Notify users when going offline.
+                
+                @Code(name: "NetworkMonitor.swift", file: "10-network-monitor.swift")
+            }
+            
+            @Step {
+                **Local Caching Strategy**
+                
+                Save frequently visited restaurant data locally.
+                Support offline access with Core Data or SwiftData.
+                
+                @Code(name: "LocalCache.swift", file: "10-local-cache.swift")
+            }
+            
+            @Step {
+                **Displaying Offline UI**
+                
+                Show a banner indicating offline status and 
+                inform about available features.
+                
+                @Code(name: "OfflineBanner.swift", file: "10-offline-banner.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Offline Support for Favorites") {
+        @ContentAndMedia {
+            Make restaurants that users have favorited 
+            viewable offline.
+        }
+        
+        @Steps {
+            @Step {
+                **Favorites Model**
+                
+                Save favorite restaurants with SwiftData.
+                Include essential information like coordinates, name, and category.
+                
+                @Code(name: "FavoriteRestaurant.swift", file: "10-favorite-model.swift")
+            }
+            
+            @Step {
+                **Displaying Offline Restaurants**
+                
+                When offline, display only favorite restaurants on the map.
+                Search functionality is limited to local data.
+                
+                @Code(name: "ContentView.swift", file: "10-offline-favorites.swift")
+            }
+            
+            @Step {
+                **App Completion**
+                
+                Integrate all features to complete the restaurant map app.
+                The app works both online and offline.
+                
+                @Code(name: "ContentView.swift", file: "10-final-app.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is a characteristic of iOS 17 offline maps feature?
+            
+            @Choice(isCorrect: true) {
+                Users must manually download regions from the Settings app
+                
+                @Justification(reaction: "Correct!") {
+                    Automatic download from apps is not possible.
+                    Users select desired regions in Settings > Maps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apps can directly download regions
+                
+                @Justification(reaction: "Not quite") {
+                    Current APIs don't allow apps to trigger downloads directly.
+                    Guiding users to the Settings app is the best approach.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All regions are automatically cached
+                
+                @Justification(reaction: "Not quite") {
+                    Due to storage concerns, automatic caching is limited.
+                    Users must explicitly download regions.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How does MKLocalSearch behave when offline?
+            
+            @Choice(isCorrect: true) {
+                Works with limitations in regions where offline maps are downloaded
+                
+                @Justification(reaction: "Exactly right!") {
+                    POI data is also saved with downloaded regions,
+                    enabling basic searches.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always fails (internet required)
+                
+                @Justification(reaction: "Not quite") {
+                    Local search is possible in regions with offline maps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Returns more accurate results offline
+                
+                @Justification(reaction: "Not quite") {
+                    Online provides more recent and comprehensive data.
+                    Offline is a snapshot from download time.
+                }
+            }
+        }
+    }
+}

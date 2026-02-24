@@ -1,0 +1,157 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Introduction to Contacts & Permissions") {
+        Learn the core concepts of the Contacts framework and 
+        how to set up permissions for accessing contacts.
+    }
+    
+    @Section(title: "What is the Contacts Framework?") {
+        @ContentAndMedia {
+            Contacts is a framework that provides access to 
+            user contact data on iOS and macOS.
+            
+            You can read and write to the user's Contacts app data,
+            allowing you to integrate contact management features into your app.
+        }
+        
+        @Steps {
+            @Step {
+                Let's explore the main classes in the Contacts framework.
+                
+                - `CNContactStore`: Access to the contacts database
+                - `CNContact`: Contact object (immutable)
+                - `CNMutableContact`: Mutable contact
+                - `CNContactFetchRequest`: Fetch request
+                
+                @Code(name: "ContactsOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                Import Contacts into your project.
+                
+                @Code(name: "ContactManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info.plist Permission Setup") {
+        @ContentAndMedia {
+            To use Contacts, you need to add a permission 
+            request message to Info.plist.
+            
+            Starting with iOS 18, a limited access option was added.
+        }
+        
+        @Steps {
+            @Step {
+                Add contacts access permission to Info.plist.
+                
+                Use the `NSContactsUsageDescription` key.
+                
+                @Code(name: "Info.plist", file: "01-03-plist.swift")
+            }
+            
+            @Step {
+                Write the permission message to match your app's purpose.
+                
+                Users should understand why contact access is needed.
+                
+                @Code(name: "Info.plist", file: "01-04-plist-detail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Permission Requests") {
+        @ContentAndMedia {
+            Write code to request permission from the user 
+            when the app launches.
+        }
+        
+        @Steps {
+            @Step {
+                Create a `CNContactStore` and check the authorization status.
+                
+                @Code(name: "ContactManager.swift", file: "01-05-auth-check.swift")
+            }
+            
+            @Step {
+                Add a method to request contact access permission.
+                
+                Use the `requestAccess(for:)` method.
+                
+                @Code(name: "ContactManager.swift", file: "01-06-request-auth.swift")
+            }
+            
+            @Step {
+                Complete the handling logic based on authorization status.
+                
+                @Code(name: "ContactManager.swift", file: "01-07-auth-complete.swift")
+            }
+            
+            @Step {
+                Handle the limited access status in iOS 18.
+                
+                @Code(name: "ContactManager.swift", file: "01-08-limited-access.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which class is used to access the contacts database in the Contacts framework?
+            
+            @Choice(isCorrect: false) {
+                `CNContact`
+                
+                @Justification(reaction: "Try again.") {
+                    `CNContact` is a class that represents an individual contact.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `CNContactStore`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    `CNContactStore` is the core class that manages 
+                    connections to the contacts database.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CNMutableContact`
+                
+                @Justification(reaction: "Try again.") {
+                    `CNMutableContact` is a class that represents a mutable contact.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the method to request contact access permission?
+            
+            @Choice(isCorrect: true) {
+                `requestAccess(for: .contacts)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The `requestAccess(for:)` method is used to 
+                    request contact access permission.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `requestContactsAccess()`
+                
+                @Justification(reaction: "Try again.") {
+                    This method does not exist.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `authorize()`
+                
+                @Justification(reaction: "Try again.") {
+                    This method does not exist.
+                }
+            }
+        }
+    }
+}

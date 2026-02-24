@@ -1,0 +1,123 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Querying Records") {
+        Query data from CloudKit using CKQuery and NSPredicate.
+        Learn filtering, sorting, and pagination techniques.
+    }
+    
+    @Section(title: "CKQuery Basics") {
+        @ContentAndMedia {
+            CKQuery consists of a record type and NSPredicate.
+            It plays a similar role to SQL's SELECT statement.
+        }
+        @Steps {
+            @Step {
+                Create a basic query to fetch all notes.
+                @Code(name: "CloudKitManager.swift", file: "04-01-basicquery.swift")
+            }
+            @Step {
+                Convert query results to Note models.
+                @Code(name: "Note.swift", file: "04-02-recordtonote.swift")
+            }
+            @Step {
+                Complete the fetch method.
+                @Code(name: "CloudKitManager.swift", file: "04-03-fetchnotes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Filtering and Sorting") {
+        @ContentAndMedia {
+            Specify conditions with NSPredicate and sort with NSSortDescriptor.
+        }
+        @Steps {
+            @Step {
+                Create a query to search notes by title.
+                @Code(name: "CloudKitManager.swift", file: "04-04-searchquery.swift")
+            }
+            @Step {
+                Filter by date range.
+                @Code(name: "CloudKitManager.swift", file: "04-05-datefilter.swift")
+            }
+            @Step {
+                Create compound condition queries.
+                Combine AND and OR conditions.
+                @Code(name: "CloudKitManager.swift", file: "04-06-compoundquery.swift")
+            }
+            @Step {
+                Specify sort order.
+                @Code(name: "CloudKitManager.swift", file: "04-07-sorting.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pagination") {
+        @ContentAndMedia {
+            Use CKQueryOperation and cursor to paginate large amounts of data.
+        }
+        @Steps {
+            @Step {
+                Create a paginated query with CKQueryOperation.
+                @Code(name: "CloudKitManager.swift", file: "04-08-pagination.swift")
+            }
+            @Step {
+                Load the next page using cursor.
+                @Code(name: "CloudKitManager.swift", file: "04-09-cursor.swift")
+            }
+            @Step {
+                Implement a ViewModel for infinite scrolling.
+                @Code(name: "NotesViewModel.swift", file: "04-10-infinitescroll.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which NSPredicate operator is NOT supported in CloudKit queries?
+            @Choice(isCorrect: false) {
+                BEGINSWITH
+                @Justification(reaction: "Think again.") {
+                    BEGINSWITH is used for string prefix searches.
+                }
+            }
+            @Choice(isCorrect: true) {
+                REGEX
+                @Justification(reaction: "Correct!") {
+                    CloudKit does not support regular expressions (REGEX).
+                }
+            }
+            @Choice(isCorrect: false) {
+                IN
+                @Justification(reaction: "Think again.") {
+                    The IN operator is used for value list comparisons.
+                }
+            }
+            @Choice(isCorrect: false) {
+                CONTAINS
+                @Justification(reaction: "Think again.") {
+                    CONTAINS is used for string containment searches.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is used for pagination in CKQueryOperation?
+            @Choice(isCorrect: false) {
+                offset
+                @Justification(reaction: "Think again.") {
+                    CloudKit uses cursor-based pagination, not offset-based.
+                }
+            }
+            @Choice(isCorrect: true) {
+                cursor
+                @Justification(reaction: "Correct!") {
+                    CKQueryOperation.Cursor tracks the next page position.
+                }
+            }
+            @Choice(isCorrect: false) {
+                page
+                @Justification(reaction: "Think again.") {
+                    There's no page property. Use cursor instead.
+                }
+            }
+        }
+    }
+}

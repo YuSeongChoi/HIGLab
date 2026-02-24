@@ -1,0 +1,196 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Video Editing (AVMutableComposition)") {
+        Edit videos with AVMutableComposition.
+        Implement trimming, merging, and audio mixing.
+    }
+    
+    @Section(title: "Composition Basics") {
+        @ContentAndMedia {
+            AVMutableComposition is a container that composites multiple media tracks.
+            Add video and audio tracks and manipulate time ranges.
+            
+            **Core Concepts:**
+            - `AVMutableComposition`: Overall composition
+            - `AVMutableCompositionTrack`: Individual tracks
+            - `CMTimeRange`: Time range
+        }
+        
+        @Steps {
+            @Step {
+                Create the VideoEditor class.
+                Encapsulate video editing functionality.
+                
+                @Code(name: "VideoEditor.swift", file: "08-video-editor-class.swift")
+            }
+            
+            @Step {
+                Create AVMutableComposition.
+                Prepare to add tracks to an empty composition.
+                
+                @Code(name: "VideoEditor.swift", file: "08-create-composition.swift")
+            }
+            
+            @Step {
+                Load video asset.
+                Get asset from file with AVURLAsset.
+                
+                @Code(name: "VideoEditor.swift", file: "08-load-asset.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Video Trimming") {
+        @ContentAndMedia {
+            Extract only a specific segment of the video.
+            Specify range with start time and end time.
+        }
+        
+        @Steps {
+            @Step {
+                Specify the segment to trim with CMTimeRange.
+                Define start point and duration with CMTime.
+                
+                @Code(name: "VideoEditor.swift", file: "08-time-range.swift")
+            }
+            
+            @Step {
+                Add video track to composition.
+                Insert only the specified segment with insertTimeRange.
+                
+                @Code(name: "VideoEditor.swift", file: "08-trim-video.swift")
+            }
+            
+            @Step {
+                Trim audio track together.
+                Apply the same time range as video.
+                
+                @Code(name: "VideoEditor.swift", file: "08-trim-audio.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Video Merging") {
+        @ContentAndMedia {
+            Connect multiple video clips into one.
+            Join in sequence to create a single video.
+        }
+        
+        @Steps {
+            @Step {
+                Insert multiple assets in sequence.
+                Use each clip's end time as the next clip's start time.
+                
+                @Code(name: "VideoEditor.swift", file: "08-merge-videos.swift")
+            }
+            
+            @Step {
+                Add transitions.
+                Create smooth transitions with crossfade effects.
+                
+                @Code(name: "VideoEditor.swift", file: "08-transition.swift")
+            }
+            
+            @Step {
+                Unify video size.
+                Needed when merging videos of different resolutions.
+                
+                @Code(name: "VideoEditor.swift", file: "08-normalize-size.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Export") {
+        @ContentAndMedia {
+            Save edited video to file with AVAssetExportSession.
+            Various presets and formats can be selected.
+        }
+        
+        @Steps {
+            @Step {
+                Create AVAssetExportSession.
+                Specify output quality with preset.
+                
+                @Code(name: "VideoEditor.swift", file: "08-create-export-session.swift")
+            }
+            
+            @Step {
+                Configure output settings.
+                Set file format, output URL, and time range.
+                
+                @Code(name: "VideoEditor.swift", file: "08-configure-export.swift")
+            }
+            
+            @Step {
+                Execute export.
+                Runs asynchronously and progress can be monitored.
+                
+                @Code(name: "VideoEditor.swift", file: "08-execute-export.swift")
+            }
+            
+            @Step {
+                Implement progress UI.
+                Display export status with ProgressView.
+                
+                @Code(name: "ExportProgressView.swift", file: "08-progress-ui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What AVFoundation class is used to composite multiple videos?
+            
+            @Choice(isCorrect: true) {
+                `AVMutableComposition`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AVMutableComposition composites multiple media tracks.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVAssetExportSession`
+                
+                @Justification(reaction: "Think again.") {
+                    AVAssetExportSession handles exporting.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVPlayerItem`
+                
+                @Justification(reaction: "Think again.") {
+                    AVPlayerItem is a class for playback.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which video export quality preset preserves the highest quality?
+            
+            @Choice(isCorrect: false) {
+                `.presetMediumQuality`
+                
+                @Justification(reaction: "Think again.") {
+                    This is a medium quality preset.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.presetHighestQuality`
+                
+                @Justification(reaction: "Think again.") {
+                    .presetHighestQuality is a preset for video export.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.presetPassthrough`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    presetPassthrough maintains the original quality as-is.
+                }
+            }
+        }
+    }
+}

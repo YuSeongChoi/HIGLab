@@ -1,0 +1,251 @@
+@Tutorial(time: 25) {
+    @Intro(title: "RAW Image Processing") {
+        Learn how to professionally process RAW format images 
+        using CIRAWFilter.
+        
+        @Image(source: "raw-processing.png", alt: "RAW Processing")
+    }
+    
+    @Section(title: "Understanding RAW Images") {
+        @ContentAndMedia {
+            RAW files contain the original data from the camera sensor.
+            They preserve much more information than JPEG, making them ideal for post-processing.
+            
+            RAW advantages:
+            - **Wide dynamic range**: Highlight/shadow recovery possible
+            - **High bit depth**: 12-14 bits (JPEG is 8 bits)
+            - **White balance adjustment**: Can be precisely adjusted in post
+            - **Uncompressed/lossless**: No image quality loss
+            
+            @Image(source: "raw-vs-jpeg.png", alt: "RAW vs JPEG")
+        }
+        
+        @Steps {
+            @Step {
+                Check supported RAW file formats.
+                Major camera RAW formats like DNG, CR2, NEF, ARW are supported.
+                
+                @Code(name: "SupportedFormats.swift", file: "09-01-supported-formats.swift")
+            }
+            
+            @Step {
+                Load CIImage from a RAW file.
+                Use CIRAWFilter to process RAW data.
+                
+                @Code(name: "LoadRAW.swift", file: "09-02-load-raw.swift")
+            }
+            
+            @Step {
+                Read metadata from RAW files.
+                You can check EXIF, shooting information, etc.
+                
+                @Code(name: "RAWMetadata.swift", file: "09-03-raw-metadata.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIRAWFilter Basic Adjustments") {
+        @ContentAndMedia {
+            CIRAWFilter adjusts various parameters of RAW images.
+            Control exposure, white balance, highlight recovery, and more.
+            
+            Key parameters:
+            - exposure: Exposure adjustment (in EV units)
+            - temperature/tint: Color temperature and tint
+            - neutralChromaticityX/Y: White point
+            - shadowBias: Shadow recovery
+            - boostAmount: Brightness boost
+        }
+        
+        @Steps {
+            @Step {
+                Adjust exposure.
+                Correct brightness using RAW's wide dynamic range.
+                
+                @Code(name: "RAWExposure.swift", file: "09-04-raw-exposure.swift")
+            }
+            
+            @Step {
+                Adjust white balance.
+                Find natural colors with temperature and tint.
+                
+                @Code(name: "RAWWhiteBalance.swift", file: "09-05-raw-white-balance.swift")
+            }
+            
+            @Step {
+                Recover shadows and highlights.
+                Bring out details with RAW's rich information.
+                
+                @Code(name: "RAWShadowHighlight.swift", file: "09-06-raw-shadow-highlight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced RAW Processing") {
+        @ContentAndMedia {
+            Use advanced parameters for professional RAW processing.
+            Apply noise reduction, sharpening, lens correction, and more.
+            
+            Advanced features:
+            - noiseReductionAmount: Noise reduction
+            - noiseReductionSharpnessAmount: Sharpening
+            - noiseReductionContrastAmount: Detail preservation
+            - linearSpaceFilter: Linear color space processing
+        }
+        
+        @Steps {
+            @Step {
+                Apply noise reduction.
+                Reduce noise in high ISO photos while preserving detail.
+                
+                @Code(name: "RAWNoiseReduction.swift", file: "09-07-raw-noise-reduction.swift")
+            }
+            
+            @Step {
+                Apply sharpening.
+                Add appropriate sharpness after RAW demosaicing.
+                
+                @Code(name: "RAWSharpening.swift", file: "09-08-raw-sharpening.swift")
+            }
+            
+            @Step {
+                Apply color profiles.
+                Use camera profiles or custom LUTs.
+                
+                @Code(name: "RAWColorProfile.swift", file: "09-09-raw-color-profile.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ProRAW and Apple RAW") {
+        @ContentAndMedia {
+            iPhone's ProRAW is a special RAW format that includes 
+            Apple's image pipeline information.
+            
+            ProRAW features:
+            - Preserves Deep Fusion, Smart HDR information
+            - Based on DNG format
+            - Computational photography + RAW flexibility
+            - 12-bit color information
+        }
+        
+        @Steps {
+            @Step {
+                Enable ProRAW capture on iPhone.
+                Configure AVCapturePhotoOutput settings.
+                
+                @Code(name: "ProRAWCapture.swift", file: "09-10-proraw-capture.swift")
+            }
+            
+            @Step {
+                Process ProRAW files.
+                Utilize Apple's semantic rendering information.
+                
+                @Code(name: "ProcessProRAW.swift", file: "09-11-process-proraw.swift")
+            }
+            
+            @Step {
+                Export RAW processing results.
+                Save in various formats like HEIF, JPEG, TIFF.
+                
+                @Code(name: "ExportRAW.swift", file: "09-12-export-raw.swift")
+            }
+            
+            @Step {
+                Implement batch RAW processing.
+                Apply the same settings to multiple RAW files.
+                
+                @Code(name: "BatchRAWProcess.swift", file: "09-13-batch-raw.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why is RAW more advantageous for post-processing than JPEG?
+            
+            @Choice(isCorrect: true) {
+                Because it preserves higher bit depth and wider dynamic range
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    RAW preserves 12-14 bit information, enabling 
+                    highlight/shadow recovery.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because smaller file size enables faster processing
+                
+                @Justification(reaction: "Actually the opposite.") {
+                    RAW files are much larger than JPEG.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because it's a standard format viewable on all devices
+                
+                @Justification(reaction: "That's not the case.") {
+                    RAW has limited compatibility and requires processing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What cannot be adjusted in CIRAWFilter?
+            
+            @Choice(isCorrect: false) {
+                Exposure
+                
+                @Justification(reaction: "It can be adjusted.") {
+                    EV unit adjustment is possible with the exposure parameter.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                White balance (temperature)
+                
+                @Justification(reaction: "It can be adjusted.") {
+                    White balance is adjusted with temperature and tint.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Changing the ISO value at shooting time
+                
+                @Justification(reaction: "Correct! ✨") {
+                    ISO is determined at shooting time; only simulation 
+                    is possible during RAW processing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What makes iPhone ProRAW special?
+            
+            @Choice(isCorrect: true) {
+                Includes computational photography information like Deep Fusion, Smart HDR
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    ProRAW stores Apple's image pipeline information 
+                    along with RAW data.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                File size is smaller than regular DNG
+                
+                @Justification(reaction: "Actually larger.") {
+                    File size is larger due to additional information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only supports 8-bit color
+                
+                @Justification(reaction: "Supports 12-bit.") {
+                    ProRAW stores 12-bit color information.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,168 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to PencilKit") {
+        Understand the core concepts of the PencilKit framework 
+        and the basics of drawing app development.
+        
+        @Image(source: "pencilkit-intro.png", alt: "PencilKit Overview")
+    }
+    
+    @Section(title: "What is PencilKit?") {
+        @ContentAndMedia {
+            PencilKit is a drawing framework introduced by Apple in iOS 13,
+            supporting both Apple Pencil and finger input.
+            
+            - **Native Performance**: High-performance Metal-based rendering
+            - **Natural Writing Feel**: Pressure, tilt, and azimuth detection
+            - **Various Tools**: Built-in pen, marker, pencil, eraser, and more
+            - **Standard Data Format**: Save and share with PKDrawing
+            
+            @Image(source: "pencilkit-overview.png", alt: "PencilKit Components")
+        }
+        
+        @Steps {
+            @Step {
+                To use PencilKit, first import the framework.
+                PencilKit is available on iOS 13+, iPadOS 13+, and macOS 10.15+.
+                
+                @Code(name: "PencilKitImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Let's explore the main components of PencilKit.
+                
+                - `PKCanvasView`: The canvas view where drawing occurs
+                - `PKDrawing`: The model that holds drawing data
+                - `PKToolPicker`: The tool selection palette
+                - `PKStroke`: Individual stroke data
+                
+                @Code(name: "PencilKitComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding PKDrawing") {
+        @ContentAndMedia {
+            PKDrawing is the core model for drawing data.
+            It contains a collection of all strokes.
+            
+            - **Immutability**: PKDrawing is designed as a value type (struct)
+            - **Efficient Storage**: Can be serialized to Data
+            - **Composable**: Multiple PKDrawings can be merged into one
+        }
+        
+        @Steps {
+            @Step {
+                PKDrawing contains an array of strokes,
+                where each stroke holds path, ink, and transform information.
+                
+                @Code(name: "PKDrawingStructure.swift", file: "01-03-drawing-structure.swift")
+            }
+            
+            @Step {
+                You can convert PKDrawing to Data for storage,
+                or restore PKDrawing from Data.
+                
+                @Code(name: "PKDrawingSerialization.swift", file: "01-04-serialization.swift")
+            }
+            
+            @Step {
+                You can combine two PKDrawings to create a new PKDrawing.
+                This feature is useful for layer compositing or collaborative drawing.
+                
+                @Code(name: "PKDrawingMerge.swift", file: "01-05-merge.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PKStroke and PKInk") {
+        @ContentAndMedia {
+            Each stroke is represented as a PKStroke object.
+            PKInk defines the pen type and color.
+            
+            | Property | Description |
+            |----------|-------------|
+            | path | PKStrokePath - The stroke's path |
+            | ink | PKInk - Pen type and color |
+            | transform | CGAffineTransform - Transformation matrix |
+            | mask | PKStrokePath? - Mask path |
+        }
+        
+        @Steps {
+            @Step {
+                PKInk defines pen types (pen, pencil, marker) and colors.
+                Each type has unique rendering characteristics.
+                
+                @Code(name: "PKInkTypes.swift", file: "01-06-ink-types.swift")
+            }
+            
+            @Step {
+                PKStrokePath contains the actual path data of a stroke.
+                Each point includes position, pressure, tilt, and other information.
+                
+                @Code(name: "PKStrokePath.swift", file: "01-07-stroke-path.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the core object that stores and manages drawing data in PencilKit?
+            
+            @Choice(isCorrect: false) {
+                PKCanvasView
+                
+                @Justification(reaction: "Think again.") {
+                    PKCanvasView is the view where drawing occurs.
+                    The data itself is stored in PKDrawing.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PKDrawing
+                
+                @Justification(reaction: "Correct! 🎨") {
+                    PKDrawing is a value type that contains all strokes
+                    and can be serialized to Data for storage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PKToolPicker
+                
+                @Justification(reaction: "Not quite.") {
+                    PKToolPicker is a component that provides the tool selection UI.
+                    It's not related to storing drawing data.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which is NOT a pen type supported by PKInk?
+            
+            @Choice(isCorrect: false) {
+                pen
+                
+                @Justification(reaction: "pen is supported.") {
+                    pen is the basic ballpoint type with consistent opacity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                marker
+                
+                @Justification(reaction: "marker is also supported.") {
+                    marker has semi-transparent characteristics like a highlighter.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                brush
+                
+                @Justification(reaction: "Correct! ✨") {
+                    PencilKit provides pen, pencil, and marker by default.
+                    Custom brushes need to be implemented separately.
+                }
+            }
+        }
+    }
+}

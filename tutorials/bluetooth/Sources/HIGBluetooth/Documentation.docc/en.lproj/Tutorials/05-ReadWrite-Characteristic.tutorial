@@ -1,0 +1,193 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Reading/Writing Characteristics") {
+        Learn how to read data from and write new values
+        to BLE device characteristics.
+    }
+    
+    @Section(title: "Reading Characteristics") {
+        @ContentAndMedia {
+            Use the `readValue(for:)` method to read the current value of a Characteristic.
+            The result is received in the `didUpdateValue` callback.
+            
+            **Read Requirements:**
+            - Characteristic's properties include `.read`
+            - Device is connected
+        }
+        
+        @Steps {
+            @Step {
+                Request to read a Characteristic value.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-01-read-value.swift")
+            }
+            
+            @Step {
+                Process the read value in the didUpdateValue callback.
+                Convert the Data type to the appropriate format.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-02-update-callback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing Characteristics") {
+        @ContentAndMedia {
+            Use the `writeValue(_:for:type:)` method to write values.
+            The write type determines whether you receive a response.
+            
+            | Type | Description |
+            |------|-------------|
+            | .withResponse | Receives write confirmation response |
+            | .withoutResponse | Sends quickly without confirmation |
+        }
+        
+        @Steps {
+            @Step {
+                Implement writing with response.
+                Use for commands where reliability is important.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-03-write-with-response.swift")
+            }
+            
+            @Step {
+                Implement writing without response.
+                Use when speed matters, like real-time control.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-04-write-without-response.swift")
+            }
+            
+            @Step {
+                Handle the write completion callback.
+                Implement retry logic when errors occur.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-05-write-callback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Data Conversion") {
+        @ContentAndMedia {
+            BLE data is transmitted as byte arrays (Data).
+            Conversion to usable types in your app is necessary.
+            
+            **Common Conversions:**
+            - Integers like UInt8, UInt16, Int16
+            - Floating point like Float, Double
+            - String (UTF-8)
+        }
+        
+        @Steps {
+            @Step {
+                Create integer type conversion utilities.
+                Consider little endian/big endian.
+                
+                @Code(name: "DataConversion.swift", file: "05-06-data-conversion.swift")
+            }
+            
+            @Step {
+                Implement a heart rate data parsing example.
+                Follow the Bluetooth SIG standard format.
+                
+                @Code(name: "HeartRateParser.swift", file: "05-07-heart-rate-parser.swift")
+            }
+            
+            @Step {
+                Example of creating Data for sending commands.
+                Create an LED light control command.
+                
+                @Code(name: "CommandBuilder.swift", file: "05-08-command-builder.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the difference between .withResponse and .withoutResponse in writeValue's type parameter?
+            
+            @Choice(isCorrect: true) {
+                withResponse receives write confirmation, withoutResponse sends without confirmation
+                
+                @Justification(reaction: "Correct! ✅") {
+                    withResponse is reliable but slower,
+                    withoutResponse is fast but delivery isn't guaranteed.
+                    Choose based on your needs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No difference
+                
+                @Justification(reaction: "There is a difference.") {
+                    Reliability and speed differ based on response.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                withoutResponse cannot be used
+                
+                @Justification(reaction: "It can be used.") {
+                    It's available if the Characteristic's properties include .writeWithoutResponse.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What byte order is typically used when transmitting 16-bit integers over BLE?
+            
+            @Choice(isCorrect: true) {
+                Little Endian
+                
+                @Justification(reaction: "Correct! 💾") {
+                    BLE standard uses little endian.
+                    0x1234 is transmitted as [0x34, 0x12].
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Big Endian
+                
+                @Justification(reaction: "BLE uses little endian.") {
+                    Big endian is mainly used for network byte order.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It varies by device
+                
+                @Justification(reaction: "There's a BLE standard.") {
+                    BLE standard defines little endian.
+                    However, custom protocols may differ.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What callback receives the value after calling readValue(for:)?
+            
+            @Choice(isCorrect: false) {
+                peripheral(_:didWriteValueFor:error:)
+                
+                @Justification(reaction: "That's the write callback.") {
+                    didWriteValueFor is called when writeValue completes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                peripheral(_:didUpdateValueFor:error:)
+                
+                @Justification(reaction: "Correct! 📖") {
+                    In didUpdateValueFor, you can access
+                    the read data via characteristic.value.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                centralManager(_:didConnect:)
+                
+                @Justification(reaction: "That's the connection callback.") {
+                    didConnect is called when Peripheral connection succeeds.
+                }
+            }
+        }
+    }
+}

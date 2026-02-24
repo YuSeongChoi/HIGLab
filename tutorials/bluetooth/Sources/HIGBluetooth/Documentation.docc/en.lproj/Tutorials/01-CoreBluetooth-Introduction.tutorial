@@ -1,0 +1,180 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to CoreBluetooth & BLE Basics") {
+        Understand the basic concepts of Bluetooth Low Energy
+        and the structure of the CoreBluetooth framework.
+    }
+    
+    @Section(title: "What is BLE (Bluetooth Low Energy)?") {
+        @ContentAndMedia {
+            BLE is a low-power wireless communication technology introduced in Bluetooth 4.0.
+            Unlike classic Bluetooth, it's optimized for intermittent data transmission with minimal power consumption.
+            
+            **BLE Characteristics:**
+            - **Low Power**: Can operate for years on a coin battery
+            - **Fast Connection**: Connection established within milliseconds
+            - **Small Data**: Ideal for healthcare and IoT sensors
+            - **Wide Support**: iOS, Android, embedded devices
+        }
+        
+        @Steps {
+            @Step {
+                There are two main roles in BLE communication.
+                Understand the relationship between Central and Peripheral.
+                
+                @Code(name: "BLERoles.swift", file: "01-01-ble-roles.swift")
+            }
+            
+            @Step {
+                Understand the data structure of BLE.
+                The hierarchy of Services and Characteristics is key.
+                
+                @Code(name: "BLEStructure.swift", file: "01-02-ble-structure.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The CoreBluetooth Framework") {
+        @ContentAndMedia {
+            CoreBluetooth is Apple's framework for BLE communication.
+            You can implement both Central and Peripheral roles.
+            
+            **Main Classes:**
+            - `CBCentralManager`: Manages the Central role
+            - `CBPeripheralManager`: Manages the Peripheral role
+            - `CBPeripheral`: A connected peripheral device
+            - `CBService`: A service provided by the device
+            - `CBCharacteristic`: A characteristic containing actual data
+        }
+        
+        @Steps {
+            @Step {
+                Import CoreBluetooth and
+                explore the basic structure.
+                
+                @Code(name: "CoreBluetoothImport.swift", file: "01-03-import.swift")
+            }
+            
+            @Step {
+                UUIDs are unique values that identify services and characteristics.
+                Understand the difference between standard and custom UUIDs.
+                
+                @Code(name: "UUIDs.swift", file: "01-04-uuids.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Permission Setup") {
+        @ContentAndMedia {
+            To use Bluetooth in an iOS app,
+            you need to add permission descriptions to Info.plist.
+            
+            Bluetooth usage permission request is required on iOS 13+.
+        }
+        
+        @Steps {
+            @Step {
+                Add the Bluetooth permission key to Info.plist.
+                Write the description message that will be shown to users.
+                
+                @Code(name: "InfoPlist.swift", file: "01-05-info-plist.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which role in BLE finds devices and initiates connections?
+            
+            @Choice(isCorrect: true) {
+                Central
+                
+                @Justification(reaction: "Correct! 📱") {
+                    Central scans for nearby devices, initiates connections,
+                    and requests data as the client role.
+                    iPhone apps typically act as Central.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Peripheral
+                
+                @Justification(reaction: "Think again.") {
+                    Peripheral advertises itself and waits for connections.
+                    Heart rate bands, smart lights, etc. are Peripherals.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Observer
+                
+                @Justification(reaction: "Not quite.") {
+                    Observer is not a BLE role.
+                    Central and Peripheral are the two main roles.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the correct BLE data hierarchy structure?
+            
+            @Choice(isCorrect: false) {
+                Characteristic > Service > Peripheral
+                
+                @Justification(reaction: "The order is reversed.") {
+                    Peripheral contains Services,
+                    and Services contain Characteristics.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Peripheral > Service > Characteristic
+                
+                @Justification(reaction: "Correct! ✨") {
+                    A Peripheral device provides multiple Services,
+                    and each Service contains multiple Characteristics.
+                    Data is read from and written to Characteristics.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Service > Peripheral > Characteristic
+                
+                @Justification(reaction: "Incorrect.") {
+                    Peripheral is at the top level and contains Services.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the UUID length for the standard heart rate service?
+            
+            @Choice(isCorrect: true) {
+                16-bit (e.g., 0x180D)
+                
+                @Justification(reaction: "Correct! 💙") {
+                    Standard services defined by Bluetooth SIG
+                    use 16-bit UUIDs.
+                    The heart rate service is 0x180D.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                32-bit
+                
+                @Justification(reaction: "Incorrect.") {
+                    BLE doesn't use 32-bit UUIDs.
+                    It's either 16-bit (standard) or 128-bit (custom).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                128-bit
+                
+                @Justification(reaction: "That's for custom UUIDs.") {
+                    128-bit is used for custom UUIDs.
+                    Standard services use 16-bit.
+                }
+            }
+        }
+    }
+}

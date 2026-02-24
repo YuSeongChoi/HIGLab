@@ -1,0 +1,107 @@
+@Tutorial(time: 20) {
+    @Intro(title: "App Launch (Universal Links)") {
+        Learn how to automatically launch apps via NFC tag scanning.
+        Implement Universal Links and background tag reading.
+    }
+    
+    @Section(title: "Setting Up Universal Links") {
+        @ContentAndMedia {
+            With Universal Links, when an NFC tag containing a specific URL is scanned,
+            your app automatically launches.
+        }
+        @Steps {
+            @Step {
+                Enable the Associated Domains capability.
+                Add domains in the format applinks:yourdomain.com.
+                @Code(name: "App.entitlements", file: "10-01-domains.swift")
+            }
+            @Step {
+                Deploy the apple-app-site-association file to your server.
+                @Code(name: "apple-app-site-association", file: "10-02-aasa.swift")
+            }
+            @Step {
+                Handle Universal Links in SceneDelegate.
+                @Code(name: "SceneDelegate.swift", file: "10-03-scenedelegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Background Tag Reading") {
+        @ContentAndMedia {
+            In iOS 13+, NFC tags can be read automatically in the background
+            without opening the app.
+        }
+        @Steps {
+            @Step {
+                Declare background tag reading support in Info.plist.
+                @Code(name: "Info.plist", file: "10-04-background.swift")
+            }
+            @Step {
+                Process tags read in the background via NSUserActivity.
+                @Code(name: "SceneDelegate.swift", file: "10-05-useractivity.swift")
+            }
+            @Step {
+                Extract the URL from tag data and navigate to the appropriate screen in the app.
+                @Code(name: "SceneDelegate.swift", file: "10-06-navigate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Clips and NFC") {
+        @ContentAndMedia {
+            By linking App Clips with NFC tags, functionality can be used
+            immediately without installing the app.
+        }
+        @Steps {
+            @Step {
+                Encode the URL in the App Clip Code.
+                @Code(name: "AppClipSetup.swift", file: "10-07-appclip.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is required for Universal Links to work?
+            @Choice(isCorrect: false) {
+                A special NFC tag type
+                @Justification(reaction: "Think again.") {
+                    A regular NDEF URL tag is sufficient.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Server's apple-app-site-association file and app's Associated Domains configuration
+                @Justification(reaction: "Correct!") {
+                    Both server and app-side configurations are required.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Apple Developer Program Enterprise account
+                @Justification(reaction: "Think again.") {
+                    A regular developer account is sufficient.
+                }
+            }
+        }
+        @MultipleChoice {
+            How do you receive tag data in background tag reading?
+            @Choice(isCorrect: false) {
+                NFCNDEFReaderSessionDelegate
+                @Justification(reaction: "Think again.") {
+                    Sessions are not managed directly in the background.
+                }
+            }
+            @Choice(isCorrect: true) {
+                NSUserActivity
+                @Justification(reaction: "Correct!") {
+                    Tag data is received via NSUserActivity in scene(_:continue:).
+                }
+            }
+            @Choice(isCorrect: false) {
+                Push Notification
+                @Justification(reaction: "Think again.") {
+                    NFC is unrelated to push notifications.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,152 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Editing & Deleting Contacts") {
+        Learn how to edit existing contacts 
+        and delete them.
+    }
+    
+    @Section(title: "Editing Contacts") {
+        @ContentAndMedia {
+            Convert an existing `CNContact` to `CNMutableContact` 
+            to modify its information.
+        }
+        
+        @Steps {
+            @Step {
+                Fetch the contact to edit.
+                
+                @Code(name: "ContactManager.swift", file: "06-01-fetch.swift")
+            }
+            
+            @Step {
+                Convert to CNMutableContact.
+                
+                @Code(name: "ContactManager.swift", file: "06-02-mutable.swift")
+            }
+            
+            @Step {
+                Modify the information.
+                
+                @Code(name: "ContactManager.swift", file: "06-03-modify.swift")
+            }
+            
+            @Step {
+                Save the changes with CNSaveRequest.
+                
+                @Code(name: "ContactManager.swift", file: "06-04-update.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Editing Phone Numbers/Emails") {
+        @ContentAndMedia {
+            Since `CNLabeledValue` is immutable, 
+            create a new array to replace it.
+        }
+        
+        @Steps {
+            @Step {
+                Add a phone number.
+                
+                @Code(name: "ContactManager.swift", file: "06-05-add-phone.swift")
+            }
+            
+            @Step {
+                Edit a specific phone number.
+                
+                @Code(name: "ContactManager.swift", file: "06-06-edit-phone.swift")
+            }
+            
+            @Step {
+                Delete a phone number.
+                
+                @Code(name: "ContactManager.swift", file: "06-07-remove-phone.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Deleting Contacts") {
+        @ContentAndMedia {
+            Learn how to permanently delete contacts.
+        }
+        
+        @Steps {
+            @Step {
+                Add the contact to delete to CNSaveRequest.
+                
+                @Code(name: "ContactManager.swift", file: "06-08-delete.swift")
+            }
+            
+            @Step {
+                Display a confirmation dialog before deleting.
+                
+                @Code(name: "ContactManager.swift", file: "06-09-confirm.swift")
+            }
+            
+            @Step {
+                Implement an edit screen in SwiftUI.
+                
+                @Code(name: "EditContactView.swift", file: "06-10-edit-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the first thing you need to do to edit a CNContact?
+            
+            @Choice(isCorrect: true) {
+                Create a CNMutableContact with `mutableCopy()`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Since CNContact is immutable, you need to create 
+                    a mutable copy with mutableCopy().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Modify properties directly
+                
+                @Justification(reaction: "Try again.") {
+                    CNContact properties are read-only.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Create a new CNContact and replace
+                
+                @Justification(reaction: "Try again.") {
+                    Use mutableCopy() to modify an existing contact.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What method is used to delete a contact?
+            
+            @Choice(isCorrect: false) {
+                `CNContactStore.delete(_:)`
+                
+                @Justification(reaction: "Try again.") {
+                    CNContactStore doesn't have a direct delete method.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `CNSaveRequest.delete(_:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Add the contact to delete to CNSaveRequest 
+                    and execute it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CNMutableContact.delete()`
+                
+                @Justification(reaction: "Try again.") {
+                    The contact itself doesn't have a delete method.
+                }
+            }
+        }
+    }
+}

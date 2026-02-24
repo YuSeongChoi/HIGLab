@@ -1,0 +1,177 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Setting Up CHHapticEngine") {
+        Learn how to initialize the haptic engine and 
+        manage it properly according to the app lifecycle.
+        
+        @Image(source: "engine-setup.png", alt: "CHHapticEngine Setup")
+    }
+    
+    @Section(title: "Initializing the Engine") {
+        @ContentAndMedia {
+            CHHapticEngine is the core of haptic playback.
+            It's efficient to create it once at app launch and reuse it.
+            
+            Engine creation can fail, so 
+            you must always include error handling.
+        }
+        
+        @Steps {
+            @Step {
+                Create a HapticManager class to manage the engine.
+                Use the singleton pattern to share one engine throughout the app.
+                
+                @Code(name: "HapticManager.swift", file: "02-01-manager-init.swift")
+            }
+            
+            @Step {
+                First check if the device supports haptics.
+                The app should fail gracefully on unsupported devices.
+                
+                @Code(name: "HapticManager.swift", file: "02-02-capability-check.swift")
+            }
+            
+            @Step {
+                Create and start the engine.
+                Haptics can only be played after calling the start() method.
+                
+                @Code(name: "HapticManager.swift", file: "02-03-engine-start.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Engine State") {
+        @ContentAndMedia {
+            CHHapticEngine can be automatically stopped 
+            depending on system conditions.
+            
+            - When the app transitions to background
+            - When system resources are low
+            - During audio session interrupts
+            
+            You need to handle these situations appropriately.
+        }
+        
+        @Steps {
+            @Step {
+                Set up a stoppedHandler to detect engine stops.
+                Choose an appropriate recovery strategy based on the stop reason.
+                
+                @Code(name: "HapticManager.swift", file: "02-04-stopped-handler.swift")
+            }
+            
+            @Step {
+                Handle engine reset situations with resetHandler.
+                After a reset, you need to restart the engine.
+                
+                @Code(name: "HapticManager.swift", file: "02-05-reset-handler.swift")
+            }
+            
+            @Step {
+                Integrate with the app lifecycle.
+                Stop the engine in background and 
+                restart when returning to foreground.
+                
+                @Code(name: "HapticManager.swift", file: "02-06-lifecycle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Auto-shutdown Configuration") {
+        @ContentAndMedia {
+            By default, the engine automatically shuts down 
+            after a period of inactivity (Auto-shutdown).
+            
+            You can control this behavior to balance 
+            battery efficiency and response speed.
+        }
+        
+        @Steps {
+            @Step {
+                Control auto-shutdown behavior with the 
+                isAutoShutdownEnabled property.
+                
+                @Code(name: "HapticManager.swift", file: "02-07-auto-shutdown.swift")
+            }
+            
+            @Step {
+                For apps like games where immediate response is critical, 
+                it's better to disable auto-shutdown.
+                
+                However, battery consumption may increase.
+                
+                @Code(name: "HapticManager.swift", file: "02-08-game-setup.swift")
+            }
+            
+            @Step {
+                Review the completed HapticManager.
+                Now you're ready to play haptics from anywhere in the app.
+                
+                @Code(name: "HapticManager.swift", file: "02-09-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When is CHHapticEngine's stoppedHandler called?
+            
+            @Choice(isCorrect: false) {
+                Only when the developer calls stop()
+                
+                @Justification(reaction: "Only partially correct.") {
+                    stoppedHandler is also called when the engine 
+                    is automatically stopped by the system.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                When the engine is stopped by the system or developer
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    It's called in various situations including app background transition, 
+                    low system resources, and explicit stop() calls.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When haptic playback is completed
+                
+                @Justification(reaction: "Incorrect.") {
+                    Individual haptic playback completion and engine stopping are different events.
+                    Use the Player's completionHandler instead.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when you set isAutoShutdownEnabled to false?
+            
+            @Choice(isCorrect: false) {
+                Battery life increases.
+                
+                @Justification(reaction: "It's the opposite.") {
+                    Disabling auto-shutdown keeps the engine running, 
+                    which actually increases battery consumption.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Haptic response speed improves but battery consumption increases.
+                
+                @Justification(reaction: "Correct! 🔋") {
+                    Since the engine is always ready, immediate response is possible,
+                    but only use this when necessary, such as in games.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Haptic intensity becomes stronger.
+                
+                @Justification(reaction: "Not related.") {
+                    The auto-shutdown setting only controls the engine's standby state
+                    and has nothing to do with haptic intensity.
+                }
+            }
+        }
+    }
+}

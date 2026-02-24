@@ -1,0 +1,177 @@
+@Tutorial(time: 20) {
+    @Intro(title: "User Location Tracking") {
+        Track the user's real-time location using CLLocationManager and
+        display it on the map. Handle permission requests and background location updates.
+    }
+    
+    @Section(title: "Setting Up Location Permissions") {
+        @ContentAndMedia {
+            Using location information in iOS requires 
+            explicit permission from the user.
+        }
+        
+        @Steps {
+            @Step {
+                **Info.plist Configuration**
+                
+                Add a description explaining the purpose of location usage.
+                The NSLocationWhenInUseUsageDescription key is required.
+                
+                @Code(name: "Info.plist", file: "07-info-plist.swift")
+            }
+            
+            @Step {
+                **Creating CLLocationManager**
+                
+                Create a location manager and request permission.
+                Detect permission status changes with a delegate.
+                
+                @Code(name: "LocationManager.swift", file: "07-location-manager.swift")
+            }
+            
+            @Step {
+                **Handling Permission Status**
+                
+                Provide appropriate UI for each status:
+                .notDetermined, .denied, .authorizedWhenInUse, etc.
+                
+                @Code(name: "LocationManager.swift", file: "07-auth-status.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-Time Location Tracking") {
+        @ContentAndMedia {
+            Receive continuous location updates with startUpdatingLocation.
+            Balance accuracy and battery efficiency.
+        }
+        
+        @Steps {
+            @Step {
+                **Starting Location Updates**
+                
+                Set accuracy with desiredAccuracy and 
+                update frequency with distanceFilter.
+                
+                @Code(name: "LocationManager.swift", file: "07-start-updates.swift")
+            }
+            
+            @Step {
+                **Detecting Location Changes**
+                
+                Receive new locations via delegate methods.
+                Pass to SwiftUI views with @Published properties.
+                
+                @Code(name: "LocationManager.swift", file: "07-location-delegate.swift")
+            }
+            
+            @Step {
+                **Battery Optimization**
+                
+                Setting activityType informs the system of movement patterns,
+                allowing efficient battery management.
+                
+                @Code(name: "LocationManager.swift", file: "07-battery-optimization.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying User Location on the Map") {
+        @ContentAndMedia {
+            Display the user's location in SwiftUI Map 
+            using the built-in UserAnnotation.
+        }
+        
+        @Steps {
+            @Step {
+                **Adding UserAnnotation**
+                
+                Add UserAnnotation() to the Map content.
+                A blue dot and accuracy circle are displayed automatically.
+                
+                @Code(name: "MapView.swift", file: "07-user-annotation.swift")
+            }
+            
+            @Step {
+                **Move to Current Location Button**
+                
+                Add a button that centers the map on the user's location.
+                Track heading as well with .userLocation(.followsHeading).
+                
+                @Code(name: "MapView.swift", file: "07-follow-user.swift")
+            }
+            
+            @Step {
+                **Automatic Nearby Restaurant Search**
+                
+                Automatically search for restaurants within 500m 
+                when the current location updates.
+                
+                @Code(name: "MapView.swift", file: "07-nearby-search.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What Info.plist key must be set to request location permission in iOS?
+            
+            @Choice(isCorrect: true) {
+                NSLocationWhenInUseUsageDescription
+                
+                @Justification(reaction: "Correct!") {
+                    To request location permission while the app is in use,
+                    you must provide a usage description in this key.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSLocationPermission
+                
+                @Justification(reaction: "Not quite") {
+                    That key doesn't exist.
+                    Use NSLocationWhenInUseUsageDescription.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CFBundleLocationUsage
+                
+                @Justification(reaction: "Not quite") {
+                    That's not the correct key name.
+                    Use the NSLocation...UsageDescription format.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the characteristic of CLLocationAccuracy.kCLLocationAccuracyBest?
+            
+            @Choice(isCorrect: true) {
+                Most accurate but high battery consumption
+                
+                @Justification(reaction: "Exactly right!") {
+                    It uses GPS, Wi-Fi, and cellular together for highest accuracy,
+                    but consumes more battery accordingly.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Returns location fastest
+                
+                @Justification(reaction: "Not quite") {
+                    High accuracy may actually take more time to achieve.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Best battery efficiency
+                
+                @Justification(reaction: "Not quite") {
+                    For battery efficiency, use kCLLocationAccuracyHundredMeters or
+                    kCLLocationAccuracyKilometer.
+                }
+            }
+        }
+    }
+}

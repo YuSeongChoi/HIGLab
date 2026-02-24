@@ -1,0 +1,245 @@
+@Tutorial(time: 18) {
+    @Intro(title: "The Transferable Protocol") {
+        Deeply understand the Transferable protocol and learn how to make
+        custom types compatible with PhotosPicker.
+    }
+    
+    @Section(title: "What is Transferable?") {
+        @ContentAndMedia {
+            Transferable is a protocol introduced in iOS 16.
+            It's a modern way to transfer data between apps (drag & drop, copy/paste).
+            
+            PhotosPickerItem's loadTransferable leverages
+            this protocol.
+        }
+        
+        @Steps {
+            @Step {
+                **Transferable Protocol Structure**
+                
+                Transferable requires a transferRepresentation property.
+                It defines how data should be transferred.
+                
+                @Code(name: "TransferableBasics.swift", file: "05-transferable-basics.swift")
+            }
+            
+            @Step {
+                **Built-in Transferable Types**
+                
+                Many Swift types already conform to Transferable:
+                - String, Data, URL
+                - AttributedString
+                - PNG/JPEGImageFileRepresentation, etc.
+                
+                @Code(name: "BuiltInTransferable.swift", file: "05-builtin-transferable.swift")
+            }
+            
+            @Step {
+                **Types of TransferRepresentation**
+                
+                There are three main representation types:
+                - CodableRepresentation: For Codable types
+                - DataRepresentation: For raw data
+                - FileRepresentation: File-based
+                
+                @Code(name: "RepresentationTypes.swift", file: "05-representation-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating a Transferable for Images") {
+        @ContentAndMedia {
+            Create a custom Transferable type for efficiently loading
+            images from PhotosPickerItem.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining TransferableImage**
+                
+                Create a struct that wraps Image and
+                converts image data using DataRepresentation.
+                
+                @Code(name: "TransferableImage.swift", file: "05-transferable-image.swift")
+            }
+            
+            @Step {
+                **Supporting Multiple Representations**
+                
+                A single type can support multiple formats.
+                Create an image type that supports both PNG and JPEG.
+                
+                @Code(name: "MultipleRepresentation.swift", file: "05-multiple-representation.swift")
+            }
+            
+            @Step {
+                **Importing and Exporting**
+                
+                Separate importing and exporting to support
+                one-directional transfer only.
+                
+                @Code(name: "ImportExport.swift", file: "05-import-export.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating a Transferable for Videos") {
+        @ContentAndMedia {
+            Video files are large, so use FileRepresentation.
+            They're saved to temporary files and accessed via URL.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Movie Type**
+                
+                Create a Movie struct that holds a video URL.
+                Receive video files using FileRepresentation.
+                
+                @Code(name: "MovieType.swift", file: "05-movie-type.swift")
+            }
+            
+            @Step {
+                **Specifying Supported Formats**
+                
+                Specify supported video formats using UTType.
+                Support .movie, .quickTimeMovie, .mpeg4Movie, etc.
+                
+                @Code(name: "VideoFormats.swift", file: "05-video-formats.swift")
+            }
+            
+            @Step {
+                **Managing File Lifecycle**
+                
+                Temporary files created by FileRepresentation
+                should be properly cleaned up.
+                
+                @Code(name: "FileLifecycle.swift", file: "05-file-lifecycle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using ProxyRepresentation") {
+        @ContentAndMedia {
+            ProxyRepresentation is a convenient way to
+            reuse existing Transferable types.
+            
+            It allows simple implementation without complex conversion logic.
+        }
+        
+        @Steps {
+            @Step {
+                **ProxyRepresentation Basics**
+                
+                Use an already Transferable type as a proxy.
+                Easily convert custom types to String or Data.
+                
+                @Code(name: "ProxyBasics.swift", file: "05-proxy-basics.swift")
+            }
+            
+            @Step {
+                **PhotosPickerItem and ProxyRepresentation**
+                
+                Implement a pattern for converting data loaded from
+                PhotosPickerItem into model objects.
+                
+                @Code(name: "PhotosPickerProxy.swift", file: "05-photos-picker-proxy.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the required property of the Transferable protocol?
+            
+            @Choice(isCorrect: true) {
+                static var transferRepresentation: some TransferRepresentation
+                
+                @Justification(reaction: "Correct!") {
+                    transferRepresentation is the only required property of Transferable.
+                    It defines what format the data should be transferred in.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                func encode() throws -> Data
+                
+                @Justification(reaction: "Not quite") {
+                    Transferable doesn't directly require an encode method.
+                    Encoding is defined through TransferRepresentation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                var contentType: UTType
+                
+                @Justification(reaction: "Not quite") {
+                    contentType is specified in TransferRepresentation.
+                    It's not a requirement of the Transferable protocol itself.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which TransferRepresentation is suitable for large files (videos, etc.)?
+            
+            @Choice(isCorrect: true) {
+                FileRepresentation
+                
+                @Justification(reaction: "Correct!") {
+                    FileRepresentation transfers files directly.
+                    It doesn't load everything into memory, making it suitable for large files.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                DataRepresentation
+                
+                @Justification(reaction: "Not quite") {
+                    DataRepresentation loads all data into memory.
+                    FileRepresentation is more suitable for large files.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CodableRepresentation
+                
+                @Justification(reaction: "Not quite") {
+                    CodableRepresentation is for Codable types.
+                    It's not suitable for binary files.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the purpose of ProxyRepresentation?
+            
+            @Choice(isCorrect: true) {
+                Simple implementation by reusing existing Transferable types
+                
+                @Justification(reaction: "Exactly right!") {
+                    ProxyRepresentation converts data to an already Transferable type,
+                    enabling implementation without complex logic.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Remote transfer over network
+                
+                @Justification(reaction: "Not quite") {
+                    Proxy is unrelated to network transfer.
+                    It means using an existing type as a proxy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Asynchronous loading support
+                
+                @Justification(reaction: "Not quite") {
+                    ProxyRepresentation is not directly related to async loading.
+                    It's for reusing existing Transferable types.
+                }
+            }
+        }
+    }
+}

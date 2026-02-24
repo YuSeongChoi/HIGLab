@@ -1,0 +1,209 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Video Playback Controls") {
+        Implement basic control features like play, pause, 
+        volume, and mute programmatically.
+        
+        @Image(source: "playback-controls.png", alt: "Playback Controls")
+    }
+    
+    @Section(title: "Play and Pause") {
+        @ContentAndMedia {
+            Use AVPlayer's basic playback control methods
+            to manage video playback.
+            
+            - `play()`: Start playback
+            - `pause()`: Pause playback
+            - `rate`: Playback speed (0 = stopped, 1 = normal)
+        }
+        
+        @Steps {
+            @Step {
+                Implement basic playback control with
+                play() and pause() methods.
+                
+                @Code(name: "PlayPause.swift", file: "03-01-play-pause.swift")
+            }
+            
+            @Step {
+                Create a toggle-style play/pause button.
+                Use timeControlStatus to check the current state.
+                
+                @Code(name: "TogglePlayback.swift", file: "03-02-toggle-playback.swift")
+            }
+            
+            @Step {
+                Observe AVPlayerItemDidPlayToEndTime notification
+                to handle playback completion.
+                
+                @Code(name: "PlaybackEnd.swift", file: "03-03-playback-end.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Volume Control") {
+        @ContentAndMedia {
+            Implement volume and mute features to
+            give users audio control.
+            
+            - `volume`: Range from 0.0 to 1.0
+            - `isMuted`: Mute state
+        }
+        
+        @Steps {
+            @Step {
+                Adjust volume with AVPlayer's volume property.
+                Use values from 0.0 (silent) to 1.0 (maximum).
+                
+                @Code(name: "VolumeControl.swift", file: "03-04-volume.swift")
+            }
+            
+            @Step {
+                Toggle mute with the isMuted property.
+                The volume value is preserved while only mute is toggled.
+                
+                @Code(name: "MuteControl.swift", file: "03-05-mute.swift")
+            }
+            
+            @Step {
+                Create custom controls with a volume slider
+                and mute button in SwiftUI.
+                
+                @Code(name: "VolumeUI.swift", file: "03-06-volume-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Tracking Current Time") {
+        @ContentAndMedia {
+            Track the current playback position of the video
+            and update the timeline UI.
+            
+            - `addPeriodicTimeObserver`: Periodic time observation
+            - `currentTime()`: Current playback position
+        }
+        
+        @Steps {
+            @Step {
+                Observe playback time changes with addPeriodicTimeObserver.
+                Receive callbacks at CMTime intervals.
+                
+                @Code(name: "TimeObserver.swift", file: "03-07-time-observer.swift")
+            }
+            
+            @Step {
+                Properly remove observers to prevent memory leaks.
+                Call removeTimeObserver when the view disappears.
+                
+                @Code(name: "RemoveObserver.swift", file: "03-08-remove-observer.swift")
+            }
+            
+            @Step {
+                Convert CMTime to a human-readable format.
+                Display as "00:00" or "1:23:45".
+                
+                @Code(name: "TimeFormatting.swift", file: "03-09-time-formatting.swift")
+            }
+            
+            @Step {
+                Implement a playback progress bar and current time label.
+                
+                @Code(name: "ProgressBar.swift", file: "03-10-progress-bar.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Now Playing Info") {
+        @ContentAndMedia {
+            Set up Now Playing information displayed on
+            the lock screen and control center.
+            
+            - Title, artist, album art
+            - Playback duration and current position
+        }
+        
+        @Steps {
+            @Step {
+                Register media information with the system
+                using MPNowPlayingInfoCenter.
+                
+                @Code(name: "NowPlayingInfo.swift", file: "03-11-now-playing.swift")
+            }
+            
+            @Step {
+                Handle remote control commands with MPRemoteCommandCenter.
+                Support controls from earphones, lock screen, and CarPlay.
+                
+                @Code(name: "RemoteCommands.swift", file: "03-12-remote-commands.swift")
+            }
+            
+            @Step {
+                Update Now Playing info whenever
+                the playback position changes.
+                
+                @Code(name: "UpdateNowPlaying.swift", file: "03-13-update-now-playing.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How should you handle the return value of addPeriodicTimeObserver?
+            
+            @Choice(isCorrect: true) {
+                Store it and release with removeTimeObserver when the view disappears.
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Not releasing the observer causes memory leaks
+                    and callbacks may continue to be called.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The return value can be ignored.
+                
+                @Justification(reaction: "That's dangerous!") {
+                    Not releasing observers causes retain cycles
+                    and negatively impacts app performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's automatically released, so you don't need to worry.
+                
+                @Justification(reaction: "Incorrect.") {
+                    AVPlayer's time observers are not automatically released.
+                    You must explicitly call removeTimeObserver.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does MPRemoteCommandCenter handle?
+            
+            @Choice(isCorrect: false) {
+                Play button taps within the app
+                
+                @Justification(reaction: "Not quite.") {
+                    In-app UI events are handled with regular UIKit/SwiftUI events.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                External control commands from earphones, lock screen, CarPlay, etc.
+                
+                @Justification(reaction: "Correct! 🎧") {
+                    MPRemoteCommandCenter handles system-level
+                    media control events.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AirPlay device discovery
+                
+                @Justification(reaction: "Check again.") {
+                    AirPlay device discovery is handled by AVRoutePickerView.
+                }
+            }
+        }
+    }
+}

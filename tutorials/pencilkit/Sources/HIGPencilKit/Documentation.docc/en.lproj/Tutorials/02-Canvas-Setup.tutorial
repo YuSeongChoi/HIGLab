@@ -1,0 +1,166 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Setting Up PKCanvasView") {
+        Learn how to configure PKCanvasView and integrate 
+        the drawing canvas with SwiftUI and UIKit.
+        
+        @Image(source: "canvas-setup.png", alt: "PKCanvasView Setup")
+    }
+    
+    @Section(title: "Setting Up PKCanvasView in UIKit") {
+        @ContentAndMedia {
+            PKCanvasView is a subclass of UIView,
+            making it easy to integrate into UIKit apps.
+            
+            - **Scroll Support**: UIScrollView-based zoom in/out
+            - **Delegate**: Detect drawing changes with PKCanvasViewDelegate
+            - **Drawing Policy**: Control finger/Apple Pencil input
+            
+            @Image(source: "canvas-uikit.png", alt: "UIKit Canvas")
+        }
+        
+        @Steps {
+            @Step {
+                Add PKCanvasView to a UIViewController.
+                Set up basic layout constraints.
+                
+                @Code(name: "BasicCanvasViewController.swift", file: "02-01-basic-canvas.swift")
+            }
+            
+            @Step {
+                Implement PKCanvasViewDelegate to 
+                detect drawing changes.
+                
+                @Code(name: "CanvasDelegate.swift", file: "02-02-delegate.swift")
+            }
+            
+            @Step {
+                Configure the canvas background color and opacity.
+                Using a transparent background reveals layers underneath.
+                
+                @Code(name: "CanvasBackground.swift", file: "02-03-background.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using PKCanvasView in SwiftUI") {
+        @ContentAndMedia {
+            In SwiftUI, use UIViewRepresentable to 
+            wrap PKCanvasView.
+            
+            Through @Binding, you can synchronize 
+            PKDrawing data bidirectionally.
+        }
+        
+        @Steps {
+            @Step {
+                Implement UIViewRepresentable to 
+                make PKCanvasView usable in SwiftUI.
+                
+                @Code(name: "CanvasView.swift", file: "02-04-swiftui-canvas.swift")
+            }
+            
+            @Step {
+                Use a Coordinator to handle 
+                PKCanvasViewDelegate events.
+                
+                @Code(name: "CanvasCoordinator.swift", file: "02-05-coordinator.swift")
+            }
+            
+            @Step {
+                Use CanvasView in a SwiftUI View.
+                Manage PKDrawing with @State.
+                
+                @Code(name: "DrawingView.swift", file: "02-06-drawing-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Configuring Canvas Zoom") {
+        @ContentAndMedia {
+            PKCanvasView inherits from UIScrollView,
+            enabling pinch gesture zoom in/out.
+            
+            - minimumZoomScale: Minimum zoom ratio
+            - maximumZoomScale: Maximum zoom ratio
+            - zoomScale: Current zoom ratio
+        }
+        
+        @Steps {
+            @Step {
+                Set the zoom range and add 
+                double-tap to zoom functionality.
+                
+                @Code(name: "ZoomableCanvas.swift", file: "02-07-zoomable.swift")
+            }
+            
+            @Step {
+                To maintain drawing quality when zoomed in,
+                set contentScaleFactor appropriately.
+                
+                @Code(name: "HighResCanvas.swift", file: "02-08-high-res.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which protocol must you implement to use PKCanvasView in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                UIViewRepresentable
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Implementing UIViewRepresentable allows you to 
+                    use UIKit views in SwiftUI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ViewModifier
+                
+                @Justification(reaction: "Not quite.") {
+                    ViewModifier is used to modify views.
+                    Use UIViewRepresentable for wrapping UIKit views.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ObservableObject
+                
+                @Justification(reaction: "Think again.") {
+                    ObservableObject is used for data models.
+                    It serves a different purpose than view wrapping.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is PKCanvasViewDelegate's canvasViewDrawingDidChange method called?
+            
+            @Choice(isCorrect: false) {
+                When the canvas appears on screen
+                
+                @Justification(reaction: "Incorrect.") {
+                    This method is only called when drawing content changes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                When the user completes or modifies a drawing
+                
+                @Justification(reaction: "Correct! ✨") {
+                    canvasViewDrawingDidChange is called 
+                    whenever the PKDrawing changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Every frame
+                
+                @Justification(reaction: "No.") {
+                    For performance, it's only called when drawing is complete.
+                }
+            }
+        }
+    }
+}

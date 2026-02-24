@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Finger vs Apple Pencil") {
+        Learn how to distinguish between finger and Apple Pencil input 
+        and handle them differently.
+        
+        @Image(source: "input-types.png", alt: "Input Type Distinction")
+    }
+    
+    @Section(title: "Setting Drawing Policy") {
+        @ContentAndMedia {
+            PKCanvasView uses the drawingPolicy property to 
+            control which input is used for drawing.
+            
+            - **.anyInput**: Both finger and Pencil can draw
+            - **.pencilOnly**: Only Apple Pencil can draw
+            - **.default**: Follows system settings
+            
+            You can set finger for scroll/pan only 
+            and Pencil exclusively for drawing.
+        }
+        
+        @Steps {
+            @Step {
+                Setting drawingPolicy to .pencilOnly 
+                makes finger input for scrolling only.
+                
+                @Code(name: "PencilOnlyPolicy.swift", file: "07-01-pencil-only.swift")
+            }
+            
+            @Step {
+                Setting to .anyInput allows 
+                drawing with finger as well.
+                
+                @Code(name: "AnyInputPolicy.swift", file: "07-02-any-input.swift")
+            }
+            
+            @Step {
+                Implement a toggle UI that allows users 
+                to change the policy in settings.
+                
+                @Code(name: "PolicyToggle.swift", file: "07-03-toggle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Utilizing Apple Pencil Features") {
+        @ContentAndMedia {
+            Apple Pencil provides various sensor data.
+            
+            | Sensor | Description |
+            |--------|-------------|
+            | Force | Pressure (0.0 ~ max) |
+            | Altitude | Tilt angle |
+            | Azimuth | Orientation angle |
+            | Roll | Rotation (Pencil Pro) |
+            
+            PencilKit automatically utilizes this data.
+        }
+        
+        @Steps {
+            @Step {
+                You can check pressure and tilt information 
+                from PKStrokePoint.
+                
+                @Code(name: "PencilData.swift", file: "07-04-pencil-data.swift")
+            }
+            
+            @Step {
+                Detect the squeeze gesture on Apple Pencil Pro.
+                Use UIPencilInteraction.
+                
+                @Code(name: "PencilInteraction.swift", file: "07-05-interaction.swift")
+            }
+            
+            @Step {
+                Customize the double-tap action.
+                Use it for tool switching or undo.
+                
+                @Code(name: "DoubleTap.swift", file: "07-06-double-tap.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Separating Finger Gestures from Drawing") {
+        @ContentAndMedia {
+            Use finger only for specific gestures 
+            and Pencil exclusively for drawing.
+            
+            - **Finger**: Pan, zoom, tap gestures
+            - **Pencil**: Drawing, erasing
+        }
+        
+        @Steps {
+            @Step {
+                Add finger gestures to 
+                trigger various functions.
+                
+                @Code(name: "FingerGestures.swift", file: "07-07-finger-gestures.swift")
+            }
+            
+            @Step {
+                Implement two-finger tap for undo 
+                and three-finger tap for redo.
+                
+                @Code(name: "UndoGestures.swift", file: "07-08-undo-gestures.swift")
+            }
+            
+            @Step {
+                Allow simultaneous finger drag panning 
+                while drawing with Pencil.
+                
+                @Code(name: "SimultaneousInput.swift", file: "07-09-simultaneous.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the default value of PKCanvasView.drawingPolicy?
+            
+            @Choice(isCorrect: false) {
+                .pencilOnly
+                
+                @Justification(reaction: "No.") {
+                    The default follows system settings, which is .default.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .default
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    .default follows the system's Apple Pencil settings.
+                    This can be changed in Settings > Apple Pencil.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .anyInput
+                
+                @Justification(reaction: "Incorrect.") {
+                    .anyInput must be explicitly set.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What new sensor data was added in Apple Pencil Pro?
+            
+            @Choice(isCorrect: false) {
+                Force (pressure)
+                
+                @Justification(reaction: "This existed before.") {
+                    Force has been supported since the 1st generation Apple Pencil.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Roll (rotation)
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Pencil Pro adds axis rotation (roll) detection,
+                    enabling brush changes based on pen rotation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Azimuth (orientation)
+                
+                @Justification(reaction: "This existed before.") {
+                    Azimuth has been supported since the original Pencil.
+                }
+            }
+        }
+    }
+}

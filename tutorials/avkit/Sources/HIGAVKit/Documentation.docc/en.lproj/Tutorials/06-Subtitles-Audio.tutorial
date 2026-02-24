@@ -1,0 +1,207 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Subtitles & Audio Tracks") {
+        Implement multilingual subtitle and audio track selection
+        to support global users.
+        
+        @Image(source: "subtitles-audio.png", alt: "Subtitles and Audio Tracks")
+    }
+    
+    @Section(title: "Understanding Media Tracks") {
+        @ContentAndMedia {
+            Video files can contain multiple tracks.
+            
+            - **Video tracks**: Video data
+            - **Audio tracks**: Multiple languages, commentary
+            - **Subtitle tracks**: Subtitles, SDH (Subtitles for the Deaf and Hard of Hearing)
+            
+            @Image(source: "media-tracks.png", alt: "Media Track Structure")
+        }
+        
+        @Steps {
+            @Step {
+                Get available track information from AVAsset.
+                Filter track types using AVMediaCharacteristic.
+                
+                @Code(name: "GetTracks.swift", file: "06-01-get-tracks.swift")
+            }
+            
+            @Step {
+                Access selectable option groups with AVMediaSelectionGroup.
+                
+                @Code(name: "SelectionGroup.swift", file: "06-02-selection-group.swift")
+            }
+            
+            @Step {
+                Check metadata like language and title
+                for each AVMediaSelectionOption.
+                
+                @Code(name: "OptionMetadata.swift", file: "06-03-option-metadata.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Subtitles") {
+        @ContentAndMedia {
+            Select subtitle tracks and display them on screen.
+            AVPlayerViewController automatically provides subtitle UI.
+            
+            - Embedded subtitles
+            - External subtitle files (WebVTT, SRT)
+            - SDH (Subtitles for the Deaf and Hard of Hearing)
+        }
+        
+        @Steps {
+            @Step {
+                Get the list of available subtitle tracks.
+                Find the subtitle group using the legible characteristic.
+                
+                @Code(name: "GetSubtitles.swift", file: "06-04-get-subtitles.swift")
+            }
+            
+            @Step {
+                Select a specific subtitle track.
+                Apply to AVPlayerItem using the select method.
+                
+                @Code(name: "SelectSubtitle.swift", file: "06-05-select-subtitle.swift")
+            }
+            
+            @Step {
+                Select nil to turn off subtitles.
+                
+                @Code(name: "DisableSubtitle.swift", file: "06-06-disable-subtitle.swift")
+            }
+            
+            @Step {
+                Implement subtitle selection UI in SwiftUI.
+                Provide user-friendly UI using Picker.
+                
+                @Code(name: "SubtitlePicker.swift", file: "06-07-subtitle-picker.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Audio Track Selection") {
+        @ContentAndMedia {
+            Allow users to select from multiple
+            audio tracks in different languages.
+            
+            - Multilingual dubbing
+            - Commentary tracks
+            - Audio description (for visually impaired)
+        }
+        
+        @Steps {
+            @Step {
+                Get the audio track group using the audible characteristic.
+                
+                @Code(name: "GetAudioTracks.swift", file: "06-08-get-audio.swift")
+            }
+            
+            @Step {
+                Select an audio track.
+                Use the same select method as subtitles.
+                
+                @Code(name: "SelectAudio.swift", file: "06-09-select-audio.swift")
+            }
+            
+            @Step {
+                Detect Audio Description tracks and
+                provide them as an accessibility feature.
+                
+                @Code(name: "AudioDescription.swift", file: "06-10-audio-description.swift")
+            }
+        }
+    }
+    
+    @Section(title: "External Subtitle Files") {
+        @ContentAndMedia {
+            Add external subtitle files that are not embedded
+            in the media at runtime.
+            
+            - WebVTT (.vtt)
+            - Local or remote URL support
+        }
+        
+        @Steps {
+            @Step {
+                Compose video with external subtitles
+                using AVMutableComposition.
+                
+                @Code(name: "ExternalSubtitle.swift", file: "06-11-external-subtitle.swift")
+            }
+            
+            @Step {
+                Load WebVTT subtitle files from remote URLs.
+                
+                @Code(name: "RemoteSubtitle.swift", file: "06-12-remote-subtitle.swift")
+            }
+            
+            @Step {
+                Customize subtitle styles.
+                Provide default styles while respecting
+                system subtitle style settings.
+                
+                @Code(name: "SubtitleStyle.swift", file: "06-13-subtitle-style.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What track type does AVMediaCharacteristic.legible represent?
+            
+            @Choice(isCorrect: false) {
+                Audio tracks
+                
+                @Justification(reaction: "Incorrect.") {
+                    Audio tracks use the .audible characteristic.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Subtitle and caption tracks
+                
+                @Justification(reaction: "Exactly right! 📝") {
+                    .legible represents "readable" content,
+                    meaning subtitles and captions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Video tracks
+                
+                @Justification(reaction: "Not quite.") {
+                    Video tracks use the .visual characteristic.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you turn off subtitles?
+            
+            @Choice(isCorrect: true) {
+                Call select(nil, in: group)
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Selecting nil deselects the track in that group.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Delete the subtitle track
+                
+                @Justification(reaction: "That's excessive.") {
+                    You can deselect without deleting tracks.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Recreate AVPlayerViewController
+                
+                @Justification(reaction: "Unnecessary.") {
+                    Simply change the selection.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,164 @@
+@Tutorial(time: 10) {
+    @Intro(title: "HKHealthStore Setup") {
+        Set up HKHealthStore, the core class of HealthKit,
+        and configure it for use throughout the app.
+    }
+    
+    @Section(title: "Understanding HKHealthStore") {
+        @ContentAndMedia {
+            **HKHealthStore** is the only interface for communicating with
+            the HealthKit database. Permission requests, data reading/writing
+            all happen through this class.
+        }
+        
+        @Steps {
+            @Step {
+                **Singleton Pattern Recommended**
+                
+                It's best to use only one HKHealthStore instance throughout the app.
+                Creating multiple instances works but wastes resources unnecessarily.
+                
+                @Code(name: "HealthStore.swift", file: "02-singleton.swift")
+            }
+            
+            @Step {
+                **Creating a HealthManager Class**
+                
+                Create a Manager class to handle permission requests, data queries, etc.
+                Implement it as ObservableObject for easy integration with SwiftUI.
+                
+                @Code(name: "HealthManager.swift", file: "02-health-manager.swift")
+            }
+            
+            @Step {
+                **Adding Availability Check**
+                
+                Check HealthKit availability at initialization time.
+                This allows graceful handling on devices like iPad.
+                
+                @Code(name: "HealthManager.swift", file: "02-availability-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Xcode Project Setup") {
+        @ContentAndMedia {
+            Before writing code, you need to enable
+            the HealthKit capability in the Xcode project.
+        }
+        
+        @Steps {
+            @Step {
+                **Adding Capability**
+                
+                In Xcode, go to Project > Signing & Capabilities and
+                add "HealthKit". If Clinical Health Records are needed,
+                check that option as well.
+                
+                @Code(name: "Entitlements.swift", file: "02-capability.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                Set up the messages displayed to users when requesting permissions.
+                Write clear and specific reasons.
+                
+                @Code(name: "InfoPlist.swift", file: "02-info-plist.swift")
+            }
+            
+            @Step {
+                **Importing HealthKit Framework**
+                
+                Add import HealthKit in files that use HealthKit.
+                
+                @Code(name: "Import.swift", file: "02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Architecture Design") {
+        @ContentAndMedia {
+            Inject HealthManager as an Environment Object
+            for use throughout the app.
+        }
+        
+        @Steps {
+            @Step {
+                **Injection at App Entry Point**
+                
+                Create HealthManager in the @main App struct
+                and pass it as an environmentObject.
+                
+                @Code(name: "FitnessDashboardApp.swift", file: "02-app-entry.swift")
+            }
+            
+            @Step {
+                **Accessing from Views**
+                
+                Use @EnvironmentObject to access HealthManager
+                from any View.
+                
+                @Code(name: "DashboardView.swift", file: "02-view-access.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How many HKHealthStore instances are recommended to create?
+            
+            @Choice(isCorrect: true) {
+                1 for the entire app
+                
+                @Justification(reaction: "Correct!") {
+                    HKHealthStore is recommended to use only one with the singleton pattern.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 for each screen
+                
+                @Justification(reaction: "Not quite") {
+                    Creating multiple instances wastes unnecessary resources.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 for each data type
+                
+                @Justification(reaction: "Not quite") {
+                    One HKHealthStore can handle all data types.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when using HKHealthStore without HealthKit capability?
+            
+            @Choice(isCorrect: true) {
+                A runtime error occurs
+                
+                @Justification(reaction: "Correct!") {
+                    HKHealthStore won't work properly without the HealthKit entitlement.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It works normally
+                
+                @Justification(reaction: "Not quite") {
+                    HealthKit capability is required.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A compile error occurs
+                
+                @Justification(reaction: "Not quite") {
+                    It compiles but problems occur at runtime.
+                }
+            }
+        }
+    }
+}

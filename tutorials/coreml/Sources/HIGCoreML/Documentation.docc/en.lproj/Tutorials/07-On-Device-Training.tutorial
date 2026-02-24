@@ -1,0 +1,228 @@
+@Tutorial(time: 22) {
+    @Intro(title: "On-Device Training") {
+        Implement personalized AI experiences by
+        updating models directly on the user's device.
+    }
+    
+    @Section(title: "Understanding On-Device Training") {
+        @ContentAndMedia {
+            On-device training allows you to
+            **improve models with user data** after deployment.
+            
+            Since data is not sent to a server,
+            personalization is possible while ensuring privacy.
+        }
+        
+        @Steps {
+            @Step {
+                **Introducing MLUpdateTask**
+                
+                This is the on-device training API supported in iOS 13+.
+                Improve the model as the user uses the app.
+                
+                @Code(name: "MLUpdateTaskIntro.swift", file: "07-update-task-intro.swift")
+            }
+            
+            @Step {
+                **Requirements for Updatable Models**
+                
+                Not all Core ML models are updatable.
+                Only certain Neural Network layers can be set as updatable.
+                
+                @Code(name: "UpdatableModel.swift", file: "07-updatable-model.swift")
+            }
+            
+            @Step {
+                **Update vs Retraining**
+                
+                On-device update is **fine-tuning**.
+                It adjusts only some layers, not complete retraining.
+                Therefore, it's fast and battery-efficient.
+                
+                @Code(name: "FinetuningConcept.swift", file: "07-finetuning.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Updatable Models") {
+        @ContentAndMedia {
+            Create updatable models using
+            Create ML or coremltools.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Up Updatability with coremltools**
+                
+                Use the Python coremltools library to
+                add updatable flags to existing models.
+                
+                @Code(name: "CoremlToolsSetup.swift", file: "07-coremltools.swift")
+            }
+            
+            @Step {
+                **Configuring Loss Function and Optimizer**
+                
+                Specify the loss function (Cross Entropy, etc.)
+                and optimizer (SGD, Adam) for training.
+                
+                @Code(name: "LossOptimizer.swift", file: "07-loss-optimizer.swift")
+            }
+            
+            @Step {
+                **Defining Training Inputs**
+                
+                Define the training inputs for model updates.
+                Specify features and target labels.
+                
+                @Code(name: "TrainingInputs.swift", file: "07-training-inputs.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing MLUpdateTask") {
+        @ContentAndMedia {
+            Implement actual on-device training
+            using MLUpdateTask in Swift.
+        }
+        
+        @Steps {
+            @Step {
+                **Preparing Training Data**
+                
+                Prepare training data with MLBatchProvider.
+                Collect user feedback (correct/incorrect).
+                
+                @Code(name: "TrainingDataBatch.swift", file: "07-training-batch.swift")
+            }
+            
+            @Step {
+                **Creating and Executing MLUpdateTask**
+                
+                Execute the update task by passing
+                model URL, training data, and configuration.
+                
+                @Code(name: "ExecuteUpdate.swift", file: "07-execute-update.swift")
+            }
+            
+            @Step {
+                **Saving the Updated Model**
+                
+                Save the updated model to the app's Documents folder.
+                The original model in the bundle is read-only, so a copy is needed.
+                
+                @Code(name: "SaveUpdatedModel.swift", file: "07-save-model.swift")
+            }
+            
+            @Step {
+                **Monitoring Update Progress**
+                
+                Use progressHandlers to monitor training progress
+                and loss values per epoch.
+                
+                @Code(name: "ProgressMonitoring.swift", file: "07-progress-monitor.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Practical Example: Personalized Classifier") {
+        @ContentAndMedia {
+            Complete an app that receives user feedback
+            to continuously improve classification accuracy.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing Feedback UI**
+                
+                Collect user feedback on classification results
+                with "Correct/Incorrect" buttons.
+                
+                @Code(name: "FeedbackUI.swift", file: "07-feedback-ui.swift")
+            }
+            
+            @Step {
+                **Triggering Training from Feedback**
+                
+                When enough feedback accumulates,
+                execute training in the background.
+                
+                @Code(name: "FeedbackLearning.swift", file: "07-feedback-learning.swift")
+            }
+            
+            @Step {
+                **Managing Training Schedule**
+                
+                Check battery status and charging state
+                to execute training at appropriate times.
+                
+                @Code(name: "LearningScheduler.swift", file: "07-learning-scheduler.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the biggest advantage of on-device training?
+            
+            @Choice(isCorrect: true) {
+                Privacy guarantee — data never leaves the device
+                
+                @Justification(reaction: "Correct!") {
+                    Personalize with user data while
+                    ensuring privacy since data is not sent to servers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                More accurate than server training
+                
+                @Justification(reaction: "Not quite") {
+                    Server training with more data
+                    can be more accurate.
+                    The core value of on-device is privacy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Faster training speed
+                
+                @Justification(reaction: "Not quite") {
+                    Server GPU clusters are faster.
+                    On-device values are privacy and offline support.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is the best time to execute on-device training?
+            
+            @Choice(isCorrect: true) {
+                When the device is charging and idle
+                
+                @Justification(reaction: "That's right!") {
+                    Training consumes battery, so run while charging
+                    and when idle to not affect user experience.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Immediately after receiving feedback
+                
+                @Justification(reaction: "Not quite") {
+                    Immediate training slows the app and drains battery.
+                    It's better to accumulate feedback and train at an appropriate time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When battery is below 10%
+                
+                @Justification(reaction: "Not quite") {
+                    Training has high power consumption.
+                    Run when battery is sufficient or while charging.
+                }
+            }
+        }
+    }
+}

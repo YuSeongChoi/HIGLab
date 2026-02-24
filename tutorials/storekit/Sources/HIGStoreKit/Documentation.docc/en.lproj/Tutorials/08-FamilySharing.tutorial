@@ -1,0 +1,120 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Supporting Family Sharing") {
+        Enable up to 6 family members to use the app
+        with a single subscription through Family Sharing.
+    }
+    
+    @Section(title: "Understanding Family Sharing") {
+        @ContentAndMedia {
+            Family Sharing is enabled in App Store Connect,
+            and StoreKit 2 distinguishes it through the Transaction's ownershipType.
+            
+            - `.purchased`: User who made the purchase directly
+            - `.familyShared`: User accessing through family sharing
+            
+            HIG Guidelines:
+            - Provide the same experience to family sharing users
+            - Clearly distinguish features that only the purchaser can manage
+        }
+        
+        @Steps {
+            @Step {
+                Implement logic to check family sharing status.
+                @Code(name: "FamilyShareManager.swift", file: "08-family-share-manager.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UI Branching by Ownership Type") {
+        @ContentAndMedia {
+            Provide different UI to purchasers and family sharing users.
+            
+            - Purchaser: Show subscription management, cancellation options
+            - Family Sharing: Guide to purchaser, limited management options
+        }
+        
+        @Steps {
+            @Step {
+                Implement an EntitlementManager that checks ownership type.
+                @Code(name: "EntitlementManager.swift", file: "08-entitlement-manager.swift")
+            }
+            @Step {
+                Add an information view for family sharing users.
+                @Code(name: "FamilyShareInfoView.swift", file: "08-family-info-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Family Sharing Cancellation") {
+        @ContentAndMedia {
+            When family sharing is revoked, access permissions are also removed.
+            Detect revocation from the Transaction.updates stream and handle accordingly.
+        }
+        
+        @Steps {
+            @Step {
+                Display appropriate guidance when family sharing is cancelled.
+                @Code(name: "FamilyShareRevokedView.swift", file: "08-family-revoked.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the Transaction.ownershipType value for a family sharing user?
+            
+            @Choice(isCorrect: false) {
+                .purchased
+                
+                @Justification(reaction: "Not quite!") {
+                    .purchased indicates a user who made the purchase directly.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .familyShared
+                
+                @Justification(reaction: "Correct!") {
+                    Users accessing through family sharing have the .familyShared type.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .shared
+                
+                @Justification(reaction: "Think again!") {
+                    In StoreKit 2, .familyShared is the correct value.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Can a family sharing user cancel the subscription?
+            
+            @Choice(isCorrect: false) {
+                Yes, they can do it anytime from their device.
+                
+                @Justification(reaction: "Not quite!") {
+                    Family sharing users don't have subscription management permissions.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                No, only the original purchaser can manage it.
+                
+                @Justification(reaction: "Correct!") {
+                    Subscription management (cancellation, changes) is only available to the original purchaser.
+                    This should be clearly communicated to family sharing users.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They must request directly from Apple.
+                
+                @Justification(reaction: "Think again!") {
+                    The original purchaser manages it directly from the Settings app.
+                }
+            }
+        }
+    }
+}

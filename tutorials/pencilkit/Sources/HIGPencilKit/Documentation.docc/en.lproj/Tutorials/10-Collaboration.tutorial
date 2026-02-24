@@ -1,0 +1,233 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Collaborative Drawing") {
+        Implement real-time collaborative functionality where 
+        multiple users can draw together.
+        
+        @Image(source: "collaboration.png", alt: "Collaborative Drawing")
+    }
+    
+    @Section(title: "Real-time Synchronization Architecture") {
+        @ContentAndMedia {
+            Implementing collaborative drawing requires 
+            real-time data synchronization.
+            
+            - **CloudKit**: Apple's cloud service
+            - **Firebase**: Google's real-time database
+            - **WebSocket**: Custom server-based
+            - **Multipeer Connectivity**: Local P2P connection
+            
+            @Image(source: "sync-architecture.png", alt: "Synchronization Architecture")
+        }
+        
+        @Steps {
+            @Step {
+                Design the data model for collaborative drawing.
+                Synchronize each stroke independently.
+                
+                @Code(name: "CollaborationModel.swift", file: "10-01-model.swift")
+            }
+            
+            @Step {
+                Serialize PKStroke to enable 
+                transmission over the network.
+                
+                @Code(name: "StrokeSerialization.swift", file: "10-02-serialization.swift")
+            }
+            
+            @Step {
+                Define conflict resolution strategies.
+                Decide how to merge during simultaneous editing.
+                
+                @Code(name: "ConflictResolution.swift", file: "10-03-conflict.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Local Collaboration with Multipeer Connectivity") {
+        @ContentAndMedia {
+            Multipeer Connectivity enables direct connection 
+            and data exchange with nearby devices via Wi-Fi or Bluetooth.
+            
+            Collaboration is possible without internet,
+            and latency is very low.
+        }
+        
+        @Steps {
+            @Step {
+                Set up MCSession and 
+                discover nearby devices.
+                
+                @Code(name: "MultipeerSetup.swift", file: "10-04-multipeer-setup.swift")
+            }
+            
+            @Step {
+                Send to connected peers 
+                whenever a new stroke is drawn.
+                
+                @Code(name: "SendStroke.swift", file: "10-05-send-stroke.swift")
+            }
+            
+            @Step {
+                Add strokes received from peers 
+                to the local canvas.
+                
+                @Code(name: "ReceiveStroke.swift", file: "10-06-receive-stroke.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Cloud Collaboration with CloudKit") {
+        @ContentAndMedia {
+            Using CloudKit enables collaboration 
+            from anywhere via the internet.
+            
+            Store drawing data in CKRecord and 
+            detect changes with CKSubscription.
+        }
+        
+        @Steps {
+            @Step {
+                Set up CloudKit container and 
+                define the drawing record type.
+                
+                @Code(name: "CloudKitSetup.swift", file: "10-07-cloudkit-setup.swift")
+            }
+            
+            @Step {
+                Save new strokes to CloudKit.
+                Store each stroke as a separate record 
+                to enable incremental synchronization.
+                
+                @Code(name: "CloudKitSave.swift", file: "10-08-cloudkit-save.swift")
+            }
+            
+            @Step {
+                Receive other users' changes 
+                in real-time with CKSubscription.
+                
+                @Code(name: "CloudKitSubscription.swift", file: "10-09-cloudkit-sub.swift")
+            }
+        }
+    }
+    
+    @Section(title: "User Identification and Cursor Display") {
+        @ContentAndMedia {
+            Identify each user during collaboration 
+            and display other users' cursor positions.
+            
+            - **User colors**: Assign unique colors to each participant
+            - **Cursor position**: Real-time position sharing
+            - **Profile**: Display name and avatar
+        }
+        
+        @Steps {
+            @Step {
+                Assign unique colors to each participant 
+                and distinguish their strokes.
+                
+                @Code(name: "UserIdentification.swift", file: "10-10-user-id.swift")
+            }
+            
+            @Step {
+                Display other users' cursors (pen positions) 
+                on screen in real-time.
+                
+                @Code(name: "RemoteCursor.swift", file: "10-11-cursor.swift")
+            }
+            
+            @Step {
+                Display participant list and 
+                current status in the UI.
+                
+                @Code(name: "ParticipantsList.swift", file: "10-12-participants.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Offline Support and Synchronization") {
+        @ContentAndMedia {
+            Users should be able to continue drawing 
+            even when network connection is lost.
+            
+            Store offline changes locally and 
+            synchronize when connection is restored.
+        }
+        
+        @Steps {
+            @Step {
+                Store offline changes in a queue.
+                Monitor network status.
+                
+                @Code(name: "OfflineQueue.swift", file: "10-13-offline.swift")
+            }
+            
+            @Step {
+                Batch send queued changes 
+                when connection is restored.
+                
+                @Code(name: "SyncOnReconnect.swift", file: "10-14-reconnect.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which collaboration method has the lowest latency on a local network?
+            
+            @Choice(isCorrect: true) {
+                Multipeer Connectivity
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    P2P direct connection minimizes latency 
+                    by not going through a server.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CloudKit
+                
+                @Justification(reaction: "Goes through the cloud.") {
+                    CloudKit routes through Apple servers,
+                    so it has more latency than local P2P.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Firebase
+                
+                @Justification(reaction: "Uses external servers.") {
+                    Firebase also routes through Google servers.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the most common way to resolve simultaneous editing conflicts in collaborative drawing?
+            
+            @Choice(isCorrect: false) {
+                Apply only the first change to arrive
+                
+                @Justification(reaction: "This causes data loss.") {
+                    This approach can lose other users' work.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Merge all strokes additively
+                
+                @Justification(reaction: "Correct! ✨") {
+                    In drawing, most strokes are independent,
+                    so adding all strokes is effective.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Overwrite with the last change
+                
+                @Justification(reaction: "Not suitable for collaboration.") {
+                    Other users' work could disappear.
+                }
+            }
+        }
+    }
+}

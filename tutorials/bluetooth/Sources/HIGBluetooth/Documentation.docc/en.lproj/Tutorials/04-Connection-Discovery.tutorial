@@ -1,0 +1,181 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Connection & Service Discovery") {
+        Connect to a selected BLE device
+        and explore its services and characteristics.
+    }
+    
+    @Section(title: "Connecting to a Device") {
+        @ContentAndMedia {
+            Use the `connect` method to connect to a Peripheral.
+            The connection process is asynchronous and results are received via delegate callbacks.
+            
+            **Connection Options:**
+            - `notifyOnConnection`: Notify on connection
+            - `notifyOnDisconnection`: Notify on disconnection
+            - `enableAutoReconnect`: Auto-reconnect on iOS 17+
+        }
+        
+        @Steps {
+            @Step {
+                Implement the functionality to connect to a selected device.
+                You must retain a reference to the Peripheral.
+                
+                @Code(name: "BluetoothManager.swift", file: "04-01-connect.swift")
+            }
+            
+            @Step {
+                Handle connection success/failure callbacks.
+                Also implement connection timeout.
+                
+                @Code(name: "BluetoothManager.swift", file: "04-02-connection-callbacks.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Service Discovery") {
+        @ContentAndMedia {
+            After connecting, call `discoverServices` to
+            retrieve the list of services the device provides.
+            
+            You can specify certain service UUIDs
+            or pass nil to discover all services.
+        }
+        
+        @Steps {
+            @Step {
+                Start service discovery after successful connection.
+                Filter only the services you're interested in.
+                
+                @Code(name: "BluetoothManager.swift", file: "04-03-discover-services.swift")
+            }
+            
+            @Step {
+                Implement the callback to handle discovered services.
+                
+                @Code(name: "BluetoothManager.swift", file: "04-04-services-callback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Characteristic Discovery") {
+        @ContentAndMedia {
+            Call `discoverCharacteristics` on each service
+            to discover the characteristics of that service.
+            
+            Check the properties of characteristics to determine
+            whether reading, writing, or notifications are possible.
+        }
+        
+        @Steps {
+            @Step {
+                Discover characteristics of a service.
+                
+                @Code(name: "BluetoothManager.swift", file: "04-05-discover-characteristics.swift")
+            }
+            
+            @Step {
+                Analyze the properties of characteristics.
+                Check what operations are available.
+                
+                @Code(name: "CharacteristicProperties.swift", file: "04-06-properties.swift")
+            }
+            
+            @Step {
+                Store discovered services and characteristics
+                in structured models.
+                
+                @Code(name: "ServiceModel.swift", file: "04-07-service-model.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which callback is called when a Peripheral connection succeeds after calling connect()?
+            
+            @Choice(isCorrect: true) {
+                centralManager(_:didConnect:)
+                
+                @Justification(reaction: "Correct! 🔗") {
+                    The didConnect callback indicates connection success.
+                    This is when you should start service discovery.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                centralManager(_:didDiscover:)
+                
+                @Justification(reaction: "That's the scan callback.") {
+                    didDiscover is called when a device is discovered.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                peripheral(_:didDiscoverServices:)
+                
+                @Justification(reaction: "That's the service discovery callback.") {
+                    Service discovery must be requested separately after connection.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does it mean when a Characteristic's properties include .notify?
+            
+            @Choice(isCorrect: false) {
+                You can write values
+                
+                @Justification(reaction: "Incorrect.") {
+                    Writing is indicated by .write or .writeWithoutResponse.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                You can subscribe to value change notifications
+                
+                @Justification(reaction: "Correct! 🔔") {
+                    With .notify, you can use setNotifyValue(true)
+                    to receive notifications when values change.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                You can read values
+                
+                @Justification(reaction: "Reading is indicated by .read.") {
+                    Check the .read property for read capability.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the difference between discoverServices(nil) and discoverServices([specificUUID])?
+            
+            @Choice(isCorrect: true) {
+                nil discovers all services, array discovers only specified services
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    nil discovers all services on the device.
+                    Passing a UUID array only finds those services.
+                    For performance, it's recommended to specify only needed services.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No difference
+                
+                @Justification(reaction: "There is a difference.") {
+                    nil discovers all, array is filtered.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Passing an array causes an error
+                
+                @Justification(reaction: "Wrong.") {
+                    Passing a UUID array is a valid usage.
+                }
+            }
+        }
+    }
+}

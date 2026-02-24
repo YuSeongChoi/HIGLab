@@ -1,0 +1,174 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Subscribing to Notifications") {
+        Implement Notify/Indicate to receive
+        real-time characteristic value changes.
+    }
+    
+    @Section(title: "Notify vs Indicate") {
+        @ContentAndMedia {
+            There are two ways to receive real-time data in BLE.
+            
+            | Method | Description | Reliability |
+            |--------|-------------|-------------|
+            | Notify | Only sends notification | Lower |
+            | Indicate | Requires acknowledgment | Higher |
+            
+            iOS uses the same API for both methods.
+        }
+        
+        @Steps {
+            @Step {
+                Check if a Characteristic supports notifications.
+                
+                @Code(name: "NotificationSupport.swift", file: "06-01-check-notify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Notification Subscription") {
+        @ContentAndMedia {
+            Subscribe to notifications with `setNotifyValue(true, for:)`.
+            The `didUpdateValue` callback is called whenever the value changes.
+        }
+        
+        @Steps {
+            @Step {
+                Start notification subscription.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-02-subscribe.swift")
+            }
+            
+            @Step {
+                Handle the subscription state change callback.
+                Attempt resubscription when errors occur.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-03-notify-callback.swift")
+            }
+            
+            @Step {
+                Process data received via notifications in real-time.
+                Perform UI updates and data storage.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-04-handle-notification.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Data UI") {
+        @ContentAndMedia {
+            Implement real-time data display with a heart rate monitor example.
+            Stream data using Combine or AsyncStream.
+        }
+        
+        @Steps {
+            @Step {
+                Stream heart rate data using AsyncStream.
+                
+                @Code(name: "HeartRateStream.swift", file: "06-05-async-stream.swift")
+            }
+            
+            @Step {
+                Implement a real-time heart rate monitor UI.
+                
+                @Code(name: "HeartRateView.swift", file: "06-06-heart-rate-view.swift")
+            }
+            
+            @Step {
+                Implement notification unsubscription.
+                Clean up subscriptions when leaving the screen.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-07-unsubscribe.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the main difference between Notify and Indicate?
+            
+            @Choice(isCorrect: true) {
+                Indicate requires acknowledgment (ACK)
+                
+                @Justification(reaction: "Correct! 📨") {
+                    Indicate waits for client acknowledgment, making it
+                    more reliable but potentially slower.
+                    Notify can send the next transmission immediately without confirmation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Notify is not supported on iOS
+                
+                @Justification(reaction: "It is supported.") {
+                    iOS supports both Notify and Indicate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No difference
+                
+                @Justification(reaction: "There is a difference.") {
+                    They differ in whether acknowledgment is required.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What callback confirms success after calling setNotifyValue(true)?
+            
+            @Choice(isCorrect: true) {
+                peripheral(_:didUpdateNotificationStateFor:error:)
+                
+                @Justification(reaction: "Correct! ✅") {
+                    You can check the isNotifying state in this callback.
+                    Success is indicated when error is nil.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                peripheral(_:didUpdateValueFor:error:)
+                
+                @Justification(reaction: "That's the value update callback.") {
+                    didUpdateValueFor is called when actual values change.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can be confirmed immediately without a separate callback
+                
+                @Justification(reaction: "An async callback is needed.") {
+                    All BLE operations are asynchronous.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you unsubscribe from notifications?
+            
+            @Choice(isCorrect: false) {
+                Call unsubscribe(for:)
+                
+                @Justification(reaction: "That method doesn't exist.") {
+                    Call setNotifyValue with false.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Call setNotifyValue(false, for:)
+                
+                @Justification(reaction: "Correct! 🔕") {
+                    Pass false to the same method to unsubscribe.
+                    Disconnection automatically unsubscribes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Just disconnect the Peripheral
+                
+                @Justification(reaction: "Explicit unsubscription is recommended.") {
+                    You need setNotifyValue(false) if you want to stop notifications while staying connected.
+                }
+            }
+        }
+    }
+}

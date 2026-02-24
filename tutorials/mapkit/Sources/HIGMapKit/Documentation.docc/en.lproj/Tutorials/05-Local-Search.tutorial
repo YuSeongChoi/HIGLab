@@ -1,0 +1,178 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Local Search (MKLocalSearch)") {
+        Search for nearby restaurants using MKLocalSearch.
+        Find desired places with natural language queries and category filters.
+    }
+    
+    @Section(title: "MKLocalSearch Basics") {
+        @ContentAndMedia {
+            MKLocalSearch searches Apple Maps' POI (Point of Interest) data.
+            You can find various places like restaurants and cafes.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating a Search Request**
+                
+                Set search conditions with MKLocalSearch.Request.
+                Specify the search query, search area, and result types.
+                
+                @Code(name: "SearchService.swift", file: "05-search-request.swift")
+            }
+            
+            @Step {
+                **Executing the Search**
+                
+                Execute the search and receive results using async/await.
+                Place information is returned as an MKMapItem array.
+                
+                @Code(name: "SearchService.swift", file: "05-execute-search.swift")
+            }
+            
+            @Step {
+                **Parsing Search Results**
+                
+                Extract name, coordinates, phone number, URL, etc. from MKMapItem.
+                Convert to our Restaurant model.
+                
+                @Code(name: "SearchService.swift", file: "05-parse-results.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Category-Based Search") {
+        @ContentAndMedia {
+            Using MKPointOfInterestCategory, you can 
+            filter results to specific types of places only.
+        }
+        
+        @Steps {
+            @Step {
+                **Restaurant Category Filter**
+                
+                Search using food-related categories like .restaurant, .cafe, .bakery.
+                Limit results with pointOfInterestFilter.
+                
+                @Code(name: "SearchService.swift", file: "05-category-filter.swift")
+            }
+            
+            @Step {
+                **Multiple Category Search**
+                
+                Create a filter that includes multiple categories.
+                Search all food establishment types suitable for a restaurant app.
+                
+                @Code(name: "SearchService.swift", file: "05-multi-category.swift")
+            }
+            
+            @Step {
+                **Combining with Natural Language Queries**
+                
+                Use natural language searches like "Italian restaurant" or "vegan cafe" 
+                together with category filters.
+                
+                @Code(name: "SearchService.swift", file: "05-natural-query.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Search UI") {
+        @ContentAndMedia {
+            Create a search field and results list so 
+            users can search for restaurants.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating SearchViewModel**
+                
+                Create a ViewModel to manage search state and logic.
+                Use debounce to prevent excessive API calls while typing.
+                
+                @Code(name: "SearchViewModel.swift", file: "05-search-viewmodel.swift")
+            }
+            
+            @Step {
+                **Building the Search UI**
+                
+                Implement a TextField and results List.
+                Provide native search UX with the .searchable modifier.
+                
+                @Code(name: "SearchView.swift", file: "05-search-ui.swift")
+            }
+            
+            @Step {
+                **Integrating with the Map**
+                
+                When selecting a search result, navigate to that location on the map.
+                Highlight the marker.
+                
+                @Code(name: "ContentView.swift", file: "05-map-integration.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the result type of MKLocalSearch?
+            
+            @Choice(isCorrect: true) {
+                MKLocalSearch.Response (containing MKMapItem array)
+                
+                @Justification(reaction: "Correct!") {
+                    search.start() returns MKLocalSearch.Response,
+                    and you access the results array via response.mapItems.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                [CLLocation] array
+                
+                @Justification(reaction: "Not quite") {
+                    CLLocation only contains location information.
+                    Search results are returned as MKMapItem with rich place information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                [String] array of place names
+                
+                @Justification(reaction: "Not quite") {
+                    MKMapItem includes rich place information like 
+                    name, coordinates, contact info, and URL.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property should be set to limit the search area?
+            
+            @Choice(isCorrect: true) {
+                request.region
+                
+                @Justification(reaction: "Exactly right!") {
+                    The region property of MKLocalSearch.Request 
+                    specifies the search range as MKCoordinateRegion.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                request.coordinate
+                
+                @Justification(reaction: "Not quite") {
+                    You need to set a region (area), not a single coordinate.
+                    Region includes a center point and span (range).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                request.radius
+                
+                @Justification(reaction: "Not quite") {
+                    There is no radius property.
+                    Adjust the search range using region's span.
+                }
+            }
+        }
+    }
+}

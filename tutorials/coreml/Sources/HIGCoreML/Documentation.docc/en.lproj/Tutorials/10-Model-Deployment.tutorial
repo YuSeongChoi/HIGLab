@@ -1,0 +1,228 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Model Management for App Deployment") {
+        Learn strategies and best practices for managing
+        ML models when deploying to the App Store.
+    }
+    
+    @Section(title: "Model Deployment Strategies") {
+        @ContentAndMedia {
+            There are several ways to include ML models in your app.
+            Choose based on app size, update frequency, and user experience.
+        }
+        
+        @Steps {
+            @Step {
+                **Bundled**
+                
+                Include the model in the app binary.
+                - Pros: Immediately usable, offline support
+                - Cons: Increases app size, model update = app update
+                
+                @Code(name: "BundledModel.swift", file: "10-bundled-model.swift")
+            }
+            
+            @Step {
+                **On-Demand Resource (ODR)**
+                
+                Download the model when needed.
+                Reduces initial app download size.
+                
+                @Code(name: "OnDemandResource.swift", file: "10-odr.swift")
+            }
+            
+            @Step {
+                **Background Assets Framework**
+                
+                In iOS 16+, download models in the background
+                immediately after app installation.
+                
+                @Code(name: "BackgroundAssets.swift", file: "10-background-assets.swift")
+            }
+            
+            @Step {
+                **Dynamic Download from Server**
+                
+                Download models from your own server.
+                Replace models without app updates.
+                
+                @Code(name: "DynamicDownload.swift", file: "10-dynamic-download.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Model Version Management") {
+        @ContentAndMedia {
+            Manage multiple model versions
+            and apply updates safely.
+        }
+        
+        @Steps {
+            @Step {
+                **Using Model Metadata**
+                
+                Include version, author, description,
+                and other metadata in the .mlmodel.
+                
+                @Code(name: "ModelMetadata.swift", file: "10-model-metadata.swift")
+            }
+            
+            @Step {
+                **Migration Strategy**
+                
+                Verify new models are compatible with previous versions.
+                If input/output format changes, app code also needs modification.
+                
+                @Code(name: "ModelMigration.swift", file: "10-migration.swift")
+            }
+            
+            @Step {
+                **Rollback Strategy**
+                
+                Prepare to rollback to previous versions
+                if issues arise with the new model.
+                
+                @Code(name: "ModelRollback.swift", file: "10-rollback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Compiled Model Management") {
+        @ContentAndMedia {
+            Understand the difference between .mlmodel and .mlmodelc
+            and manage them appropriately.
+        }
+        
+        @Steps {
+            @Step {
+                **.mlmodel vs .mlmodelc**
+                
+                - .mlmodel: Original model (compiled at build time)
+                - .mlmodelc: Compiled model (immediately usable at runtime)
+                
+                Downloaded models need to be compiled with compileModel(at:)
+                
+                @Code(name: "CompiledModel.swift", file: "10-compiled-model.swift")
+            }
+            
+            @Step {
+                **Model Compilation Location**
+                
+                Save compiled models to cache to prevent
+                recompilation on app restart.
+                
+                @Code(name: "ModelCaching.swift", file: "10-model-caching.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Store Submission Considerations") {
+        @ContentAndMedia {
+            Guidelines and tips you should know
+            when submitting ML apps to the App Store.
+        }
+        
+        @Steps {
+            @Step {
+                **App Size Optimization**
+                
+                App Store restricts cellular downloads
+                for apps over 200MB.
+                Reduce size with model compression.
+                
+                @Code(name: "AppSizeOptimization.swift", file: "10-app-size.swift")
+            }
+            
+            @Step {
+                **Utilizing App Thinning**
+                
+                Deploy device-optimized models.
+                Separate models for iPhone and iPad.
+                
+                @Code(name: "AppThinning.swift", file: "10-app-thinning.swift")
+            }
+            
+            @Step {
+                **Privacy Policy**
+                
+                Data collected or analyzed by ML
+                must be stated in the privacy policy.
+                Explaining on-device processing builds trust.
+                
+                @Code(name: "PrivacyPolicy.swift", file: "10-privacy.swift")
+            }
+            
+            @Step {
+                **Testing for Review**
+                
+                Thoroughly test that models load correctly on all devices
+                and error handling is appropriate.
+                
+                @Code(name: "ReviewPreparation.swift", file: "10-review-prep.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How can you provide ML models while reducing initial app download size?
+            
+            @Choice(isCorrect: true) {
+                Use On-Demand Resources (ODR) or Background Assets
+                
+                @Justification(reaction: "Correct!") {
+                    ODR downloads when needed, Background Assets downloads right after installation,
+                    both reducing initial app size.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Replace with a larger model
+                
+                @Justification(reaction: "Not quite") {
+                    Larger models increase app size.
+                    Separate them with ODR or Background Assets.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always bundle in the app
+                
+                @Justification(reaction: "Not quite") {
+                    Bundling increases app size.
+                    Separation strategies are effective for large models.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            To use a .mlmodel file downloaded from a server, what must you do?
+            
+            @Choice(isCorrect: true) {
+                Compile it first with MLModel.compileModel(at:)
+                
+                @Justification(reaction: "That's right!") {
+                    .mlmodel requires runtime compilation.
+                    Saving compilation results to cache is efficient.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Load directly with MLModel(contentsOf:)
+                
+                @Justification(reaction: "Not quite") {
+                    .mlmodel requires compilation.
+                    .mlmodelc (compiled version) can be loaded directly.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Server download is not possible
+                
+                @Justification(reaction: "Not quite") {
+                    You can dynamically replace models
+                    by downloading and compiling from a server.
+                }
+            }
+        }
+    }
+}

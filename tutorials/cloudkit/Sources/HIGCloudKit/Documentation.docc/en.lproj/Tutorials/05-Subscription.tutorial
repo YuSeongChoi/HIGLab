@@ -1,0 +1,119 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Subscriptions (CKSubscription)") {
+        Detect data changes in real-time with CKSubscription.
+        Set up server-side notifications to automate synchronization.
+    }
+    
+    @Section(title: "Understanding Subscriptions") {
+        @ContentAndMedia {
+            CKSubscription detects data changes on the server and sends push notifications.
+            Real-time synchronization is possible without polling.
+        }
+        @Steps {
+            @Step {
+                Understand the three subscription types.
+                There are Query, RecordZone, and Database subscriptions.
+                @Code(name: "Subscriptions.swift", file: "05-01-subscriptiontypes.swift")
+            }
+            @Step {
+                Create a CKQuerySubscription.
+                Detect changes to records matching specific conditions.
+                @Code(name: "CloudKitManager.swift", file: "05-02-querysubscription.swift")
+            }
+            @Step {
+                Set up notification info (CKNotificationInfo).
+                @Code(name: "CloudKitManager.swift", file: "05-03-notificationinfo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Zone-Based Subscriptions") {
+        @ContentAndMedia {
+            CKRecordZoneSubscription tracks zone changes in Private Database.
+            It's optimized for efficient synchronization.
+        }
+        @Steps {
+            @Step {
+                Create a CKRecordZoneSubscription.
+                @Code(name: "CloudKitManager.swift", file: "05-04-zonesubscription.swift")
+            }
+            @Step {
+                Save the subscription to the server.
+                @Code(name: "CloudKitManager.swift", file: "05-05-savesubscription.swift")
+            }
+            @Step {
+                Query and manage existing subscriptions.
+                @Code(name: "CloudKitManager.swift", file: "05-06-managesubscriptions.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Database Subscriptions") {
+        @ContentAndMedia {
+            CKDatabaseSubscription tracks changes to the entire database.
+            It's particularly useful for detecting changes in the Shared Database.
+        }
+        @Steps {
+            @Step {
+                Set up CKDatabaseSubscription.
+                @Code(name: "CloudKitManager.swift", file: "05-07-databasesubscription.swift")
+            }
+            @Step {
+                Implement subscription ID management strategy.
+                Prevent duplicate subscriptions.
+                @Code(name: "CloudKitManager.swift", file: "05-08-subscriptionid.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which database can use CKRecordZoneSubscription?
+            @Choice(isCorrect: true) {
+                Private Database
+                @Justification(reaction: "Correct!") {
+                    Zone subscriptions are only used in Private Database with custom zones.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "Think again.") {
+                    Public Database only has the default zone, so zone subscriptions aren't available.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Shared Database
+                @Justification(reaction: "Think again.") {
+                    Shared Database uses database subscriptions.
+                }
+            }
+        }
+        @MultipleChoice {
+            Which is NOT included in CKQuerySubscription's firesOn options?
+            @Choice(isCorrect: false) {
+                .recordCreation
+                @Justification(reaction: "Think again.") {
+                    You can receive notifications when records are created.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .recordUpdate
+                @Justification(reaction: "Think again.") {
+                    You can receive notifications when records are updated.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .recordDeletion
+                @Justification(reaction: "Think again.") {
+                    You can receive notifications when records are deleted.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .recordQuery
+                @Justification(reaction: "Correct!") {
+                    Query is not an event, so it's not in firesOn options.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,95 @@
+@Tutorial(time: 20) {
+    @Intro(title: "NFCNDEFReaderSession") {
+        Use NFCNDEFReaderSession to read NDEF format NFC tags.
+        Understand the session lifecycle and delegate pattern.
+    }
+    
+    @Section(title: "Creating a Reader Session") {
+        @ContentAndMedia {
+            NFCNDEFReaderSession is the core class for scanning NDEF tags.
+            Learn how to create and start a session.
+        }
+        @Steps {
+            @Step {
+                Create a class that adopts the NFCNDEFReaderSessionDelegate protocol.
+                @Code(name: "NFCReader.swift", file: "02-01-delegate.swift")
+            }
+            @Step {
+                Create an NFCNDEFReaderSession instance.
+                The invalidateAfterFirstRead option determines whether to end the session after the first read.
+                @Code(name: "NFCReader.swift", file: "02-02-session.swift")
+            }
+            @Step {
+                Start the session and guide the user to scan a tag.
+                Set the alertMessage to display on the scanning UI.
+                @Code(name: "NFCReader.swift", file: "02-03-begin.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Delegate Methods") {
+        @ContentAndMedia {
+            Manage tag detection, error handling, and session termination through delegate methods.
+        }
+        @Steps {
+            @Step {
+                Receive NDEF messages through the readerSession(_:didDetectNDEFs:) method.
+                @Code(name: "NFCReader.swift", file: "02-04-detect.swift")
+            }
+            @Step {
+                Handle errors through the readerSession(_:didInvalidateWithError:) method.
+                Handle various situations including user cancellation and system errors.
+                @Code(name: "NFCReader.swift", file: "02-05-error.swift")
+            }
+            @Step {
+                Detect session activation through the readerSessionDidBecomeActive(_:) method.
+                @Code(name: "NFCReader.swift", file: "02-06-active.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when NFCNDEFReaderSession's invalidateAfterFirstRead is set to true?
+            @Choice(isCorrect: true) {
+                The session automatically ends after reading the first tag.
+                @Justification(reaction: "Correct!") {
+                    This option is useful when reading only a single tag.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Multiple tags can be read consecutively.
+                @Justification(reaction: "Think again.") {
+                    To read multiple tags, set it to false.
+                }
+            }
+            @Choice(isCorrect: false) {
+                It operates in read-only mode.
+                @Justification(reaction: "Think again.") {
+                    This option only determines when the session ends.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is required before starting an NFC session?
+            @Choice(isCorrect: false) {
+                Internet connection
+                @Justification(reaction: "Think again.") {
+                    NFC is local communication and doesn't require internet.
+                }
+            }
+            @Choice(isCorrect: true) {
+                NFCReaderUsageDescription in Info.plist
+                @Justification(reaction: "Correct!") {
+                    This is a required entry explaining the purpose of NFC access to the user.
+                }
+            }
+            @Choice(isCorrect: false) {
+                User location permission
+                @Justification(reaction: "Think again.") {
+                    NFC and location permissions are unrelated.
+                }
+            }
+        }
+    }
+}

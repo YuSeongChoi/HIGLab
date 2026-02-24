@@ -1,0 +1,163 @@
+@Tutorial(time: 10) {
+    @Intro(title: "MCNearbyServiceAdvertiser (Advertising)") {
+        Use MCNearbyServiceAdvertiser to 
+        advertise your device to nearby devices and receive connection invitations.
+    }
+    
+    @Section(title: "Understanding MCNearbyServiceAdvertiser") {
+        @ContentAndMedia {
+            MCNearbyServiceAdvertiser is responsible for 
+            announcing your presence to nearby devices.
+            
+            Advertising devices are discovered through browsers.
+        }
+        
+        @Steps {
+            @Step {
+                Let's examine the basic structure of MCNearbyServiceAdvertiser.
+                
+                Initialize with PeerID, discoveryInfo, and service type.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-01-advertiser-basic.swift")
+            }
+            
+            @Step {
+                Set additional information in discoveryInfo.
+                
+                This information can be seen by the browser side.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-02-discovery-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting and Stopping Advertising") {
+        @ContentAndMedia {
+            When advertising starts, browsers can discover this device,
+            and connection invitations can be received.
+        }
+        
+        @Steps {
+            @Step {
+                Implement MCNearbyServiceAdvertiserDelegate.
+                
+                Handle invitation reception events.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-03-delegate.swift")
+            }
+            
+            @Step {
+                Implement a method to start advertising.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-04-start.swift")
+            }
+            
+            @Step {
+                Implement a method to stop advertising.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-05-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Connection Invitations") {
+        @ContentAndMedia {
+            When a connection invitation is received from a browser,
+            you can accept or decline it.
+            
+            Respond with the invitationHandler closure.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the invitation reception callback.
+                
+                A simple implementation that automatically accepts.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-06-receive-invite.swift")
+            }
+            
+            @Step {
+                Change to an implementation that asks for user confirmation.
+                
+                Use an Alert to decide whether to accept.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-07-confirm-invite.swift")
+            }
+            
+            @Step {
+                Implement the invitation confirmation UI with SwiftUI View.
+                
+                @Code(name: "InvitationView.swift", file: "04-08-invitation-view.swift")
+            }
+            
+            @Step {
+                Utilize the invitation context.
+                
+                context can contain additional data sent by the inviter.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-09-context.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which statement about MCNearbyServiceAdvertiser's discoveryInfo parameter is correct?
+            
+            @Choice(isCorrect: false) {
+                It is a required parameter
+                
+                @Justification(reaction: "Think again.") {
+                    discoveryInfo is an optional parameter that can be set to nil.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It is passed along when the browser discovers the peer
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    discoveryInfo is passed as the withDiscoveryInfo parameter 
+                    in the foundPeer callback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It is transmitted encrypted
+                
+                @Justification(reaction: "Think again.") {
+                    discoveryInfo is transmitted as plaintext without encryption.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of the invitationHandler closure?
+            
+            @Choice(isCorrect: true) {
+                To communicate acceptance status and session
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Use invitationHandler(true, session) to accept,
+                    and invitationHandler(false, nil) to decline.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To send an invitation
+                
+                @Justification(reaction: "Think again.") {
+                    Sending invitations is the browser's role.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To update peer information
+                
+                @Justification(reaction: "Think again.") {
+                    invitationHandler is dedicated to invitation responses.
+                }
+            }
+        }
+    }
+}

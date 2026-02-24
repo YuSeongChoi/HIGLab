@@ -1,0 +1,236 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Heart Rate & Sleep Data") {
+        Query heart rate (HKQuantityType) and sleep (HKCategoryType) data.
+        Understand the characteristics of category types and sleep analysis data structure.
+    }
+    
+    @Section(title: "Querying Heart Rate Data") {
+        @ContentAndMedia {
+            Heart rate is an **HKQuantityType**, automatically measured by Apple Watch.
+            It's recorded in beats per minute (BPM).
+        }
+        
+        @Steps {
+            @Step {
+                **Define Heart Rate Type**
+                
+                Use the .heartRate identifier.
+                The unit is .count()/.minute() (BPM).
+                
+                @Code(name: "HeartRateType.swift", file: "05-heartrate-type.swift")
+            }
+            
+            @Step {
+                **Query Latest Heart Rate**
+                
+                Get the 1 most recently measured heart rate.
+                Sort with sortDescriptors and set limit to 1.
+                
+                @Code(name: "LatestHeartRate.swift", file: "05-latest-heartrate.swift")
+            }
+            
+            @Step {
+                **Heart Rate Range Analysis**
+                
+                Calculate min/max/average heart rate for a specified period.
+                Using HKStatisticsQuery is more efficient.
+                
+                @Code(name: "HeartRateRange.swift", file: "05-heartrate-range.swift")
+            }
+            
+            @Step {
+                **Heart Rate UI Component**
+                
+                Create a card displaying current heart rate and range.
+                Add a pulse animation to the heart icon.
+                
+                @Code(name: "HeartRateView.swift", file: "05-heartrate-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding HKCategoryType") {
+        @ContentAndMedia {
+            **HKCategoryType** stores category values rather than numbers.
+            Sleep analysis, menstrual cycle, mindfulness, etc. belong here.
+        }
+        
+        @Steps {
+            @Step {
+                **Category vs Quantity**
+                
+                Quantity is "how much" (e.g., 72 BPM)
+                Category is "what state" (e.g., deep sleep, REM sleep)
+                
+                @Code(name: "CategoryVsQuantity.swift", file: "05-category-vs-quantity.swift")
+            }
+            
+            @Step {
+                **Sleep Analysis Categories**
+                
+                In iOS 16+, sleep is subdivided into various stages:
+                - .asleepUnspecified: Sleep (unclassified)
+                - .asleepCore: Core sleep
+                - .asleepDeep: Deep sleep
+                - .asleepREM: REM sleep
+                - .awake: Awake
+                - .inBed: In bed
+                
+                @Code(name: "SleepCategories.swift", file: "05-sleep-categories.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Querying Sleep Data") {
+        @ContentAndMedia {
+            Sleep data is recorded as continuous time intervals.
+            Each sample includes start/end time and sleep stage.
+        }
+        
+        @Steps {
+            @Step {
+                **Query Last Night's Sleep**
+                
+                Query sleep data from last evening to this morning.
+                
+                @Code(name: "LastNightSleep.swift", file: "05-last-night-sleep.swift")
+            }
+            
+            @Step {
+                **Calculate Time by Sleep Stage**
+                
+                Calculate duration of each sample and aggregate by stage.
+                
+                @Code(name: "SleepAnalysis.swift", file: "05-sleep-analysis.swift")
+            }
+            
+            @Step {
+                **Calculate Total Sleep Time**
+                
+                Sum only actual sleep stages excluding .inBed.
+                
+                @Code(name: "TotalSleep.swift", file: "05-total-sleep.swift")
+            }
+            
+            @Step {
+                **Sleep UI Component**
+                
+                Display sleep time and stage ratios as a chart.
+                Beautiful visualizations are possible with Swift Charts.
+                
+                @Code(name: "SleepView.swift", file: "05-sleep-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Dashboard Integration") {
+        @ContentAndMedia {
+            Integrate heart rate and sleep data into the main dashboard.
+        }
+        
+        @Steps {
+            @Step {
+                **Extend HealthManager**
+                
+                Add heart rate and sleep query methods to HealthManager.
+                
+                @Code(name: "HealthManager.swift", file: "05-health-manager-extended.swift")
+            }
+            
+            @Step {
+                **Dashboard Layout**
+                
+                Arrange steps, heart rate, and sleep in a grid layout.
+                
+                @Code(name: "DashboardView.swift", file: "05-dashboard-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the HKUnit for heart rate?
+            
+            @Choice(isCorrect: true) {
+                .count().per(.minute()) — BPM
+                
+                @Justification(reaction: "Correct!") {
+                    Heart rate is beats per minute, so it uses count/minute unit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .count()
+                
+                @Justification(reaction: "Not quite") {
+                    .count() is used for total counts like steps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .second()
+                
+                @Justification(reaction: "Not quite") {
+                    .second() is a time unit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the type of sleep data in iOS 16+?
+            
+            @Choice(isCorrect: true) {
+                HKCategoryType — classified into multiple sleep stages
+                
+                @Justification(reaction: "Correct!") {
+                    Sleep is categorized into core, deep sleep, REM, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKQuantityType — sleep time in minutes
+                
+                @Justification(reaction: "Not quite") {
+                    Sleep is a "state" not time, so it's CategoryType.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKWorkoutType — sleep workout
+                
+                @Justification(reaction: "Not quite") {
+                    WorkoutType is used for workout sessions like running or swimming.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you calculate duration from a sleep sample?
+            
+            @Choice(isCorrect: true) {
+                endDate - startDate
+                
+                @Justification(reaction: "Correct!") {
+                    Each HKSample has startDate and endDate,
+                    and the difference is the duration for that interval.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                quantity.doubleValue(for: .second())
+                
+                @Justification(reaction: "Not quite") {
+                    HKCategorySample doesn't have a quantity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                value property
+                
+                @Justification(reaction: "Not quite") {
+                    value is an integer representing the sleep stage.
+                }
+            }
+        }
+    }
+}

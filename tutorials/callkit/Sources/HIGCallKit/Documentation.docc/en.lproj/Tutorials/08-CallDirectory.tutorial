@@ -1,0 +1,163 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Call Directory (CXCallDirectoryProvider)") {
+        Create a Call Directory Extension to implement
+        caller identification and phone number blocking features.
+    }
+    
+    @Section(title: "Creating Call Directory Extension") {
+        @ContentAndMedia {
+            Add a Call Directory Extension
+            to your project in Xcode.
+        }
+        
+        @Steps {
+            @Step {
+                Add a Call Directory Extension as a new Target.
+                
+                File > New > Target > Call Directory Extension
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-01-extension.swift")
+            }
+            
+            @Step {
+                Check the class that inherits from CXCallDirectoryProvider.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-02-provider.swift")
+            }
+            
+            @Step {
+                Implement the beginRequest method.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-03-begin-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Caller Identification") {
+        @ContentAndMedia {
+            Register caller information for phone numbers
+            with the system.
+        }
+        
+        @Steps {
+            @Step {
+                Prepare caller identification data.
+                
+                Phone numbers must be sorted in ascending order.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-04-identification-data.swift")
+            }
+            
+            @Step {
+                Register with the addIdentificationEntry method.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-05-add-identification.swift")
+            }
+            
+            @Step {
+                Implement incremental updates.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-06-incremental.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sharing Data Between Extension and App") {
+        @ContentAndMedia {
+            Share data between the main app and Extension
+            using App Groups.
+        }
+        
+        @Steps {
+            @Step {
+                Set up App Group.
+                
+                @Code(name: "AppGroupConfig.swift", file: "08-07-app-group.swift")
+            }
+            
+            @Step {
+                Implement shared storage.
+                
+                @Code(name: "SharedStorage.swift", file: "08-08-shared-storage.swift")
+            }
+            
+            @Step {
+                Read data in the Extension.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "08-09-read-data.swift")
+            }
+            
+            @Step {
+                Request Extension refresh.
+                
+                @Code(name: "CallManager.swift", file: "08-10-reload.swift")
+            }
+            
+            @Step {
+                Check Extension status.
+                
+                @Code(name: "CallManager.swift", file: "08-11-status.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which method registers caller identification in Call Directory Extension?
+            
+            @Choice(isCorrect: true) {
+                `addIdentificationEntry(withNextSequentialPhoneNumber:label:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    This method adds phone numbers and labels
+                    to the caller identification list.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `addCallerIdentification(phoneNumber:name:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This method doesn't exist.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `registerCaller(number:label:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This method doesn't exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you be careful about when registering phone numbers to Call Directory Extension?
+            
+            @Choice(isCorrect: true) {
+                Phone numbers must be sorted in ascending order
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Phone numbers must be sorted in ascending order
+                    for the system to process them correctly.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Phone numbers must be hashed
+                
+                @Justification(reaction: "Think again.") {
+                    Phone numbers are registered as-is.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Duplicate phone numbers must be registered
+                
+                @Justification(reaction: "Think again.") {
+                    Duplicate registration is not allowed.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,108 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Writing NFC Tags") {
+        Learn how to write NDEF messages to NFC tags.
+        Create NFCNDEFPayload and write it to tags.
+    }
+    
+    @Section(title: "Creating NDEF Payloads") {
+        @ContentAndMedia {
+            Using NFCNDEFPayload convenience initializers,
+            you can easily create URL and text records.
+        }
+        @Steps {
+            @Step {
+                Create a URL record.
+                Use the wellKnownTypeURIPayload(url:) method.
+                @Code(name: "NFCWriter.swift", file: "06-01-urlpayload.swift")
+            }
+            @Step {
+                Create a text record.
+                Use the wellKnownTypeTextPayload(string:locale:) method.
+                @Code(name: "NFCWriter.swift", file: "06-02-textpayload.swift")
+            }
+            @Step {
+                Create custom payloads directly.
+                @Code(name: "NFCWriter.swift", file: "06-03-custompayload.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing to Tags") {
+        @ContentAndMedia {
+            Bundle created payloads into an NDEF message and write to the tag.
+        }
+        @Steps {
+            @Step {
+                Configure a write session.
+                Set invalidateAfterFirstRead to false.
+                @Code(name: "NFCWriter.swift", file: "06-04-writesession.swift")
+            }
+            @Step {
+                Connect to the tag and check write capability.
+                @Code(name: "NFCWriter.swift", file: "06-05-checkwrite.swift")
+            }
+            @Step {
+                Write the message to the tag using the writeNDEF method.
+                @Code(name: "NFCWriter.swift", file: "06-06-write.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Locking Tags") {
+        @ContentAndMedia {
+            You can lock tags as read-only to protect data.
+            Caution: Locking cannot be reversed!
+        }
+        @Steps {
+            @Step {
+                Lock the tag using the writeLock method.
+                @Code(name: "NFCWriter.swift", file: "06-07-lock.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What must you check before writing to an NFC tag?
+            @Choice(isCorrect: true) {
+                Check write capability with queryNDEFStatus
+                @Justification(reaction: "Correct!") {
+                    Writing fails on read-only tags or when capacity is insufficient.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Internet connection status
+                @Justification(reaction: "Think again.") {
+                    NFC writing is a local operation and doesn't require internet.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Battery level
+                @Justification(reaction: "Think again.") {
+                    You need to check the tag's write capability first.
+                }
+            }
+        }
+        @MultipleChoice {
+            What happens to the tag after calling writeLock()?
+            @Choice(isCorrect: false) {
+                It automatically unlocks after 24 hours.
+                @Justification(reaction: "Think again.") {
+                    The lock is permanent.
+                }
+            }
+            @Choice(isCorrect: false) {
+                The lock can be released with special tools.
+                @Justification(reaction: "Think again.") {
+                    It's a hardware-level lock that cannot be released.
+                }
+            }
+            @Choice(isCorrect: true) {
+                It becomes permanently read-only.
+                @Justification(reaction: "Correct!") {
+                    writeLock is an irreversible permanent lock.
+                }
+            }
+        }
+    }
+}

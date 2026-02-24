@@ -1,0 +1,250 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Performance Optimization") {
+        Learn how to optimize CoreImage app memory management 
+        and GPU utilization to achieve the best performance.
+        
+        @Image(source: "optimization.png", alt: "Performance Optimization")
+    }
+    
+    @Section(title: "Memory Management Basics") {
+        @ContentAndMedia {
+            Image processing uses a lot of memory.
+            Efficient memory management prevents crashes and improves performance.
+            
+            Memory issues:
+            - Memory spikes when loading large images
+            - Memory growth from accumulated intermediate results
+            - Delayed release from not using autoreleasepool
+            - Memory explosion from unmanaged cache
+            
+            @Image(source: "memory-management.png", alt: "Memory Management")
+        }
+        
+        @Steps {
+            @Step {
+                Use autoreleasepool to release memory immediately.
+                Essential when processing images in loops.
+                
+                @Code(name: "AutoreleasePool.swift", file: "10-01-autoreleasepool.swift")
+            }
+            
+            @Step {
+                Resize images appropriately.
+                Pre-shrinking to display size saves memory.
+                
+                @Code(name: "ImageResizing.swift", file: "10-02-image-resizing.swift")
+            }
+            
+            @Step {
+                Set up cache policies.
+                Use NSCache to auto-release under memory pressure.
+                
+                @Code(name: "ImageCaching.swift", file: "10-03-image-caching.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIContext Optimization") {
+        @ContentAndMedia {
+            Performance varies greatly depending on CIContext settings.
+            Choose options appropriate for your use case.
+            
+            Optimization options:
+            - workingColorSpace: Working color space (nil for auto)
+            - cacheIntermediates: Intermediate result caching
+            - priorityRequestLow: Suitable for background tasks
+            - outputPremultiplied: Alpha premultiply
+        }
+        
+        @Steps {
+            @Step {
+                Configure CIContext settings by use case.
+                Use different settings for real-time preview and final rendering.
+                
+                @Code(name: "ContextOptions.swift", file: "10-04-context-options.swift")
+            }
+            
+            @Step {
+                Disable intermediate result caching to save memory.
+                Caching is unnecessary for one-time rendering.
+                
+                @Code(name: "DisableCaching.swift", file: "10-05-disable-caching.swift")
+            }
+            
+            @Step {
+                Manage system load by adjusting priority.
+                Run background tasks at lower priority.
+                
+                @Code(name: "PriorityControl.swift", file: "10-06-priority-control.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Rendering Performance Optimization") {
+        @ContentAndMedia {
+            Various techniques for optimizing performance at the rendering stage.
+            Reduce unnecessary operations and efficiently utilize the GPU.
+            
+            Optimization techniques:
+            - Render only needed region (ROI)
+            - Use low-resolution preview
+            - Asynchronous rendering
+            - Choose appropriate output format
+        }
+        
+        @Steps {
+            @Step {
+                Specify Region of Interest (ROI) to render only needed areas.
+                Process only the visible portion instead of the entire image.
+                
+                @Code(name: "ROIRendering.swift", file: "10-07-roi-rendering.swift")
+            }
+            
+            @Step {
+                Use different resolutions for preview and final output.
+                Preview quickly at low resolution during user manipulation.
+                
+                @Code(name: "DualResolution.swift", file: "10-08-dual-resolution.swift")
+            }
+            
+            @Step {
+                Maintain UI responsiveness with asynchronous rendering.
+                Utilize Grand Central Dispatch.
+                
+                @Code(name: "AsyncRendering.swift", file: "10-09-async-rendering.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Profiling and Debugging") {
+        @ContentAndMedia {
+            Use Instruments to analyze CoreImage performance.
+            Find bottlenecks and measure optimization effects.
+            
+            Useful tools:
+            - Core Animation profiler
+            - GPU profiler
+            - Allocations (memory)
+            - Time Profiler (CPU)
+        }
+        
+        @Steps {
+            @Step {
+                Monitor GPU usage in Instruments.
+                Check filter processing time and GPU occupancy.
+                
+                @Code(name: "GPUProfiling.swift", file: "10-10-gpu-profiling.swift")
+            }
+            
+            @Step {
+                Create a utility to measure rendering time.
+                Log each filter's processing time.
+                
+                @Code(name: "RenderingTimer.swift", file: "10-11-rendering-timer.swift")
+            }
+            
+            @Step {
+                Track memory usage.
+                Monitor memory changes before and after image processing.
+                
+                @Code(name: "MemoryTracking.swift", file: "10-12-memory-tracking.swift")
+            }
+            
+            @Step {
+                Summarize an optimization checklist.
+                Review performance items to check before app release.
+                
+                @Code(name: "OptimizationChecklist.swift", file: "10-13-checklist.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why should autoreleasepool be used when processing images in a loop?
+            
+            @Choice(isCorrect: true) {
+                To prevent memory accumulation as it's not released until the loop ends
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Without autoreleasepool, temporary objects are not 
+                    released until the entire loop finishes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                For compiler optimization
+                
+                @Justification(reaction: "Not related.") {
+                    autoreleasepool is about runtime memory management.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To enable GPU acceleration
+                
+                @Justification(reaction: "That's not the case.") {
+                    GPU acceleration is related to CIContext settings.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when cacheIntermediates is disabled in CIContext?
+            
+            @Choice(isCorrect: true) {
+                Memory usage decreases but may be slower when reapplying the same filter
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Disabling cache saves memory but requires 
+                    recalculation for repeated rendering.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Rendering speed always increases
+                
+                @Justification(reaction: "Depends on the situation.") {
+                    With cache hits, caching is actually faster.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Image quality improves
+                
+                @Justification(reaction: "Not related.") {
+                    Caching is about performance, not quality.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why use low-resolution images for preview?
+            
+            @Choice(isCorrect: true) {
+                To provide fast feedback during user manipulation
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Fast response is important during manipulation;
+                    high resolution is only needed for final output.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because low resolution provides better quality
+                
+                @Justification(reaction: "That's not the case.") {
+                    High resolution has better quality, but there's a speed trade-off.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To ensure identical results across all devices
+                
+                @Justification(reaction: "Not the main reason.") {
+                    Performance optimization is the main purpose.
+                }
+            }
+        }
+    }
+}

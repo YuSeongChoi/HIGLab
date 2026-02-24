@@ -1,0 +1,212 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Beacon Detection (iBeacon)") {
+        Use iBeacon technology to detect precise locations indoors.
+        This can be used in running trackers for indoor track segment recognition.
+    }
+    
+    @Section(title: "iBeacon Overview") {
+        @ContentAndMedia {
+            iBeacon is a Bluetooth Low Energy (BLE) based
+            proximity detection technology developed by Apple.
+            
+            It can provide location-based services indoors where GPS doesn't work.
+            It can be used in gym running tracks or indoor courses.
+        }
+        
+        @Steps {
+            @Step {
+                **iBeacon Components**
+                
+                An iBeacon is identified by three values:
+                - **UUID**: Organization/app unique identifier
+                - **Major**: Group/building identifier (0-65535)
+                - **Minor**: Individual beacon identifier (0-65535)
+                
+                @Code(name: "BeaconIdentifier.swift", file: "07-beacon-id.swift")
+            }
+            
+            @Step {
+                **Creating CLBeaconRegion**
+                
+                Define the beacon region to detect.
+                You can specify only UUID, or refine with Major/Minor.
+                
+                @Code(name: "BeaconManager.swift", file: "07-beacon-region.swift")
+            }
+            
+            @Step {
+                **Bluetooth Permission Setup**
+                
+                On iOS 13+, Bluetooth usage permission is required.
+                Add `NSBluetoothAlwaysUsageDescription` to Info.plist.
+                
+                @Code(name: "Info.plist", file: "07-bluetooth-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Beacon Monitoring vs Ranging") {
+        @ContentAndMedia {
+            There are two modes for beacon detection:
+            - **Monitoring**: Detects only region entry/exit (battery efficient)
+            - **Ranging**: Real-time distance measurement (precise but high battery consumption)
+        }
+        
+        @Steps {
+            @Step {
+                **Starting Beacon Monitoring**
+                
+                Similar to geofencing, receive region entry/exit events.
+                Works even when the app is in background.
+                
+                @Code(name: "BeaconManager.swift", file: "07-monitoring.swift")
+            }
+            
+            @Step {
+                **Starting Beacon Ranging**
+                
+                Ranging measures distance to nearby beacons in real-time.
+                The proximity property gives approximate distance.
+                
+                @Code(name: "BeaconManager.swift", file: "07-ranging.swift")
+            }
+            
+            @Step {
+                **Handling Distance Measurement Results**
+                
+                Receive detected beacon information in
+                `locationManager(_:didRange:satisfying:)`.
+                
+                @Code(name: "BeaconManager.swift", file: "07-did-range.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Indoor Track Segment Recognition") {
+        @ContentAndMedia {
+            By installing beacons on a gym running track,
+            you can measure segment lap times even indoors.
+        }
+        
+        @Steps {
+            @Step {
+                **Track Beacon Placement Plan**
+                
+                Place beacons at the track start and each segment.
+                Assign a unique Minor value to each beacon.
+                
+                @Code(name: "IndoorTrack.swift", file: "07-track-layout.swift")
+            }
+            
+            @Step {
+                **Segment Passage Detection**
+                
+                When beacon proximity becomes .immediate or .near,
+                consider that segment as passed.
+                
+                @Code(name: "IndoorTrack.swift", file: "07-segment-detect.swift")
+            }
+            
+            @Step {
+                **Indoor Dashboard UI**
+                
+                Create a UI showing current segment, lap count, and segment times.
+                
+                @Code(name: "IndoorDashboardView.swift", file: "07-indoor-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What are the three identifiers of an iBeacon?
+            
+            @Choice(isCorrect: true) {
+                UUID, Major, Minor
+                
+                @Justification(reaction: "Correct!") {
+                    UUID identifies the organization, Major identifies the group, Minor identifies individual beacons.
+                    This hierarchy allows systematic management of thousands of beacons.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID, Name, Location
+                
+                @Justification(reaction: "Not quite") {
+                    iBeacons are identified by UUID, Major, Minor numeric values.
+                    Name and location are mapped separately in the app.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MAC Address, RSSI, TxPower
+                
+                @Justification(reaction: "Not quite") {
+                    These are BLE technical parameters.
+                    iBeacon identifiers are UUID, Major, Minor.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the difference between beacon monitoring and ranging?
+            
+            @Choice(isCorrect: true) {
+                Monitoring is entry/exit only, ranging is real-time distance measurement
+                
+                @Justification(reaction: "Correct!") {
+                    Monitoring is battery efficient and works in background.
+                    Ranging is precise but only works in foreground.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Same functionality
+                
+                @Justification(reaction: "Not quite") {
+                    The two features have different purposes and behaviors.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Ranging uses GPS
+                
+                @Justification(reaction: "Not quite") {
+                    Ranging also uses Bluetooth.
+                    It's a separate technology from GPS.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What are the four values of CLProximity?
+            
+            @Choice(isCorrect: true) {
+                unknown, immediate, near, far
+                
+                @Justification(reaction: "Correct!") {
+                    immediate is a few centimeters, near is a few meters,
+                    far is beyond that, unknown means measurement unavailable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                close, medium, far, lost
+                
+                @Justification(reaction: "Not quite") {
+                    The correct values are unknown, immediate, near, far.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1m, 5m, 10m, 50m
+                
+                @Justification(reaction: "Not quite") {
+                    CLProximity represents approximate distance categories,
+                    not exact meter values.
+                }
+            }
+        }
+    }
+}

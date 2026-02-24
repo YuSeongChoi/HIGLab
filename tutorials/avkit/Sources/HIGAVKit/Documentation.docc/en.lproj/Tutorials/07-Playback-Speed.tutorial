@@ -1,0 +1,208 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Playback Speed Control") {
+        Implement 0.5x ~ 2.0x playback speed and frame-by-frame
+        navigation for flexible viewing experience.
+        
+        @Image(source: "playback-speed.png", alt: "Playback Speed Control")
+    }
+    
+    @Section(title: "Playback Speed Basics") {
+        @ContentAndMedia {
+            Control playback speed with AVPlayer's rate property.
+            
+            - **0.0**: Stopped
+            - **0.5**: 0.5x (slow)
+            - **1.0**: Normal speed
+            - **2.0**: 2x speed
+            
+            @Image(source: "rate-values.png", alt: "Playback Speed Values")
+        }
+        
+        @Steps {
+            @Step {
+                Change playback speed with the rate property.
+                1.0 is normal speed.
+                
+                @Code(name: "BasicRate.swift", file: "07-01-basic-rate.swift")
+            }
+            
+            @Step {
+                For speech content, apply pitch correction
+                with audioTimePitchAlgorithm.
+                
+                @Code(name: "PitchCorrection.swift", file: "07-02-pitch-correction.swift")
+            }
+            
+            @Step {
+                Maintain audio pitch during speed playback
+                for natural-sounding voice.
+                
+                @Code(name: "TimePitch.swift", file: "07-03-time-pitch.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Playback Speed UI") {
+        @ContentAndMedia {
+            Implement an interface for users to easily
+            change playback speed.
+            
+            - Speed selection menu
+            - Step adjustment buttons
+            - Current speed display
+        }
+        
+        @Steps {
+            @Step {
+                Define commonly used playback speed options.
+                
+                @Code(name: "SpeedOptions.swift", file: "07-04-speed-options.swift")
+            }
+            
+            @Step {
+                Create a speed selection menu using SwiftUI Picker.
+                
+                @Code(name: "SpeedPicker.swift", file: "07-05-speed-picker.swift")
+            }
+            
+            @Step {
+                Implement segmented control style speed buttons.
+                
+                @Code(name: "SpeedSegments.swift", file: "07-06-speed-segments.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Reverse Playback and Frame Navigation") {
+        @ContentAndMedia {
+            Use negative rate for reverse playback,
+            and step() method for frame-by-frame navigation.
+            
+            - Reverse playback (only some formats supported)
+            - Frame-by-frame forward/backward
+            - Precise editing features
+        }
+        
+        @Steps {
+            @Step {
+                Set negative rate for reverse playback.
+                Not all videos support reverse playback.
+                
+                @Code(name: "ReversePlay.swift", file: "07-07-reverse-play.swift")
+            }
+            
+            @Step {
+                Check reverse playback support with canPlayReverse.
+                
+                @Code(name: "CheckReverse.swift", file: "07-08-check-reverse.swift")
+            }
+            
+            @Step {
+                Implement frame-by-frame navigation with step(byCount:).
+                Useful in video editing apps.
+                
+                @Code(name: "StepFrame.swift", file: "07-09-step-frame.swift")
+            }
+            
+            @Step {
+                Implement frame forward/backward buttons.
+                
+                @Code(name: "FrameButtons.swift", file: "07-10-frame-buttons.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Streaming Speed Support") {
+        @ContentAndMedia {
+            There are server-side considerations
+            for speed playback support in HLS streaming.
+            
+            - Adaptive bitrate adjustment
+            - Buffer management
+            - Bandwidth considerations
+        }
+        
+        @Steps {
+            @Step {
+                Adjust preferredPeakBitRate for
+                speed playback on HLS streams.
+                
+                @Code(name: "HLSSpeed.swift", file: "07-11-hls-speed.swift")
+            }
+            
+            @Step {
+                Monitor buffer status to ensure
+                smooth playback.
+                
+                @Code(name: "BufferMonitor.swift", file: "07-12-buffer-monitor.swift")
+            }
+            
+            @Step {
+                Dynamically adjust speed playback availability
+                based on network conditions.
+                
+                @Code(name: "NetworkAdaptive.swift", file: "07-13-network-adaptive.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you maintain natural voice pitch during speed playback?
+            
+            @Choice(isCorrect: false) {
+                Change rate slowly
+                
+                @Justification(reaction: "Incorrect.") {
+                    Rate change speed has no relation to pitch correction.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Set audioTimePitchAlgorithm to .timeDomain or .spectral
+                
+                @Justification(reaction: "Exactly right! 🎵") {
+                    These algorithms maintain natural voice pitch
+                    when playback speed changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Separate audio processing is required
+                
+                @Justification(reaction: "Not quite.") {
+                    AVPlayerItem's built-in features are sufficient.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is step(byCount:) used for?
+            
+            @Choice(isCorrect: true) {
+                Move video forward or backward by frames
+                
+                @Justification(reaction: "Correct! 🎬") {
+                    Positive values move forward, negative values move backward
+                    by the specified number of frames.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Change playback speed incrementally
+                
+                @Justification(reaction: "That's different.") {
+                    Use the rate property to change playback speed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Adjust volume incrementally
+                
+                @Justification(reaction: "Unrelated.") {
+                    Use the volume property to adjust volume.
+                }
+            }
+        }
+    }
+}

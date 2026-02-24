@@ -1,0 +1,138 @@
+@Tutorial(time: 25) {
+    @Intro(title: "CKShare Collaboration") {
+        Share notes with other users using CKShare.
+        Implement sharing UI with UICloudSharingController.
+    }
+    
+    @Section(title: "Understanding CKShare") {
+        @ContentAndMedia {
+            CKShare is a special record type for sharing records.
+            It manages share URLs and participant permissions.
+        }
+        @Steps {
+            @Step {
+                Understand the structure of CKShare.
+                It has properties like rootRecord, participants, and publicPermission.
+                @Code(name: "ShareStructure.swift", file: "08-01-structure.swift")
+            }
+            @Step {
+                Create a CKShare.
+                Specify the record to share as root.
+                @Code(name: "CloudKitManager.swift", file: "08-02-createshare.swift")
+            }
+            @Step {
+                Set sharing permissions.
+                @Code(name: "CloudKitManager.swift", file: "08-03-permission.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Sharing UI") {
+        @ContentAndMedia {
+            Using UICloudSharingController makes it easy to display the system sharing UI.
+        }
+        @Steps {
+            @Step {
+                Create UICloudSharingController.
+                @Code(name: "SharingController.swift", file: "08-04-sharingcontroller.swift")
+            }
+            @Step {
+                Wrap UICloudSharingController in SwiftUI.
+                @Code(name: "CloudSharingView.swift", file: "08-05-swiftuiwrapper.swift")
+            }
+            @Step {
+                Implement the delegate to handle sharing completion.
+                @Code(name: "CloudSharingView.swift", file: "08-06-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Share Acceptance") {
+        @ContentAndMedia {
+            Handle the process when a user receives and accepts a share URL.
+        }
+        @Steps {
+            @Step {
+                Handle the share URL scheme.
+                Get CKShare.Metadata.
+                @Code(name: "SceneDelegate.swift", file: "08-07-acceptshare.swift")
+            }
+            @Step {
+                Accept the share with CKAcceptSharesOperation.
+                @Code(name: "CloudKitManager.swift", file: "08-08-acceptoperation.swift")
+            }
+            @Step {
+                Synchronize data after accepting the share.
+                @Code(name: "CloudKitManager.swift", file: "08-09-syncafteraccept.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Participants") {
+        @ContentAndMedia {
+            Add or remove participants from existing shares.
+        }
+        @Steps {
+            @Step {
+                Add a participant.
+                Use CKUserIdentityLookupInfo.
+                @Code(name: "CloudKitManager.swift", file: "08-10-addparticipant.swift")
+            }
+            @Step {
+                Remove a participant and stop sharing.
+                @Code(name: "CloudKitManager.swift", file: "08-11-removeparticipant.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which is NOT a CKShare publicPermission option?
+            @Choice(isCorrect: false) {
+                .none
+                @Justification(reaction: "Think again.") {
+                    .none means no access via URL alone.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .readOnly
+                @Justification(reaction: "Think again.") {
+                    .readOnly allows read access via URL.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .owner
+                @Justification(reaction: "Correct!") {
+                    owner is a participant role, not a permission.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .readWrite
+                @Justification(reaction: "Think again.") {
+                    .readWrite allows read/write access via URL.
+                }
+            }
+        }
+        @MultipleChoice {
+            What method is used in AppDelegate/SceneDelegate to handle share URLs?
+            @Choice(isCorrect: true) {
+                userDidAcceptCloudKitShare(with:)
+                @Justification(reaction: "Correct!") {
+                    This is the dedicated method for handling CloudKit share URLs.
+                }
+            }
+            @Choice(isCorrect: false) {
+                openURL(_:options:)
+                @Justification(reaction: "Think again.") {
+                    That's a general URL opening method. CloudKit shares need special handling.
+                }
+            }
+            @Choice(isCorrect: false) {
+                handleUniversalLink(_:)
+                @Justification(reaction: "Think again.") {
+                    That's for universal links.
+                }
+            }
+        }
+    }
+}

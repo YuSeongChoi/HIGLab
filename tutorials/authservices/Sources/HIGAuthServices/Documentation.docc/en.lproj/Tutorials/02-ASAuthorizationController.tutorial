@@ -1,0 +1,194 @@
+@Tutorial(time: 18) {
+    @Intro(title: "ASAuthorizationController Setup") {
+        Initialize the authorization controller and configure delegates 
+        to manage the Sign in with Apple authentication flow.
+        
+        @Image(source: "auth-controller.png", alt: "ASAuthorizationController Structure")
+    }
+    
+    @Section(title: "Creating ASAuthorizationAppleIDProvider") {
+        @ContentAndMedia {
+            ASAuthorizationAppleIDProvider is the core class 
+            that creates Apple ID authentication requests.
+            
+            - Creates authentication requests
+            - Checks credential state
+            - User Identifier-based verification
+        }
+        
+        @Steps {
+            @Step {
+                Create a provider and make an authentication request.
+                Specify the required information scopes.
+                
+                @Code(name: "AppleIDProvider.swift", file: "02-01-provider.swift")
+            }
+            
+            @Step {
+                Requesting fullName and email scopes 
+                asks the user for consent to share that information.
+                
+                @Code(name: "RequestScopes.swift", file: "02-02-scopes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Initializing ASAuthorizationController") {
+        @ContentAndMedia {
+            ASAuthorizationController displays the actual authentication UI 
+            and handles user interaction.
+            
+            - Processes one or more authentication requests
+            - Displays system authentication sheet
+            - Delivers results through delegate
+        }
+        
+        @Steps {
+            @Step {
+                Initialize the controller with an array of authorization requests.
+                Multiple authentication methods can be offered simultaneously.
+                
+                @Code(name: "ControllerInit.swift", file: "02-03-controller-init.swift")
+            }
+            
+            @Step {
+                Set up the delegate and presentationContextProvider.
+                Both protocols must be implemented.
+                
+                @Code(name: "DelegateSetup.swift", file: "02-04-delegate-setup.swift")
+            }
+            
+            @Step {
+                Call performRequests() to start the authentication flow.
+                The system automatically displays the appropriate authentication UI.
+                
+                @Code(name: "PerformRequests.swift", file: "02-05-perform-requests.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Delegate Protocol") {
+        @ContentAndMedia {
+            Handle authentication success/failure results 
+            through ASAuthorizationControllerDelegate.
+            
+            - `didCompleteWithAuthorization`: Receive credentials on success
+            - `didCompleteWithError`: Handle errors
+        }
+        
+        @Steps {
+            @Step {
+                Extract ASAuthorizationAppleIDCredential 
+                in didCompleteWithAuthorization.
+                
+                @Code(name: "SuccessHandler.swift", file: "02-06-success-handler.swift")
+            }
+            
+            @Step {
+                Handle errors that occur on authentication failure.
+                Distinguish between user cancellation and actual errors.
+                
+                @Code(name: "ErrorHandler.swift", file: "02-07-error-handler.swift")
+            }
+            
+            @Step {
+                Use ASError.Code to distinguish specific errors.
+                
+                - `.canceled`: User canceled
+                - `.failed`: Authentication failed
+                - `.invalidResponse`: Invalid response
+                - `.notHandled`: Not handled
+                
+                @Code(name: "ErrorCodes.swift", file: "02-08-error-codes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing PresentationContextProvider") {
+        @ContentAndMedia {
+            ASAuthorizationControllerPresentationContextProviding 
+            specifies the window to display the authentication sheet.
+            
+            Implementation differs between UIKit and SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                In UIKit, return the current ViewController's 
+                view.window.
+                
+                @Code(name: "UIKitContext.swift", file: "02-09-uikit-context.swift")
+            }
+            
+            @Step {
+                In SwiftUI, find the active window 
+                through UIWindowScene.
+                
+                @Code(name: "SwiftUIContext.swift", file: "02-10-swiftui-context.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which protocols must be implemented 
+            to use ASAuthorizationController?
+            
+            @Choice(isCorrect: false) {
+                Only ASAuthorizationControllerDelegate needs to be implemented.
+                
+                @Justification(reaction: "Partially correct.") {
+                    PresentationContextProviding must also be implemented 
+                    for the authentication sheet to display.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ASAuthorizationControllerDelegate and 
+                ASAuthorizationControllerPresentationContextProviding.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Delegate handles results, PresentationContextProviding 
+                    specifies the UI display location.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASAuthorizationAppleIDProviderDelegate.
+                
+                @Justification(reaction: "This protocol doesn't exist.") {
+                    Provider doesn't have a separate delegate.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What error code is generated when the user cancels authentication?
+            
+            @Choice(isCorrect: true) {
+                ASError.Code.canceled
+                
+                @Justification(reaction: "Correct! ✨") {
+                    The .canceled error occurs on cancellation, 
+                    and no error message needs to be displayed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASError.Code.failed
+                
+                @Justification(reaction: "Incorrect.") {
+                    .failed occurs on actual authentication failure.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASError.Code.userCancelled
+                
+                @Justification(reaction: "The error code name is different.") {
+                    The correct name is .canceled.
+                }
+            }
+        }
+    }
+}

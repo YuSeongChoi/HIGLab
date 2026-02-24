@@ -1,0 +1,116 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CKContainer Setup") {
+        Learn how to set up a CloudKit container in your Xcode project
+        and configure iCloud capabilities.
+    }
+    
+    @Section(title: "Xcode Project Setup") {
+        @ContentAndMedia {
+            To use CloudKit, you need to enable iCloud capability in Xcode.
+            An Apple Developer account is required.
+        }
+        @Steps {
+            @Step {
+                Add iCloud capability in project settings.
+                Click + Capability in the Signing & Capabilities tab.
+                @Code(name: "Setup.md", file: "02-01-capability.md")
+            }
+            @Step {
+                Create a CloudKit container ID.
+                By default, it uses the format `iCloud.{bundle-id}`.
+                @Code(name: "Setup.md", file: "02-02-containerid.md")
+            }
+            @Step {
+                Check the Entitlements file.
+                Review the automatically generated CloudKit settings.
+                @Code(name: "App.entitlements", file: "02-03-entitlements.plist")
+            }
+        }
+    }
+    
+    @Section(title: "CKContainer Initialization") {
+        @ContentAndMedia {
+            Access CKContainer from code and get database references.
+        }
+        @Steps {
+            @Step {
+                Access the default container.
+                @Code(name: "CloudKitManager.swift", file: "02-04-defaultcontainer.swift")
+            }
+            @Step {
+                How to access with a specific container ID.
+                Use this when multiple apps share the same container.
+                @Code(name: "CloudKitManager.swift", file: "02-05-customcontainer.swift")
+            }
+            @Step {
+                Get references to the three databases.
+                @Code(name: "CloudKitManager.swift", file: "02-06-databases.swift")
+            }
+            @Step {
+                Add a method to check iCloud account status.
+                @Code(name: "CloudKitManager.swift", file: "02-07-accountstatus.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Custom Zones") {
+        @ContentAndMedia {
+            Using custom zones in Private Database enables more granular data management.
+        }
+        @Steps {
+            @Step {
+                Create a custom CKRecordZone.
+                @Code(name: "CloudKitManager.swift", file: "02-08-customzone.swift")
+            }
+            @Step {
+                Save the zone to the server.
+                @Code(name: "CloudKitManager.swift", file: "02-09-createzone.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the default format for a CloudKit container ID?
+            @Choice(isCorrect: true) {
+                iCloud.{bundle-identifier}
+                @Justification(reaction: "Correct!") {
+                    CloudKit containers follow the iCloud.{bundle-id} format by default.
+                }
+            }
+            @Choice(isCorrect: false) {
+                cloudkit.{bundle-identifier}
+                @Justification(reaction: "Think again.") {
+                    The prefix is iCloud, not cloudkit.
+                }
+            }
+            @Choice(isCorrect: false) {
+                {bundle-identifier}.iCloud
+                @Justification(reaction: "Think again.") {
+                    iCloud should be the prefix.
+                }
+            }
+        }
+        @MultipleChoice {
+            Which database can use custom zones?
+            @Choice(isCorrect: true) {
+                Private Database
+                @Justification(reaction: "Correct!") {
+                    Custom zones can only be created in Private Database.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "Think again.") {
+                    Public Database only uses the default zone.
+                }
+            }
+            @Choice(isCorrect: false) {
+                All databases
+                @Justification(reaction: "Think again.") {
+                    Custom zones are exclusive to Private Database.
+                }
+            }
+        }
+    }
+}

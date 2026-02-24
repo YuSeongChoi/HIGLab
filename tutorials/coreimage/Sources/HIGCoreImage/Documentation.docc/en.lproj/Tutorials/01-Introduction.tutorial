@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to CoreImage") {
+        Understand the core concepts of the CoreImage framework and 
+        how the image processing pipeline works.
+        
+        @Image(source: "coreimage-intro.png", alt: "CoreImage Overview")
+    }
+    
+    @Section(title: "What is CoreImage?") {
+        @ContentAndMedia {
+            CoreImage is a high-performance image processing framework provided by Apple.
+            It enables real-time filtering and analysis using GPU acceleration.
+            
+            - **GPU Acceleration**: Hardware acceleration using Metal and OpenGL
+            - **Lazy Evaluation**: Defers actual processing until the final result is needed
+            - **200+ Filters**: Various built-in filters including color adjustment, blur, distortion
+            
+            @Image(source: "coreimage-architecture.png", alt: "CoreImage Architecture")
+        }
+        
+        @Steps {
+            @Step {
+                Import CoreImage into your project.
+                Available on iOS, macOS, and tvOS.
+                
+                @Code(name: "ImportCoreImage.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Explore the core components of CoreImage.
+                
+                - `CIImage`: Immutable image data representation
+                - `CIFilter`: Image processing algorithm
+                - `CIContext`: Context that performs rendering
+                
+                @Code(name: "CoreImageComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Image Processing Pipeline") {
+        @ContentAndMedia {
+            CoreImage uses Lazy Evaluation.
+            Even when filters are applied, they are not processed immediately;
+            instead, they are processed in an optimized manner when rendered by CIContext.
+            
+            ```
+            Original Image → Filter1 → Filter2 → Filter3 → CIContext → Final Result
+            (CIImage)       (chain)   (chain)   (chain)   (render)    (CGImage/Data)
+            ```
+        }
+        
+        @Steps {
+            @Step {
+                CIImage is an "image recipe", not pixel data.
+                Actual pixels are generated at rendering time.
+                
+                @Code(name: "LazyEvaluation.swift", file: "01-03-lazy.swift")
+            }
+            
+            @Step {
+                Even when applying multiple filters consecutively, no intermediate images are created.
+                All filters are combined into a single operation and processed efficiently.
+                
+                @Code(name: "FilterPipeline.swift", file: "01-04-pipeline.swift")
+            }
+            
+            @Step {
+                Final rendering is handled by CIContext.
+                You can choose between GPU or CPU renderers.
+                
+                @Code(name: "ContextRendering.swift", file: "01-05-rendering.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Relationship with UIImage and CGImage") {
+        @ContentAndMedia {
+            In iOS development, you work with multiple image types.
+            You need to understand the role of each type and how to convert between them.
+            
+            | Type | Role | Mutable |
+            |------|------|---------|
+            | UIImage | For UI display | Immutable |
+            | CGImage | Bitmap data | Immutable |
+            | CIImage | Filter pipeline | Immutable |
+        }
+        
+        @Steps {
+            @Step {
+                How to convert from UIImage to CIImage.
+                The original data is always preserved during conversion.
+                
+                @Code(name: "UIImageToCIImage.swift", file: "01-06-uiimage-to-ciimage.swift")
+            }
+            
+            @Step {
+                Convert back from CIImage to UIImage.
+                You must first create a CGImage through CIContext.
+                
+                @Code(name: "CIImageToUIImage.swift", file: "01-07-ciimage-to-uiimage.swift")
+            }
+            
+            @Step {
+                Consolidate the entire conversion flow.
+                Creating helper methods makes it convenient.
+                
+                @Code(name: "ImageConversion.swift", file: "01-08-conversion.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why does CoreImage use Lazy Evaluation?
+            
+            @Choice(isCorrect: false) {
+                To use more memory
+                
+                @Justification(reaction: "Think again.") {
+                    Lazy evaluation actually reduces memory usage 
+                    by avoiding intermediate image creation.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To combine multiple filters into a single optimized operation
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Through lazy evaluation, multiple filters are combined 
+                    into a single efficient operation at final rendering time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To use only the CPU
+                
+                @Justification(reaction: "Not quite.") {
+                    CoreImage actively utilizes GPU acceleration.
+                    Lazy evaluation helps optimize GPU operations.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which statement correctly describes CIImage?
+            
+            @Choice(isCorrect: true) {
+                It stores an image processing recipe, not pixel data.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    CIImage doesn't store actual pixels;
+                    it contains information about how to generate the image.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's a mutable object that allows direct pixel modification.
+                
+                @Justification(reaction: "Incorrect.") {
+                    CIImage is an immutable object.
+                    Applying a filter creates a new CIImage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can be displayed directly in UIImageView.
+                
+                @Justification(reaction: "Not accurate.") {
+                    To display in UIImageView, you must first convert to UIImage.
+                    Rendering through CIContext is required.
+                }
+            }
+        }
+    }
+}

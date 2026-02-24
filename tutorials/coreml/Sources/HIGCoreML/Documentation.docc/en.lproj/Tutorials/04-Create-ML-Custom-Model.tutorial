@@ -1,0 +1,213 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Creating Custom Models with Create ML") {
+        Use Apple's Create ML app to
+        train your own image classification model.
+    }
+    
+    @Section(title: "Introduction to Create ML") {
+        @ContentAndMedia {
+            Create ML is a machine learning training tool built into macOS.
+            You can create models without code using the GUI,
+            or train programmatically with Swift code.
+        }
+        
+        @Steps {
+            @Step {
+                **Launching Create ML App**
+                
+                Xcode > Open Developer Tool > Create ML
+                or launch directly from the Applications folder.
+                
+                @Code(name: "CreateMLInfo.swift", file: "04-createml-info.swift")
+            }
+            
+            @Step {
+                **Selecting a Template**
+                
+                Select the Image Classification template.
+                Various templates are available including
+                Object Detection, Sound Classification, and more.
+                
+                @Code(name: "Templates.swift", file: "04-templates.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Preparing Training Data") {
+        @ContentAndMedia {
+            The key to machine learning is **data**.
+            Prepare labeled images organized by folder structure.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating Folder Structure**
+                
+                Create folders for each class and organize images.
+                The folder name becomes the label.
+                
+                @Code(name: "FolderStructure.swift", file: "04-folder-structure.swift")
+            }
+            
+            @Step {
+                **Data Quality Checklist**
+                
+                - Minimum 50+ images per class recommended
+                - Include various lighting, angles, backgrounds
+                - Train/Validation 8:2 split
+                - Balanced class distribution
+                
+                @Code(name: "DataQuality.swift", file: "04-data-quality.swift")
+            }
+            
+            @Step {
+                **Using Data Augmentation**
+                
+                Create ML automatically applies data augmentation.
+                Rotation, flip, crop, color transforms help
+                achieve good performance even with limited data.
+                
+                @Code(name: "DataAugmentation.swift", file: "04-augmentation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Training the Model") {
+        @ContentAndMedia {
+            Train the model with prepared data
+            and review the evaluation results.
+        }
+        
+        @Steps {
+            @Step {
+                **Starting Training**
+                
+                Drag the Training Data folder and click the Train button.
+                Training is very fast on Macs with Neural Engine.
+                
+                @Code(name: "TrainingStart.swift", file: "04-training-start.swift")
+            }
+            
+            @Step {
+                **Monitoring Training**
+                
+                Monitor Training/Validation accuracy in real-time.
+                Watch for signs of overfitting.
+                
+                - Training >> Validation: Suspect overfitting
+                - Both low: Insufficient data or model limitations
+                
+                @Code(name: "TrainingMonitor.swift", file: "04-training-monitor.swift")
+            }
+            
+            @Step {
+                **Model Evaluation**
+                
+                Check the Confusion Matrix in the Evaluation tab.
+                Identify which classes are being confused.
+                
+                @Code(name: "ModelEvaluation.swift", file: "04-evaluation.swift")
+            }
+            
+            @Step {
+                **Exporting the Model**
+                
+                Export the .mlmodel file from the Output tab.
+                Add model name, author, and description as metadata.
+                
+                @Code(name: "ModelExport.swift", file: "04-export.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Programmatic Training") {
+        @ContentAndMedia {
+            You can also use Create ML with Swift code.
+            Useful for automated pipelines or macOS apps.
+        }
+        
+        @Steps {
+            @Step {
+                **Importing CreateML Framework**
+                
+                Use the CreateML framework in macOS apps
+                or Swift Playgrounds.
+                
+                @Code(name: "ProgrammaticML.swift", file: "04-programmatic.swift")
+            }
+            
+            @Step {
+                **Training with MLImageClassifier**
+                
+                Train an image classifier with just a few lines of code.
+                
+                @Code(name: "MLImageClassifier.swift", file: "04-ml-classifier.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the recommended minimum number of images per class for image classification in Create ML?
+            
+            @Choice(isCorrect: true) {
+                50 or more
+                
+                @Justification(reaction: "Correct!") {
+                    Create ML uses transfer learning, so training is possible
+                    with relatively few images, but 50+ is recommended.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                10 or more
+                
+                @Justification(reaction: "Not quite") {
+                    10 images is too few. 50+ is recommended.
+                    More data leads to better performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1000 or more
+                
+                @Justification(reaction: "Not quite") {
+                    Create ML uses transfer learning,
+                    so you can start with around 50 images.
+                    Of course, more is better!
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            If Training accuracy is 95% but Validation accuracy is 60%, what does this indicate?
+            
+            @Choice(isCorrect: true) {
+                Overfitting — specialized only on training data
+                
+                @Justification(reaction: "That's right!") {
+                    This gap is a classic sign of overfitting.
+                    More data, data augmentation, or regularization is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Underfitting — model is too simple
+                
+                @Justification(reaction: "Not quite") {
+                    Underfitting occurs when Training accuracy is also low.
+                    Here, Training is high but Validation is low, indicating overfitting.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Normal — performance is good enough
+                
+                @Justification(reaction: "Not quite") {
+                    A 35-point gap is severe overfitting.
+                    Performance on new data will be poor.
+                }
+            }
+        }
+    }
+}

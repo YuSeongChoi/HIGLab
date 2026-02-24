@@ -1,0 +1,227 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Statistics Query (HKStatisticsQuery)") {
+        Use HKStatisticsQuery and HKStatisticsCollectionQuery to
+        efficiently aggregate sums, averages, min/max values of health data.
+    }
+    
+    @Section(title: "HKStatisticsQuery Basics") {
+        @ContentAndMedia {
+            **HKStatisticsQuery** calculates statistics for a specified period at once.
+            It's much more efficient than fetching all samples with HKSampleQuery and summing them.
+        }
+        
+        @Steps {
+            @Step {
+                **Statistics vs Sample Query**
+                
+                SampleQuery: Fetch all individual samples and calculate yourself
+                StatisticsQuery: HealthKit aggregates internally and returns only results
+                
+                It especially handles duplicate source processing automatically.
+                
+                @Code(name: "Comparison.swift", file: "07-comparison.swift")
+            }
+            
+            @Step {
+                **Statistics Options**
+                
+                Specify the desired statistics type with HKStatisticsOptions:
+                - .cumulativeSum: Sum (steps, calories)
+                - .discreteAverage/Min/Max: Average/Min/Max (heart rate, weight)
+                - .mostRecent: Most recent value
+                
+                @Code(name: "StatisticsOptions.swift", file: "07-statistics-options.swift")
+            }
+            
+            @Step {
+                **Today's Step Sum**
+                
+                Get today's total steps with HKStatisticsQuery.
+                Duplicates from multiple sources (Apple Watch, iPhone) are automatically handled.
+                
+                @Code(name: "TodayStepsSum.swift", file: "07-today-steps-sum.swift")
+            }
+            
+            @Step {
+                **Heart Rate Average/Min/Max**
+                
+                Query today's heart rate statistics at once.
+                
+                @Code(name: "HeartRateStats.swift", file: "07-heartrate-stats.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HKStatisticsCollectionQuery") {
+        @ContentAndMedia {
+            **HKStatisticsCollectionQuery** divides a period into intervals and calculates statistics for each.
+            Essential for drawing daily, hourly, or weekly trend charts.
+        }
+        
+        @Steps {
+            @Step {
+                **Define Intervals with DateComponents**
+                
+                Define intervals with anchorDate and intervalComponents.
+                Example: 24-hour intervals based on midnight each day
+                
+                @Code(name: "IntervalDefinition.swift", file: "07-interval-definition.swift")
+            }
+            
+            @Step {
+                **Last 7 Days Steps**
+                
+                Query daily step sums as an array.
+                Can be used directly as chart data.
+                
+                @Code(name: "WeeklySteps.swift", file: "07-weekly-steps.swift")
+            }
+            
+            @Step {
+                **Iterate Results**
+                
+                Use enumerateStatistics to iterate through each interval's statistics.
+                Extract startDate, endDate, and statistical values.
+                
+                @Code(name: "EnumerateStats.swift", file: "07-enumerate-stats.swift")
+            }
+            
+            @Step {
+                **Hourly Statistics**
+                
+                Set intervalComponents to hour: 1
+                to get hourly statistics.
+                
+                @Code(name: "HourlyStats.swift", file: "07-hourly-stats.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Trend Charts") {
+        @ContentAndMedia {
+            Visualize health data trends using Swift Charts.
+        }
+        
+        @Steps {
+            @Step {
+                **Chart Data Model**
+                
+                Define a simple model containing date and value.
+                
+                @Code(name: "ChartData.swift", file: "07-chart-data.swift")
+            }
+            
+            @Step {
+                **Weekly Steps Chart**
+                
+                Display daily steps with Swift Charts BarMark.
+                
+                @Code(name: "WeeklyStepsChart.swift", file: "07-weekly-steps-chart.swift")
+            }
+            
+            @Step {
+                **Heart Rate Range Chart**
+                
+                Display heart rate changes with LineMark and AreaMark.
+                Express min/max range as an area.
+                
+                @Code(name: "HeartRateChart.swift", file: "07-heartrate-chart.swift")
+            }
+            
+            @Step {
+                **HealthManager Integration**
+                
+                Add statistics query methods to HealthManager.
+                
+                @Code(name: "HealthManager.swift", file: "07-health-manager-stats.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What HKStatisticsOptions is appropriate for getting step sum?
+            
+            @Choice(isCorrect: true) {
+                .cumulativeSum
+                
+                @Justification(reaction: "Correct!") {
+                    Steps are cumulative values, so use cumulativeSum.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .discreteAverage
+                
+                @Justification(reaction: "Not quite") {
+                    discreteAverage is suitable for averaging instantaneous values like heart rate.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .mostRecent
+                
+                @Justification(reaction: "Not quite") {
+                    mostRecent is used when only one most recent value is needed.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the main purpose of HKStatisticsCollectionQuery?
+            
+            @Choice(isCorrect: true) {
+                Query interval statistics (daily/hourly) at once
+                
+                @Justification(reaction: "Correct!") {
+                    Essential query for drawing trend charts.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Query multiple data types simultaneously
+                
+                @Justification(reaction: "Not quite") {
+                    It calculates interval statistics for one data type.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Real-time health data streaming
+                
+                @Justification(reaction: "Not quite") {
+                    Use HKObserverQuery for real-time updates.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What advantage does HKStatisticsQuery have over HKSampleQuery?
+            
+            @Choice(isCorrect: true) {
+                Automatically handles duplicate sources and efficient aggregation
+                
+                @Justification(reaction: "Correct!") {
+                    Automatically handles duplicate data from
+                    Apple Watch and iPhone.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can fetch more data
+                
+                @Justification(reaction: "Not quite") {
+                    Statistics returns only aggregated results, so you can't get individual samples.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can be used for all data types
+                
+                @Justification(reaction: "Not quite") {
+                    Primarily used for Quantity types.
+                }
+            }
+        }
+    }
+}

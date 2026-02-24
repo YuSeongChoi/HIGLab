@@ -1,0 +1,165 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Observation Tracking Principles (willSet-based)") {
+        Dive deep into how the Observation framework works internally.
+        Learn the principles of willSet-based tracking and how to use withObservationTracking.
+    }
+    
+    @Section(title: "The Core of Tracking: willSet") {
+        @ContentAndMedia {
+            Observation notifies changes at the **willSet** moment.
+            It notifies observers **just before** the value changes,
+            and observers read the new value in the next RunLoop.
+            
+            This is the same principle as ObservableObject's objectWillChange.
+        }
+        
+        @Steps {
+            @Step {
+                willSet vs didSet - Why willSet?
+                
+                SwiftUI receives notifications **before** changes
+                to compare with the current snapshot and plan animations.
+                
+                @Code(name: "WillSetVsDidSet.swift", file: "04-willset-vs-didset.swift")
+            }
+            
+            @Step {
+                Let's look at how withMutation works.
+                When a property changes, willSet executes, then the value changes, then didSet.
+                
+                @Code(name: "MutationFlow.swift", file: "04-mutation-flow.swift")
+            }
+            
+            @Step {
+                Let's see what happens when SwiftUI executes body.
+                It automatically tracks accessed properties and
+                redraws the view when those properties change.
+                
+                @Code(name: "SwiftUITracking.swift", file: "04-swiftui-tracking.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding withObservationTracking") {
+        @ContentAndMedia {
+            You can use Observation without SwiftUI.
+            Let's detect changes directly with the `withObservationTracking` function.
+        }
+        
+        @Steps {
+            @Step {
+                The basic structure of withObservationTracking.
+                When properties accessed in the apply closure change,
+                the onChange closure is called.
+                
+                @Code(name: "BasicTracking.swift", file: "04-basic-tracking.swift")
+            }
+            
+            @Step {
+                Important: onChange is called only **once**!
+                Re-registration is needed for continuous observation.
+                
+                @Code(name: "ReRegister.swift", file: "04-re-register.swift")
+            }
+            
+            @Step {
+                Practical example: Let's create a custom logging system.
+                A debugging tool that automatically records state changes.
+                
+                @Code(name: "CustomLogging.swift", file: "04-custom-logging.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Adding a Debug Console") {
+        @ContentAndMedia {
+            Let's add a debug console to the CartFlow app
+            that shows state changes in real-time.
+            We'll use withObservationTracking.
+        }
+        
+        @Steps {
+            @Step {
+                Create a DebugStore that records state changes.
+                
+                @Code(name: "DebugStore.swift", file: "04-debug-store.swift")
+            }
+            
+            @Step {
+                Add logic to monitor CartStore changes.
+                
+                @Code(name: "ObserveCart.swift", file: "04-observe-cart.swift")
+            }
+            
+            @Step {
+                Create a debug console view and add it to the app.
+                Wrap with #if DEBUG to show only during development.
+                
+                @Code(name: "DebugConsole.swift", file: "04-debug-console.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why does Observation send notifications at willSet?
+            
+            @Choice(isCorrect: true) {
+                So SwiftUI can compare with the pre-change snapshot and plan animations
+                
+                @Justification(reaction: "Correct!") {
+                    SwiftUI receives willSet notifications, reads the new value in the next RunLoop,
+                    compares with the previous value, and applies appropriate animations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because it's more performant than didSet
+                
+                @Justification(reaction: "Not quite") {
+                    There's no performance difference.
+                    willSet is used to match SwiftUI's rendering pipeline.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To allow canceling value changes
+                
+                @Justification(reaction: "Not quite") {
+                    Observation's willSet is unrelated to change cancellation.
+                    It's for matching notification timing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How many times is withObservationTracking's onChange closure called?
+            
+            @Choice(isCorrect: true) {
+                Once - re-registration is needed
+                
+                @Justification(reaction: "Perfect!") {
+                    onChange is called only once when a change is first detected.
+                    For continuous observation, you must recursively re-register.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Every time a property changes
+                
+                @Justification(reaction: "Not quite") {
+                    No. After one call, the registration is released.
+                    Re-registration is needed for continuous observation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Equal to the number of tracked properties
+                
+                @Justification(reaction: "Not quite") {
+                    It's called only once regardless of the number of properties.
+                }
+            }
+        }
+    }
+}

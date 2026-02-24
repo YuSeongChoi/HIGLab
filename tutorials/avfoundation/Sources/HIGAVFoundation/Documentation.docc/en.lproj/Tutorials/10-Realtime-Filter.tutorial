@@ -1,0 +1,198 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Real-time Filters (CIFilter)") {
+        Apply Core Image filters to real-time camera preview.
+        Implement frame-by-frame processing with AVCaptureVideoDataOutput.
+    }
+    
+    @Section(title: "Video Data Output Setup") {
+        @ContentAndMedia {
+            AVCaptureVideoDataOutput allows access to raw video frames.
+            Intercept each frame to apply filters.
+        }
+        
+        @Steps {
+            @Step {
+                Add AVCaptureVideoDataOutput to the session.
+                Set up delegate queue to receive frames.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-video-data-output.swift")
+            }
+            
+            @Step {
+                Implement AVCaptureVideoDataOutputSampleBufferDelegate.
+                Receive each frame in captureOutput.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-sample-buffer-delegate.swift")
+            }
+            
+            @Step {
+                Convert CMSampleBuffer to CIImage.
+                Convert to a form processable by Core Image.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-buffer-to-ciimage.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying CIFilter") {
+        @ContentAndMedia {
+            Apply various Core Image filters to frames.
+            Implement effects like sepia, black and white, vignette.
+        }
+        
+        @Steps {
+            @Step {
+                Create and configure CIFilter.
+                Create instance with filter name.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-create-filter.swift")
+            }
+            
+            @Step {
+                Apply sepia tone filter.
+                Create vintage effect with CISepiaTone filter.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-sepia-filter.swift")
+            }
+            
+            @Step {
+                Apply black and white filter.
+                Create monochrome effect with CIPhotoEffectMono.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-mono-filter.swift")
+            }
+            
+            @Step {
+                Chain multiple filters.
+                Connect filter output to next filter input.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-chain-filters.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Rendering with Metal") {
+        @ContentAndMedia {
+            Implement GPU-accelerated rendering with Metal.
+            Essential for smooth real-time preview.
+        }
+        
+        @Steps {
+            @Step {
+                Create CIContext with Metal device.
+                Prepare context for GPU acceleration.
+                
+                @Code(name: "FilteredCameraManager.swift", file: "10-metal-context.swift")
+            }
+            
+            @Step {
+                Render filtered image with MTKView.
+                High-performance rendering with Metal-based view.
+                
+                @Code(name: "MetalPreviewView.swift", file: "10-mtkview.swift")
+            }
+            
+            @Step {
+                Render CIImage in draw method.
+                Draw to Metal texture with CIContext.render.
+                
+                @Code(name: "MetalPreviewView.swift", file: "10-render-ciimage.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Filter Selection UI") {
+        @ContentAndMedia {
+            Implement UI for user to select filters.
+            Display filter list with thumbnail previews.
+        }
+        
+        @Steps {
+            @Step {
+                Define filter list.
+                Manage each filter's name and settings as struct.
+                
+                @Code(name: "FilterPreset.swift", file: "10-filter-presets.swift")
+            }
+            
+            @Step {
+                Generate filter thumbnails.
+                Create previews by applying filters to sample images.
+                
+                @Code(name: "FilterPreset.swift", file: "10-filter-thumbnail.swift")
+            }
+            
+            @Step {
+                Implement filter selection picker.
+                Allow horizontal scrolling to select filters.
+                
+                @Code(name: "FilterPickerView.swift", file: "10-filter-picker.swift")
+            }
+            
+            @Step {
+                Apply selected filter in real-time.
+                Immediately reflect in preview when filter changes.
+                
+                @Code(name: "FilteredCameraView.swift", file: "10-apply-selected-filter.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which output class is used to access real-time video frames?
+            
+            @Choice(isCorrect: false) {
+                `AVCapturePhotoOutput`
+                
+                @Justification(reaction: "Think again.") {
+                    AVCapturePhotoOutput is for still image capture.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `AVCaptureVideoDataOutput`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AVCaptureVideoDataOutput allows access to raw video frames.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVCaptureMovieFileOutput`
+                
+                @Justification(reaction: "Think again.") {
+                    AVCaptureMovieFileOutput is for recording to file.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is needed when creating CIContext to GPU-accelerate Core Image filter processing?
+            
+            @Choice(isCorrect: true) {
+                MTLDevice
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Creating Metal-based CIContext with MTLDevice enables GPU acceleration.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CGContext
+                
+                @Justification(reaction: "Think again.") {
+                    CGContext is for CPU-based rendering.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EAGLContext
+                
+                @Justification(reaction: "Think again.") {
+                    EAGLContext is for OpenGL ES; Metal is now recommended.
+                }
+            }
+        }
+    }
+}

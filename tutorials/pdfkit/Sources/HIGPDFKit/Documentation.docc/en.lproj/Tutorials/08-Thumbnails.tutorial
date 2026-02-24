@@ -1,0 +1,224 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Thumbnail Grid") {
+        Implement a thumbnail preview grid of PDF pages 
+        to provide a quick page browsing experience.
+        
+        @Image(source: "thumbnails.png", alt: "Thumbnail Grid")
+    }
+    
+    @Section(title: "Using PDFThumbnailView") {
+        @ContentAndMedia {
+            PDFKit provides the PDFThumbnailView class 
+            to easily implement a thumbnail UI.
+            
+            When linked to PDFView, current page display 
+            and tap-to-navigate are automatically handled.
+        }
+        
+        @Steps {
+            @Step {
+                Add PDFThumbnailView and connect it to PDFView.
+                Set the pdfView property.
+                
+                @Code(name: "SetupThumbnailView.swift", file: "08-01-setup.swift")
+            }
+            
+            @Step {
+                Set thumbnail size and orientation.
+                Adjust thumbnailSize and layoutMode.
+                
+                @Code(name: "ThumbnailSize.swift", file: "08-02-size.swift")
+            }
+            
+            @Step {
+                Customize background color and current page highlight.
+                
+                @Code(name: "ThumbnailAppearance.swift", file: "08-03-appearance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Custom Thumbnail Grid") {
+        @ContentAndMedia {
+            For more control, implement it directly 
+            using UICollectionView or LazyVGrid.
+            
+            Generate thumbnail images with 
+            PDFPage.thumbnail(of:for:).
+        }
+        
+        @Steps {
+            @Step {
+                Generate thumbnail images from PDFPage.
+                Specify the desired size to get optimized images.
+                
+                @Code(name: "GenerateThumbnail.swift", file: "08-04-generate.swift")
+            }
+            
+            @Step {
+                Implement a thumbnail grid with UICollectionView.
+                Apply cell reuse and async image loading.
+                
+                @Code(name: "CollectionViewGrid.swift", file: "08-05-collection.swift")
+            }
+            
+            @Step {
+                Implement a thumbnail grid with SwiftUI's LazyVGrid.
+                Create the same functionality with a more declarative approach.
+                
+                @Code(name: "LazyVGridThumbnails.swift", file: "08-06-lazygrid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Thumbnail Caching") {
+        @ContentAndMedia {
+            Thumbnail generation is an expensive operation.
+            Improve performance with caching.
+            
+            Use NSCache for memory-efficient management.
+        }
+        
+        @Steps {
+            @Step {
+                Cache thumbnail images with NSCache.
+                Use the page index as the key.
+                
+                @Code(name: "ThumbnailCache.swift", file: "08-07-cache.swift")
+            }
+            
+            @Step {
+                Pre-generate thumbnails in the background.
+                Prepare images ahead of user scrolling.
+                
+                @Code(name: "PrefetchThumbnails.swift", file: "08-08-prefetch.swift")
+            }
+            
+            @Step {
+                Clean up the cache on memory warnings.
+                Handle in didReceiveMemoryWarning.
+                
+                @Code(name: "CacheCleanup.swift", file: "08-09-cleanup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Interaction") {
+        @ContentAndMedia {
+            Navigate to a page by tapping its thumbnail 
+            and visually indicate the current page.
+        }
+        
+        @Steps {
+            @Step {
+                Navigate to a page when its thumbnail is tapped.
+                Call PDFView.go(to:) method.
+                
+                @Code(name: "ThumbnailTap.swift", file: "08-10-tap.swift")
+            }
+            
+            @Step {
+                Display a border on the current page thumbnail.
+                Update according to page change notifications.
+                
+                @Code(name: "CurrentPageIndicator.swift", file: "08-11-indicator.swift")
+            }
+            
+            @Step {
+                Reorder pages with drag and drop.
+                Implement UICollectionViewDragDelegate.
+                
+                @Code(name: "DragReorder.swift", file: "08-12-drag.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the built-in thumbnail view class provided by PDFKit?
+            
+            @Choice(isCorrect: true) {
+                PDFThumbnailView
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Linking PDFThumbnailView to PDFView 
+                    automatically implements thumbnail navigation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPageThumbnail
+                
+                @Justification(reaction: "There is no such class.") {
+                    Check the thumbnail-related class in PDFKit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFPreviewView
+                
+                @Justification(reaction: "Not quite.") {
+                    There is a dedicated class for thumbnails, not previews.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which method generates a thumbnail image from PDFPage?
+            
+            @Choice(isCorrect: false) {
+                createThumbnail(size:)
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the image generation API in PDFPage.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                thumbnail(of:for:)
+                
+                @Justification(reaction: "That's right! ✨") {
+                    Use thumbnail(of:for:) method to generate 
+                    thumbnail images of the desired size.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                image(size:)
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact method name and parameters.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property sets the scroll direction of PDFThumbnailView?
+            
+            @Choice(isCorrect: true) {
+                layoutMode
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Set layoutMode to .horizontal or .vertical 
+                    to specify the scroll direction.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                scrollDirection
+                
+                @Justification(reaction: "There is no such property.") {
+                    Check the layout-related properties in PDFThumbnailView.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                orientation
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the terminology used in PDFKit.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,237 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Providing Prompts") {
+        Learn how to provide various prompts and concepts 
+        using ImagePlaygroundConcept.
+        
+        @Image(source: "prompts-intro.png", alt: "Providing Prompts")
+    }
+    
+    @Section(title: "Understanding ImagePlaygroundConcept") {
+        @ContentAndMedia {
+            `ImagePlaygroundConcept` is a type that represents 
+            ideas or concepts for image generation.
+            
+            There are three main concept types:
+            
+            - **text**: Free-form text descriptions
+            - **extracted**: Concepts extracted from longer text
+            - **person**: Concepts based on a person's face image
+            
+            @Image(source: "concept-types.png", alt: "Concept Types")
+        }
+        
+        @Steps {
+            @Step {
+                Create the most basic text concept.
+                Describe the desired image as a string.
+                
+                @Code(name: "TextConcept.swift", file: "03-01-text-concept.swift")
+            }
+            
+            @Step {
+                You can pass multiple concepts as an array.
+                The concepts are combined and reflected in the final image.
+                
+                @Code(name: "MultipleConcepts.swift", file: "03-02-multiple-concepts.swift")
+            }
+            
+            @Step {
+                Pass initial concepts to the sheet through the `concepts` parameter.
+                Users can modify or add to these as a starting point.
+                
+                @Code(name: "ConceptsParameter.swift", file: "03-03-concepts-param.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Text Extraction (Extracted)") {
+        @ContentAndMedia {
+            The `extracted(from:title:)` concept automatically extracts 
+            content suitable for image generation from longer text.
+            
+            This feature is useful in cases like:
+            - Generating images based on note content in a notes app
+            - Visualizing conversation content in a messaging app
+            - Creating illustrations for document content
+            
+            Apple Intelligence analyzes the text to extract 
+            key concepts.
+        }
+        
+        @Steps {
+            @Step {
+                The `extracted` concept takes source text and an optional title.
+                The title helps convey context more clearly.
+                
+                @Code(name: "ExtractedConcept.swift", file: "03-04-extracted.swift")
+            }
+            
+            @Step {
+                Here's a real-world usage example.
+                Generate images based on user's note content.
+                
+                @Code(name: "NoteAppExample.swift", file: "03-05-note-example.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Person Concept") {
+        @ContentAndMedia {
+            You can include people from the Photos app's 
+            People album in images.
+            
+            **Important Restrictions:**
+            - Only people the user directly selects from the People album can be used
+            - Programmatic injection of arbitrary faces is not possible
+            - Strictly limited for privacy protection
+            
+            This is Apple's intentional design to prevent 
+            deepfakes and unauthorized use.
+        }
+        
+        @Steps {
+            @Step {
+                The People selection option is automatically provided 
+                in the sheet for user selection.
+                
+                @Code(name: "PersonConcept.swift", file: "03-06-person.swift")
+            }
+            
+            @Step {
+                You can combine text concepts with person concepts.
+                Create creative images like 
+                "[selected person] dressed as an astronaut."
+                
+                @Code(name: "CombinedConcepts.swift", file: "03-07-combined.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing Effective Prompts") {
+        @ContentAndMedia {
+            Good prompts include clear and specific descriptions.
+            
+            **Recommendations:**
+            - Clearly describe the subject (What is there?)
+            - Include style or mood (What's the feeling?)
+            - Describe the background or environment (Where is it?)
+            
+            **Things to Avoid:**
+            - Overly abstract descriptions
+            - Negative instructions ("not having ~")
+            - Mentioning copyrighted characters or brands
+        }
+        
+        @Steps {
+            @Step {
+                Here are examples of specific, visual prompts.
+                Describe colors, environment, and mood together.
+                
+                @Code(name: "GoodPrompts.swift", file: "03-08-good-prompts.swift")
+            }
+            
+            @Step {
+                Dynamically generate prompts that fit your app's context.
+                Provide personalized suggestions based on user data.
+                
+                @Code(name: "DynamicPrompts.swift", file: "03-09-dynamic-prompts.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When is the 'extracted' type of ImagePlaygroundConcept 
+            most useful?
+            
+            @Choice(isCorrect: true) {
+                When generating images based on long text content
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    `extracted` automatically extracts key concepts 
+                    from long texts like notes, messages, and documents 
+                    to use for image generation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When extracting text from images
+                
+                @Justification(reaction: "Incorrect.") {
+                    `extracted` extracts concepts from text,
+                    not OCR to extract text from images.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When rendering text in a specific font style
+                
+                @Justification(reaction: "Not quite.") {
+                    ImagePlayground is a framework for image generation,
+                    not text rendering.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why can't Person concepts be injected programmatically 
+            in ImagePlayground?
+            
+            @Choice(isCorrect: false) {
+                Due to technical limitations in facial recognition
+                
+                @Justification(reaction: "Incorrect.") {
+                    It's technically possible, but Apple 
+                    intentionally restricted it.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To prevent deepfake misuse and privacy violations
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Restricting usage to only user-selected people 
+                    prevents unauthorized image generation and deepfake abuse.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Due to photo library access permission issues
+                
+                @Justification(reaction: "Not quite.") {
+                    It's not a permission issue but an ethical 
+                    design decision.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you avoid when writing effective prompts?
+            
+            @Choice(isCorrect: false) {
+                Describing colors and environment specifically
+                
+                @Justification(reaction: "This is actually recommended!") {
+                    Specific visual descriptions create better results.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Mentioning copyrighted characters or brands
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Copyrighted content can cause legal issues 
+                    and should be avoided.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Describing mood or style together
+                
+                @Justification(reaction: "This is actually good!") {
+                    Mood descriptions help achieve the desired results.
+                }
+            }
+        }
+    }
+}

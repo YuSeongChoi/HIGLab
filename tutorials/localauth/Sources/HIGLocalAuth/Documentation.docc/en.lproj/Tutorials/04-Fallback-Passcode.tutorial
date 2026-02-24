@@ -1,0 +1,178 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Fallback Handling (Passcode)") {
+        Learn how to use passcode as an alternative authentication method
+        when biometric authentication fails or is unavailable.
+    }
+    
+    @Section(title: "Situations Requiring Fallback") {
+        @ContentAndMedia {
+            Biometric authentication alone cannot cover all situations.
+            An appropriate fallback strategy is needed for user experience.
+        }
+        
+        @Steps {
+            @Step {
+                **Cases Requiring Fallback**
+                
+                - Exceeded biometric authentication failure count (lockout)
+                - After biometric data change (new face/fingerprint registration)
+                - Right after device restart
+                - After 48+ hours of inactivity
+                
+                @Code(name: "FallbackCases.swift", file: "04-fallback-cases.swift")
+            }
+            
+            @Step {
+                **LAError.biometryLockout**
+                
+                This error occurs when Face ID/Touch ID attempt limit is exceeded.
+                The lockout must be cleared with passcode.
+                
+                @Code(name: "Lockout.swift", file: "04-lockout.swift")
+            }
+            
+            @Step {
+                **LAError.biometryNotAvailable**
+                
+                Occurs when the device doesn't support biometric authentication
+                or there's a hardware problem.
+                
+                @Code(name: "NotAvailable.swift", file: "04-not-available.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using System Passcode Fallback") {
+        @ContentAndMedia {
+            Using the .deviceOwnerAuthentication policy,
+            the system automatically handles passcode fallback.
+        }
+        
+        @Steps {
+            @Step {
+                **Policy Selection Strategy**
+                
+                Choose policy considering security level and user convenience.
+                Financial apps use biometrics only, memo apps allow fallback, etc.
+                
+                @Code(name: "PolicyStrategy.swift", file: "04-policy-strategy.swift")
+            }
+            
+            @Step {
+                **Using System Fallback UI**
+                
+                When using deviceOwnerAuthentication,
+                passcode entry UI is automatically displayed after biometric failure.
+                
+                @Code(name: "SystemFallback.swift", file: "04-system-fallback.swift")
+            }
+            
+            @Step {
+                **Customizing Fallback Button**
+                
+                Change the "Enter Password" button text with localizedFallbackTitle.
+                Set it to wording appropriate for your app.
+                
+                @Code(name: "FallbackButton.swift", file: "04-fallback-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Custom Fallback") {
+        @ContentAndMedia {
+            If you want to use a separate PIN or pattern within the app,
+            you can implement custom fallback logic.
+        }
+        
+        @Steps {
+            @Step {
+                **App's Own PIN Code**
+                
+                You can use an app-specific PIN instead of system passcode.
+                In this case, separate keychain storage and validation logic is needed.
+                
+                @Code(name: "CustomPIN.swift", file: "04-custom-pin.swift")
+            }
+            
+            @Step {
+                **Fallback Screen Transition Logic**
+                
+                Transition to custom PIN entry screen when biometric auth fails.
+                
+                @Code(name: "FallbackNavigation.swift", file: "04-fallback-navigation.swift")
+            }
+            
+            @Step {
+                **PINEntryView Implementation**
+                
+                Implement a clean PIN entry UI with SwiftUI.
+                
+                @Code(name: "PINEntryView.swift", file: "04-pin-entry-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            In what situation does LAError.biometryLockout occur?
+            
+            @Choice(isCorrect: true) {
+                When biometric authentication attempt limit is exceeded
+                
+                @Justification(reaction: "Correct!") {
+                    Face ID locks after 5 failures, Touch ID after 5 failures.
+                    The lockout must be cleared with passcode to use biometrics again.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When the device doesn't support biometric authentication
+                
+                @Justification(reaction: "Not quite") {
+                    That case is biometryNotAvailable error.
+                    lockout occurs when attempt count is exceeded.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When biometric data is not enrolled
+                
+                @Justification(reaction: "Not quite") {
+                    That case is biometryNotEnrolled error.
+                    lockout occurs when authentication failure count is exceeded.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the advantage of .deviceOwnerAuthentication policy?
+            
+            @Choice(isCorrect: true) {
+                Automatic passcode fallback UI is provided when biometrics fail
+                
+                @Justification(reaction: "Correct!") {
+                    Since the system handles fallback logic,
+                    developers don't need to implement separate UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Biometric authentication is faster
+                
+                @Justification(reaction: "Not quite") {
+                    Policy difference doesn't affect speed.
+                    The difference is whether fallback is allowed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No error occurs when authentication fails
+                
+                @Justification(reaction: "Not quite") {
+                    If fallback also fails, an error still occurs.
+                    Fallback just provides an additional chance.
+                }
+            }
+        }
+    }
+}

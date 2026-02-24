@@ -1,0 +1,70 @@
+@Tutorial(time: 25) {
+    @Intro(title: "World Map Save and Load") {
+        Save and restore AR session spatial mapping data to provide persistent AR experiences.
+    }
+    
+    @Section(title: "Saving World Map") {
+        @ContentAndMedia {
+            ARWorldMap contains detected feature points, anchors, and environment information, allowing you to restore an AR session later at the same location.
+        }
+        @Steps {
+            @Step {
+                Check the world map status of the current session.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping.swift")
+            }
+            @Step {
+                Get the world map asynchronously from ARSession.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-02.swift")
+            }
+            @Step {
+                Archive and save ARWorldMap to a file.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Restoring World Map") {
+        @ContentAndMedia {
+            Load a saved world map to reconstruct the space from a previous AR session.
+        }
+        @Steps {
+            @Step {
+                Unarchive ARWorldMap from the saved file.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-04.swift")
+            }
+            @Step {
+                Set initialWorldMap and start the session.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-05.swift")
+            }
+            @Step {
+                Monitor re-localization status.
+                @Code(name: "WorldMapping.swift", file: "10-worldmapping-06.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What ARFrame.WorldMappingStatus indicates that the world map is suitable for saving?
+            
+            @Choice(isCorrect: false) {
+                `.notAvailable`
+                @Justification(reaction: "Think again.") {
+                    In this state, the world map cannot be retrieved.
+                }
+            }
+            @Choice(isCorrect: false) {
+                `.limited`
+                @Justification(reaction: "Think again.") {
+                    Only limited data has been collected, so reliability is low.
+                }
+            }
+            @Choice(isCorrect: true) {
+                `.mapped`
+                @Justification(reaction: "Correct! 🎉") {
+                    The `.mapped` state indicates that sufficient spatial data has been collected and is suitable for saving. `.extending` is also usable.
+                }
+            }
+        }
+    }
+}

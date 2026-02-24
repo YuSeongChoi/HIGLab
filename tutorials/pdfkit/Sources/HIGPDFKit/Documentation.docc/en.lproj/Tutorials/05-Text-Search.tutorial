@@ -1,0 +1,225 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Text Search") {
+        Implement text search within PDF documents, 
+        highlight results, and navigate between them.
+        
+        @Image(source: "text-search.png", alt: "Text Search")
+    }
+    
+    @Section(title: "PDFDocument Search API") {
+        @ContentAndMedia {
+            PDFDocument supports text search with the findString method.
+            
+            Search is performed asynchronously, and results are delivered 
+            via delegate or Notification.
+            
+            - `findString(_:withOptions:)`: Start asynchronous search
+            - `cancelFindString()`: Cancel search
+        }
+        
+        @Steps {
+            @Step {
+                Start a basic text search.
+                Set whether to match case in search options.
+                
+                @Code(name: "BasicSearch.swift", file: "05-01-basic-search.swift")
+            }
+            
+            @Step {
+                Implement PDFDocumentDelegate to receive search results.
+                The didMatchString method is called for each result.
+                
+                @Code(name: "SearchDelegate.swift", file: "05-02-delegate.swift")
+            }
+            
+            @Step {
+                Detect search completion.
+                Use the didFinishFind delegate method or 
+                PDFDocumentDidEndFind notification.
+                
+                @Code(name: "SearchComplete.swift", file: "05-03-complete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Search Results") {
+        @ContentAndMedia {
+            Search results are returned as PDFSelection objects.
+            
+            PDFSelection represents a text range within a document 
+            and can be highlighted or navigated to.
+        }
+        
+        @Steps {
+            @Step {
+                Store search results as a list.
+                Display the text and page information of each PDFSelection.
+                
+                @Code(name: "SearchResults.swift", file: "05-04-results.swift")
+            }
+            
+            @Step {
+                Navigate to a selected search result.
+                Combine setCurrentSelection and go(to:).
+                
+                @Code(name: "GoToResult.swift", file: "05-05-go-to-result.swift")
+            }
+            
+            @Step {
+                Highlight the currently selected result.
+                Specify the highlight color with PDFSelection.color.
+                
+                @Code(name: "HighlightResult.swift", file: "05-06-highlight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Search UI") {
+        @ContentAndMedia {
+            Build a complete search UI with search bar, 
+            result count, and previous/next result buttons.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a search bar and result count display.
+                Show a loading indicator while searching.
+                
+                @Code(name: "SearchBar.swift", file: "05-07-search-bar.swift")
+            }
+            
+            @Step {
+                Add buttons to navigate to previous/next results.
+                Track the current result index.
+                
+                @Code(name: "NavigateResults.swift", file: "05-08-navigate.swift")
+            }
+            
+            @Step {
+                Implement live search (search while typing).
+                Optimize performance with debounce.
+                
+                @Code(name: "LiveSearch.swift", file: "05-09-live-search.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced Search Options") {
+        @ContentAndMedia {
+            Provide various search options such as 
+            case sensitivity, whole word search, regular expressions, etc.
+        }
+        
+        @Steps {
+            @Step {
+                Configure search options using NSString.CompareOptions.
+                Combine caseInsensitive, diacriticInsensitive, etc.
+                
+                @Code(name: "SearchOptions.swift", file: "05-10-options.swift")
+            }
+            
+            @Step {
+                Limit the search scope.
+                Search only the current page or a specific page range.
+                
+                @Code(name: "SearchScope.swift", file: "05-11-scope.swift")
+            }
+            
+            @Step {
+                Implement multi-keyword search.
+                Highlight each keyword with a different color.
+                
+                @Code(name: "MultiKeyword.swift", file: "05-12-multi-keyword.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which method starts text search in PDFDocument?
+            
+            @Choice(isCorrect: true) {
+                findString(_:withOptions:)
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    The findString method starts an asynchronous search, 
+                    and results are received via delegate or notification.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                search(for:)
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the PDFDocument search API name.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                findText(_:)
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the exact method name and parameters.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which PDFKit class represents a search result?
+            
+            @Choice(isCorrect: false) {
+                PDFSearchResult
+                
+                @Justification(reaction: "There is no such class.") {
+                    Search results are represented by a different class.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFSelection
+                
+                @Justification(reaction: "That's right! ✨") {
+                    PDFSelection represents a text range within a document 
+                    and is used for both search results and user selections.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFMatch
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the class name used in PDFKit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the Notification name for detecting search completion?
+            
+            @Choice(isCorrect: false) {
+                PDFDocumentSearchFinished
+                
+                @Justification(reaction: "Not quite.") {
+                    Check the PDFKit notification naming convention.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PDFDocumentDidEndFind
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    PDFDocumentDidEndFind notification is sent 
+                    when search completes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFSearchComplete
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact Notification name.
+                }
+            }
+        }
+    }
+}

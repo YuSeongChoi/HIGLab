@@ -1,0 +1,162 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Using @ObservationIgnored") {
+        Learn how to exclude specific properties from observation.
+        Efficiently manage caches, temporary data, and heavy computation results.
+    }
+    
+    @Section(title: "@ObservationIgnored Basics") {
+        @ContentAndMedia {
+            @ObservationIgnored completely excludes a property from observation.
+            Changes won't cause view updates.
+            
+            This is useful for performance optimization and intentional update prevention.
+        }
+        
+        @Steps {
+            @Step {
+                Basic usage.
+                Add @ObservationIgnored before the property.
+                
+                @Code(name: "IgnoredBasic.swift", file: "07-ignored-basic.swift")
+            }
+            
+            @Step {
+                **When should you use it?**
+                It's appropriate for internal state that doesn't need view updates.
+                
+                @Code(name: "WhenToUse.swift", file: "07-when-to-use.swift")
+            }
+            
+            @Step {
+                Caution: Indiscriminate use creates bugs!
+                Carefully judge whether view updates are really unnecessary.
+                
+                @Code(name: "IgnoredCaution.swift", file: "07-ignored-caution.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Practical Usage Patterns") {
+        @ContentAndMedia {
+            Let's look at practical use cases for @ObservationIgnored.
+            Useful for caches, dependency injection, debug info, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Pattern 1**: Cache management
+                Cache computed results without triggering view updates.
+                
+                @Code(name: "CachePattern.swift", file: "07-cache-pattern.swift")
+            }
+            
+            @Step {
+                **Pattern 2**: Dependency injection
+                Store service objects that don't need observation.
+                
+                @Code(name: "DependencyInjection.swift", file: "07-dependency-injection.swift")
+            }
+            
+            @Step {
+                **Pattern 3**: Debug and analytics
+                Separate development/analytics purpose data from views.
+                
+                @Code(name: "DebugData.swift", file: "07-debug-data.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Performance Optimization") {
+        @ContentAndMedia {
+            Apply @ObservationIgnored to the CartFlow app
+            to prevent unnecessary view updates.
+        }
+        
+        @Steps {
+            @Step {
+                Add a price calculation cache.
+                Frequently accessed but doesn't need view updates.
+                
+                @Code(name: "PriceCache.swift", file: "07-price-cache.swift")
+            }
+            
+            @Step {
+                Add analytics data tracking.
+                Record user behavior but don't affect the UI.
+                
+                @Code(name: "AnalyticsTracking.swift", file: "07-analytics-tracking.swift")
+            }
+            
+            @Step {
+                Inject network service dependency.
+                Service objects don't need to redraw views when changed.
+                
+                @Code(name: "ServiceInjection.swift", file: "07-service-injection.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When is @ObservationIgnored appropriate to use?
+            
+            @Choice(isCorrect: true) {
+                Cache data or internal state not displayed in views
+                
+                @Justification(reaction: "Correct!") {
+                    Good for caches, analytics data, service dependencies -
+                    data unrelated to UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All frequently changing properties
+                
+                @Justification(reaction: "Not quite") {
+                    Even if it changes frequently, if it's displayed in views,
+                    you shouldn't use @ObservationIgnored.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use as much as possible for performance optimization
+                
+                @Justification(reaction: "Not quite") {
+                    Indiscriminate use creates bugs where views don't update.
+                    Judge carefully.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when a property with @ObservationIgnored changes?
+            
+            @Choice(isCorrect: true) {
+                Views are not re-rendered
+                
+                @Justification(reaction: "Perfect!") {
+                    @ObservationIgnored completely excludes the property
+                    from the observation system, so no change notifications are sent.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Views are updated like normal properties
+                
+                @Justification(reaction: "Not quite") {
+                    No. Changes to @ObservationIgnored properties
+                    are not notified to the observation system.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An error occurs
+                
+                @Justification(reaction: "Not quite") {
+                    It works normally without errors.
+                    View updates just don't happen.
+                }
+            }
+        }
+    }
+}

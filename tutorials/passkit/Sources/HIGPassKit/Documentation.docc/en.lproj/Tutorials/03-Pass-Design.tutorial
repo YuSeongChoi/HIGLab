@@ -1,0 +1,211 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Pass Design (pass.json)") {
+        Create a pass.json file to define the appearance
+        and data of a membership card.
+        
+        @Image(source: "pass-design.png", alt: "Pass Design")
+    }
+    
+    @Section(title: "Basic pass.json Structure") {
+        @ContentAndMedia {
+            pass.json contains all pass information.
+            Required and optional keys must be properly configured.
+            
+            **Required keys:**
+            - `formatVersion`: Always 1
+            - `passTypeIdentifier`: ID registered in developer portal
+            - `serialNumber`: Unique pass identifier
+            - `teamIdentifier`: Developer team ID
+            - `organizationName`: Organization name
+            - `description`: Pass description (for accessibility)
+        }
+        
+        @Steps {
+            @Step {
+                Write the basic pass.json structure for a membership card.
+                Define fields under the storeCard key.
+                
+                @Code(name: "BasicPassJson.swift", file: "03-01-basic-pass.swift")
+            }
+            
+            @Step {
+                Set the pass color theme.
+                Use colors matching brand identity.
+                
+                @Code(name: "PassColors.swift", file: "03-02-colors.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Configuring Membership Card Fields") {
+        @ContentAndMedia {
+            Configure necessary information for membership cards as fields.
+            
+            - **Member Number**: Also displayed as barcode
+            - **Tier**: Gold, Silver, Bronze, etc.
+            - **Points**: Accumulated point balance
+            - **Join Date**: Membership enrollment date
+        }
+        
+        @Steps {
+            @Step {
+                Place member name in primaryFields.
+                Displayed in the most prominent position.
+                
+                @Code(name: "PrimaryFields.swift", file: "03-03-primary-fields.swift")
+            }
+            
+            @Step {
+                Display points and tier in secondaryFields.
+                Suitable for updatable dynamic information.
+                
+                @Code(name: "SecondaryFields.swift", file: "03-04-secondary-fields.swift")
+            }
+            
+            @Step {
+                Add join date and expiration in auxiliaryFields.
+                Date formats are automatically localized.
+                
+                @Code(name: "AuxiliaryFields.swift", file: "03-05-auxiliary-fields.swift")
+            }
+            
+            @Step {
+                Include terms, customer service info, etc. in backFields.
+                Displayed on the back of the pass with no length limit.
+                
+                @Code(name: "BackFields.swift", file: "03-06-back-fields.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Barcode Configuration") {
+        @ContentAndMedia {
+            Barcodes are used to scan passes at stores.
+            Encoding the member number enables quick lookup.
+            
+            QR codes are most widely supported,
+            and PDF417 or Code128 can be added as fallbacks.
+        }
+        
+        @Steps {
+            @Step {
+                Define barcode information in the barcodes array.
+                The first item is used as the default barcode.
+                
+                @Code(name: "BarcodeConfig.swift", file: "03-07-barcode-config.swift")
+            }
+            
+            @Step {
+                Set text to display below the barcode.
+                Display member number in human-readable form.
+                
+                @Code(name: "AltText.swift", file: "03-08-alt-text.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Location and Time-Based Notifications") {
+        @ContentAndMedia {
+            Passes can display notifications at specific locations or times.
+            The pass automatically appears when arriving near a store.
+            
+            - **locations**: Up to 10 location coordinates
+            - **relevantDate**: Valid date/time
+            - **maxDistance**: Notification radius (meters)
+        }
+        
+        @Steps {
+            @Step {
+                Add store locations to the locations array.
+                Include latitude, longitude, and relevantText.
+                
+                @Code(name: "LocationSetup.swift", file: "03-09-locations.swift")
+            }
+            
+            @Step {
+                Set relevant date to provide notifications at appropriate times.
+                Specify dates in ISO 8601 format.
+                
+                @Code(name: "RelevantDate.swift", file: "03-10-relevant-date.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complete pass.json") {
+        @ContentAndMedia {
+            Combine all elements learned so far
+            to write a complete membership card pass.json.
+        }
+        
+        @Steps {
+            @Step {
+                The final pass.json including all fields and settings.
+                Based on this file, create the actual pass.
+                
+                @Code(name: "CompletePassJson.swift", file: "03-11-complete-pass.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which is NOT a required key in pass.json?
+            
+            @Choice(isCorrect: false) {
+                passTypeIdentifier
+                
+                @Justification(reaction: "Check again.") {
+                    passTypeIdentifier is a required key that identifies the pass.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                teamIdentifier
+                
+                @Justification(reaction: "Not quite.") {
+                    teamIdentifier is a required key that identifies the developer.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                locations
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    locations is an optional key
+                    for location-based notifications.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which field group is displayed in the most prominent position on the pass?
+            
+            @Choice(isCorrect: true) {
+                primaryFields
+                
+                @Justification(reaction: "Correct! ✨") {
+                    primaryFields is displayed large
+                    in the main area of the pass.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                headerFields
+                
+                @Justification(reaction: "Incorrect.") {
+                    headerFields is displayed small at the top right,
+                    mainly used for balance or points.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                backFields
+                
+                @Justification(reaction: "Think again.") {
+                    backFields is displayed on the back of the pass
+                    and not visible by default.
+                }
+            }
+        }
+    }
+}

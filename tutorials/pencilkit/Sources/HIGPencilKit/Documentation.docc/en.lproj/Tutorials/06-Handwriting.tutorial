@@ -1,0 +1,199 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Handwriting Recognition") {
+        Learn how to analyze PencilKit strokes 
+        to recognize handwriting as text.
+        
+        @Image(source: "handwriting.png", alt: "Handwriting Recognition")
+    }
+    
+    @Section(title: "Integrating with Vision Framework") {
+        @ContentAndMedia {
+            Apple's Vision framework provides powerful 
+            text recognition (OCR) capabilities.
+            
+            Convert PKDrawing to an image and extract text 
+            using VNRecognizeTextRequest.
+            
+            - **Korean** support (iOS 16+)
+            - **Real-time recognition** capable
+            - **High accuracy**
+            
+            @Image(source: "vision-ocr.png", alt: "Vision OCR Pipeline")
+        }
+        
+        @Steps {
+            @Step {
+                Import the Vision framework and 
+                prepare a text recognition request.
+                
+                @Code(name: "VisionSetup.swift", file: "06-01-vision-setup.swift")
+            }
+            
+            @Step {
+                Convert PKDrawing to an image and 
+                pass it to the Vision request.
+                
+                @Code(name: "DrawingToVision.swift", file: "06-02-drawing-to-vision.swift")
+            }
+            
+            @Step {
+                Execute VNRecognizeTextRequest and 
+                extract the recognized text.
+                
+                @Code(name: "TextRecognition.swift", file: "06-03-text-recognition.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Korean Handwriting Recognition") {
+        @ContentAndMedia {
+            Korean handwriting recognition is supported starting from iOS 16.
+            Add "ko-KR" to recognitionLanguages.
+            
+            Multi-language recognition is also possible,
+            specifying language priority as an array.
+        }
+        
+        @Steps {
+            @Step {
+                Set Korean as the recognition language.
+                Automatic language detection is also possible.
+                
+                @Code(name: "KoreanRecognition.swift", file: "06-04-korean.swift")
+            }
+            
+            @Step {
+                Configure to recognize multiple languages simultaneously.
+                Recognize Korean, English, and Japanese together.
+                
+                @Code(name: "MultiLanguage.swift", file: "06-05-multi-lang.swift")
+            }
+            
+            @Step {
+                Configure options to improve recognition accuracy.
+                Understand the difference between accurate vs fast modes.
+                
+                @Code(name: "AccuracyOptions.swift", file: "06-06-accuracy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Handwriting Recognition") {
+        @ContentAndMedia {
+            You can recognize text in real-time 
+            whenever drawing is completed.
+            
+            Apply debouncing for performance and 
+            process in a background thread.
+        }
+        
+        @Steps {
+            @Step {
+                Detect drawing changes in 
+                PKCanvasViewDelegate.
+                
+                @Code(name: "RealtimeDetection.swift", file: "06-07-realtime.swift")
+            }
+            
+            @Step {
+                Apply debouncing to prevent 
+                excessive recognition requests.
+                
+                @Code(name: "Debounce.swift", file: "06-08-debounce.swift")
+            }
+            
+            @Step {
+                Display recognition results in the UI in real-time.
+                Also show the recognition in-progress state.
+                
+                @Code(name: "RealtimeUI.swift", file: "06-09-realtime-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Formula Recognition") {
+        @ContentAndMedia {
+            Recognizing mathematical notation requires separate handling.
+            Vision's default OCR is limited for formulas.
+            
+            Third-party libraries or 
+            ML models can be utilized.
+        }
+        
+        @Steps {
+            @Step {
+                Implement basic number and operator recognition.
+                Simple arithmetic can be handled with Vision.
+                
+                @Code(name: "BasicMath.swift", file: "06-10-basic-math.swift")
+            }
+            
+            @Step {
+                Calculate recognized formulas and display results.
+                Utilize NSExpression.
+                
+                @Code(name: "MathCalculation.swift", file: "06-11-math-calc.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the minimum iOS version required to recognize Korean handwriting with the Vision framework?
+            
+            @Choice(isCorrect: false) {
+                iOS 13
+                
+                @Justification(reaction: "No.") {
+                    iOS 13 only supports limited languages, mainly English.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 15
+                
+                @Justification(reaction: "A bit higher.") {
+                    Korean was not yet supported in iOS 15.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                iOS 16
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Korean (ko-KR) handwriting recognition was added in iOS 16.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the difference between .accurate and .fast in VNRecognizeTextRequest's recognitionLevel?
+            
+            @Choice(isCorrect: true) {
+                .accurate is more precise but slower, .fast is faster but less accurate
+                
+                @Justification(reaction: "Correct! ✨") {
+                    .accurate is neural network-based for precision,
+                    .fast uses simpler algorithms for speed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .accurate supports more languages
+                
+                @Justification(reaction: "No.") {
+                    Supported languages are the same.
+                    It's a trade-off between speed and accuracy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                There's no difference
+                
+                @Justification(reaction: "Incorrect.") {
+                    The two modes have clear differences in performance and accuracy.
+                }
+            }
+        }
+    }
+}

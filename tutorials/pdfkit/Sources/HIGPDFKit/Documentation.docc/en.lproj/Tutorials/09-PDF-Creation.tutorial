@@ -1,0 +1,254 @@
+@Tutorial(time: 25) {
+    @Intro(title: "PDF Creation") {
+        Create PDF documents programmatically.
+        Build documents containing text, images, shapes, and more.
+        
+        @Image(source: "pdf-creation.png", alt: "PDF Creation")
+    }
+    
+    @Section(title: "UIGraphicsPDFRenderer Basics") {
+        @ContentAndMedia {
+            The most modern way to create PDFs on iOS is 
+            using UIGraphicsPDFRenderer.
+            
+            You can create multi-page PDFs while drawing 
+            directly to a Core Graphics context.
+        }
+        
+        @Steps {
+            @Step {
+                Create a UIGraphicsPDFRenderer and 
+                generate a basic PDF.
+                
+                @Code(name: "BasicPDFRenderer.swift", file: "09-01-renderer.swift")
+            }
+            
+            @Step {
+                Set page size and margins.
+                Use standard sizes like A4, Letter, etc.
+                
+                @Code(name: "PageSettings.swift", file: "09-02-page-settings.swift")
+            }
+            
+            @Step {
+                Set PDF metadata.
+                Add information like title, author, subject, etc.
+                
+                @Code(name: "PDFMetadata.swift", file: "09-03-metadata.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Adding Text") {
+        @ContentAndMedia {
+            Learn various ways to add text to PDFs.
+            
+            Render formatted text with NSAttributedString 
+            using draw(at:) or draw(in:).
+        }
+        
+        @Steps {
+            @Step {
+                Add basic text to a PDF.
+                Use the String.draw(at:withAttributes:) method.
+                
+                @Code(name: "AddText.swift", file: "09-04-add-text.swift")
+            }
+            
+            @Step {
+                Add formatted text with NSAttributedString.
+                Specify font, color, alignment, etc.
+                
+                @Code(name: "AttributedText.swift", file: "09-05-attributed.swift")
+            }
+            
+            @Step {
+                Split pages when text doesn't fit in the area.
+                Use NSLayoutManager or boundingRect.
+                
+                @Code(name: "TextPagination.swift", file: "09-06-pagination.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Adding Images") {
+        @ContentAndMedia {
+            Add UIImages to PDFs.
+            Handle resizing, positioning, aspect ratio preservation, etc.
+        }
+        
+        @Steps {
+            @Step {
+                Draw a UIImage on a PDF.
+                Specify the area with draw(in:) method.
+                
+                @Code(name: "AddImage.swift", file: "09-07-add-image.swift")
+            }
+            
+            @Step {
+                Add images while maintaining aspect ratio.
+                Use AVFoundation's AVMakeRect.
+                
+                @Code(name: "AspectRatioImage.swift", file: "09-08-aspect-ratio.swift")
+            }
+            
+            @Step {
+                Adjust image quality and compression.
+                Reduce file size by lowering JPEG quality.
+                
+                @Code(name: "ImageCompression.swift", file: "09-09-compression.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Shapes and Graphics") {
+        @ContentAndMedia {
+            Draw lines, rectangles, circles, paths, etc. with Core Graphics.
+            Useful for charts and diagrams.
+        }
+        
+        @Steps {
+            @Step {
+                Draw basic shapes.
+                Use CGContext's fill and stroke methods.
+                
+                @Code(name: "DrawShapes.swift", file: "09-10-shapes.swift")
+            }
+            
+            @Step {
+                Draw complex paths with UIBezierPath.
+                Create curves and custom shapes.
+                
+                @Code(name: "BezierPaths.swift", file: "09-11-bezier.swift")
+            }
+            
+            @Step {
+                Draw table layouts.
+                Position grid lines and text within cells.
+                
+                @Code(name: "DrawTable.swift", file: "09-12-table.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving and Sharing PDFs") {
+        @ContentAndMedia {
+            Save generated PDFs to files or 
+            share with other apps.
+        }
+        
+        @Steps {
+            @Step {
+                Save PDF data to a file.
+                Save to the Documents directory.
+                
+                @Code(name: "SavePDF.swift", file: "09-13-save.swift")
+            }
+            
+            @Step {
+                Share PDFs with UIActivityViewController.
+                Export to email, AirDrop, Files app, etc.
+                
+                @Code(name: "SharePDF.swift", file: "09-14-share.swift")
+            }
+            
+            @Step {
+                Load the generated PDF as PDFDocument to verify.
+                Create PDFDocument directly from Data.
+                
+                @Code(name: "VerifyPDF.swift", file: "09-15-verify.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the modern API for creating PDFs on iOS?
+            
+            @Choice(isCorrect: true) {
+                UIGraphicsPDFRenderer
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    UIGraphicsPDFRenderer is a modern PDF creation API 
+                    introduced in iOS 10.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFGenerator
+                
+                @Justification(reaction: "There is no such class.") {
+                    Check Apple's PDF creation API.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFDocument.create()
+                
+                @Justification(reaction: "Not quite.") {
+                    PDFDocument is used to load existing PDFs. 
+                    A different API is used for creating new documents.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which method starts a new page in UIGraphicsPDFRenderer?
+            
+            @Choice(isCorrect: false) {
+                newPage()
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the PDF renderer context methods.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                beginPage()
+                
+                @Justification(reaction: "That's right! ✨") {
+                    Call context.beginPage() to 
+                    start a new page.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                addPage()
+                
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact method name.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you set PDF metadata (title, author, etc.)?
+            
+            @Choice(isCorrect: true) {
+                UIGraphicsPDFRendererFormat's documentInfo
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Set metadata in the format.documentInfo dictionary 
+                    using keys like kCGPDFContextTitle.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PDFDocument.documentAttributes
+                
+                @Justification(reaction: "Not quite.") {
+                    This is used to read properties of existing PDFs. 
+                    A different method is used during creation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CGContext.setMetadata()
+                
+                @Justification(reaction: "There is no such method.") {
+                    Check the PDF renderer format properties.
+                }
+            }
+        }
+    }
+}

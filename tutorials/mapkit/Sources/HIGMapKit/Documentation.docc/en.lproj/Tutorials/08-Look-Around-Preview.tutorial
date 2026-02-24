@@ -1,0 +1,159 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Look Around Preview") {
+        Integrate Apple Maps' Look Around feature into your app.
+        Preview restaurant exteriors with 360° panoramas.
+    }
+    
+    @Section(title: "Introduction to Look Around") {
+        @ContentAndMedia {
+            Look Around is Apple's street view feature.
+            In supported regions, you can view actual street scenes as 360° images.
+        }
+        
+        @Steps {
+            @Step {
+                **Checking Look Around Availability**
+                
+                Look Around is not available in all regions.
+                Check availability with MKLookAroundSceneRequest.
+                
+                @Code(name: "LookAroundService.swift", file: "08-availability-check.swift")
+            }
+            
+            @Step {
+                **Requesting a Scene**
+                
+                Fetch an MKLookAroundScene based on coordinates.
+                Handle asynchronously with async/await.
+                
+                @Code(name: "LookAroundService.swift", file: "08-scene-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "LookAroundPreview View") {
+        @ContentAndMedia {
+            Display a preview using LookAroundPreview 
+            in SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                **Displaying Basic Preview**
+                
+                Pass the scene to LookAroundPreview.
+                The panorama image loads automatically.
+                
+                @Code(name: "LookAroundView.swift", file: "08-basic-preview.swift")
+            }
+            
+            @Step {
+                **Styling the Preview**
+                
+                Set size and shape with .frame and .clipShape.
+                Create a card-style preview.
+                
+                @Code(name: "LookAroundView.swift", file: "08-preview-style.swift")
+            }
+            
+            @Step {
+                **Configuring Interaction**
+                
+                Control UI elements and navigation with 
+                .badgePosition and .allowsNavigation.
+                
+                @Code(name: "LookAroundView.swift", file: "08-interaction.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Full-Screen Look Around") {
+        @ContentAndMedia {
+            Switch to a full-screen Look Around viewer on tap.
+            Provide an immersive street exploration experience.
+        }
+        
+        @Steps {
+            @Step {
+                **Full-Screen Viewer**
+                
+                Display full-screen Look Around with .fullScreenCover.
+                Users can freely explore in 360°.
+                
+                @Code(name: "LookAroundView.swift", file: "08-fullscreen.swift")
+            }
+            
+            @Step {
+                **Integrating with Restaurant Detail**
+                
+                Add Look Around preview to the restaurant detail screen.
+                Display a fallback image when not available.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "08-detail-integration.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you check Look Around availability?
+            
+            @Choice(isCorrect: true) {
+                Request a scene with MKLookAroundSceneRequest and check for nil
+                
+                @Justification(reaction: "Correct!") {
+                    If scene is nil, it means Look Around is not 
+                    available at that location.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check the CLLocation.hasLookAround property
+                
+                @Justification(reaction: "Not quite") {
+                    That property doesn't exist.
+                    You must use MKLookAroundSceneRequest.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Configure the region in Info.plist
+                
+                @Justification(reaction: "Not quite") {
+                    Look Around availability is determined by regions Apple has photographed.
+                    It cannot be controlled through app settings.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you disable 360° navigation in LookAroundPreview?
+            
+            @Choice(isCorrect: true) {
+                .allowsNavigation(false)
+                
+                @Justification(reaction: "Exactly right!") {
+                    Setting allowsNavigation to false 
+                    displays only a static preview.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .isUserInteractionEnabled(false)
+                
+                @Justification(reaction: "Not quite") {
+                    In SwiftUI, use the .allowsNavigation modifier.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .disabled(true)
+                
+                @Justification(reaction: "Not quite") {
+                    .disabled disables the entire view.
+                    Use .allowsNavigation to control only navigation.
+                }
+            }
+        }
+    }
+}
