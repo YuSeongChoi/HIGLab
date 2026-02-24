@@ -13,6 +13,7 @@ Learn the **top 50** of Apple's 367 frameworks through practical, hands-on proje
 1. **📝 Blog Post** — HIG guideline walkthrough + real-world examples
 2. **📚 DocC Tutorial** — Step-by-step guide you can follow right in Xcode (10+ chapters)
 3. **💻 Sample Project** — Production-quality SwiftUI app (avg. 5,000+ lines)
+4. **🛠️ AI Skills** — Ready-to-use config files for Claude Code, Cursor, and Copilot
 
 🌐 **Live Site**: [m1zz.github.io/HIGLab](https://m1zz.github.io/HIGLab/)
 
@@ -27,6 +28,7 @@ Learn the **top 50** of Apple's 367 frameworks through practical, hands-on proje
 | 📝 Blog | **50/50** | 100% ✅ |
 | 📚 DocC | **50/50** (10+ chapters) | 100% ✅ |
 | 💻 Samples | **43** (covering all 50) | 100% ✅ |
+| 🛠️ Skills | **3** (Claude/Cursor/Copilot) | 100% ✅ |
 
 > **🎉 Project Complete!** Full coverage of all 50 technologies
 
@@ -146,8 +148,12 @@ HIGLab/
 │   └── {framework}/        # Swift Package + DocC
 ├── samples/               # 💻 Sample projects (43)
 │   └── {SampleName}/      # Complete SwiftUI apps
-├── ai-reference/          # 🤖 AI code generation references
+├── ai-reference/          # 🤖 AI Reference (50)
 │   └── {framework}.md
+├── skills/                # 🛠️ AI Skills (Claude/Cursor/Copilot)
+│   ├── claude-code/
+│   ├── cursor/
+│   └── copilot/
 └── SSOT.json              # Single Source of Truth
 ```
 
@@ -271,16 +277,84 @@ We support [llms.txt](https://m1zz.github.io/HIGLab/llms.txt) for efficient AI a
 
 ---
 
-## 🛠️ AI Tool Integration
+## 🛠️ AI Skills — AI Coding Tool Integration
 
-This project integrates seamlessly with popular AI coding tools:
+### What are Skills?
 
-| Tool | Config File | Usage |
-|------|------------|-------|
-| Claude Code | `CLAUDE.md` | Run Claude Code in the project folder |
-| Cursor | `.cursorrules` | Open project with Cursor |
-| GitHub Copilot | `.github/copilot-instructions.md` | Auto-applied in VS Code |
-| Other AI | `llms.txt` / `llms-full.txt` | Provide URL: `https://m1zz.github.io/HIGLab/llms.txt` |
+Config files that help AI coding tools (Claude Code, Cursor, Copilot) generate **more accurate iOS code**.
+
+**Problem**: AI often uses deprecated APIs or doesn't know iOS 17+ patterns (`@Observable`, `SwiftData`).  
+**Solution**: HIG Lab's AI Reference as Skills gives AI access to best practices for 50 Apple frameworks.
+
+👉 **[Installation Guide](skills/README.md)**
+
+---
+
+### 📦 Quick Install
+
+#### Claude Code — `/hig` Command
+
+```bash
+# Global install (available in all projects)
+mkdir -p ~/.claude/commands
+curl -o ~/.claude/commands/hig.md https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/claude-code/hig.md
+```
+
+#### Cursor
+
+```bash
+# Copy to project root
+curl -o .cursorrules https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/cursor/.cursorrules
+```
+
+#### GitHub Copilot
+
+```bash
+mkdir -p .github
+curl -o .github/copilot-instructions.md https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/copilot/copilot-instructions.md
+```
+
+---
+
+### 💡 Usage Examples
+
+#### Using `/hig` Command in Claude Code
+
+```
+You: /hig storekit
+     Add in-app purchase functionality
+
+AI:  (Automatically fetches StoreKit 2 AI Reference)
+     I'll implement using Product.products(for:) with @Observable pattern...
+```
+
+Korean keywords also work:
+
+```
+/hig 인앱결제    → StoreKit 2
+/hig 위젯       → WidgetKit
+/hig list      → All 50 frameworks
+```
+
+#### Before & After
+
+| | Before (without Skills) | After (with Skills) |
+|---|---|---|
+| State | `@StateObject`, `ObservableObject` | ✅ `@Observable` (iOS 17+) |
+| Data | Core Data + `@FetchRequest` | ✅ SwiftData + `@Query` |
+| IAP | StoreKit 1 completion handlers | ✅ StoreKit 2 async/await |
+| Errors | `print(error)` | ✅ `LocalizedError` protocol |
+
+---
+
+### 🔧 Supported Tools
+
+| Tool | File | Description |
+|------|------|-------------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `skills/claude-code/hig.md` | `/hig` slash command |
+| [Cursor](https://cursor.sh) | `skills/cursor/.cursorrules` | Auto context awareness |
+| [GitHub Copilot](https://github.com/features/copilot) | `skills/copilot/copilot-instructions.md` | VS Code auto-apply |
+| Other AI | `llms.txt` / `llms-full.txt` | URL: `https://m1zz.github.io/HIGLab/llms.txt` |
 
 > 💡 Clone the project and open it with your AI coding tool — the AI will automatically reference all 50 framework documents to generate accurate iOS code.
 
