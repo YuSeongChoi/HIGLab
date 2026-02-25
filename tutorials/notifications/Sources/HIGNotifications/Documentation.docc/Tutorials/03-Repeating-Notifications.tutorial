@@ -1,0 +1,243 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Repeating Notifications") {
+        Set up daily, weekly, and monthly repeating notifications.
+        
+        Leverage the flexibility of Calendar triggers to implement
+        various repeat patterns for habit trackers, medication reminders, and more.
+    }
+    
+    @Section(title: "Creating Repeating Notifications with Calendar Triggers") {
+        @ContentAndMedia {
+            Set the repeats parameter of UNCalendarNotificationTrigger to true
+            for the same pattern to repeat.
+            
+            Omitted fields in DateComponents mean "every":
+            - Omit year → every year
+            - Omit month → every month
+            - Omit day → every day
+        }
+        
+        @Steps {
+            @Step {
+                **Daily Notification at the Same Time**
+                
+                Specify only hour and minute for daily repetition.
+                Let's create an 8:30 AM wake-up alarm.
+                
+                @Code(name: "DailyNotification.swift", file: "03-daily-notification.swift")
+            }
+            
+            @Step {
+                **Notification on Specific Days**
+                
+                Add the weekday component to fire notifications only on specific days.
+                1 = Sunday, 2 = Monday, ..., 7 = Saturday.
+                
+                @Code(name: "WeekdayNotification.swift", file: "03-weekday-notification.swift")
+            }
+            
+            @Step {
+                **Weekday Only Notifications (Mon-Fri)**
+                
+                To set notifications for multiple days, create separate requests for each.
+                Managing them in an array is convenient.
+                
+                @Code(name: "WeekdaysNotification.swift", file: "03-weekdays-notification.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TimeInterval Repetition") {
+        @ContentAndMedia {
+            UNTimeIntervalNotificationTrigger can also repeat.
+            
+            Use it when you need "repeat every N seconds."
+            However, it must be at least 60 seconds.
+        }
+        
+        @Steps {
+            @Step {
+                **Repeating at Time Intervals**
+                
+                Implement patterns like every hour or every 30 minutes.
+                Suitable for features like drink water reminders.
+                
+                @Code(name: "IntervalRepeat.swift", file: "03-interval-repeat.swift")
+            }
+            
+            @Step {
+                **Interval Selection UI**
+                
+                Create a Picker where users can select the repeat interval.
+                
+                @Code(name: "IntervalPickerView.swift", file: "03-interval-picker-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complex Repeat Patterns") {
+        @ContentAndMedia {
+            More complex patterns like the first Monday of each month or the 15th of each month
+            can also be implemented with DateComponents.
+            
+            However, some patterns require multiple notification requests.
+        }
+        
+        @Steps {
+            @Step {
+                **Monthly Notification on Specific Day**
+                
+                Use the day component for notifications on the same date each month.
+                Useful for payday notifications, recurring payment reminders, etc.
+                
+                @Code(name: "MonthlyNotification.swift", file: "03-monthly-notification.swift")
+            }
+            
+            @Step {
+                **Nth X-day of Each Month**
+                
+                Create patterns like "first Monday of each month" with weekdayOrdinal.
+                
+                @Code(name: "WeekdayOrdinal.swift", file: "03-weekday-ordinal.swift")
+            }
+            
+            @Step {
+                **Repeat Option Enumeration**
+                
+                Define the repeat options your app will offer.
+                Create a helper to generate triggers for each option.
+                
+                @Code(name: "RepeatOption.swift", file: "03-repeat-option.swift")
+            }
+            
+            @Step {
+                **Completing the Repeat Scheduler**
+                
+                Add repeating notification support to NotificationManager.
+                
+                @Code(name: "RepeatScheduler.swift", file: "03-repeat-scheduler.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Repeating Notifications") {
+        @ContentAndMedia {
+            Repeating notifications continue forever unless canceled.
+            
+            You should provide UI that lets users easily turn them on and off.
+            Managing notification IDs properly is key.
+        }
+        
+        @Steps {
+            @Step {
+                **Repeating Notification ID Strategy**
+                
+                Using meaningful IDs for repeating notifications makes management easier.
+                "daily-water-reminder", "weekday-morning-alarm", etc.
+                
+                @Code(name: "NotificationID.swift", file: "03-notification-id.swift")
+            }
+            
+            @Step {
+                **Active Repeating Notifications List**
+                
+                Query and display currently active repeating notifications.
+                
+                @Code(name: "ActiveRepeatingView.swift", file: "03-active-repeating-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What values should you set in DateComponents to send a notification at 9 AM every day?
+            
+            @Choice(isCorrect: true) {
+                Set only hour = 9 (omit year, month, day)
+                
+                @Justification(reaction: "Correct!") {
+                    Omitted components mean "all values."
+                    Specifying only hour makes it repeat every day at that time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set year, month, day, and hour all
+                
+                @Justification(reaction: "Not quite") {
+                    Specifying all date components makes the notification fire only on that specific date.
+                    It won't repeat (even with repeats: true, the date is fixed).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                day = 0, hour = 9
+                
+                @Justification(reaction: "Not quite") {
+                    day = 0 is not valid.
+                    Omit it or set to nil for "every day" meaning.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            In iOS, what is the weekday value for Monday?
+            
+            @Choice(isCorrect: false) {
+                0
+                
+                @Justification(reaction: "Not quite") {
+                    iOS Calendar weekday starts from 1.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 (Sunday is 1)
+                
+                @Justification(reaction: "Sunday is indeed 1, but...") {
+                    The question asks about Monday.
+                    Monday is 2.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                2
+                
+                @Justification(reaction: "Correct!") {
+                    1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat.
+                    This follows the Gregorian calendar convention.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How many UNNotificationRequests are needed for daily weekday (Mon-Fri) notifications?
+            
+            @Choice(isCorrect: false) {
+                1 (set weekday as an array)
+                
+                @Justification(reaction: "Not quite") {
+                    DateComponents weekday only accepts a single value.
+                    It doesn't support arrays.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                5 (one for each day)
+                
+                @Justification(reaction: "Correct!") {
+                    Separate notification requests are needed for Monday, Tuesday, Wednesday, Thursday, and Friday.
+                    Each request has a unique identifier.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The system handles it automatically
+                
+                @Justification(reaction: "Not quite") {
+                    Developers must create requests for each day manually.
+                }
+            }
+        }
+    }
+}

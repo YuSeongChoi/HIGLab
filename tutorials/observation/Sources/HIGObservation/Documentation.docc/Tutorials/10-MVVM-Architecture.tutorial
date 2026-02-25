@@ -1,0 +1,229 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Completing the MVVM Architecture") {
+        Build a modern MVVM architecture using @Observable.
+        Master patterns immediately applicable in practice while completing the CartFlow app.
+    }
+    
+    @Section(title: "MVVM and Observation") {
+        @ContentAndMedia {
+            Learn how MVVM (Model-View-ViewModel) pattern
+            naturally harmonizes with @Observable.
+            Clarify the role and responsibility of each layer.
+        }
+        
+        @Steps {
+            @Step {
+                Define the three components of MVVM.
+                Understand the role of Model, View, and ViewModel.
+                
+                @Code(name: "MVVMOverview.swift", file: "10-mvvm-overview.swift")
+            }
+            
+            @Step {
+                Implement ViewModel with @Observable.
+                Encapsulate business logic and provide bindable state to views.
+                
+                @Code(name: "ViewModelBasic.swift", file: "10-viewmodel-basic.swift")
+            }
+            
+            @Step {
+                View only needs to know ViewModel.
+                Views display state and pass actions to ViewModel.
+                
+                @Code(name: "ViewBasic.swift", file: "10-view-basic.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Dependency Injection Pattern") {
+        @ContentAndMedia {
+            Apply dependency injection patterns
+            for testable and flexible code.
+        }
+        
+        @Steps {
+            @Step {
+                Protocol-based service design.
+                Actual implementations and test Mocks can be swapped.
+                
+                @Code(name: "ServiceProtocol.swift", file: "10-service-protocol.swift")
+            }
+            
+            @Step {
+                Inject services into ViewModel.
+                Constructor injection makes dependencies explicit.
+                
+                @Code(name: "DependencyInjection.swift", file: "10-dependency-injection.swift")
+            }
+            
+            @Step {
+                Global service access through @Environment.
+                Manage app-wide shared dependencies.
+                
+                @Code(name: "EnvironmentDI.swift", file: "10-environment-di.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Completed Architecture") {
+        @ContentAndMedia {
+            Apply everything we've learned
+            to complete CartFlow's architecture.
+        }
+        
+        @Steps {
+            @Step {
+                Model layer: Domain models and service definitions
+                
+                @Code(name: "CartFlowModels.swift", file: "10-cartflow-models.swift")
+            }
+            
+            @Step {
+                ViewModel layer: CartViewModel implementation
+                Handles all business logic for the cart.
+                
+                @Code(name: "CartViewModel.swift", file: "10-cart-viewmodel.swift")
+            }
+            
+            @Step {
+                View layer: Completed CartView
+                Binds with ViewModel to implement reactive UI.
+                
+                @Code(name: "CartViewFinal.swift", file: "10-cart-view-final.swift")
+            }
+            
+            @Step {
+                App entry point: Dependency setup and screen composition
+                Assemble all layers to complete the app.
+                
+                @Code(name: "CartFlowAppFinal.swift", file: "10-app-final.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Testing Strategy") {
+        @ContentAndMedia {
+            Learn how to test @Observable-based ViewModels.
+            Cover unit testing and UI testing strategies.
+        }
+        
+        @Steps {
+            @Step {
+                Basic ViewModel unit test structure.
+                Inject Mock services to perform isolated tests.
+                
+                @Code(name: "ViewModelTests.swift", file: "10-viewmodel-tests.swift")
+            }
+            
+            @Step {
+                Testing async state changes.
+                Verify loading, success, and failure scenarios.
+                
+                @Code(name: "AsyncTests.swift", file: "10-async-tests.swift")
+            }
+            
+            @Step {
+                Integration tests: Verify real usage scenarios
+                Confirm multiple components work together.
+                
+                @Code(name: "IntegrationTests.swift", file: "10-integration-tests.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the main role of ViewModel in MVVM?
+            
+            @Choice(isCorrect: true) {
+                Encapsulate business logic and provide bindable state to views
+                
+                @Justification(reaction: "Correct!") {
+                    ViewModel acts as mediator between View and Model,
+                    handling logic and managing state for View to display.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Directly handle database access and network requests
+                
+                @Justification(reaction: "Not quite") {
+                    Data access is usually handled by separate Service/Repository layers,
+                    and ViewModel coordinates them.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Handle UI rendering logic
+                
+                @Justification(reaction: "Not quite") {
+                    UI rendering is View's responsibility.
+                    ViewModel provides what to display (state).
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the key element for making @Observable ViewModel testable?
+            
+            @Choice(isCorrect: true) {
+                Protocol-based dependency injection
+                
+                @Justification(reaction: "Perfect!") {
+                    Using protocols allows injecting Mocks instead of real services,
+                    creating isolated test environments.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Declare all properties as public
+                
+                @Justification(reaction: "Not quite") {
+                    Access control is about encapsulation, not testability.
+                    Dependency injection is the key to testing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use singleton pattern
+                
+                @Justification(reaction: "Not quite") {
+                    Singletons actually make testing harder.
+                    Explicit dependency injection is favorable for testing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            You've completed the CartFlow tutorial! What's the biggest advantage of Observation?
+            
+            @Choice(isCorrect: true) {
+                Granular observation automatically updates only necessary views
+                
+                @Justification(reaction: "Congratulations! 🎉") {
+                    This is the core value of Observation.
+                    You can build more efficient apps with cleaner code.
+                    Now try applying it in practice!
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Reduced lines of code
+                
+                @Justification(reaction: "Partial answer!") {
+                    Cleaner code is also an advantage,
+                    but the core is performance optimization through granular observation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Opportunity to learn new syntax
+                
+                @Justification(reaction: "You have a sense of humor 😄") {
+                    Learning new things is good,
+                    but Observation's real value lies in performance and simplicity!
+                }
+            }
+        }
+    }
+}

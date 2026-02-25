@@ -1,0 +1,220 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Entity and Component") {
+        Deeply understand RealityKit's core Entity-Component-System (ECS) architecture.
+        Learn how to create Entities and extend their functionality by adding Components.
+        
+        @Image(source: "chapter3-entity.png", alt: "Entity and Component System")
+    }
+    
+    @Section(title: "Understanding Entity") {
+        @ContentAndMedia {
+            Entity is the fundamental building block of RealityKit scenes.
+            All 3D objects, anchors, and groups are represented as Entities.
+            
+            @Image(source: "entity-hierarchy.png", alt: "Entity Hierarchy")
+        }
+        
+        @Steps {
+            @Step {
+                Create a basic Entity.
+                Entity itself is an empty container; functionality is added through Components.
+                
+                @Code(name: "BasicEntity.swift", file: "03-entity-01.swift")
+            }
+            
+            @Step {
+                Entities can form hierarchical structures.
+                Build complex scenes through parent-child relationships.
+                
+                @Code(name: "EntityHierarchy.swift", file: "03-entity-02.swift")
+            }
+            
+            @Step {
+                Control Entity's position, rotation, and scale with Transform.
+                
+                @Code(name: "EntityTransform.swift", file: "03-entity-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Built-in Components") {
+        @ContentAndMedia {
+            RealityKit provides various built-in Components.
+            Combine them to implement desired behaviors.
+            
+            @Image(source: "components.png", alt: "RealityKit Components")
+        }
+        
+        @Steps {
+            @Step {
+                ModelComponent defines 3D mesh and materials.
+                
+                @Code(name: "ModelComponent.swift", file: "03-entity-04.swift")
+            }
+            
+            @Step {
+                CollisionComponent enables collision detection.
+                
+                @Code(name: "CollisionComponent.swift", file: "03-entity-05.swift")
+            }
+            
+            @Step {
+                PhysicsBodyComponent applies physics simulation.
+                
+                @Code(name: "PhysicsBodyComponent.swift", file: "03-entity-06.swift")
+            }
+            
+            @Step {
+                Combine various Components to create a complete Entity.
+                
+                @Code(name: "CombinedComponents.swift", file: "03-entity-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Custom Components") {
+        @ContentAndMedia {
+            You can define your own Components to add custom data to Entities.
+            
+            @Image(source: "custom-component.png", alt: "Custom Component")
+        }
+        
+        @Steps {
+            @Step {
+                Define a custom Component by adopting the Component protocol.
+                
+                @Code(name: "CustomComponent.swift", file: "03-entity-08.swift")
+            }
+            
+            @Step {
+                Create a ComponentSystem to implement custom logic.
+                
+                @Code(name: "CustomSystem.swift", file: "03-entity-09.swift")
+            }
+            
+            @Step {
+                Register and use the System.
+                
+                @Code(name: "RegisterSystem.swift", file: "03-entity-10.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Entity Search and Queries") {
+        @ContentAndMedia {
+            Learn how to find specific Entities in the scene or filter by Component.
+            
+            @Image(source: "entity-query.png", alt: "Entity Query")
+        }
+        
+        @Steps {
+            @Step {
+                Find an Entity by name.
+                
+                @Code(name: "FindByName.swift", file: "03-entity-11.swift")
+            }
+            
+            @Step {
+                Use EntityQuery to find Entities with specific Components.
+                
+                @Code(name: "EntityQuery.swift", file: "03-entity-12.swift")
+            }
+            
+            @Step {
+                Clone and reuse Entities.
+                
+                @Code(name: "CloneEntity.swift", file: "03-entity-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which Component should you use to add a 3D shape to an Entity?
+            
+            @Choice(isCorrect: true) {
+                ModelComponent
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    ModelComponent includes MeshResource and Material
+                    to provide visual 3D shapes to Entities.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CollisionComponent
+                
+                @Justification(reaction: "Think again.") {
+                    CollisionComponent is for collision detection, not visual rendering.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                TransformComponent
+                
+                @Justification(reaction: "Think again.") {
+                    TransformComponent defines position, rotation, and scale,
+                    but doesn't add actual 3D shapes.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What method adds a child Entity to an Entity hierarchy?
+            
+            @Choice(isCorrect: false) {
+                append()
+                
+                @Justification(reaction: "Not quite.") {
+                    append is a method used with arrays.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                addChild()
+                
+                @Justification(reaction: "Correct! ✅") {
+                    Use addChild(_:) to add children to the Entity hierarchy.
+                    Child Transforms are applied relative to the parent.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                insert()
+                
+                @Justification(reaction: "Not quite.") {
+                    insert is a method used with collections.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What protocol must you adopt when creating a custom Component?
+            
+            @Choice(isCorrect: true) {
+                Component
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Adopting the Component protocol allows RealityKit's ECS system
+                    to recognize that type as a Component.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Entity
+                
+                @Justification(reaction: "Think again.") {
+                    Entity is a class with a different role than Components.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Codable
+                
+                @Justification(reaction: "Think again.") {
+                    Codable is a protocol for serialization, not related to ECS.
+                }
+            }
+        }
+    }
+}

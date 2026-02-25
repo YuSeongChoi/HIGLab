@@ -1,0 +1,166 @@
+@Tutorial(time: 20) {
+    @Intro(title: "AVCaptureSession Setup") {
+        AVCaptureSession is the core of the capture pipeline.
+        It manages real-time capture by connecting camera input and various outputs.
+    }
+    
+    @Section(title: "Initializing Capture Session") {
+        @ContentAndMedia {
+            Create an AVCaptureSession and configure basic settings.
+            The session acts as a central hub connecting inputs and outputs.
+        }
+        
+        @Steps {
+            @Step {
+                Add capture session property to CameraManager.
+                Session configuration must be performed on a background queue.
+                
+                @Code(name: "CameraManager.swift", file: "02-session-property.swift")
+            }
+            
+            @Step {
+                Set the session preset.
+                The preset determines capture quality and resolution.
+                
+                - `.photo`: Optimized for high-quality photos
+                - `.high`: High-quality video
+                - `.medium`: Medium quality
+                - `.hd4K3840x2160`: 4K video
+                
+                @Code(name: "CameraManager.swift", file: "02-session-preset.swift")
+            }
+            
+            @Step {
+                Create the basic structure of the session configuration method.
+                Use `beginConfiguration()` and `commitConfiguration()` for atomic changes.
+                
+                @Code(name: "CameraManager.swift", file: "02-configure-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Setting Up Camera Input") {
+        @ContentAndMedia {
+            Create AVCaptureDeviceInput to connect the camera to the session.
+            You can selectively use rear camera or front camera.
+        }
+        
+        @Steps {
+            @Step {
+                Find available camera devices.
+                AVCaptureDevice.DiscoverySession allows searching for devices that match conditions.
+                
+                @Code(name: "CameraManager.swift", file: "02-discover-device.swift")
+            }
+            
+            @Step {
+                Add logic to select the default camera.
+                Use dual camera if possible, otherwise wide camera.
+                
+                @Code(name: "CameraManager.swift", file: "02-select-camera.swift")
+            }
+            
+            @Step {
+                Create AVCaptureDeviceInput and add to session.
+                First check if addition is possible with `canAddInput()`.
+                
+                @Code(name: "CameraManager.swift", file: "02-add-input.swift")
+            }
+            
+            @Step {
+                Implement front/rear camera switching.
+                Always use beginConfiguration/commitConfiguration when changing session configuration.
+                
+                @Code(name: "CameraManager.swift", file: "02-switch-camera.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting and Stopping Session") {
+        @ContentAndMedia {
+            Manage the lifecycle of the capture session.
+            Session start/stop can block UI, so perform in background.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the session start method.
+                Must run on a dedicated queue, not the main thread.
+                
+                @Code(name: "CameraManager.swift", file: "02-start-session.swift")
+            }
+            
+            @Step {
+                Implement session stop and resource cleanup.
+                It's good to stop the session when the app goes to background.
+                
+                @Code(name: "CameraManager.swift", file: "02-stop-session.swift")
+            }
+            
+            @Step {
+                Add session management according to app lifecycle.
+                Detect app state changes with NotificationCenter.
+                
+                @Code(name: "CameraManager.swift", file: "02-lifecycle.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What method pair ensures atomic updates when changing AVCaptureSession settings?
+            
+            @Choice(isCorrect: true) {
+                `beginConfiguration()` / `commitConfiguration()`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Changes made between these methods are applied simultaneously.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `startRunning()` / `stopRunning()`
+                
+                @Justification(reaction: "Think again.") {
+                    These methods control session execution.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `addInput()` / `removeInput()`
+                
+                @Justification(reaction: "Think again.") {
+                    These methods add/remove inputs.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which session preset is optimized for high-quality photo capture?
+            
+            @Choice(isCorrect: false) {
+                `.high`
+                
+                @Justification(reaction: "Think again.") {
+                    .high is suitable for high-quality video.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.photo`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The .photo preset provides settings optimized for photo capture.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.medium`
+                
+                @Justification(reaction: "Think again.") {
+                    .medium is medium quality, not suitable for photo capture.
+                }
+            }
+        }
+    }
+}

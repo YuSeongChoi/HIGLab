@@ -1,134 +1,134 @@
 @Tutorial(time: 15) {
-    @Intro(title: "결과 처리") {
-        ImagePlayground에서 생성된 이미지를 받아 
-        앱에서 활용하는 방법을 배웁니다.
+    @Intro(title: "Handling Results") {
+        Learn how to receive and utilize generated images 
+        from ImagePlayground in your app.
         
-        @Image(source: "handling-results.png", alt: "결과 처리")
+        @Image(source: "handling-results.png", alt: "Handling Results")
     }
     
-    @Section(title: "완료 핸들러 이해하기") {
+    @Section(title: "Understanding the Completion Handler") {
         @ContentAndMedia {
-            `imagePlaygroundSheet`의 완료 클로저는 
-            사용자가 이미지를 선택하면 호출됩니다.
+            The completion closure of `imagePlaygroundSheet` is called 
+            when the user selects an image.
             
-            클로저는 `URL` 타입의 파라미터를 받으며,
-            이 URL은 생성된 이미지 파일을 가리킵니다.
+            The closure receives a parameter of type `URL`,
+            which points to the generated image file.
             
-            **중요:** 
-            - URL은 임시 디렉토리의 파일을 가리킴
-            - 앱이 종료되면 파일이 삭제될 수 있음
-            - 영구 보관이 필요하면 직접 복사해야 함
+            **Important:**
+            - The URL points to a file in a temporary directory
+            - The file may be deleted when the app terminates
+            - If permanent storage is needed, you must copy it yourself
             
-            @Image(source: "completion-flow.png", alt: "완료 흐름")
+            @Image(source: "completion-flow.png", alt: "Completion Flow")
         }
         
         @Steps {
             @Step {
-                기본적인 완료 핸들러 구조입니다.
-                URL을 받아 이미지로 변환합니다.
+                Here's the basic completion handler structure.
+                Receive the URL and convert it to an image.
                 
                 @Code(name: "CompletionHandler.swift", file: "05-01-completion.swift")
             }
             
             @Step {
-                URL에서 이미지 데이터를 로드하는 방법입니다.
-                `UIImage` 또는 `Image`로 변환할 수 있습니다.
+                Here's how to load image data from the URL.
+                You can convert it to `UIImage` or `Image`.
                 
                 @Code(name: "LoadImage.swift", file: "05-02-load-image.swift")
             }
         }
     }
     
-    @Section(title: "URL에서 이미지 로드") {
+    @Section(title: "Loading Images from URL") {
         @ContentAndMedia {
-            생성된 이미지 URL에서 실제 이미지 데이터를 
-            로드하는 여러 방법이 있습니다.
+            There are several ways to load actual image data 
+            from the generated image URL.
             
-            - **Data(contentsOf:)**: 동기적 로드
-            - **AsyncImage**: SwiftUI 비동기 로드
-            - **FileManager**: 파일 시스템 직접 접근
+            - **Data(contentsOf:)**: Synchronous loading
+            - **AsyncImage**: SwiftUI asynchronous loading
+            - **FileManager**: Direct file system access
             
-            각 방법은 상황에 따라 장단점이 있습니다.
+            Each method has its pros and cons depending on the situation.
         }
         
         @Steps {
             @Step {
-                동기적으로 이미지를 로드하는 간단한 방법입니다.
-                UI 스레드에서 호출하면 블로킹될 수 있습니다.
+                Here's a simple synchronous image loading method.
+                It may block if called from the UI thread.
                 
                 @Code(name: "SyncLoad.swift", file: "05-03-sync-load.swift")
             }
             
             @Step {
-                Task를 사용한 비동기 로드로 UI 응답성을 유지합니다.
+                Maintain UI responsiveness with asynchronous loading using Task.
                 
                 @Code(name: "AsyncLoad.swift", file: "05-04-async-load.swift")
             }
             
             @Step {
-                AsyncImage를 사용하면 로딩 상태도 함께 처리할 수 있습니다.
+                Using AsyncImage also handles the loading state.
                 
                 @Code(name: "AsyncImageView.swift", file: "05-05-async-image.swift")
             }
         }
     }
     
-    @Section(title: "이미지 표시하기") {
+    @Section(title: "Displaying Images") {
         @ContentAndMedia {
-            로드한 이미지를 SwiftUI 뷰에 표시하는 
-            다양한 방법을 알아봅니다.
+            Learn various ways to display loaded images 
+            in SwiftUI views.
             
-            - State 변수에 저장하여 표시
-            - ObservableObject를 통한 관리
-            - 여러 이미지를 갤러리로 표시
+            - Store in State variable and display
+            - Manage through ObservableObject
+            - Display multiple images in a gallery
         }
         
         @Steps {
             @Step {
-                가장 기본적인 이미지 표시 방법입니다.
-                State 변수에 저장하고 Image 뷰로 표시합니다.
+                Here's the most basic image display method.
+                Store in a State variable and display with Image view.
                 
                 @Code(name: "DisplayImage.swift", file: "05-06-display.swift")
             }
             
             @Step {
-                placeholder를 사용해 로딩 중 상태를 표시합니다.
+                Use a placeholder to show loading state.
                 
                 @Code(name: "PlaceholderImage.swift", file: "05-07-placeholder.swift")
             }
             
             @Step {
-                여러 이미지를 생성하고 갤러리로 표시하는 예시입니다.
+                Here's an example of generating multiple images and displaying them as a gallery.
                 
                 @Code(name: "GalleryView.swift", file: "05-08-gallery.swift")
             }
         }
     }
     
-    @Section(title: "취소 처리") {
+    @Section(title: "Handling Cancellation") {
         @ContentAndMedia {
-            사용자가 이미지를 선택하지 않고 시트를 닫으면 
-            취소된 것으로 처리해야 합니다.
+            When users close the sheet without selecting an image,
+            it should be handled as cancelled.
             
-            `imagePlaygroundSheet`에서는:
-            - 이미지 선택 시: 완료 클로저 호출 + 시트 닫힘
-            - 취소 시: 완료 클로저 호출 없이 시트만 닫힘
+            In `imagePlaygroundSheet`:
+            - Image selection: Completion closure called + sheet closes
+            - Cancellation: Sheet closes without calling completion closure
             
-            시트가 닫혔을 때의 상태를 확인하여 
-            취소 여부를 판단할 수 있습니다.
+            You can determine cancellation by checking the state 
+            when the sheet closes.
         }
         
         @Steps {
             @Step {
-                onChange를 사용해 시트 닫힘을 감지하고 
-                취소 여부를 판단합니다.
+                Use onChange to detect sheet closing and 
+                determine if it was cancelled.
                 
                 @Code(name: "HandleCancel.swift", file: "05-09-cancel.swift")
             }
             
             @Step {
-                완전한 상태 관리 예시입니다.
-                생성, 취소, 에러 상태를 모두 추적합니다.
+                Here's a complete state management example.
+                Track generation, cancellation, and error states.
                 
                 @Code(name: "FullStateManagement.swift", file: "05-10-full-state.swift")
             }
@@ -137,94 +137,93 @@
     
     @Assessments {
         @MultipleChoice {
-            imagePlaygroundSheet 완료 클로저에서 받는 URL의 특성은?
+            What are the characteristics of the URL received in the imagePlaygroundSheet completion closure?
             
             @Choice(isCorrect: false) {
-                iCloud에 자동 백업되는 영구 URL
+                A permanent URL that automatically backs up to iCloud
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    URL은 임시 디렉토리를 가리키며, 
-                    자동 백업되지 않습니다.
+                @Justification(reaction: "Incorrect.") {
+                    The URL points to a temporary directory 
+                    and doesn't automatically backup.
                 }
             }
             
             @Choice(isCorrect: true) {
-                임시 디렉토리의 파일로, 앱 종료 시 삭제될 수 있음
+                A file in a temporary directory that may be deleted when the app terminates
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    생성된 이미지는 임시 위치에 저장되므로,
-                    영구 보관이 필요하면 직접 복사해야 합니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    Generated images are saved to a temporary location,
+                    so you must copy them if permanent storage is needed.
                 }
             }
             
             @Choice(isCorrect: false) {
-                앱의 Documents 폴더에 자동 저장된 파일
+                A file automatically saved to the app's Documents folder
                 
-                @Justification(reaction: "아쉽습니다.") {
-                    자동으로 Documents에 저장되지 않으며,
-                    개발자가 직접 복사 로직을 구현해야 합니다.
+                @Justification(reaction: "Not quite.") {
+                    It's not automatically saved to Documents,
+                    and developers must implement copying logic themselves.
                 }
             }
         }
         
         @MultipleChoice {
-            사용자가 이미지를 선택하지 않고 시트를 닫으면?
+            What happens when a user closes the sheet without selecting an image?
             
             @Choice(isCorrect: true) {
-                완료 클로저가 호출되지 않고 시트만 닫힘
+                The sheet closes without calling the completion closure
                 
-                @Justification(reaction: "맞습니다! ✨") {
-                    취소 시에는 완료 클로저 없이 시트가 닫히므로,
-                    isPresented 바인딩의 변화로 감지해야 합니다.
+                @Justification(reaction: "Correct! ✨") {
+                    On cancellation, the sheet closes without the completion closure,
+                    so you must detect this through changes in the isPresented binding.
                 }
             }
             
             @Choice(isCorrect: false) {
-                nil URL로 완료 클로저가 호출됨
+                The completion closure is called with a nil URL
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    취소 시에는 완료 클로저 자체가 호출되지 않습니다.
+                @Justification(reaction: "Incorrect.") {
+                    On cancellation, the completion closure itself is not called.
                 }
             }
             
             @Choice(isCorrect: false) {
-                에러와 함께 완료 클로저가 호출됨
+                The completion closure is called with an error
                 
-                @Justification(reaction: "아쉽습니다.") {
-                    취소는 에러가 아니며, 
-                    클로저가 호출되지 않습니다.
+                @Justification(reaction: "Not quite.") {
+                    Cancellation is not an error,
+                    and the closure is not called.
                 }
             }
         }
         
         @MultipleChoice {
-            UI 응답성을 유지하면서 이미지를 로드하는 
-            가장 좋은 방법은?
+            What is the best way to load images while maintaining UI responsiveness?
             
             @Choice(isCorrect: false) {
-                메인 스레드에서 Data(contentsOf:) 사용
+                Use Data(contentsOf:) on the main thread
                 
-                @Justification(reaction: "비권장됩니다.") {
-                    메인 스레드에서의 동기 로드는 
-                    UI를 블로킹할 수 있습니다.
+                @Justification(reaction: "Not recommended.") {
+                    Synchronous loading on the main thread 
+                    can block the UI.
                 }
             }
             
             @Choice(isCorrect: true) {
-                Task를 사용한 비동기 로드 또는 AsyncImage 활용
+                Asynchronous loading using Task or AsyncImage
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    비동기 처리로 메인 스레드를 차단하지 않아
-                    부드러운 사용자 경험을 제공합니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    Asynchronous processing doesn't block the main thread,
+                    providing a smooth user experience.
                 }
             }
             
             @Choice(isCorrect: false) {
-                DispatchQueue.main에서 동기적으로 로드
+                Load synchronously on DispatchQueue.main
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    메인 큐에서의 동기 작업은 
-                    UI를 차단합니다.
+                @Justification(reaction: "Incorrect.") {
+                    Synchronous operations on the main queue 
+                    block the UI.
                 }
             }
         }

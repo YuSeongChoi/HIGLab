@@ -1,0 +1,177 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Defining Data Models with @Model Macro") {
+        The @Model macro is the heart of SwiftData.
+        It transforms pure Swift classes into persistable data models.
+        
+        Let's explore all the features of @Model while creating the TaskItem model.
+    }
+    
+    @Section(title: "Creating the TaskItem Model") {
+        @ContentAndMedia {
+            Define TaskItem, the core model of the TaskMaster app.
+            It manages the task's title, description, completion status, priority, and due date.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Model Structure**
+                
+                Create a new Swift file `TaskItem.swift`.
+                Apply the @Model macro to the class.
+                
+                Important: @Model can only be applied to classes, not structs!
+                
+                @Code(name: "TaskItem.swift", file: "02-model-basic.swift")
+            }
+            
+            @Step {
+                **Supported Property Types**
+                
+                SwiftData automatically persists various types.
+                
+                - Basic types: String, Int, Double, Bool, Date, UUID, URL, Data
+                - Optional: Optionals of all basic types
+                - Collections: Array, Dictionary, Set (with Codable elements)
+                - Codable: Including RawRepresentable enums
+                
+                @Code(name: "TaskItem.swift", file: "02-model-types.swift")
+            }
+            
+            @Step {
+                **Adding Priority Enum**
+                
+                Define task priority as an enum.
+                SwiftData automatically handles enums that adopt Codable.
+                
+                @Code(name: "TaskItem.swift", file: "02-model-enum.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The @Attribute Macro") {
+        @ContentAndMedia {
+            Fine-tune property persistence behavior with the @Attribute macro.
+            You can set unique constraints, external storage, Spotlight indexing, and more.
+        }
+        
+        @Steps {
+            @Step {
+                **Unique Constraints**
+                
+                Use `.unique` to prevent duplicates.
+                When a duplicate value is inserted, it updates the existing data (upsert).
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-unique.swift")
+            }
+            
+            @Step {
+                **External Data Storage**
+                
+                Use `.externalStorage` to store large data in separate files.
+                Useful for images, attachments, etc.
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-external.swift")
+            }
+            
+            @Step {
+                **Spotlight Indexing**
+                
+                Use `.spotlight` to expose data to system search.
+                Users can search for tasks in Spotlight.
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-spotlight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The @Transient Macro") {
+        @ContentAndMedia {
+            Mark properties that shouldn't be saved with @Transient.
+            Use for caches, temporary state, computed values, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Temporary Properties**
+                
+                @Transient properties exist only in memory.
+                They reset to default values when the app restarts.
+                
+                You must provide a default value!
+                
+                @Code(name: "TaskItem.swift", file: "02-transient.swift")
+            }
+            
+            @Step {
+                **Final TaskItem Model**
+                
+                The completed model combining everything we've learned.
+                We'll continue using this model throughout the tutorials.
+                
+                @Code(name: "TaskItem.swift", file: "02-model-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What types can the @Model macro be applied to?
+            
+            @Choice(isCorrect: true) {
+                Only applicable to classes
+                
+                @Justification(reaction: "Correct!") {
+                    @Model can only be applied to reference type classes.
+                    It cannot be used with structs or enums.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only applicable to structs
+                
+                @Justification(reaction: "Not quite") {
+                    Structs are value types, making SwiftData's change tracking impossible.
+                    @Model is class-only.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Applicable to both classes and structs
+                
+                @Justification(reaction: "Not quite") {
+                    @Model only applies to classes.
+                    Struct data can be stored as Codable inside class properties.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What macro marks a temporary property that shouldn't be saved?
+            
+            @Choice(isCorrect: true) {
+                @Transient
+                
+                @Justification(reaction: "Exactly right!") {
+                    @Transient excludes that property from persistence.
+                    You must provide a default value.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Ignore
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData uses @Transient.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Ephemeral
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData uses @Transient.
+                }
+            }
+        }
+    }
+}

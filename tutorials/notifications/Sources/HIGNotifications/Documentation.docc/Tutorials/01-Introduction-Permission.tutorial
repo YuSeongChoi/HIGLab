@@ -1,0 +1,228 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to Notifications & Permission Requests") {
+        The UserNotifications framework is the core API for managing notifications in iOS apps.
+        
+        You cannot send notifications without user permission.
+        Permission requests are a crucial moment that determines the app's first impression.
+    }
+    
+    @Section(title: "Understanding the UserNotifications Framework") {
+        @ContentAndMedia {
+            UserNotifications was introduced in iOS 10, replacing the legacy UILocalNotification.
+            
+            - Unified management of local and push notifications
+            - Support for media attachments and action buttons
+            - Notification grouping and threading
+        }
+        
+        @Steps {
+            @Step {
+                **Exploring Core Types**
+                
+                UNUserNotificationCenter is the center of all notification operations.
+                It uses the singleton pattern, sharing a single instance throughout the app.
+                
+                @Code(name: "NotificationBasics.swift", file: "01-notification-basics.swift")
+            }
+            
+            @Step {
+                **The 3 Elements of Notifications: Content, Trigger, Request**
+                
+                Notifications are made of three components.
+                Content + Trigger = Request
+                
+                @Code(name: "NotificationComponents.swift", file: "01-notification-components.swift")
+            }
+            
+            @Step {
+                **Creating the RemindMe Project**
+                
+                Start the reminder app project we'll build in this tutorial.
+                Create a new iOS App project in Xcode.
+                
+                @Code(name: "RemindMeApp.swift", file: "01-remindme-app.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Requesting Permission") {
+        @ContentAndMedia {
+            iOS values user privacy.
+            You must ask for user permission before sending notifications.
+            
+            **HIG Tip**: Explain why you need permission before requesting it.
+            Requesting permission in a context where notifications are actually needed increases approval rates.
+        }
+        
+        @Steps {
+            @Step {
+                **Understanding Permission Options**
+                
+                Let's look at the types of permissions you can request.
+                .alert, .sound, .badge are the most basic.
+                
+                @Code(name: "PermissionOptions.swift", file: "01-permission-options.swift")
+            }
+            
+            @Step {
+                **Creating a NotificationManager Class**
+                
+                Create a manager class that encapsulates notification-related logic.
+                Use the @Observable macro to integrate with SwiftUI.
+                
+                @Code(name: "NotificationManager.swift", file: "01-notification-manager.swift")
+            }
+            
+            @Step {
+                **Implementing the Permission Request Method**
+                
+                Request permission using the requestAuthorization method.
+                Handle it cleanly with async/await.
+                
+                @Code(name: "RequestPermission.swift", file: "01-request-permission.swift")
+            }
+            
+            @Step {
+                **Checking Permission Status**
+                
+                Add a method to check the current permission status.
+                Handle .notDetermined, .denied, .authorized, .provisional, etc.
+                
+                @Code(name: "CheckPermission.swift", file: "01-check-permission.swift")
+            }
+            
+            @Step {
+                **Implementing Permission Request UI**
+                
+                Create an onboarding view that explains the need for permissions.
+                Display the system permission dialog after the explanation.
+                
+                @Code(name: "PermissionView.swift", file: "01-permission-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Permission Denial") {
+        @ContentAndMedia {
+            If the user denies permission, you cannot request it again within the app.
+            
+            Guiding the user to the Settings app is the only option.
+            However, being too pushy can worsen the user experience.
+        }
+        
+        @Steps {
+            @Step {
+                **Opening the Settings App**
+                
+                Open the Settings app using UIApplication.openSettingsURLString.
+                Users can change permissions directly there.
+                
+                @Code(name: "OpenSettings.swift", file: "01-open-settings.swift")
+            }
+            
+            @Step {
+                **UI Handling When Permission is Denied**
+                
+                Display an appropriate guidance message when permission is denied.
+                Gently guide users to change their settings.
+                
+                @Code(name: "DeniedView.swift", file: "01-denied-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which class is the center of all notification operations in UserNotifications?
+            
+            @Choice(isCorrect: true) {
+                UNUserNotificationCenter
+                
+                @Justification(reaction: "Correct!") {
+                    Access the singleton instance via UNUserNotificationCenter.current() to perform
+                    all operations including permission requests, notification scheduling, and management.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UNNotificationCenter
+                
+                @Justification(reaction: "Not quite") {
+                    The correct name is UNUserNotificationCenter.
+                    Remember that User is included!
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NotificationCenter
+                
+                @Justification(reaction: "Easy to confuse") {
+                    NotificationCenter is for internal app event delivery.
+                    For user notifications, use UNUserNotificationCenter.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            After a user denies notification permission, can you request it again from the app?
+            
+            @Choice(isCorrect: false) {
+                Yes, just call requestAuthorization again
+                
+                @Justification(reaction: "Not quite") {
+                    Once denied, you cannot request again within the app.
+                    The system dialog will not appear again.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                No, the user must change it directly in the Settings app
+                
+                @Justification(reaction: "Correct!") {
+                    If permission is denied, guiding to the Settings app is the only way.
+                    Use UIApplication.openSettingsURLString.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                You can request again after 24 hours
+                
+                @Justification(reaction: "Not quite") {
+                    iOS doesn't have such a restriction.
+                    Once decided, the user must change permissions manually.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is the best time to request notification permission?
+            
+            @Choice(isCorrect: false) {
+                Right after app first launch
+                
+                @Justification(reaction: "Not recommended") {
+                    Requesting permission before users understand the app's value
+                    increases rejection rates.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                When the user uses a feature that requires notifications
+                
+                @Justification(reaction: "This is the HIG best practice!") {
+                    When setting a reminder, it's naturally understood why notifications are needed.
+                    Contextual permission requests increase approval rates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                In the settings screen
+                
+                @Justification(reaction: "Possible but not ideal") {
+                    It can be in settings, but requesting at the actual moment of need
+                    is more natural.
+                }
+            }
+        }
+    }
+}

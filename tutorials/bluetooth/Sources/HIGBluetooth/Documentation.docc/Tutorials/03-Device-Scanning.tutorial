@@ -1,0 +1,179 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Device Scanning") {
+        Learn how to scan for nearby BLE devices
+        and manage the list of discovered devices.
+    }
+    
+    @Section(title: "Starting a Scan") {
+        @ContentAndMedia {
+            Use the `scanForPeripherals` method to search for nearby BLE devices.
+            You can specify certain service UUIDs or scan for all devices.
+            
+            **Scan Options:**
+            - `allowDuplicates`: Report the same device repeatedly
+            - `solicitedServiceUUIDs`: Request specific services
+        }
+        
+        @Steps {
+            @Step {
+                Implement the basic scanning functionality.
+                Start scanning after confirming poweredOn state.
+                
+                @Code(name: "BluetoothManager.swift", file: "03-01-start-scan.swift")
+            }
+            
+            @Step {
+                Scan only for devices with specific services.
+                Let's use the heart rate service (0x180D) as an example.
+                
+                @Code(name: "BluetoothManager.swift", file: "03-02-filtered-scan.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Processing Discovered Devices") {
+        @ContentAndMedia {
+            Receive discovered device information in the `didDiscover` callback.
+            
+            **Provided Information:**
+            - `peripheral`: CBPeripheral object
+            - `advertisementData`: Advertisement data dictionary
+            - `RSSI`: Signal strength (dBm)
+        }
+        
+        @Steps {
+            @Step {
+                Convert discovered devices to models and store them.
+                Filter out duplicate devices.
+                
+                @Code(name: "DiscoveredDevice.swift", file: "03-03-discovered-device.swift")
+            }
+            
+            @Step {
+                Extract useful information from advertisementData.
+                Parse device name, service UUIDs, etc.
+                
+                @Code(name: "BluetoothManager.swift", file: "03-04-advertisement-data.swift")
+            }
+            
+            @Step {
+                Convert RSSI values to signal strength icons.
+                Provide visual feedback to users.
+                
+                @Code(name: "SignalStrength.swift", file: "03-05-signal-strength.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing the Scan UI") {
+        @ContentAndMedia {
+            Display the discovered device list using SwiftUI.
+            Provide scan status and refresh functionality.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the scan screen UI.
+                Display the device list and scan status.
+                
+                @Code(name: "ScanView.swift", file: "03-06-scan-view.swift")
+            }
+            
+            @Step {
+                Implement the device cell UI.
+                Display name, signal strength, and connect button.
+                
+                @Code(name: "DeviceRow.swift", file: "03-07-device-row.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when you pass nil to the serviceUUIDs parameter of scanForPeripherals?
+            
+            @Choice(isCorrect: true) {
+                It scans for all BLE devices
+                
+                @Justification(reaction: "Correct! 📡") {
+                    nil scans all advertising devices without filtering.
+                    This consumes more battery, so filtering is recommended when possible.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It doesn't scan
+                
+                @Justification(reaction: "Incorrect.") {
+                    nil is a valid value that scans all devices.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An error occurs
+                
+                @Justification(reaction: "Wrong.") {
+                    nil is an allowed value.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which has a stronger signal: RSSI value -50 dBm or -90 dBm?
+            
+            @Choice(isCorrect: true) {
+                -50 dBm
+                
+                @Justification(reaction: "Correct! 📶") {
+                    RSSI closer to 0 means stronger signal.
+                    -50 dBm is a close distance, -90 dBm is a far distance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                -90 dBm
+                
+                @Justification(reaction: "It's the opposite.") {
+                    The smaller the number (further from 0), the weaker the signal.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They are the same
+                
+                @Justification(reaction: "Wrong.") {
+                    A 40 dBm difference is significant in signal strength.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which key retrieves the device name from advertisementData?
+            
+            @Choice(isCorrect: false) {
+                CBAdvertisementDataServiceUUIDsKey
+                
+                @Justification(reaction: "That's the service UUID list.") {
+                    Service UUIDs contain information about services the device provides.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CBAdvertisementDataLocalNameKey
+                
+                @Justification(reaction: "Correct! 🏷️") {
+                    LocalName is the name advertised by the device.
+                    It may differ from peripheral.name.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CBAdvertisementDataManufacturerDataKey
+                
+                @Justification(reaction: "Incorrect.") {
+                    ManufacturerData contains custom data from the manufacturer.
+                }
+            }
+        }
+    }
+}

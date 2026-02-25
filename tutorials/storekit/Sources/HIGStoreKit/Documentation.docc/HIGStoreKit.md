@@ -1,15 +1,15 @@
 # ``HIGStoreKit``
 
-StoreKit 2를 활용한 인앱결제와 구독 시스템을 구현합니다.
+Implement in-app purchases and subscription systems using StoreKit 2.
 
 ## Overview
 
-이 튜토리얼에서는 구독형 앱을 만들며 StoreKit 2의 핵심 개념을 학습합니다.
+In this tutorial, you'll learn the core concepts of StoreKit 2 while building a subscription-based app.
 
-- Product 로딩 및 표시
-- 구매 플로우 구현
-- 구독 상태 관리
-- HIG 준수 페이월 UI
+- Loading and displaying Products
+- Implementing purchase flow
+- Managing subscription status
+- HIG-compliant paywall UI
 
 ## Topics
 

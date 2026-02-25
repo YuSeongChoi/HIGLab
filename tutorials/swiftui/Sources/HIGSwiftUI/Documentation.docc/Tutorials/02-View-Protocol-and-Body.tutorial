@@ -1,0 +1,218 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Understanding View Protocol & body") {
+        Deeply explore the View protocol, the core of SwiftUI.
+        Learn the role of the body property and the magic of @ViewBuilder.
+    }
+    
+    @Section(title: "The Secret of View Protocol") {
+        @ContentAndMedia {
+            In SwiftUI, everything visible on screen follows the **View protocol**.
+            
+            Text, Image, Button, VStack, List...
+            All are Views.
+            
+            The View protocol has only one requirement:
+            the `body` property
+        }
+        
+        @Steps {
+            @Step {
+                **View Protocol Definition**
+                
+                Let's look at the View protocol definition.
+                It's surprisingly simple!
+                
+                It only has `associatedtype Body: View` and
+                `var body: Body { get }`.
+                
+                @Code(name: "ViewProtocol.swift", file: "02-view-protocol.swift")
+            }
+            
+            @Step {
+                **body is a Computed Property**
+                
+                body is a computed property, not a stored property.
+                It returns a new view hierarchy each time it's called.
+                
+                SwiftUI re-calls this body whenever state changes,
+                efficiently updating only the changed parts.
+                
+                @Code(name: "BodyProperty.swift", file: "02-body-computed.swift")
+            }
+            
+            @Step {
+                **The Meaning of some View**
+                
+                `some View` means "some specific View type".
+                It's called an Opaque Return Type.
+                
+                The compiler infers the actual type,
+                but externally only "it's a View" is known.
+                
+                @Code(name: "SomeView.swift", file: "02-some-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The Magic of @ViewBuilder") {
+        @ContentAndMedia {
+            The reason you can list multiple views inside body is
+            thanks to **@ViewBuilder**.
+            
+            @ViewBuilder uses Swift's Result Builder feature
+            to combine multiple views into one view.
+        }
+        
+        @Steps {
+            @Step {
+                **Returning Multiple Views**
+                
+                What if you list multiple views without VStack inside body?
+                @ViewBuilder automatically wraps them in a TupleView.
+                
+                However, it's usually better to wrap with a Stack.
+                This gives you explicit control over the layout.
+                
+                @Code(name: "ViewBuilder.swift", file: "02-viewbuilder.swift")
+            }
+            
+            @Step {
+                **Conditional View Rendering**
+                
+                Thanks to @ViewBuilder, you can conditionally display views with if statements.
+                
+                Let's conditionally show the "favorites indicator" in ChefBook.
+                
+                @Code(name: "ConditionalView.swift", file: "02-conditional.swift")
+            }
+            
+            @Step {
+                **Creating Custom @ViewBuilder**
+                
+                Use @ViewBuilder when creating your own container views.
+                
+                Let's make ChefBook's "section card".
+                A reusable container that takes a title and content.
+                
+                @Code(name: "CustomViewBuilder.swift", file: "02-custom-viewbuilder.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ChefBook: Creating Recipe Header") {
+        @ContentAndMedia {
+            Let's create ChefBook's recipe detail screen header using what we've learned!
+            
+            A view showing recipe name, description, cooking time, and difficulty.
+        }
+        
+        @Steps {
+            @Step {
+                **RecipeHeaderView Structure Design**
+                
+                First, think about what information to display.
+                
+                - Recipe name (large font)
+                - Description (subtext)
+                - Icon + cooking time
+                - Difficulty badge
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-start.swift")
+            }
+            
+            @Step {
+                **Connecting Recipe Data Model**
+                
+                Receive a Recipe struct and display information.
+                Apply appropriate styles to each piece of information.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-model.swift")
+            }
+            
+            @Step {
+                **Styling with View Modifiers**
+                
+                Apply styles with SwiftUI's **Modifier** chains.
+                
+                Chain .font(), .foregroundStyle(), .padding(), etc.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-styled.swift")
+            }
+            
+            @Step {
+                **Check with Preview**
+                
+                Preview various states with #Preview macro.
+                
+                Test with real data and various cases.
+                
+                @Code(name: "RecipeHeaderView.swift", file: "02-recipe-header-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the only required requirement of the View protocol?
+            
+            @Choice(isCorrect: true) {
+                body property
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    View protocol only requires body.
+                    Everything else is provided through extensions and modifiers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                init() initializer
+                
+                @Justification(reaction: "Not quite") {
+                    Initializer is not a requirement of View protocol.
+                    You can create custom initializers as needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                draw() method
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftUI has no draw() method.
+                    body "declares" the UI.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does `some View` mean?
+            
+            @Choice(isCorrect: true) {
+                A specific View type inferred by the compiler
+                
+                @Justification(reaction: "Exactly right! ⭐") {
+                    As an Opaque Return Type,
+                    the compiler knows the exact type but
+                    externally only "it's a View" is exposed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Any View can be returned
+                
+                @Justification(reaction: "Not quite") {
+                    some View means "one specific type".
+                    You can't return different types each time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Same meaning as Optional<View>
+                
+                @Justification(reaction: "Not quite") {
+                    some View is different from Optional.
+                    It always returns a specific View type.
+                }
+            }
+        }
+    }
+}

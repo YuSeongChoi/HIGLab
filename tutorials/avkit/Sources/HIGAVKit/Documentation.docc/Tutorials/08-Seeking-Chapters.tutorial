@@ -1,0 +1,214 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Time Seeking & Chapters") {
+        Implement precise seeking and chapter navigation
+        so users can easily jump to desired positions.
+        
+        @Image(source: "seeking-chapters.png", alt: "Time Seeking and Chapters")
+    }
+    
+    @Section(title: "Basic Seeking") {
+        @ContentAndMedia {
+            Use seek(to:) method to move to a specific time position.
+            Specify precise time using CMTime.
+            
+            - Second-based navigation
+            - Percentage-based navigation
+            - Completion handler
+        }
+        
+        @Steps {
+            @Step {
+                Move to a specific time using CMTime.
+                
+                @Code(name: "BasicSeek.swift", file: "08-01-basic-seek.swift")
+            }
+            
+            @Step {
+                Receive callback after seek completes to update UI.
+                
+                @Code(name: "SeekCompletion.swift", file: "08-02-seek-completion.swift")
+            }
+            
+            @Step {
+                Implement relative time navigation.
+                Move ±10 seconds, ±30 seconds from current position.
+                
+                @Code(name: "RelativeSeek.swift", file: "08-03-relative-seek.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Precise Seeking") {
+        @ContentAndMedia {
+            Control seeking precision with toleranceBefore
+            and toleranceAfter.
+            
+            - Fast seeking: Wide tolerance
+            - Precise seeking: Zero tolerance
+            - Keyframe-based seeking
+        }
+        
+        @Steps {
+            @Step {
+                Setting toleranceBefore/After to .zero
+                moves to exact position but takes longer.
+                
+                @Code(name: "PreciseSeek.swift", file: "08-04-precise-seek.swift")
+            }
+            
+            @Step {
+                Use wide tolerance for fast seeking.
+                Moves to nearest keyframe.
+                
+                @Code(name: "FastSeek.swift", file: "08-05-fast-seek.swift")
+            }
+            
+            @Step {
+                Use fast seeking during slider drag,
+                precise seeking when drag ends.
+                
+                @Code(name: "SmartSeek.swift", file: "08-06-smart-seek.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Timeline Slider") {
+        @ContentAndMedia {
+            Implement a timeline slider for users
+            to directly select time.
+            
+            - Preview during drag
+            - Buffer status display
+            - Thumbnail preview
+        }
+        
+        @Steps {
+            @Step {
+                Implement timeline using Slider.
+                
+                @Code(name: "TimelineSlider.swift", file: "08-07-timeline-slider.swift")
+            }
+            
+            @Step {
+                Pause playback during drag and
+                resume at that position when drag ends.
+                
+                @Code(name: "SliderDrag.swift", file: "08-08-slider-drag.swift")
+            }
+            
+            @Step {
+                Generate thumbnails for specific times
+                using AVAssetImageGenerator.
+                
+                @Code(name: "ThumbnailGenerator.swift", file: "08-09-thumbnail.swift")
+            }
+            
+            @Step {
+                Display thumbnail preview above the slider.
+                
+                @Code(name: "ThumbnailPreview.swift", file: "08-10-thumbnail-preview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Chapter Navigation") {
+        @ContentAndMedia {
+            Read chapter information embedded in videos
+            and implement chapter-based navigation.
+            
+            - Read chapter metadata
+            - Display chapter list
+            - Navigate between chapters
+        }
+        
+        @Steps {
+            @Step {
+                Load chapter metadata from AVAsset.
+                Get chapter info with chapterMetadataGroups.
+                
+                @Code(name: "LoadChapters.swift", file: "08-11-load-chapters.swift")
+            }
+            
+            @Step {
+                Implement chapter list UI.
+                Display each chapter's title and start time.
+                
+                @Code(name: "ChapterList.swift", file: "08-12-chapter-list.swift")
+            }
+            
+            @Step {
+                Navigate to that time when a chapter is tapped.
+                
+                @Code(name: "ChapterNavigation.swift", file: "08-13-chapter-nav.swift")
+            }
+            
+            @Step {
+                Implement previous/next chapter buttons.
+                Find chapters based on current playback position.
+                
+                @Code(name: "ChapterButtons.swift", file: "08-14-chapter-buttons.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when toleranceBefore and toleranceAfter are set to .zero?
+            
+            @Choice(isCorrect: true) {
+                Moves to exact time position but seeking takes longer
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Zero tolerance requires additional decoding work
+                    to find the exact position.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Seeking fails
+                
+                @Justification(reaction: "Incorrect.") {
+                    Seeking succeeds but takes longer.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always moves to keyframes only
+                
+                @Justification(reaction: "It's the opposite.") {
+                    Zero tolerance moves to the exact position,
+                    not keyframes.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the optimal seek strategy during slider drag?
+            
+            @Choice(isCorrect: false) {
+                Always use precise seeking (.zero tolerance)
+                
+                @Justification(reaction: "Performance issues.") {
+                    Fast feedback is more important during drag.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Use fast seeking during drag, precise seeking when finished
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Provides fast feedback during drag,
+                    accuracy at the final position.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only seek when drag ends
+                
+                @Justification(reaction: "Poor user experience.") {
+                    Preview should be available during drag too.
+                }
+            }
+        }
+    }
+}

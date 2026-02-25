@@ -1,0 +1,94 @@
+@Tutorial(time: 25) {
+    @Intro(title: "NFCTagReaderSession") {
+        Access various native tag types with NFCTagReaderSession.
+        Work directly with ISO 7816, ISO 15693, FeliCa, and MIFARE tags.
+    }
+    
+    @Section(title: "Setting Up TagReaderSession") {
+        @ContentAndMedia {
+            NFCTagReaderSession supports various tag protocols beyond NDEF.
+            Lower-level tag control is possible.
+        }
+        @Steps {
+            @Step {
+                Adopt the NFCTagReaderSessionDelegate protocol.
+                @Code(name: "TagReader.swift", file: "07-01-delegate.swift")
+            }
+            @Step {
+                Specify tag types to support as polling options.
+                Choose from iso14443, iso15693, or iso18092.
+                @Code(name: "TagReader.swift", file: "07-02-polling.swift")
+            }
+            @Step {
+                Create and start the session.
+                @Code(name: "TagReader.swift", file: "07-03-begin.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Identifying Tag Types") {
+        @ContentAndMedia {
+            Identify the type of detected tag and perform appropriate processing.
+        }
+        @Steps {
+            @Step {
+                Receive the tag array in the readerSession(_:didDetect:) delegate.
+                @Code(name: "TagReader.swift", file: "07-04-detect.swift")
+            }
+            @Step {
+                Branch tag types using the NFCTag enumeration.
+                Cases include iso7816, feliCa, iso15693, and miFare.
+                @Code(name: "TagReader.swift", file: "07-05-switch.swift")
+            }
+            @Step {
+                Connect to the tag and begin communication.
+                @Code(name: "TagReader.swift", file: "07-06-connect.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the difference between NFCTagReaderSession and NFCNDEFReaderSession?
+            @Choice(isCorrect: false) {
+                Only performance differences.
+                @Justification(reaction: "Think again.") {
+                    They serve functionally different purposes.
+                }
+            }
+            @Choice(isCorrect: true) {
+                TagReaderSession can access native tag protocols beyond NDEF.
+                @Justification(reaction: "Correct!") {
+                    Low-level communication like ISO 7816 APDU commands is possible.
+                }
+            }
+            @Choice(isCorrect: false) {
+                TagReaderSession is write-only.
+                @Justification(reaction: "Think again.") {
+                    Both reading and writing are possible.
+                }
+            }
+        }
+        @MultipleChoice {
+            Which is NOT a valid polling option for NFCTagReaderSession?
+            @Choice(isCorrect: false) {
+                .iso14443
+                @Justification(reaction: "Think again.") {
+                    iso14443 is a valid polling option.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .iso15693
+                @Justification(reaction: "Think again.") {
+                    iso15693 is a valid polling option.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .bluetooth
+                @Justification(reaction: "Correct!") {
+                    Bluetooth is not NFC, so it's not in the polling options.
+                }
+            }
+        }
+    }
+}

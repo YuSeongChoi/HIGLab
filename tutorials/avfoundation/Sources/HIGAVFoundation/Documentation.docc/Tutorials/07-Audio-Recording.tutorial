@@ -1,0 +1,203 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Audio Recording (AVAudioRecorder)") {
+        Record high-quality audio with AVAudioRecorder.
+        Implement recording level monitoring and file management.
+    }
+    
+    @Section(title: "AVAudioRecorder Setup") {
+        @ContentAndMedia {
+            AVAudioRecorder is a high-level API for audio recording.
+            It supports various audio formats and quality settings.
+            
+            **Supported Formats:**
+            - AAC (.m4a)
+            - Apple Lossless (.m4a)
+            - Linear PCM (.wav)
+            - MP3 (playback only)
+        }
+        
+        @Steps {
+            @Step {
+                Create the AudioRecorder class.
+                Adopt ObservableObject for binding with SwiftUI.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-audio-recorder-class.swift")
+            }
+            
+            @Step {
+                Configure recording settings.
+                Set sample rate, number of channels, and bit rate.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-recording-settings.swift")
+            }
+            
+            @Step {
+                Create recording file URL.
+                Create filename with timestamp in Documents directory.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-file-url.swift")
+            }
+            
+            @Step {
+                Create AVAudioRecorder instance.
+                Initialize recorder with settings and URL.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-create-recorder.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Recording Control") {
+        @ContentAndMedia {
+            Implement start, pause, and stop recording functionality.
+            Track recording state to reflect in UI.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the start recording method.
+                Prepare buffer with prepareToRecord() before calling record().
+                
+                @Code(name: "AudioRecorder.swift", file: "07-start-recording.swift")
+            }
+            
+            @Step {
+                Implement recording pause and resume.
+                Control with pause() and record().
+                
+                @Code(name: "AudioRecorder.swift", file: "07-pause-resume.swift")
+            }
+            
+            @Step {
+                Implement stop recording.
+                File is saved after calling stop().
+                
+                @Code(name: "AudioRecorder.swift", file: "07-stop-recording.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Level Monitoring") {
+        @ContentAndMedia {
+            Monitor real-time audio levels.
+            Provide visual feedback with level meter UI.
+        }
+        
+        @Steps {
+            @Step {
+                Enable metering.
+                Set isMeteringEnabled to true.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-enable-metering.swift")
+            }
+            
+            @Step {
+                Read levels periodically with Timer.
+                Read peakPower after calling updateMeters().
+                
+                @Code(name: "AudioRecorder.swift", file: "07-read-levels.swift")
+            }
+            
+            @Step {
+                Normalize decibels to 0~1 range.
+                Convert to values easy to use in UI.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-normalize-level.swift")
+            }
+            
+            @Step {
+                Implement level meter UI.
+                Draw bar graph with SwiftUI.
+                
+                @Code(name: "AudioLevelView.swift", file: "07-level-meter-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Recording File Management") {
+        @ContentAndMedia {
+            Manage and play back recorded file list.
+        }
+        
+        @Steps {
+            @Step {
+                Get list of recorded files.
+                Search for audio files in Documents directory.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-list-recordings.swift")
+            }
+            
+            @Step {
+                Add recording file delete functionality.
+                Delete files with FileManager.
+                
+                @Code(name: "AudioRecorder.swift", file: "07-delete-recording.swift")
+            }
+            
+            @Step {
+                Implement recordings list UI.
+                Display file list with List and delete with swipe.
+                
+                @Code(name: "RecordingsListView.swift", file: "07-recordings-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which method must be called before reading recording levels in AVAudioRecorder?
+            
+            @Choice(isCorrect: true) {
+                `updateMeters()`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Call updateMeters() to read the latest level values.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `prepareToRecord()`
+                
+                @Justification(reaction: "Think again.") {
+                    prepareToRecord() is a method that prepares buffers before recording starts.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `refreshMeters()`
+                
+                @Justification(reaction: "Think again.") {
+                    Such a method doesn't exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the kAudioFormatKey value for recording in AAC format?
+            
+            @Choice(isCorrect: false) {
+                `kAudioFormatAppleLossless`
+                
+                @Justification(reaction: "Think again.") {
+                    This is the lossless compression format.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `kAudioFormatMPEG4AAC`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AAC format is specified with kAudioFormatMPEG4AAC.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `kAudioFormatLinearPCM`
+                
+                @Justification(reaction: "Think again.") {
+                    LinearPCM is an uncompressed audio format.
+                }
+            }
+        }
+    }
+}

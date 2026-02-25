@@ -1,0 +1,159 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Introduction to MultipeerConnectivity") {
+        Learn the core concepts of the MultipeerConnectivity framework and 
+        basic setup for nearby communication.
+    }
+    
+    @Section(title: "What is MultipeerConnectivity?") {
+        @ContentAndMedia {
+            MultipeerConnectivity is a framework that enables direct 
+            communication with nearby devices via Wi-Fi, P2P Wi-Fi, and Bluetooth.
+            
+            You can exchange data, streams, and files 
+            without an internet connection.
+        }
+        
+        @Steps {
+            @Step {
+                Let's look at the main classes in MultipeerConnectivity.
+                
+                - `MCPeerID`: Device identifier
+                - `MCSession`: Communication session between connected peers
+                - `MCNearbyServiceBrowser`: Discover nearby devices
+                - `MCNearbyServiceAdvertiser`: Advertise yourself
+                
+                @Code(name: "MultipeerOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                Import MultipeerConnectivity into your project.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info.plist Permission Setup") {
+        @ContentAndMedia {
+            To use MultipeerConnectivity, 
+            you need to configure required permissions in Info.plist.
+            
+            Local network access and Bonjour service setup are required.
+        }
+        
+        @Steps {
+            @Step {
+                Add local network access permission.
+                
+                Use the `NSLocalNetworkUsageDescription` key.
+                
+                @Code(name: "Info.plist", file: "01-03-plist.swift")
+            }
+            
+            @Step {
+                Register the Bonjour service type.
+                
+                Add the service type to the `NSBonjourServices` array.
+                
+                @Code(name: "Info.plist", file: "01-04-bonjour.swift")
+            }
+            
+            @Step {
+                Add permission for Bluetooth usage as well.
+                
+                @Code(name: "Info.plist", file: "01-05-bluetooth.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Defining Service Type") {
+        @ContentAndMedia {
+            In MultipeerConnectivity, service types identify 
+            devices running the same app.
+            
+            Service types consist of 1-15 lowercase letters and numbers.
+        }
+        
+        @Steps {
+            @Step {
+                Define the service type constant.
+                
+                The same service type must be used throughout the app.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-06-service-type.swift")
+            }
+            
+            @Step {
+                Write the basic structure of the MultipeerManager class.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-07-manager-struct.swift")
+            }
+            
+            @Step {
+                Make it an ObservableObject to integrate with SwiftUI.
+                
+                @Code(name: "MultipeerManager.swift", file: "01-08-observable.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which is NOT a communication method supported by MultipeerConnectivity?
+            
+            @Choice(isCorrect: false) {
+                Wi-Fi
+                
+                @Justification(reaction: "Think again.") {
+                    Wi-Fi is a communication method supported by MultipeerConnectivity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bluetooth
+                
+                @Justification(reaction: "Think again.") {
+                    Bluetooth is a communication method supported by MultipeerConnectivity.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Cellular Network
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    MultipeerConnectivity only supports Wi-Fi, P2P Wi-Fi, and Bluetooth.
+                    It does not support cellular networks.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the correct format for a service type?
+            
+            @Choice(isCorrect: true) {
+                1-15 lowercase letters and numbers
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Service types consist of 1-15 lowercase letters and numbers, 
+                    and may include hyphens (-).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A word starting with uppercase
+                
+                @Justification(reaction: "Think again.") {
+                    Uppercase letters cannot be used in service types.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID format
+                
+                @Justification(reaction: "Think again.") {
+                    A short string is used, not UUID format.
+                }
+            }
+        }
+    }
+}

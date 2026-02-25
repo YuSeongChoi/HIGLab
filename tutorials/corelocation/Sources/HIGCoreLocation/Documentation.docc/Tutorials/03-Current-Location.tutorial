@@ -1,0 +1,214 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Getting the Current Location") {
+        Learn how to retrieve the user's current location once.
+        Use this to record the starting point before a run.
+    }
+    
+    @Section(title: "One-Shot Location Request") {
+        @ContentAndMedia {
+            When continuous tracking isn't needed,
+            getting the current location just once is more efficient.
+            
+            Starting with iOS 17, you can use the new async/await API.
+        }
+        
+        @Steps {
+            @Step {
+                **Using requestLocation()**
+                
+                `requestLocation()` requests the current location once.
+                When the location is received, the delegate method is called.
+                
+                @Code(name: "LocationManager.swift", file: "03-request-location.swift")
+            }
+            
+            @Step {
+                **Receiving Location Updates**
+                
+                In the `locationManager(_:didUpdateLocations:)` method,
+                the last element in the locations array is the most recent location.
+                
+                @Code(name: "LocationManager.swift", file: "03-did-update.swift")
+            }
+            
+            @Step {
+                **Error Handling**
+                
+                When the location cannot be retrieved,
+                `locationManager(_:didFailWithError:)` is called.
+                Handle situations like no GPS signal or permission denied.
+                
+                @Code(name: "LocationManager.swift", file: "03-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using CLLocation Data") {
+        @ContentAndMedia {
+            The CLLocation object contains various information
+            beyond latitude/longitude, including accuracy, altitude, speed, and timestamp.
+        }
+        
+        @Steps {
+            @Step {
+                **Extracting Coordinate Information**
+                
+                Get latitude and longitude from the `coordinate` property.
+                
+                @Code(name: "LocationData.swift", file: "03-coordinate.swift")
+            }
+            
+            @Step {
+                **Checking Accuracy**
+                
+                `horizontalAccuracy` is the location error range in meters.
+                Smaller values indicate more accurate positions.
+                
+                Negative values mean the location is invalid.
+                
+                @Code(name: "LocationData.swift", file: "03-accuracy-check.swift")
+            }
+            
+            @Step {
+                **Calculating Distance**
+                
+                Calculate the distance between two CLLocations
+                using the `distance(from:)` method.
+                It returns accurate distance considering Earth's curvature.
+                
+                @Code(name: "LocationData.swift", file: "03-distance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying the Starting Point") {
+        @ContentAndMedia {
+            Get the current location, save it as the running start point,
+            and display it on a map using MapKit.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating the RunSession Model**
+                
+                Create a model to store running session data.
+                Include start location, end location, and route coordinates.
+                
+                @Code(name: "RunSession.swift", file: "03-run-session.swift")
+            }
+            
+            @Step {
+                **Displaying the Map with MapKit**
+                
+                Use SwiftUI's Map view to display
+                the current location on a map.
+                
+                @Code(name: "MapView.swift", file: "03-map-view.swift")
+            }
+            
+            @Step {
+                **Completing the Run Start Screen**
+                
+                Display the current location and add a "Start Run" button.
+                Pressing the button records the starting location.
+                
+                @Code(name: "StartRunView.swift", file: "03-start-run-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the difference between requestLocation() and startUpdatingLocation()?
+            
+            @Choice(isCorrect: true) {
+                requestLocation() gets location once, startUpdatingLocation() receives continuously
+                
+                @Justification(reaction: "Correct!") {
+                    requestLocation() stops automatically after receiving one location.
+                    It's battery efficient when continuous tracking isn't needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                requestLocation() is more accurate
+                
+                @Justification(reaction: "Not quite") {
+                    Accuracy is determined by the desiredAccuracy setting.
+                    There's no accuracy difference between the methods themselves.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No difference
+                
+                @Justification(reaction: "Not quite") {
+                    The two methods operate differently.
+                    One is one-shot, the other is continuous updates.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does a negative horizontalAccuracy in CLLocation mean?
+            
+            @Choice(isCorrect: true) {
+                The location data is invalid
+                
+                @Justification(reaction: "Correct!") {
+                    Negative accuracy means the location could not be determined.
+                    You should not use that location data.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Very accurate location
+                
+                @Justification(reaction: "Not quite") {
+                    Negative values indicate an error.
+                    Higher accuracy means smaller positive values.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Measured underground
+                
+                @Justification(reaction: "Not quite") {
+                    Regardless of underground status, negative values mean
+                    the location could not be determined.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What method calculates the distance between two CLLocations?
+            
+            @Choice(isCorrect: true) {
+                distance(from:)
+                
+                @Justification(reaction: "Correct!") {
+                    distance(from:) returns accurate distance in meters
+                    considering Earth's curvature.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                distanceBetween(_:_:)
+                
+                @Justification(reaction: "Not quite") {
+                    There's no method with this name in CLLocation.
+                    Use the distance(from:) instance method.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Calculate coordinate difference directly
+                
+                @Justification(reaction: "Not quite") {
+                    Direct calculation doesn't consider Earth's curvature and is inaccurate.
+                    Use the distance(from:) method.
+                }
+            }
+        }
+    }
+}

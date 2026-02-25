@@ -1,0 +1,142 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Setting Up EKEventStore") {
+        Learn how to properly set up and manage an EKEventStore 
+        for use throughout your app.
+    }
+    
+    @Section(title: "Creating EKEventStore") {
+        @ContentAndMedia {
+            `EKEventStore` represents a connection to the calendar database. 
+            It's best to maintain only one instance in your app.
+        }
+        
+        @Steps {
+            @Step {
+                Create a CalendarManager class using the singleton pattern.
+                
+                @Code(name: "CalendarManager.swift", file: "02-01-singleton.swift")
+            }
+            
+            @Step {
+                Declare an `EKEventStore` instance as a property.
+                
+                @Code(name: "CalendarManager.swift", file: "02-02-store.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Detecting Database Changes") {
+        @ContentAndMedia {
+            When calendar data is changed by other apps or the system, 
+            you need to receive notifications and update the UI.
+        }
+        
+        @Steps {
+            @Step {
+                Subscribe to the `EKEventStoreChanged` notification.
+                
+                @Code(name: "CalendarManager.swift", file: "02-03-notification.swift")
+            }
+            
+            @Step {
+                Implement it in a more modern way using Combine.
+                
+                @Code(name: "CalendarManager.swift", file: "02-04-combine.swift")
+            }
+            
+            @Step {
+                Refresh data when receiving change notifications.
+                
+                @Code(name: "CalendarManager.swift", file: "02-05-refresh.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Integrating with SwiftUI") {
+        @ContentAndMedia {
+            Inject CalendarManager into your SwiftUI app 
+            using Environment.
+        }
+        
+        @Steps {
+            @Step {
+                Modify to conform to `ObservableObject`.
+                
+                @Code(name: "CalendarManager.swift", file: "02-06-observable.swift")
+            }
+            
+            @Step {
+                Inject as Environment at the app entry point.
+                
+                @Code(name: "CalendarApp.swift", file: "02-07-app.swift")
+            }
+            
+            @Step {
+                Use CalendarManager in a View.
+                
+                @Code(name: "ContentView.swift", file: "02-08-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How many EKEventStore instances are recommended per app?
+            
+            @Choice(isCorrect: true) {
+                One (singleton)
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    EKEventStore uses a lot of resources, so 
+                    it's best to maintain only one in your app.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                One per View
+                
+                @Justification(reaction: "Try again.") {
+                    Creating multiple EKEventStores 
+                    unnecessarily increases memory usage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Create new ones as needed
+                
+                @Justification(reaction: "Try again.") {
+                    Creating EKEventStore is an expensive operation.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What notification do you subscribe to for detecting calendar data changes?
+            
+            @Choice(isCorrect: false) {
+                `EKCalendarChanged`
+                
+                @Justification(reaction: "Try again.") {
+                    This notification name doesn't exist.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `EKEventStoreChanged`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    You can detect calendar data changes 
+                    with the `EKEventStoreChanged` notification.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `NSCalendarDayChanged`
+                
+                @Justification(reaction: "Try again.") {
+                    This notification fires when the date changes.
+                }
+            }
+        }
+    }
+}

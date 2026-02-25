@@ -1,0 +1,168 @@
+@Tutorial(time: 12) {
+    @Intro(title: "MCSession Connection") {
+        Use MCSession to manage connections between peers and
+        set up communication channels.
+    }
+    
+    @Section(title: "Understanding MCSession") {
+        @ContentAndMedia {
+            MCSession is a communication session between connected peers.
+            
+            Up to 8 peers can connect to a single session,
+            and you can exchange data, streams, and resources.
+        }
+        
+        @Steps {
+            @Step {
+                Let's examine the basic structure of MCSession.
+                
+                Initialize the session with a PeerID.
+                
+                @Code(name: "SessionManager.swift", file: "05-01-session-basic.swift")
+            }
+            
+            @Step {
+                Learn about security identifiers and encryption defaults.
+                
+                @Code(name: "SessionManager.swift", file: "05-02-security.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Session Delegate") {
+        @ContentAndMedia {
+            MCSessionDelegate handles events like session state changes, 
+            data reception, and stream reception.
+            
+            All callbacks are called on background threads.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the required methods of MCSessionDelegate.
+                
+                @Code(name: "SessionManager.swift", file: "05-03-delegate.swift")
+            }
+            
+            @Step {
+                Handle peer connection state changes.
+                
+                There are connected, connecting, and notConnected states.
+                
+                @Code(name: "SessionManager.swift", file: "05-04-state-changed.swift")
+            }
+            
+            @Step {
+                Implement the data reception callback.
+                
+                @Code(name: "SessionManager.swift", file: "05-05-receive-data.swift")
+            }
+            
+            @Step {
+                Implement the stream reception callback.
+                
+                @Code(name: "SessionManager.swift", file: "05-06-receive-stream.swift")
+            }
+            
+            @Step {
+                Implement the resource reception callback.
+                
+                Handle file transfer start and completion.
+                
+                @Code(name: "SessionManager.swift", file: "05-07-receive-resource.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Connection Management") {
+        @ContentAndMedia {
+            Manage connected peers in the session,
+            and handle disconnections.
+        }
+        
+        @Steps {
+            @Step {
+                Track the list of connected peers.
+                
+                @Code(name: "SessionManager.swift", file: "05-08-connected-peers.swift")
+            }
+            
+            @Step {
+                Disconnect from a specific peer.
+                
+                @Code(name: "SessionManager.swift", file: "05-09-disconnect.swift")
+            }
+            
+            @Step {
+                Terminate the entire session.
+                
+                @Code(name: "SessionManager.swift", file: "05-10-disconnect-all.swift")
+            }
+            
+            @Step {
+                Display connection status in the UI.
+                
+                @Code(name: "ConnectionStatusView.swift", file: "05-11-status-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the maximum number of peers that can connect to an MCSession?
+            
+            @Choice(isCorrect: false) {
+                4
+                
+                @Justification(reaction: "Think again.") {
+                    MCSession supports more peers.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                8
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    MCSession can connect up to 8 peers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Unlimited
+                
+                @Justification(reaction: "Think again.") {
+                    MCSession has a connection limit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            On which thread are MCSessionDelegate methods called?
+            
+            @Choice(isCorrect: false) {
+                Main thread
+                
+                @Justification(reaction: "Think again.") {
+                    You need to switch to DispatchQueue.main for UI updates.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Background thread
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    All delegate callbacks are called on background threads,
+                    so you must switch to the main thread for UI updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Random thread
+                
+                @Justification(reaction: "Think again.") {
+                    Callbacks are always called on background threads.
+                }
+            }
+        }
+    }
+}

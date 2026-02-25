@@ -1,0 +1,245 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Loading Selected Items") {
+        Learn advanced techniques for loading various data formats
+        from PhotosPickerItem.
+    }
+    
+    @Section(title: "Understanding Loading Patterns") {
+        @ContentAndMedia {
+            Data loading from PhotosPickerItem is asynchronous.
+            Let's explore various patterns for efficient loading.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Loading Pattern**
+                
+                loadTransferable(type:) is an async throws method.
+                Call it with await inside a Task.
+                
+                @Code(name: "BasicLoading.swift", file: "06-basic-loading.swift")
+            }
+            
+            @Step {
+                **Error Handling Strategy**
+                
+                Implement error handling for loading failures.
+                Catch errors with do-catch and handle appropriately.
+                
+                @Code(name: "ErrorHandling.swift", file: "06-error-handling.swift")
+            }
+            
+            @Step {
+                **Cancellation Support**
+                
+                Check Task.isCancelled to quickly terminate cancelled work.
+                Stop unnecessary loading when the view disappears.
+                
+                @Code(name: "CancellationSupport.swift", file: "06-cancellation-support.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Parallel Loading") {
+        @ContentAndMedia {
+            Loading multiple items simultaneously greatly improves performance.
+            Implement parallel loading using TaskGroup.
+        }
+        
+        @Steps {
+            @Step {
+                **Parallel Loading with TaskGroup**
+                
+                Use withTaskGroup to load multiple images simultaneously.
+                Parallel processing is possible while maintaining order.
+                
+                @Code(name: "ParallelLoading.swift", file: "06-parallel-loading.swift")
+            }
+            
+            @Step {
+                **Limiting Concurrent Loading**
+                
+                Too many concurrent loads can cause memory issues.
+                Implement a pattern to limit concurrent execution.
+                
+                @Code(name: "ConcurrencyLimit.swift", file: "06-concurrency-limit.swift")
+            }
+            
+            @Step {
+                **Progress Tracking**
+                
+                Calculate overall loading progress and display it to users.
+                Bind to UI with @Published properties.
+                
+                @Code(name: "ProgressTracking.swift", file: "06-progress-tracking.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Caching Strategy") {
+        @ContentAndMedia {
+            Cache loaded images to prevent repeated loading.
+            Appropriately utilize memory and disk caches.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing Memory Cache**
+                
+                Implement memory cache using NSCache.
+                It automatically clears the cache under memory pressure.
+                
+                @Code(name: "MemoryCache.swift", file: "06-memory-cache.swift")
+            }
+            
+            @Step {
+                **Designing Cache Keys**
+                
+                Use PhotosPickerItem's itemIdentifier as the cache key.
+                Identical photos won't be loaded again.
+                
+                @Code(name: "CacheKey.swift", file: "06-cache-key.swift")
+            }
+            
+            @Step {
+                **Thumbnails vs Full Images**
+                
+                Load thumbnails in lists, full images in detail screens.
+                Control size with preferredItemEncoding.
+                
+                @Code(name: "ThumbnailVsFull.swift", file: "06-thumbnail-vs-full.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ViewModel Pattern") {
+        @ContentAndMedia {
+            Separate image loading logic into a ViewModel.
+            Bind to UI with observable state.
+        }
+        
+        @Steps {
+            @Step {
+                **Designing GalleryViewModel**
+                
+                Create a ViewModel responsible for selection, loading, and caching.
+                Make state observable with the @Observable macro.
+                
+                @Code(name: "GalleryViewModel.swift", file: "06-gallery-view-model.swift")
+            }
+            
+            @Step {
+                **ImageItem Model**
+                
+                Define a model that holds loading state and image data.
+                Make it Identifiable for use in lists.
+                
+                @Code(name: "ImageItem.swift", file: "06-image-item.swift")
+            }
+            
+            @Step {
+                **Completed Gallery Screen**
+                
+                Implement a complete gallery screen using the ViewModel.
+                Loading state, error handling, and caching are all applied.
+                
+                @Code(name: "CompletedGallery.swift", file: "06-completed-gallery.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the most efficient way to load multiple images?
+            
+            @Choice(isCorrect: true) {
+                Parallel loading with TaskGroup
+                
+                @Justification(reaction: "Correct!") {
+                    Using withTaskGroup lets you load multiple images simultaneously,
+                    greatly reducing total loading time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Sequential loading with a for loop
+                
+                @Justification(reaction: "Not quite") {
+                    Sequential loading is simple but slow.
+                    Performance can be greatly improved with parallel loading.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Using DispatchQueue.global().async
+                
+                @Justification(reaction: "Not quite") {
+                    TaskGroup is more suitable in Swift Concurrency.
+                    Structured concurrency enables safe parallel processing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class is suitable for memory caching in iOS?
+            
+            @Choice(isCorrect: true) {
+                NSCache
+                
+                @Justification(reaction: "Correct!") {
+                    NSCache automatically removes items under memory pressure.
+                    It's ideal for image caching.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Dictionary
+                
+                @Justification(reaction: "Not quite") {
+                    Dictionary doesn't have automatic memory management.
+                    You must manually clean up under memory pressure.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UserDefaults
+                
+                @Justification(reaction: "Not quite") {
+                    UserDefaults stores to disk,
+                    and is not suitable for large image caches.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you stop in-progress loading when a view disappears?
+            
+            @Choice(isCorrect: true) {
+                Store the Task and call cancel() in onDisappear
+                
+                @Justification(reaction: "Exactly right!") {
+                    Store the Task in @State and call
+                    cancel() when the view disappears to cancel loading.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Tasks are automatically cancelled
+                
+                @Justification(reaction: "Not quite") {
+                    Tasks are not automatically cancelled.
+                    You must explicitly call cancel().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Cannot be cancelled
+                
+                @Justification(reaction: "Not quite") {
+                    Tasks can be cancelled via the cancel() method.
+                    Check Task.isCancelled inside the task to handle it.
+                }
+            }
+        }
+    }
+}

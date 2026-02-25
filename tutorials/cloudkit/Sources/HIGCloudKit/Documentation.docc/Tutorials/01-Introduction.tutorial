@@ -1,0 +1,97 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CloudKit Introduction & Containers") {
+        Learn the basic concepts and architecture of CloudKit.
+        Understand the relationships between containers, databases, and records.
+    }
+    
+    @Section(title: "Understanding CloudKit") {
+        @ContentAndMedia {
+            CloudKit is Apple's iCloud-based backend service.
+            You can implement data storage, synchronization, and sharing features without building a server.
+        }
+        @Steps {
+            @Step {
+                Import CloudKit. It's available from iOS 8+ and works with SwiftUI.
+                @Code(name: "CloudKitIntro.swift", file: "01-01-import.swift")
+            }
+            @Step {
+                Understand CloudKit's core structure.
+                It follows a Container > Database > Zone > Record hierarchy.
+                @Code(name: "CloudKitIntro.swift", file: "01-02-structure.swift")
+            }
+            @Step {
+                Learn about the three database types.
+                There are Private, Public, and Shared databases.
+                @Code(name: "CloudKitIntro.swift", file: "01-03-databases.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting the Notes App Project") {
+        @ContentAndMedia {
+            Design the basic structure of the shared notes app.
+        }
+        @Steps {
+            @Step {
+                Define the note data model.
+                Create a struct that will map to CloudKit records.
+                @Code(name: "Note.swift", file: "01-04-notemodel.swift")
+            }
+            @Step {
+                Create the basic skeleton of the CloudKit manager.
+                @Code(name: "CloudKitManager.swift", file: "01-05-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which is NOT a CloudKit database type?
+            @Choice(isCorrect: false) {
+                Private Database
+                @Justification(reaction: "Think again.") {
+                    Private Database is the default database for storing user's personal data.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "Think again.") {
+                    Public Database is a public database accessible by all users.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Protected Database
+                @Justification(reaction: "Correct!") {
+                    CloudKit doesn't have a Protected Database. There are three types: Private, Public, and Shared.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Shared Database
+                @Justification(reaction: "Think again.") {
+                    Shared Database is where data shared via CKShare is stored.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is the correct data hierarchy in CloudKit?
+            @Choice(isCorrect: true) {
+                Container > Database > Zone > Record
+                @Justification(reaction: "Correct!") {
+                    CloudKit follows the Container (app) > Database (Private/Public/Shared) > Zone > Record hierarchy.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Database > Container > Record > Zone
+                @Justification(reaction: "Think again.") {
+                    Container is at the top level, and Zone is above Record.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Zone > Database > Container > Record
+                @Justification(reaction: "Think again.") {
+                    Container is at the top level, and the order is incorrect.
+                }
+            }
+        }
+    }
+}

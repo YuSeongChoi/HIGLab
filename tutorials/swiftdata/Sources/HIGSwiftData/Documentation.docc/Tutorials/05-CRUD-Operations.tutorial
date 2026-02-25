@@ -1,0 +1,186 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Mastering CRUD: Create, Read, Update, Delete") {
+        Master the four fundamental data operations completely.
+        Learn intuitive modification patterns using ModelContext's 
+        insert, delete, and @Bindable.
+    }
+    
+    @Section(title: "Create: Data Creation") {
+        @ContentAndMedia {
+            Create a new object and insert it into the context.
+            SwiftData's autosave is default, so no separate save call is needed.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Creation Pattern**
+                
+                Create an object and insert with context.insert().
+                This alone saves it to the database.
+                
+                @Code(name: "CreateTask.swift", file: "05-create-basic.swift")
+            }
+            
+            @Step {
+                **Add New Task Sheet**
+                
+                Create a sheet that receives user input and creates a new TaskItem.
+                Priority and due date can also be set.
+                
+                @Code(name: "AddTaskSheet.swift", file: "05-create-sheet.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Read: Data Query") {
+        @ContentAndMedia {
+            @Query provides declarative querying.
+            Use FetchDescriptor for querying single objects with specific conditions.
+        }
+        
+        @Steps {
+            @Step {
+                **Querying with FetchDescriptor**
+                
+                Besides @Query, you can query directly with context.fetch().
+                Useful for finding objects by specific ID or conditional queries.
+                
+                @Code(name: "FetchExamples.swift", file: "05-read-fetch.swift")
+            }
+            
+            @Step {
+                **Implementing Detail View**
+                
+                Create a view displaying detailed information of the selected task.
+                Configure a drill-down UI connected with navigation.
+                
+                @Code(name: "TaskDetailView.swift", file: "05-read-detail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Update: Data Modification") {
+        @ContentAndMedia {
+            Modification in SwiftData is surprisingly simple.
+            Bind objects with @Bindable and property changes are automatically saved.
+        }
+        
+        @Steps {
+            @Step {
+                **Direct Modification with @Bindable**
+                
+                With @Bindable, you can bind directly to TextField, etc.
+                Changes are automatically tracked and saved.
+                
+                @Code(name: "EditTask.swift", file: "05-update-bindable.swift")
+            }
+            
+            @Step {
+                **Implementing Edit Sheet**
+                
+                Create an edit sheet to modify existing tasks.
+                Learn the pattern for rolling back changes on cancel.
+                
+                @Code(name: "EditTaskSheet.swift", file: "05-update-sheet.swift")
+            }
+            
+            @Step {
+                **Implementing Completion Toggle**
+                
+                Toggle completion status with a swipe action.
+                Record completion time as well.
+                
+                @Code(name: "ToggleComplete.swift", file: "05-update-toggle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Delete: Data Deletion") {
+        @ContentAndMedia {
+            Delete objects with context.delete().
+            Implement various patterns like swipe delete and batch delete.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Deletion**
+                
+                Delete objects with context.delete().
+                Integrate with SwiftUI's onDelete for swipe deletion.
+                
+                @Code(name: "DeleteTask.swift", file: "05-delete-basic.swift")
+            }
+            
+            @Step {
+                **Batch Deletion**
+                
+                Implement functionality to delete all completed items.
+                Use a confirmation dialog to prevent accidents.
+                
+                @Code(name: "BatchDelete.swift", file: "05-delete-batch.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you bind a SwiftData object's properties to SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                Use @Bindable property wrapper
+                
+                @Justification(reaction: "Correct!") {
+                    @Bindable allows you to bind SwiftData object properties
+                    directly to SwiftUI controls.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Copy to @State then use
+                
+                @Justification(reaction: "Not quite") {
+                    Copying to @State won't modify the original object.
+                    Use @Bindable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Pass with @Binding
+                
+                @Justification(reaction: "Not quite") {
+                    Declare the SwiftData object itself with @Bindable,
+                    then use $ prefix when accessing properties for binding.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Do you need to call save() separately after context.insert()?
+            
+            @Choice(isCorrect: true) {
+                Usually not needed — autosave handles it
+                
+                @Justification(reaction: "Exactly right!") {
+                    SwiftData has autosave enabled by default,
+                    automatically saving at appropriate times.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always required
+                
+                @Justification(reaction: "Not quite") {
+                    With autosave enabled by default, it's mostly unnecessary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Auto-saves every 5 seconds
+                
+                @Justification(reaction: "Not quite") {
+                    Autosave is run-loop based, not time-based.
+                }
+            }
+        }
+    }
+}

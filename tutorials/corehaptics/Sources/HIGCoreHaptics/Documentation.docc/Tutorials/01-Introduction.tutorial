@@ -1,0 +1,173 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to CoreHaptics & Taptic Engine") {
+        Understand the core concepts of the CoreHaptics framework and 
+        how the iPhone's Taptic Engine works.
+        
+        @Image(source: "haptic-intro.png", alt: "CoreHaptics Overview")
+    }
+    
+    @Section(title: "What is Taptic Engine?") {
+        @ContentAndMedia {
+            Taptic Engine is a linear actuator developed by Apple 
+            that generates precise vibration feedback.
+            
+            - **Linear vibration**: Unlike traditional motors, provides delicate feedback through linear motion
+            - **Fast response**: Precise timing control in milliseconds
+            - **Various intensities**: From subtle taps to strong impacts
+            
+            @Image(source: "taptic-engine.png", alt: "Taptic Engine Structure")
+        }
+        
+        @Steps {
+            @Step {
+                Check if the device supports CoreHaptics.
+                Since haptics don't work in the simulator, 
+                you need to test on a real device.
+                
+                @Code(name: "HapticCapability.swift", file: "01-01-capability.swift")
+            }
+            
+            @Step {
+                Let's look at the main components of CoreHaptics.
+                
+                - `CHHapticEngine`: Engine that manages haptic playback
+                - `CHHapticPattern`: Sequence of haptic events
+                - `CHHapticEvent`: Individual haptic event
+                
+                @Code(name: "CoreHapticsOverview.swift", file: "01-02-overview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Haptic Event Types") {
+        @ContentAndMedia {
+            CoreHaptics provides two basic event types.
+            
+            - **Transient**: Momentary tap feeling (button clicks, collisions)
+            - **Continuous**: Sustained vibration (engine sounds, dragging)
+            
+            Each type is controlled by intensity and sharpness.
+        }
+        
+        @Steps {
+            @Step {
+                Transient events provide short, sharp feedback.
+                They're suitable for button taps or toggle switches.
+                
+                @Code(name: "TransientEvent.swift", file: "01-03-transient.swift")
+            }
+            
+            @Step {
+                Continuous events are vibrations that last for a certain duration.
+                They're used for slider drags or loading states.
+                
+                @Code(name: "ContinuousEvent.swift", file: "01-04-continuous.swift")
+            }
+            
+            @Step {
+                You can create various sensations by combining Intensity and Sharpness.
+                
+                - High intensity + High sharpness = Strong, sharp tap
+                - Low intensity + Low sharpness = Soft thud
+                
+                @Code(name: "HapticParameters.swift", file: "01-05-parameters.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Comparison with UIKit's UIFeedbackGenerator") {
+        @ContentAndMedia {
+            UIKit's UIFeedbackGenerator is simple but limited.
+            Use CoreHaptics when you need more fine-grained control.
+            
+            | Feature | UIFeedbackGenerator | CoreHaptics |
+            |---------|---------------------|-------------|
+            | Difficulty | Easy | Medium |
+            | Customization | Limited | Full control |
+            | Audio sync | Not possible | Possible |
+            | AHAP files | Not supported | Supported |
+        }
+        
+        @Steps {
+            @Step {
+                UIFeedbackGenerator only provides predefined feedback.
+                It's useful when you want to implement quickly.
+                
+                @Code(name: "UIFeedbackComparison.swift", file: "01-06-feedback-generator.swift")
+            }
+            
+            @Step {
+                When to choose CoreHaptics:
+                
+                - When you need a unique haptic signature for your brand
+                - When you need precise synchronization with audio
+                - When enhancing immersion in games or media apps
+                
+                @Code(name: "WhenToUseCoreHaptics.swift", file: "01-07-when-to-use.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the main difference between Transient and Continuous events 
+            in CoreHaptics?
+            
+            @Choice(isCorrect: false) {
+                Transient only produces sound, Continuous only produces vibration.
+                
+                @Justification(reaction: "Think again.") {
+                    Both events produce vibration.
+                    Audio is handled separately with the AudioCustom type.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Transient is a momentary tap, Continuous is sustained vibration.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Transient is suitable for short feedback like button clicks,
+                    while Continuous is suitable for sustained feedback like slider drags.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only Transient supports the intensity parameter.
+                
+                @Justification(reaction: "Not quite.") {
+                    Both events support the intensity and sharpness parameters.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why is the Taptic Engine superior to traditional vibration motors?
+            
+            @Choice(isCorrect: true) {
+                Linear motion enables precise and fast response.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    The Taptic Engine is a linear actuator that enables 
+                    precise control in milliseconds.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can produce louder sounds.
+                
+                @Justification(reaction: "Incorrect.") {
+                    The Taptic Engine is a device for tactile feedback, not sound.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It uses more battery to produce stronger vibration.
+                
+                @Justification(reaction: "It's actually the opposite.") {
+                    The Taptic Engine is designed efficiently 
+                    to provide precise feedback with less power.
+                }
+            }
+        }
+    }
+}

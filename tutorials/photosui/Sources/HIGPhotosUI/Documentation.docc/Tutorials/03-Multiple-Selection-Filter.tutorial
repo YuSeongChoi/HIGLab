@@ -1,0 +1,247 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Multiple Selection & Filters") {
+        Learn how to select multiple photos at once
+        and filter by media type.
+    }
+    
+    @Section(title: "Implementing Multiple Selection") {
+        @ContentAndMedia {
+            Binding an array type to PhotosPicker enables multiple selection mode.
+            
+            Use maxSelectionCount to limit the maximum number of selections.
+            Selection order is also preserved in the array.
+        }
+        
+        @Steps {
+            @Step {
+                **Multiple Selection with Array Binding**
+                
+                Bind to a [PhotosPickerItem] array.
+                When the user selects multiple photos, they're added to the array in order.
+                
+                @Code(name: "MultipleSelection.swift", file: "03-multiple-selection.swift")
+            }
+            
+            @Step {
+                **Limiting Maximum Selection Count**
+                
+                Set the maximum count with the maxSelectionCount parameter.
+                Additional selections are disabled when the limit is reached.
+                
+                @Code(name: "MaxSelection.swift", file: "03-max-selection.swift")
+            }
+            
+            @Step {
+                **Preserving Selection Order**
+                
+                Control selection behavior with selectionBehavior.
+                .ordered preserves selection order and displays numbers.
+                
+                @Code(name: "SelectionBehavior.swift", file: "03-selection-behavior.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Media Type Filtering") {
+        @ContentAndMedia {
+            Control selectable media types with PHPickerFilter.
+            
+            - .images: Still images
+            - .videos: Videos
+            - .livePhotos: Live Photos
+            - .screenshots: Screenshots
+            - .depthEffectPhotos: Portrait mode photos
+        }
+        
+        @Steps {
+            @Step {
+                **Applying a Single Filter**
+                
+                Pass the desired filter to the matching parameter.
+                Using .images allows only image selection.
+                
+                @Code(name: "SingleFilter.swift", file: "03-single-filter.swift")
+            }
+            
+            @Step {
+                **Combining Filters**
+                
+                Use .any(of:) to OR-combine multiple filters.
+                AND combination with .all(of:) is also possible.
+                
+                @Code(name: "CombinedFilter.swift", file: "03-combined-filter.swift")
+            }
+            
+            @Step {
+                **Excluding Filters**
+                
+                Exclude specific types with .not(_:).
+                Example: All images except screenshots
+                
+                @Code(name: "ExcludeFilter.swift", file: "03-exclude-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing a Grid Gallery") {
+        @ContentAndMedia {
+            Display multiple selected photos in a grid format.
+            
+            Use LazyVGrid for an efficient grid layout
+            and load each image asynchronously.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Up Grid Layout**
+                
+                Create a responsive grid with LazyVGrid and adaptive columns.
+                The number of columns adjusts automatically based on screen size.
+                
+                @Code(name: "GridLayout.swift", file: "03-grid-layout.swift")
+            }
+            
+            @Step {
+                **Asynchronous Image Loading**
+                
+                Load images asynchronously from each PhotosPickerItem.
+                Use the task modifier to start loading when the view appears.
+                
+                @Code(name: "AsyncImageLoading.swift", file: "03-async-image-loading.swift")
+            }
+            
+            @Step {
+                **Completed Gallery View**
+                
+                Combine PhotosPicker with the grid gallery.
+                Display the add photo button and selected photos list together.
+                
+                @Code(name: "GalleryGridView.swift", file: "03-gallery-grid-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Selection Management Features") {
+        @ContentAndMedia {
+            Implement additional features for managing selected items.
+            
+            - Delete individual items
+            - Clear all selections
+            - Display selection count
+        }
+        
+        @Steps {
+            @Step {
+                **Individual Delete Feature**
+                
+                Add a delete button to each image.
+                Simply remove the item from the array.
+                
+                @Code(name: "DeleteItem.swift", file: "03-delete-item.swift")
+            }
+            
+            @Step {
+                **Drag to Reorder**
+                
+                Implement drag-and-drop reordering with onMove modifier.
+                Users can intuitively adjust photo order.
+                
+                @Code(name: "ReorderItems.swift", file: "03-reorder-items.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you preserve selection order in multiple selection mode?
+            
+            @Choice(isCorrect: true) {
+                Use selectionBehavior: .ordered
+                
+                @Justification(reaction: "Correct!") {
+                    Using the .ordered option preserves selection order in the array,
+                    and displays selection order numbers in the Picker UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set orderPreserving: true
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such parameter.
+                    Use selectionBehavior: .ordered.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Order is always preserved by default
+                
+                @Justification(reaction: "Not quite") {
+                    The default behavior is .default, which doesn't guarantee selection order.
+                    You must explicitly set .ordered.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you allow both images and videos to be selected?
+            
+            @Choice(isCorrect: true) {
+                matching: .any(of: [.images, .videos])
+                
+                @Justification(reaction: "Correct!") {
+                    You can OR-combine multiple filters with .any(of:).
+                    Items matching either images or videos can be selected.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .images + .videos
+                
+                @Justification(reaction: "Not quite") {
+                    PHPickerFilter doesn't support the + operator.
+                    Use .any(of:) or .all(of:).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .all(of: [.images, .videos])
+                
+                @Justification(reaction: "Not quite") {
+                    .all(of:) is an AND combination.
+                    Since no item is both an image and a video simultaneously, nothing can be selected.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you filter all images except screenshots?
+            
+            @Choice(isCorrect: true) {
+                matching: .all(of: [.images, .not(.screenshots)])
+                
+                @Justification(reaction: "Exactly right!") {
+                    Exclude specific types with .not(_:),
+                    and AND-combine conditions with .all(of:).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .images.excluding(.screenshots)
+                
+                @Justification(reaction: "Not quite") {
+                    There's no .excluding method.
+                    Use .all(of: [.images, .not(.screenshots)]).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Not possible to filter
+                
+                @Justification(reaction: "Not quite") {
+                    You can exclude specific types with the .not(_:) filter.
+                }
+            }
+        }
+    }
+}

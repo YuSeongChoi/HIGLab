@@ -1,169 +1,169 @@
 @Tutorial(time: 30) {
-    @Intro(title: "협업 드로잉") {
-        실시간으로 여러 사용자가 함께 그리는 
-        협업 기능을 구현합니다.
+    @Intro(title: "Collaborative Drawing") {
+        Implement real-time collaborative functionality where 
+        multiple users can draw together.
         
-        @Image(source: "collaboration.png", alt: "협업 드로잉")
+        @Image(source: "collaboration.png", alt: "Collaborative Drawing")
     }
     
-    @Section(title: "실시간 동기화 아키텍처") {
+    @Section(title: "Real-time Synchronization Architecture") {
         @ContentAndMedia {
-            협업 드로잉을 구현하려면 
-            실시간 데이터 동기화가 필요합니다.
+            Implementing collaborative drawing requires 
+            real-time data synchronization.
             
-            - **CloudKit**: Apple의 클라우드 서비스
-            - **Firebase**: Google의 실시간 데이터베이스
-            - **WebSocket**: 커스텀 서버 기반
-            - **Multipeer Connectivity**: 로컬 P2P 연결
+            - **CloudKit**: Apple's cloud service
+            - **Firebase**: Google's real-time database
+            - **WebSocket**: Custom server-based
+            - **Multipeer Connectivity**: Local P2P connection
             
-            @Image(source: "sync-architecture.png", alt: "동기화 아키텍처")
+            @Image(source: "sync-architecture.png", alt: "Synchronization Architecture")
         }
         
         @Steps {
             @Step {
-                협업 드로잉의 데이터 모델을 설계합니다.
-                각 획을 독립적으로 동기화합니다.
+                Design the data model for collaborative drawing.
+                Synchronize each stroke independently.
                 
                 @Code(name: "CollaborationModel.swift", file: "10-01-model.swift")
             }
             
             @Step {
-                PKStroke를 직렬화하여 
-                네트워크로 전송할 수 있게 합니다.
+                Serialize PKStroke to enable 
+                transmission over the network.
                 
                 @Code(name: "StrokeSerialization.swift", file: "10-02-serialization.swift")
             }
             
             @Step {
-                충돌 해결 전략을 정의합니다.
-                동시 편집 시 어떻게 병합할지 결정합니다.
+                Define conflict resolution strategies.
+                Decide how to merge during simultaneous editing.
                 
                 @Code(name: "ConflictResolution.swift", file: "10-03-conflict.swift")
             }
         }
     }
     
-    @Section(title: "Multipeer Connectivity로 로컬 협업") {
+    @Section(title: "Local Collaboration with Multipeer Connectivity") {
         @ContentAndMedia {
-            Multipeer Connectivity는 Wi-Fi나 Bluetooth로
-            근처 기기와 직접 연결하여 데이터를 교환합니다.
+            Multipeer Connectivity enables direct connection 
+            and data exchange with nearby devices via Wi-Fi or Bluetooth.
             
-            인터넷 없이도 협업이 가능하며,
-            지연 시간이 매우 짧습니다.
+            Collaboration is possible without internet,
+            and latency is very low.
         }
         
         @Steps {
             @Step {
-                MCSession을 설정하고 
-                근처 기기를 검색합니다.
+                Set up MCSession and 
+                discover nearby devices.
                 
                 @Code(name: "MultipeerSetup.swift", file: "10-04-multipeer-setup.swift")
             }
             
             @Step {
-                새로운 획이 그려질 때마다 
-                연결된 피어에게 전송합니다.
+                Send to connected peers 
+                whenever a new stroke is drawn.
                 
                 @Code(name: "SendStroke.swift", file: "10-05-send-stroke.swift")
             }
             
             @Step {
-                피어로부터 받은 획을 
-                로컬 캔버스에 추가합니다.
+                Add strokes received from peers 
+                to the local canvas.
                 
                 @Code(name: "ReceiveStroke.swift", file: "10-06-receive-stroke.swift")
             }
         }
     }
     
-    @Section(title: "CloudKit으로 클라우드 협업") {
+    @Section(title: "Cloud Collaboration with CloudKit") {
         @ContentAndMedia {
-            CloudKit을 사용하면 인터넷을 통해
-            어디서든 협업이 가능합니다.
+            Using CloudKit enables collaboration 
+            from anywhere via the internet.
             
-            CKRecord에 드로잉 데이터를 저장하고
-            CKSubscription으로 변경사항을 감지합니다.
+            Store drawing data in CKRecord and 
+            detect changes with CKSubscription.
         }
         
         @Steps {
             @Step {
-                CloudKit 컨테이너를 설정하고
-                드로잉 레코드 타입을 정의합니다.
+                Set up CloudKit container and 
+                define the drawing record type.
                 
                 @Code(name: "CloudKitSetup.swift", file: "10-07-cloudkit-setup.swift")
             }
             
             @Step {
-                새 획을 CloudKit에 저장합니다.
-                각 획을 별도 레코드로 저장하여 
-                증분 동기화를 가능하게 합니다.
+                Save new strokes to CloudKit.
+                Store each stroke as a separate record 
+                to enable incremental synchronization.
                 
                 @Code(name: "CloudKitSave.swift", file: "10-08-cloudkit-save.swift")
             }
             
             @Step {
-                CKSubscription으로 다른 사용자의 
-                변경사항을 실시간으로 받습니다.
+                Receive other users' changes 
+                in real-time with CKSubscription.
                 
                 @Code(name: "CloudKitSubscription.swift", file: "10-09-cloudkit-sub.swift")
             }
         }
     }
     
-    @Section(title: "사용자 식별과 커서 표시") {
+    @Section(title: "User Identification and Cursor Display") {
         @ContentAndMedia {
-            협업 시 각 사용자를 구분하고
-            다른 사용자의 커서 위치를 표시합니다.
+            Identify each user during collaboration 
+            and display other users' cursor positions.
             
-            - **사용자 색상**: 각 참여자에게 고유 색상 할당
-            - **커서 위치**: 실시간 위치 공유
-            - **프로필**: 이름과 아바타 표시
+            - **User colors**: Assign unique colors to each participant
+            - **Cursor position**: Real-time position sharing
+            - **Profile**: Display name and avatar
         }
         
         @Steps {
             @Step {
-                각 참여자에게 고유한 색상을 할당하고
-                그들의 획을 구분합니다.
+                Assign unique colors to each participant 
+                and distinguish their strokes.
                 
                 @Code(name: "UserIdentification.swift", file: "10-10-user-id.swift")
             }
             
             @Step {
-                다른 사용자의 커서(펜 위치)를 
-                실시간으로 화면에 표시합니다.
+                Display other users' cursors (pen positions) 
+                on screen in real-time.
                 
                 @Code(name: "RemoteCursor.swift", file: "10-11-cursor.swift")
             }
             
             @Step {
-                참여자 목록과 현재 상태를 
-                UI에 표시합니다.
+                Display participant list and 
+                current status in the UI.
                 
                 @Code(name: "ParticipantsList.swift", file: "10-12-participants.swift")
             }
         }
     }
     
-    @Section(title: "오프라인 지원과 동기화") {
+    @Section(title: "Offline Support and Synchronization") {
         @ContentAndMedia {
-            네트워크 연결이 끊어져도 
-            계속 그릴 수 있어야 합니다.
+            Users should be able to continue drawing 
+            even when network connection is lost.
             
-            오프라인 변경사항을 로컬에 저장하고
-            연결 복구 시 동기화합니다.
+            Store offline changes locally and 
+            synchronize when connection is restored.
         }
         
         @Steps {
             @Step {
-                오프라인 변경사항을 큐에 저장합니다.
-                네트워크 상태를 모니터링합니다.
+                Store offline changes in a queue.
+                Monitor network status.
                 
                 @Code(name: "OfflineQueue.swift", file: "10-13-offline.swift")
             }
             
             @Step {
-                연결 복구 시 큐에 있는 
-                변경사항을 일괄 전송합니다.
+                Batch send queued changes 
+                when connection is restored.
                 
                 @Code(name: "SyncOnReconnect.swift", file: "10-14-reconnect.swift")
             }
@@ -172,61 +172,60 @@
     
     @Assessments {
         @MultipleChoice {
-            로컬 네트워크에서 가장 지연 시간이 짧은 협업 방식은?
+            Which collaboration method has the lowest latency on a local network?
             
             @Choice(isCorrect: true) {
                 Multipeer Connectivity
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    P2P 직접 연결로 서버를 거치지 않아
-                    지연 시간이 최소화됩니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    P2P direct connection minimizes latency 
+                    by not going through a server.
                 }
             }
             
             @Choice(isCorrect: false) {
                 CloudKit
                 
-                @Justification(reaction: "클라우드를 거칩니다.") {
-                    CloudKit은 Apple 서버를 경유하므로
-                    로컬 P2P보다 지연이 있습니다.
+                @Justification(reaction: "Goes through the cloud.") {
+                    CloudKit routes through Apple servers,
+                    so it has more latency than local P2P.
                 }
             }
             
             @Choice(isCorrect: false) {
                 Firebase
                 
-                @Justification(reaction: "외부 서버를 사용합니다.") {
-                    Firebase도 Google 서버를 경유합니다.
+                @Justification(reaction: "Uses external servers.") {
+                    Firebase also routes through Google servers.
                 }
             }
         }
         
         @MultipleChoice {
-            협업 드로잉에서 동시 편집 충돌을 해결하는 가장 일반적인 방법은?
+            What's the most common way to resolve simultaneous editing conflicts in collaborative drawing?
             
             @Choice(isCorrect: false) {
-                먼저 도착한 변경만 적용한다
+                Apply only the first change to arrive
                 
-                @Justification(reaction: "데이터 손실이 발생합니다.") {
-                    이 방식은 다른 사용자의 작업을 
-                    잃어버릴 수 있습니다.
+                @Justification(reaction: "This causes data loss.") {
+                    This approach can lose other users' work.
                 }
             }
             
             @Choice(isCorrect: true) {
-                획 단위로 모두 병합한다 (Additive)
+                Merge all strokes additively
                 
-                @Justification(reaction: "맞습니다! ✨") {
-                    드로잉에서는 대부분의 획이 독립적이므로
-                    모든 획을 추가하는 방식이 효과적입니다.
+                @Justification(reaction: "Correct! ✨") {
+                    In drawing, most strokes are independent,
+                    so adding all strokes is effective.
                 }
             }
             
             @Choice(isCorrect: false) {
-                마지막 변경으로 덮어쓴다
+                Overwrite with the last change
                 
-                @Justification(reaction: "협업에 부적합합니다.") {
-                    다른 사용자의 작업이 사라질 수 있습니다.
+                @Justification(reaction: "Not suitable for collaboration.") {
+                    Other users' work could disappear.
                 }
             }
         }

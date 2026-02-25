@@ -1,0 +1,242 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Sorting & Filtering: Data Your Way") {
+        Create type-safe filters with the #Predicate macro,
+        and implement various sorting with SortDescriptor.
+        Complete user-customized views by connecting with dynamic UI.
+    }
+    
+    @Section(title: "Advanced #Predicate") {
+        @ContentAndMedia {
+            #Predicate is a filter macro that validates types at compile time.
+            It eliminates the dangers of string-based NSPredicate,
+            fully leveraging Swift's type system.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Predicate Syntax**
+                
+                Write conditions in closure form.
+                Property access is validated as type-safe.
+                
+                @Code(name: "PredicateBasics.swift", file: "07-predicate-basics.swift")
+            }
+            
+            @Step {
+                **Creating Compound Conditions**
+                
+                Combine conditions with &&, ||, ! operators.
+                Use parentheses to clearly specify priority.
+                
+                @Code(name: "PredicateComplex.swift", file: "07-predicate-complex.swift")
+            }
+            
+            @Step {
+                **String Search**
+                
+                Implement text search with contains, localizedStandardContains, etc.
+                
+                @Code(name: "PredicateString.swift", file: "07-predicate-string.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using SortDescriptor") {
+        @ContentAndMedia {
+            SortDescriptor defines sorting criteria.
+            Specify sorting properties type-safely using KeyPath.
+        }
+        
+        @Steps {
+            @Step {
+                **Single Sort**
+                
+                Sort ascending/descending based on a single property.
+                Specify direction with the order parameter.
+                
+                @Code(name: "SortBasics.swift", file: "07-sort-basic.swift")
+            }
+            
+            @Step {
+                **Multiple Sort**
+                
+                Pass multiple sorting criteria as an array.
+                Later criteria apply when earlier ones are equal.
+                
+                @Code(name: "SortMultiple.swift", file: "07-sort-multiple.swift")
+            }
+            
+            @Step {
+                **Sorting Optional Properties**
+                
+                Properties that can be nil can also be sorted.
+                nil values are placed last by default.
+                
+                @Code(name: "SortOptional.swift", file: "07-sort-optional.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Dynamic Sort/Filter UI") {
+        @ContentAndMedia {
+            Implement UI where users can change sort/filter conditions in real-time.
+            Learn the dynamic query pattern using @Query's init.
+        }
+        
+        @Steps {
+            @Step {
+                **Filter Options Enum**
+                
+                Define filter options as an enum.
+                Add a computed property that returns the Predicate for each option.
+                
+                @Code(name: "FilterOptions.swift", file: "07-filter-options.swift")
+            }
+            
+            @Step {
+                **Sort Options Enum**
+                
+                Define sorting criteria as an enum.
+                Map user-friendly names to SortDescriptors.
+                
+                @Code(name: "SortOptions.swift", file: "07-sort-options.swift")
+            }
+            
+            @Step {
+                **Dynamic Query View**
+                
+                Receive conditions from parent and initialize @Query.
+                When conditions change, the view recreates and query updates.
+                
+                @Code(name: "DynamicQueryView.swift", file: "07-dynamic-query.swift")
+            }
+            
+            @Step {
+                **Complete Filter/Sort UI**
+                
+                Select options with Picker and list updates in real-time.
+                Add a search bar for enhanced completeness.
+                
+                @Code(name: "FilterSortView.swift", file: "07-filter-sort-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced FetchDescriptor") {
+        @ContentAndMedia {
+            Using FetchDescriptor directly instead of @Query
+            enables finer control.
+        }
+        
+        @Steps {
+            @Step {
+                **FetchDescriptor Configuration**
+                
+                Combine predicate, sortBy, fetchLimit, etc.
+                with FetchDescriptor.
+                
+                @Code(name: "FetchDescriptor.swift", file: "07-fetch-descriptor.swift")
+            }
+            
+            @Step {
+                **Implementing Pagination**
+                
+                Implement pagination with fetchLimit and fetchOffset.
+                Useful for handling large data volumes.
+                
+                @Code(name: "Pagination.swift", file: "07-pagination.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            To search strings case-insensitively in #Predicate?
+            
+            @Choice(isCorrect: true) {
+                Use localizedStandardContains
+                
+                @Justification(reaction: "Correct!") {
+                    localizedStandardContains ignores case and accents
+                    for localized searching.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Combine contains + lowercased()
+                
+                @Justification(reaction: "Not quite") {
+                    Calling lowercased() inside #Predicate is restricted.
+                    Use localizedStandardContains.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use caseInsensitiveCompare
+                
+                @Justification(reaction: "Not quite") {
+                    This method is not supported in #Predicate.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How does passing multiple SortDescriptors in an array work?
+            
+            @Choice(isCorrect: true) {
+                Later criteria apply when earlier ones are equal
+                
+                @Justification(reaction: "Exactly right!") {
+                    Priority is determined by array order.
+                    Compare with the second if the first is equal.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All criteria considered simultaneously
+                
+                @Justification(reaction: "Not quite") {
+                    Applied sequentially. First sort by first criteria,
+                    then equal values sorted by second.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Criteria chosen randomly
+                
+                @Justification(reaction: "Not quite") {
+                    Priority is applied in order.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            To dynamically change @Query's filter?
+            
+            @Choice(isCorrect: true) {
+                Change conditions in parent view to recreate child view
+                
+                @Justification(reaction: "Correct!") {
+                    @Query's parameters are determined at initialization,
+                    so the view must be recreated when conditions change.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Directly assign new value to @Query property
+                
+                @Justification(reaction: "Not quite") {
+                    @Query is a property wrapper, direct reassignment is not possible.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Call query.refresh()
+                
+                @Justification(reaction: "Not quite") {
+                    No such method exists. View recreation is needed.
+                }
+            }
+        }
+    }
+}

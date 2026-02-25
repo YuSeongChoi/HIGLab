@@ -1,0 +1,136 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to AVFoundation & Architecture") {
+        AVFoundation is the core framework for media work on Apple platforms.
+        It provides various media features from camera capture to audio recording and video editing.
+    }
+    
+    @Section(title: "What is AVFoundation?") {
+        @ContentAndMedia {
+            AVFoundation is a framework for working with time-based audiovisual media.
+            
+            **Key Features:**
+            - Media capture (photos, video, audio)
+            - Media playback
+            - Media editing and composition
+            - Media analysis (barcode, face recognition)
+        }
+        
+        @Steps {
+            @Step {
+                AVFoundation consists of multiple layers.
+                AVKit is at the top, with AVFoundation below it.
+                
+                @Code(name: "Architecture.swift", file: "01-architecture-overview.swift")
+            }
+            
+            @Step {
+                Create a new project and import AVFoundation.
+                Create a `CameraApp` project with the **App** template in Xcode.
+                
+                @Code(name: "CameraApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                Add permissions to Info.plist for camera and microphone access.
+                
+                - `NSCameraUsageDescription`: Reason for camera use
+                - `NSMicrophoneUsageDescription`: Reason for microphone use
+                
+                @Code(name: "Info.plist", file: "01-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Capture Pipeline Structure") {
+        @ContentAndMedia {
+            AVFoundation's capture system has a pipeline structure.
+            
+            **Core Components:**
+            - `AVCaptureDevice`: Physical devices like camera, microphone
+            - `AVCaptureInput`: Data input from devices
+            - `AVCaptureSession`: Session connecting inputs and outputs
+            - `AVCaptureOutput`: Output of captured data
+        }
+        
+        @Steps {
+            @Step {
+                Understand the data flow of the capture pipeline.
+                Data flows in order: Device → Input → Session → Output.
+                
+                @Code(name: "CapturePipeline.swift", file: "01-pipeline-concept.swift")
+            }
+            
+            @Step {
+                Define the basic structure of the CameraManager class.
+                Adopt ObservableObject for easy integration with SwiftUI.
+                
+                @Code(name: "CameraManager.swift", file: "01-camera-manager-skeleton.swift")
+            }
+            
+            @Step {
+                Implement permission request methods.
+                Camera and microphone permissions require user consent.
+                
+                @Code(name: "CameraManager.swift", file: "01-camera-manager-permission.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What class represents the camera device in the AVFoundation capture pipeline?
+            
+            @Choice(isCorrect: false) {
+                `AVCaptureSession`
+                
+                @Justification(reaction: "Think again.") {
+                    AVCaptureSession is the session that connects inputs and outputs.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `AVCaptureDevice`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AVCaptureDevice represents physical devices like cameras and microphones.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVCaptureOutput`
+                
+                @Justification(reaction: "Think again.") {
+                    AVCaptureOutput handles the output of captured data.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What key must be added to Info.plist for camera use?
+            
+            @Choice(isCorrect: false) {
+                `NSPhotoLibraryUsageDescription`
+                
+                @Justification(reaction: "Think again.") {
+                    This key is for photo library access permission.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `NSCameraUsageDescription`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The NSCameraUsageDescription key is required for camera access.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `NSLocationUsageDescription`
+                
+                @Justification(reaction: "Think again.") {
+                    This key is for location services access permission.
+                }
+            }
+        }
+    }
+}

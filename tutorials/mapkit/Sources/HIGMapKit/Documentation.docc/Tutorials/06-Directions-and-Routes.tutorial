@@ -1,0 +1,196 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Directions & Routes (MKDirections)") {
+        Calculate the route from the current location to a restaurant 
+        and display it on the map using MKDirections.
+    }
+    
+    @Section(title: "MKDirections Basics") {
+        @ContentAndMedia {
+            MKDirections calculates the actual travel route 
+            between a starting point and destination.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating a Directions Request**
+                
+                Set the source, destination, and transport type with MKDirections.Request.
+                Choose from .automobile, .walking, or .transit.
+                
+                @Code(name: "DirectionsService.swift", file: "06-directions-request.swift")
+            }
+            
+            @Step {
+                **Executing Route Calculation**
+                
+                Calculate the route using async/await.
+                Multiple alternative routes may be returned.
+                
+                @Code(name: "DirectionsService.swift", file: "06-calculate-directions.swift")
+            }
+            
+            @Step {
+                **Using MKRoute Information**
+                
+                Extract expected travel time, distance, and route coordinates.
+                Provide estimated arrival information to users.
+                
+                @Code(name: "DirectionsService.swift", file: "06-route-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Routes on the Map") {
+        @ContentAndMedia {
+            Draw the calculated route on the map with MapPolyline.
+            Apply different styles for each transport type.
+        }
+        
+        @Steps {
+            @Step {
+                **Converting MKRoute to MapPolyline**
+                
+                Extract coordinates from route.polyline to create a MapPolyline.
+                
+                @Code(name: "RouteMapView.swift", file: "06-route-polyline.swift")
+            }
+            
+            @Step {
+                **Styles by Transport Type**
+                
+                Display walking routes as dashed lines, driving as solid lines, and transit in different colors.
+                
+                @Code(name: "RouteMapView.swift", file: "06-transport-style.swift")
+            }
+            
+            @Step {
+                **Adjusting Camera to Fit Route**
+                
+                Automatically adjust the camera to show both the starting point and destination.
+                
+                @Code(name: "RouteMapView.swift", file: "06-camera-fit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Turn-by-Turn Directions") {
+        @ContentAndMedia {
+            Provide detailed route guidance with MKRoute.Step.
+            Display instructions like "Turn left in 200m."
+        }
+        
+        @Steps {
+            @Step {
+                **Extracting Route Steps**
+                
+                Get the instructions and distance for each step from the route.steps array.
+                
+                @Code(name: "RouteStepsView.swift", file: "06-route-steps.swift")
+            }
+            
+            @Step {
+                **Implementing Direction UI**
+                
+                Create swipeable route direction cards.
+                Highlight the current step.
+                
+                @Code(name: "RouteStepsView.swift", file: "06-steps-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Integrating into the Restaurant App") {
+        @ContentAndMedia {
+            Provide directions functionality from the restaurant detail screen.
+        }
+        
+        @Steps {
+            @Step {
+                **Adding a "Get Directions" Button**
+                
+                Add a directions button to the restaurant detail sheet.
+                Calculate the route from the current location to that restaurant.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-directions-button.swift")
+            }
+            
+            @Step {
+                **Displaying Estimated Time**
+                
+                Preview the estimated travel time by walking/driving.
+                Display in format like "Walking 15 min / Driving 5 min."
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-eta-display.swift")
+            }
+            
+            @Step {
+                **Opening in Apple Maps App**
+                
+                Provide detailed route navigation in the default Maps app.
+                Start navigation with MKMapItem.openInMaps.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-open-maps.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which transport type is NOT supported in MKDirections.Request?
+            
+            @Choice(isCorrect: true) {
+                .bicycle (cycling)
+                
+                @Justification(reaction: "Correct!") {
+                    Unfortunately, Apple MapKit does not yet support cycling routes.
+                    Only .automobile, .walking, .transit, and .any are available.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .walking (walking)
+                
+                @Justification(reaction: "Not quite") {
+                    Walking routes are supported.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .transit (public transit)
+                
+                @Justification(reaction: "Not quite") {
+                    Public transit routes are supported (availability varies by region).
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the unit for expected travel time in MKRoute?
+            
+            @Choice(isCorrect: true) {
+                Seconds - TimeInterval type
+                
+                @Justification(reaction: "Exactly right!") {
+                    route.expectedTravelTime is TimeInterval (Double) in seconds.
+                    Divide by 60 to convert to minutes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Minutes
+                
+                @Justification(reaction: "Not quite") {
+                    TimeInterval is in seconds. Division by 60 is needed for minutes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Milliseconds
+                
+                @Justification(reaction: "Not quite") {
+                    Foundation's TimeInterval is in seconds.
+                }
+            }
+        }
+    }
+}

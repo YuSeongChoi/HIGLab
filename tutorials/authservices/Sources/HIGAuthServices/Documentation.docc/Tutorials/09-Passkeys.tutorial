@@ -1,0 +1,217 @@
+@Tutorial(time: 22) {
+    @Intro(title: "Passkeys") {
+        Implement passkeys, the next-generation authentication method, 
+        alongside Sign in with Apple for passwordless authentication.
+        
+        @Image(source: "passkeys.png", alt: "Passkeys Authentication")
+    }
+    
+    @Section(title: "What are Passkeys?") {
+        @ContentAndMedia {
+            Passkeys are next-generation authentication technology 
+            developed by FIDO Alliance and W3C to replace passwords.
+            
+            - **No Password Required**: Authenticate with Face ID/Touch ID
+            - **Phishing Prevention**: Bound to domains
+            - **Cross-Platform**: Synced via iCloud Keychain
+            - **WebAuthn Based**: Industry standard protocol
+            
+            Supported on iOS 16+, macOS Ventura+.
+        }
+        
+        @Steps {
+            @Step {
+                Associated Domains setup is required 
+                to use the passkey feature.
+                
+                @Code(name: "AssociatedDomains.swift", file: "09-01-associated-domains.swift")
+            }
+            
+            @Step {
+                Configure the apple-app-site-association file 
+                on the server. Add the webcredentials service.
+                
+                @Code(name: "AASA.swift", file: "09-02-aasa.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Passkey Registration") {
+        @ContentAndMedia {
+            Create a new passkey and link it to the user account.
+            
+            Registration flow:
+            1. Server generates challenge
+            2. Client uses ASAuthorizationPlatformPublicKeyCredentialProvider
+            3. Store generated public key on server
+        }
+        
+        @Steps {
+            @Step {
+                Create a registration request with 
+                ASAuthorizationPlatformPublicKeyCredentialProvider.
+                
+                @Code(name: "RegistrationProvider.swift", file: "09-03-registration-provider.swift")
+            }
+            
+            @Step {
+                Configure the request with challenge 
+                and userID from the server.
+                
+                @Code(name: "RegistrationRequest.swift", file: "09-04-registration-request.swift")
+            }
+            
+            @Step {
+                Execute registration with ASAuthorizationController.
+                Passkey is created after Face ID/Touch ID authentication.
+                
+                @Code(name: "PerformRegistration.swift", file: "09-05-perform-registration.swift")
+            }
+            
+            @Step {
+                Extract public key and attestation data from 
+                ASAuthorizationPlatformPublicKeyCredentialRegistration.
+                
+                @Code(name: "ExtractRegistration.swift", file: "09-06-extract-registration.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Passkey Assertion") {
+        @ContentAndMedia {
+            Authenticate users with stored passkeys.
+            
+            Authentication flow:
+            1. Server generates challenge
+            2. Client requests assertion
+            3. Server verifies signed challenge
+        }
+        
+        @Steps {
+            @Step {
+                Create an assertion request.
+                Uses a different method from registration.
+                
+                @Code(name: "AssertionRequest.swift", file: "09-07-assertion-request.swift")
+            }
+            
+            @Step {
+                Use allowedCredentials to allow only 
+                specific user's passkeys.
+                
+                @Code(name: "AllowedCredentials.swift", file: "09-08-allowed-credentials.swift")
+            }
+            
+            @Step {
+                Extract signature and authenticatorData 
+                from the authentication result.
+                
+                @Code(name: "ExtractAssertion.swift", file: "09-09-extract-assertion.swift")
+            }
+            
+            @Step {
+                Verify the signature on the server 
+                to complete authentication.
+                
+                @Code(name: "ServerVerifyAssertion.swift", file: "09-10-server-verify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sign in with Apple + Passkeys") {
+        @ContentAndMedia {
+            Offering Sign in with Apple and passkeys together 
+            provides maximum convenience for users.
+            
+            - First login: Sign in with Apple
+            - Subsequent logins: Passkeys (faster)
+            - Fallback: Sign in with Apple (other devices)
+        }
+        
+        @Steps {
+            @Step {
+                Create a unified request supporting 
+                Sign in with Apple, passkeys, and passwords.
+                
+                @Code(name: "UnifiedRequest.swift", file: "09-11-unified-request.swift")
+            }
+            
+            @Step {
+                Process differently based on Credential type.
+                Consider all three types.
+                
+                @Code(name: "HandleAllTypes.swift", file: "09-12-handle-all-types.swift")
+            }
+            
+            @Step {
+                Provide quick login with AutoFill support.
+                Suggest passkeys in text fields.
+                
+                @Code(name: "AutoFill.swift", file: "09-13-autofill.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What setup is required to use Passkeys?
+            
+            @Choice(isCorrect: true) {
+                Associated Domains and apple-app-site-association file.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Passkeys are bound to domains, so 
+                    app-server connection setup is required.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only Sign in with Apple capability is needed.
+                
+                @Justification(reaction: "Insufficient.") {
+                    Passkeys require separate 
+                    Associated Domains setup.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can be used immediately without special setup.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Setup for domain verification is required.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the difference between passkey Registration and Assertion?
+            
+            @Choice(isCorrect: false) {
+                They use the same method with different parameters.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Each uses different methods.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Registration creates a new key pair, 
+                Assertion signs with an existing key.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Registration registers the public key with the server, 
+                    Assertion signs the challenge with the private key.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only Registration requires Face ID.
+                
+                @Justification(reaction: "Both require it.") {
+                    Assertion also requires biometric authentication 
+                    to approve private key access.
+                }
+            }
+        }
+    }
+}

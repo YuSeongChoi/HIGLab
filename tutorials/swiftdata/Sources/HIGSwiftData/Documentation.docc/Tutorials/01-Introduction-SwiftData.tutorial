@@ -1,0 +1,190 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Introduction to SwiftData: The Game Changer") {
+        SwiftData, unveiled by Apple at WWDC23, is a next-generation 
+        data persistence framework that completely replaces Core Data.
+        
+        Powered by Swift macros, it eliminates boilerplate 
+        and integrates natively with SwiftUI.
+    }
+    
+    @Section(title: "Why SwiftData?") {
+        @ContentAndMedia {
+            Core Data was introduced alongside Mac OS X Tiger in 2005.
+            That's a framework over 20 years old, carrying the legacy of the Objective-C era.
+            
+            SwiftData was designed from the ground up for Swift.
+            It leverages all the advantages of modern Swift: macros, property wrappers, and async/await.
+        }
+        
+        @Steps {
+            @Step {
+                **The Pain of Core Data**
+                
+                You have to manage XML-based .xcdatamodeld files.
+                You need to inherit from NSManagedObject and worry about code generation.
+                NSFetchRequest and string-based NSPredicate are not type-safe.
+                
+                @Code(name: "CoreDataPain.swift", file: "01-coredata-pain.swift")
+            }
+            
+            @Step {
+                **The Innovation of SwiftData**
+                
+                One @Model macro is all you need.
+                A pure Swift class becomes your data model.
+                No separate schema files required.
+                
+                @Code(name: "SwiftDataJoy.swift", file: "01-swiftdata-joy.swift")
+            }
+            
+            @Step {
+                **Key Comparison Table**
+                
+                A side-by-side comparison of the two frameworks.
+                SwiftData does more with less code.
+                
+                @Code(name: "Comparison.swift", file: "01-comparison.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftData Architecture") {
+        @ContentAndMedia {
+            SwiftData consists of three core components:
+            
+            - **@Model**: Data model definition
+            - **ModelContainer**: Data storage
+            - **ModelContext**: Data manipulation context
+        }
+        
+        @Steps {
+            @Step {
+                **The @Model Macro**
+                
+                When you attach @Model to a class, SwiftData handles everything.
+                Property change tracking, persistence, and relationship management are all automatic.
+                
+                @Code(name: "ModelBasics.swift", file: "01-model-basics.swift")
+            }
+            
+            @Step {
+                **ModelContainer**
+                
+                This is where data is actually stored.
+                It supports various backends including SQLite files, memory, and CloudKit.
+                
+                Typically, one container is shared across the entire app.
+                
+                @Code(name: "ContainerBasics.swift", file: "01-container-basics.swift")
+            }
+            
+            @Step {
+                **ModelContext**
+                
+                This is where actual CRUD operations occur.
+                It's automatically injected in the SwiftUI environment.
+                Changes are automatically tracked and saved.
+                
+                @Code(name: "ContextBasics.swift", file: "01-context-basics.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting the TaskMaster Project") {
+        @ContentAndMedia {
+            Let's introduce the app we'll build in this tutorial.
+            
+            **TaskMaster** is a category-based task management app.
+            It manages priorities, due dates, and completion status,
+            syncing across all devices via iCloud.
+        }
+        
+        @Steps {
+            @Step {
+                **Create a New Project**
+                
+                Create a new iOS App project in Xcode.
+                - Product Name: `TaskMaster`
+                - Interface: `SwiftUI`
+                - Storage: `None` (we'll add SwiftData ourselves)
+                
+                @Code(name: "TaskMasterApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                **Check System Requirements**
+                
+                SwiftData is available on iOS 17, macOS 14 and above.
+                Verify your project's Deployment Target.
+                
+                - iOS 17.0+
+                - macOS 14.0+
+                - watchOS 10.0+
+                - tvOS 17.0+
+                
+                @Code(name: "Requirements.swift", file: "01-requirements.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What macro is used to define a data model in SwiftData?
+            
+            @Choice(isCorrect: true) {
+                @Model
+                
+                @Justification(reaction: "Correct!") {
+                    When you attach the @Model macro to a class, SwiftData 
+                    automatically handles persistence, change tracking, and relationship management.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Entity
+                
+                @Justification(reaction: "Not quite") {
+                    @Entity is a Core Data concept. 
+                    SwiftData uses @Model.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Persistent
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData uses the @Model macro.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the minimum iOS version supported by SwiftData?
+            
+            @Choice(isCorrect: true) {
+                iOS 17
+                
+                @Justification(reaction: "Exactly right!") {
+                    SwiftData was announced at WWDC23 and is supported from iOS 17.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 15
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData is supported from iOS 17. 
+                    You need to use Core Data for earlier versions.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iOS 16
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData is supported from iOS 17.
+                }
+            }
+        }
+    }
+}

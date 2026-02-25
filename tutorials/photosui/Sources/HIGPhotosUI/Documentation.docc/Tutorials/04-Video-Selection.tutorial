@@ -1,0 +1,244 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Video Selection") {
+        Learn how to select videos with PhotosPicker
+        and play them using VideoPlayer.
+    }
+    
+    @Section(title: "Video-Only PhotosPicker") {
+        @ContentAndMedia {
+            Configure a PhotosPicker that only allows video selection
+            with the matching: .videos filter.
+            
+            Since videos may take longer to load than images,
+            appropriate loading UI is important.
+        }
+        
+        @Steps {
+            @Step {
+                **Applying Video Filter**
+                
+                Create a Picker that only shows videos with matching: .videos.
+                Only videos will appear filtered from the photo library.
+                
+                @Code(name: "VideoFilter.swift", file: "04-video-filter.swift")
+            }
+            
+            @Step {
+                **Identifying Video Items**
+                
+                Check if a selected item is actually a video
+                using supportedContentTypes.
+                
+                @Code(name: "VideoIdentification.swift", file: "04-video-identification.swift")
+            }
+            
+            @Step {
+                **Mixed Video and Image Selection**
+                
+                Allow both with .any(of: [.images, .videos]),
+                and distinguish the type of selected items for processing.
+                
+                @Code(name: "MixedMediaSelection.swift", file: "04-mixed-media-selection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Loading Video Data") {
+        @ContentAndMedia {
+            Video data must be handled differently from images.
+            
+            Use a Movie type Transferable,
+            or save to a temporary file and use the URL.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Movie Transferable**
+                
+                Define a Movie struct that can hold video files.
+                Implement the Transferable protocol for PhotosPicker compatibility.
+                
+                @Code(name: "MovieTransferable.swift", file: "04-movie-transferable.swift")
+            }
+            
+            @Step {
+                **Loading Video URL**
+                
+                Load videos with loadTransferable(type: Movie.self).
+                Use the returned URL with VideoPlayer.
+                
+                @Code(name: "LoadVideoURL.swift", file: "04-load-video-url.swift")
+            }
+            
+            @Step {
+                **Displaying Loading Progress**
+                
+                Since videos can be large, showing loading progress is helpful.
+                Provide feedback to users with ProgressView.
+                
+                @Code(name: "VideoLoadingProgress.swift", file: "04-video-loading-progress.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Video Player") {
+        @ContentAndMedia {
+            Play selected videos using AVKit's VideoPlayer.
+            
+            You can utilize various features like
+            playback controls, full screen, and Picture-in-Picture.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic VideoPlayer Implementation**
+                
+                Play videos using AVPlayer and VideoPlayer.
+                Create an AVPlayer instance from the URL.
+                
+                @Code(name: "BasicVideoPlayer.swift", file: "04-basic-video-player.swift")
+            }
+            
+            @Step {
+                **Managing Playback State**
+                
+                Implement play/pause buttons by observing AVPlayer's state.
+                Manage playback state with @State.
+                
+                @Code(name: "PlaybackState.swift", file: "04-playback-state.swift")
+            }
+            
+            @Step {
+                **Generating Video Thumbnails**
+                
+                Extract video thumbnails with AVAssetImageGenerator.
+                Useful for showing video previews in lists.
+                
+                @Code(name: "VideoThumbnail.swift", file: "04-video-thumbnail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completed Video Gallery") {
+        @ContentAndMedia {
+            Implement a complete video gallery screen that integrates
+            video selection, loading, and playback.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing VideoGalleryView**
+                
+                Combine video list and playback screen.
+                Tapping a selected video plays it in full screen.
+                
+                @Code(name: "VideoGalleryView.swift", file: "04-video-gallery-view.swift")
+            }
+            
+            @Step {
+                **Video Detail View**
+                
+                Implement a detail view with video playback,
+                information display, and sharing features.
+                
+                @Code(name: "VideoDetailView.swift", file: "04-video-detail-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you get a video URL from PhotosPickerItem?
+            
+            @Choice(isCorrect: true) {
+                Load with a custom type that implements Transferable
+                
+                @Justification(reaction: "Correct!") {
+                    Define a Transferable type like Movie and
+                    load with loadTransferable(type: Movie.self).
+                    Use FileRepresentation to receive the URL.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Access the .videoURL property
+                
+                @Justification(reaction: "Not quite") {
+                    PhotosPickerItem doesn't have a videoURL property.
+                    You need to load through the Transferable protocol.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Load as Data and save to a temporary file
+                
+                @Justification(reaction: "Partially correct") {
+                    This is possible, but using FileRepresentation
+                    automatically creates a temporary file.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class is used to generate video thumbnails?
+            
+            @Choice(isCorrect: true) {
+                AVAssetImageGenerator
+                
+                @Justification(reaction: "Correct!") {
+                    AVAssetImageGenerator extracts frames from a video
+                    at specific times to create images.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VideoThumbnailGenerator
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such class.
+                    Use AVAssetImageGenerator.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayer.thumbnailImage
+                
+                @Justification(reaction: "Not quite") {
+                    AVPlayer doesn't have a thumbnailImage property.
+                    You need to use AVAssetImageGenerator separately.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you check if a selected PhotosPickerItem is a video?
+            
+            @Choice(isCorrect: true) {
+                Check for UTType.movie in supportedContentTypes
+                
+                @Justification(reaction: "Exactly right!") {
+                    If UTType.movie is included in the PhotosPickerItem's
+                    supportedContentTypes array, it's a video.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check the isVideo property
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such property.
+                    Check supportedContentTypes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check the itemIdentifier prefix
+                
+                @Justification(reaction: "Not quite") {
+                    itemIdentifier doesn't indicate media type.
+                    Use supportedContentTypes.
+                }
+            }
+        }
+    }
+}

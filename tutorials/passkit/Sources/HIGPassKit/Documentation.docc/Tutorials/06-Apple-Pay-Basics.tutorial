@@ -1,0 +1,207 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Apple Pay Payment Basics") {
+        Learn how Apple Pay works and
+        how to prepare for payments in your app.
+        
+        @Image(source: "apple-pay-basics.png", alt: "Apple Pay Basics")
+    }
+    
+    @Section(title: "How Apple Pay Works") {
+        @ContentAndMedia {
+            Apple Pay is a secure payment system based on tokenization.
+            It uses one-time tokens instead of actual card numbers.
+            
+            **Security Features:**
+            - Device Account Number: Device-specific virtual card number
+            - Dynamic Security Code: Security code generated per transaction
+            - Secure Element: Hardware-level secure storage
+            
+            @Image(source: "apple-pay-flow.png", alt: "Apple Pay Flow")
+        }
+        
+        @Steps {
+            @Step {
+                Understand the Apple Pay payment flow.
+                Proceeds as User → App → Payment Gateway → Card Network → Merchant.
+                
+                @Code(name: "PaymentFlow.swift", file: "06-01-payment-flow.swift")
+            }
+            
+            @Step {
+                App receives encrypted Payment Token and forwards to server.
+                Server processes actual payment through Payment Gateway (PG).
+                
+                @Code(name: "TokenHandling.swift", file: "06-02-token-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Setting Up Merchant ID") {
+        @ContentAndMedia {
+            To use Apple Pay, you need to register a Merchant ID.
+            This identifies the merchant processing payments.
+            
+            **Setup Steps:**
+            1. Create Merchant ID in Apple Developer Portal
+            2. Generate payment processing certificate
+            3. Add Apple Pay Capability in Xcode project
+        }
+        
+        @Steps {
+            @Step {
+                Register Merchant ID in Developer Portal.
+                Use format `merchant.com.yourcompany.appname`.
+                
+                @Code(name: "MerchantID.swift", file: "06-03-merchant-id.swift")
+            }
+            
+            @Step {
+                Add Apple Pay Capability in Xcode.
+                Click + Capability in Signing & Capabilities.
+                
+                @Code(name: "Capability.swift", file: "06-04-capability.swift")
+            }
+            
+            @Step {
+                Select and link your registered Merchant ID.
+                Automatically added to entitlements file.
+                
+                @Code(name: "Entitlements.swift", file: "06-05-entitlements.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Checking Payment Availability") {
+        @ContentAndMedia {
+            Apple Pay is not available on all devices or regions.
+            Check availability before displaying the payment button.
+            
+            **Things to Check:**
+            - Device support (NFC equipped)
+            - Cards registered
+            - Supported network availability
+        }
+        
+        @Steps {
+            @Step {
+                Check payment availability with PKPaymentAuthorizationController.
+                canMakePayments() only checks device support.
+                
+                @Code(name: "CanMakePayments.swift", file: "06-06-can-make-payments.swift")
+            }
+            
+            @Step {
+                Check support for specific card networks with canMakePayments(usingNetworks:).
+                Specify Visa, Mastercard, AMEX, etc.
+                
+                @Code(name: "NetworkCheck.swift", file: "06-07-network-check.swift")
+            }
+            
+            @Step {
+                Handling when user hasn't registered cards.
+                Can display a button to prompt card setup.
+                
+                @Code(name: "SetupButton.swift", file: "06-08-setup-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using PKPaymentButton") {
+        @ContentAndMedia {
+            Apple provides standardized payment button designs.
+            Following Human Interface Guidelines is essential.
+            
+            **Button Types:**
+            - `.buy`: Buy with Apple Pay
+            - `.checkout`: Checkout with Apple Pay
+            - `.plain`: Apple Pay logo only
+            - `.setUp`: Set up Apple Pay
+        }
+        
+        @Steps {
+            @Step {
+                Use PaymentButton in SwiftUI.
+                Native SwiftUI button supported from iOS 16.
+                
+                @Code(name: "PaymentButtonSwiftUI.swift", file: "06-09-payment-button-swiftui.swift")
+            }
+            
+            @Step {
+                Adjust button style to match app theme.
+                Choose black, white, or automatic style.
+                
+                @Code(name: "ButtonStyle.swift", file: "06-10-button-style.swift")
+            }
+            
+            @Step {
+                Display appropriate button based on payment availability.
+                Branch based on canMakePayments result.
+                
+                @Code(name: "ConditionalButton.swift", file: "06-11-conditional-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is used instead of actual card numbers in Apple Pay?
+            
+            @Choice(isCorrect: true) {
+                Device Account Number (token)
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Apple Pay generates device-specific virtual card numbers
+                    to protect actual card information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CVV code
+                
+                @Justification(reaction: "Not quite.") {
+                    CVV is the security code on card back,
+                    different from Apple Pay's tokenization.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Encrypted actual card number
+                
+                @Justification(reaction: "Incorrect.") {
+                    Not simple encryption but a completely
+                    different virtual number is used.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does PKPaymentAuthorizationController.canMakePayments(usingNetworks:) do?
+            
+            @Choice(isCorrect: false) {
+                Check payment processing server connection
+                
+                @Justification(reaction: "Think again.") {
+                    Checks local device status, not server connection.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Check if payment is possible with specified card networks
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Checks if cards from specified networks like
+                    Visa, Mastercard are registered.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Validate Merchant ID
+                
+                @Justification(reaction: "Incorrect.") {
+                    Merchant ID validation is processed
+                    on server during payment request.
+                }
+            }
+        }
+    }
+}

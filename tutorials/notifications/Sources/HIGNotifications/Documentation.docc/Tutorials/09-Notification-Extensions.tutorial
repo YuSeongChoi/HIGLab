@@ -1,0 +1,280 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Notification Extensions (Service/Content Extension)") {
+        Powerfully extend notifications with Notification Extensions.
+        
+        Modify push content with Service Extension,
+        and implement fully custom UI with Content Extension.
+    }
+    
+    @Section(title: "Notification Service Extension") {
+        @ContentAndMedia {
+            Service Extension provides an opportunity to modify push notification content
+            before it's displayed to the user.
+            
+            **Main Uses:**
+            - Download and attach images/media
+            - Decrypt notification content
+            - Dynamically modify notification content
+        }
+        
+        @Steps {
+            @Step {
+                **Adding Service Extension Target**
+                
+                Select Notification Service Extension from
+                File > New > Target.
+                
+                @Code(name: "AddServiceExtension.swift", file: "09-add-service-extension.swift")
+            }
+            
+            @Step {
+                **NotificationService Class Structure**
+                
+                Examine the auto-generated template code.
+                didReceive and serviceExtensionTimeWillExpire are the key methods.
+                
+                @Code(name: "ServiceTemplate.swift", file: "09-service-template.swift")
+            }
+            
+            @Step {
+                **mutable-content Setting**
+                
+                For Service Extension to be called, the push payload
+                must have mutable-content: 1.
+                
+                @Code(name: "MutableContent.swift", file: "09-mutable-content.swift")
+            }
+            
+            @Step {
+                **Download and Attach Images**
+                
+                Download images from URLs included in push and attach them.
+                There's a 30-second time limit.
+                
+                @Code(name: "DownloadAndAttach.swift", file: "09-download-and-attach.swift")
+            }
+            
+            @Step {
+                **Handling Timeout**
+                
+                serviceExtensionTimeWillExpire is called when timeout is imminent.
+                You must return the content processed so far.
+                
+                @Code(name: "HandleTimeout.swift", file: "09-handle-timeout.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Notification Content Extension") {
+        @ContentAndMedia {
+            Content Extension displays a fully custom UI
+            when the notification is expanded.
+            
+            Complex interfaces can be implemented with storyboards or SwiftUI.
+            Various UI like image galleries, maps, charts are possible.
+        }
+        
+        @Steps {
+            @Step {
+                **Adding Content Extension Target**
+                
+                Select Notification Content Extension from
+                File > New > Target.
+                
+                @Code(name: "AddContentExtension.swift", file: "09-add-content-extension.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                Link categories in the NSExtension dictionary.
+                Set the UNNotificationExtensionCategory key.
+                
+                @Code(name: "ContentInfoPlist.swift", file: "09-content-info-plist.swift")
+            }
+            
+            @Step {
+                **Implementing NotificationViewController**
+                
+                Implement the UNNotificationContentExtension protocol.
+                Display notification content in the UI in didReceive.
+                
+                @Code(name: "ContentViewController.swift", file: "09-content-view-controller.swift")
+            }
+            
+            @Step {
+                **Building Custom UI**
+                
+                Design the desired UI in storyboard.
+                Place image views, labels, buttons, etc.
+                
+                @Code(name: "CustomUI.swift", file: "09-custom-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Content Extension Interaction") {
+        @ContentAndMedia {
+            Content Extension can work with action buttons
+            to implement complex interactions.
+            
+            Receive user input and update the UI in real-time.
+        }
+        
+        @Steps {
+            @Step {
+                **Intercepting Action Responses**
+                
+                Handle action responses with didReceive(_:completionHandler:).
+                Forward to the main app or handle directly in the Extension.
+                
+                @Code(name: "InterceptAction.swift", file: "09-intercept-action.swift")
+            }
+            
+            @Step {
+                **Handling Text Input**
+                
+                Display text input action content in the UI.
+                
+                @Code(name: "HandleTextInExtension.swift", file: "09-handle-text-extension.swift")
+            }
+            
+            @Step {
+                **Media Playback Button**
+                
+                Add media controls with UNNotificationContentExtension's
+                mediaPlayPauseButtonType.
+                
+                @Code(name: "MediaControls.swift", file: "09-media-controls.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Data Sharing Between Extension and Main App") {
+        @ContentAndMedia {
+            Extensions run in a separate process from the main app.
+            
+            Use App Groups to share data.
+            Utilize UserDefaults(suiteName:) or shared file containers.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Up App Group**
+                
+                Add the same App Group to both main app and Extension.
+                Configure in Signing & Capabilities.
+                
+                @Code(name: "AppGroup.swift", file: "09-app-group.swift")
+            }
+            
+            @Step {
+                **Shared UserDefaults**
+                
+                Share UserDefaults through App Group.
+                
+                @Code(name: "SharedUserDefaults.swift", file: "09-shared-userdefaults.swift")
+            }
+            
+            @Step {
+                **Shared File Container**
+                
+                Share large data as files.
+                Use FileManager's containerURL(forSecurityApplicationGroupIdentifier:).
+                
+                @Code(name: "SharedContainer.swift", file: "09-shared-container.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is needed in the push payload for Notification Service Extension to be called?
+            
+            @Choice(isCorrect: true) {
+                mutable-content: 1
+                
+                @Justification(reaction: "Correct!") {
+                    The mutable-content flag is required for the system to
+                    call the Service Extension.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                content-available: 1
+                
+                @Justification(reaction: "Don't confuse them") {
+                    content-available is for Silent Push.
+                    Service Extension uses mutable-content.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always called without special settings
+                
+                @Justification(reaction: "Not quite") {
+                    The mutable-content flag is required.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the time limit for Notification Service Extension tasks?
+            
+            @Choice(isCorrect: true) {
+                About 30 seconds
+                
+                @Justification(reaction: "Correct!") {
+                    You must complete tasks within 30 seconds.
+                    serviceExtensionTimeWillExpire is called on timeout.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                5 seconds
+                
+                @Justification(reaction: "That's longer") {
+                    About 30 seconds is given for image downloads, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    There's a time limit for battery and user experience.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you use to share data between Extension and main app?
+            
+            @Choice(isCorrect: true) {
+                App Group
+                
+                @Justification(reaction: "Correct!") {
+                    Extensions run in separate processes, so access
+                    shared containers and UserDefaults through App Groups.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Regular UserDefaults
+                
+                @Justification(reaction: "Not quite") {
+                    Regular UserDefaults are separated per app.
+                    Use App Group suite to share.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Global variables
+                
+                @Justification(reaction: "That's not possible") {
+                    Separate processes don't share memory.
+                }
+            }
+        }
+    }
+}

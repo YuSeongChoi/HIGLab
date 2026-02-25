@@ -1,0 +1,189 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Migration from ObservableObject") {
+        Learn how to safely migrate existing ObservableObject-based code to @Observable.
+        Cover step-by-step transition strategies and considerations.
+    }
+    
+    @Section(title: "Basic Migration Steps") {
+        @ContentAndMedia {
+            The transition from ObservableObject to @Observable
+            follows a few simple steps.
+            Let's first learn the parts that can be mechanically converted.
+        }
+        
+        @Steps {
+            @Step {
+                **Before**: Existing ObservableObject code.
+                Uses @Published and ObservableObject protocol.
+                
+                @Code(name: "BeforeMigration.swift", file: "09-before-migration.swift")
+            }
+            
+            @Step {
+                **Step 1**: Replace protocol and macro
+                Remove ObservableObject and add @Observable.
+                
+                @Code(name: "Step1Protocol.swift", file: "09-step1-protocol.swift")
+            }
+            
+            @Step {
+                **Step 2**: Remove @Published
+                In @Observable, stored properties are automatically tracked.
+                
+                @Code(name: "Step2Published.swift", file: "09-step2-published.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Updating View Code") {
+        @ContentAndMedia {
+            Update view code to match model changes.
+            Learn the replacements for @StateObject and @ObservedObject.
+        }
+        
+        @Steps {
+            @Step {
+                **@StateObject → @State**
+                Objects owned by the view change to @State.
+                
+                @Code(name: "StateObjectMigration.swift", file: "09-state-object.swift")
+            }
+            
+            @Step {
+                **@ObservedObject → Remove or keep**
+                Objects injected from outside can be used without wrappers.
+                
+                @Code(name: "ObservedObjectMigration.swift", file: "09-observed-object.swift")
+            }
+            
+            @Step {
+                **@EnvironmentObject → @Environment**
+                Environment objects are replaced with @Environment.
+                
+                @Code(name: "EnvironmentMigration.swift", file: "09-environment.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Migration Considerations") {
+        @ContentAndMedia {
+            Learn about potential issues during migration
+            and their solutions.
+        }
+        
+        @Steps {
+            @Step {
+                **When iOS 17 below support is needed**
+                Conditional compilation can run both approaches in parallel.
+                
+                @Code(name: "BackwardCompatibility.swift", file: "09-backward-compat.swift")
+            }
+            
+            @Step {
+                **When using objectWillChange directly**
+                If manual triggering is needed, use ObservationRegistrar.
+                
+                @Code(name: "ManualTrigger.swift", file: "09-manual-trigger.swift")
+            }
+            
+            @Step {
+                **Checklist**: Migration completion verification
+                Check all items to ensure complete transition.
+                
+                @Code(name: "MigrationChecklist.swift", file: "09-checklist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Gradual Migration") {
+        @ContentAndMedia {
+            See how to gradually migrate in a real app
+            through the CartFlow example.
+        }
+        
+        @Steps {
+            @Step {
+                Existing Legacy code: ObservableObject-based CartStore
+                
+                @Code(name: "LegacyCartStore.swift", file: "09-legacy-cart.swift")
+            }
+            
+            @Step {
+                Convert to new @Observable-based CartStore.
+                Modernize while maintaining existing functionality.
+                
+                @Code(name: "ModernCartStore.swift", file: "09-modern-cart.swift")
+            }
+            
+            @Step {
+                Update view code to complete migration.
+                
+                @Code(name: "UpdatedViews.swift", file: "09-updated-views.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens to @Published when migrating from ObservableObject to @Observable?
+            
+            @Choice(isCorrect: true) {
+                Remove it - automatically tracked in @Observable
+                
+                @Justification(reaction: "Correct!") {
+                    The @Observable macro automatically generates observation code
+                    for stored properties, so @Published is unnecessary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Keep it as is
+                
+                @Justification(reaction: "Not quite") {
+                    @Published is for ObservableObject only.
+                    It's meaningless in @Observable and can interfere.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Replace with @Observed
+                
+                @Justification(reaction: "Not quite") {
+                    There's no macro called @Observed.
+                    Stored properties are automatically tracked in @Observable.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What replaces @StateObject when migrating to @Observable?
+            
+            @Choice(isCorrect: true) {
+                @State
+                
+                @Justification(reaction: "Perfect!") {
+                    In iOS 17+, @State properly manages
+                    the lifecycle of Observable objects.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Bindable
+                
+                @Justification(reaction: "Not quite") {
+                    @Bindable is for two-way binding,
+                    a different role from object ownership management.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Regular property without wrapper
+                
+                @Justification(reaction: "Not quite") {
+                    When the view needs to own and create the object,
+                    @State is needed for lifecycle management.
+                }
+            }
+        }
+    }
+}

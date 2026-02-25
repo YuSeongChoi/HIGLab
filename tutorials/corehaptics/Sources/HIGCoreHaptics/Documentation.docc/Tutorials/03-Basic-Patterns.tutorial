@@ -1,0 +1,200 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Basic Haptic Patterns") {
+        Learn how to combine various haptic events with CHHapticPattern
+        to create meaningful feedback.
+        
+        @Image(source: "basic-patterns.png", alt: "Basic Haptic Patterns")
+    }
+    
+    @Section(title: "Creating Your First Haptic Pattern") {
+        @ContentAndMedia {
+            CHHapticPattern consists of one or more CHHapticEvents.
+            Events are defined by start time, duration, and parameters.
+            
+            Let's start with a simple tap feedback.
+        }
+        
+        @Steps {
+            @Step {
+                Create the most basic tap feedback with a single Transient event.
+                This pattern is suitable for button touches.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-01-simple-tap.swift")
+            }
+            
+            @Step {
+                Adjust intensity and sharpness with CHHapticEventParameter.
+                Experiment with various combinations.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-02-parameters.swift")
+            }
+            
+            @Step {
+                Convert the pattern to a Player and play it.
+                Players are reusable, so creating them once is efficient.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-03-play-pattern.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Composite Patterns") {
+        @ContentAndMedia {
+            Combining multiple events creates richer feedback.
+            Adjust the relativeTime of events to compose sequences.
+            
+            Let's design patterns for different situations like success, failure, and warning.
+        }
+        
+        @Steps {
+            @Step {
+                Success feedback: Convey a positive feeling with two light taps.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-04-success.swift")
+            }
+            
+            @Step {
+                Failure feedback: Draw attention with a strong, heavy single tap.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-05-failure.swift")
+            }
+            
+            @Step {
+                Warning feedback: Express urgency with consecutive taps.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-06-warning.swift")
+            }
+            
+            @Step {
+                Heartbeat pattern: Continuous feedback mimicking a heartbeat.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-07-heartbeat.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using Continuous Events") {
+        @ContentAndMedia {
+            Continuous events are vibrations that last for a specified duration.
+            They're suitable for sliders, scrolling, and loading state indicators.
+            
+            Combining Transient and Continuous enables 
+            even more diverse feedback.
+        }
+        
+        @Steps {
+            @Step {
+                Create a basic Continuous event.
+                Set the duration with the duration parameter.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-08-continuous-basic.swift")
+            }
+            
+            @Step {
+                Vary the vibration intensity over time.
+                You can create fade-in/fade-out effects.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-09-continuous-curve.swift")
+            }
+            
+            @Step {
+                A composite pattern combining Transient and Continuous.
+                Creates an effect like lingering sensation after an impact.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-10-combined.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pattern Reuse and Management") {
+        @ContentAndMedia {
+            Well-designed patterns should be used consistently throughout the app.
+            Let's create a structure to systematically manage patterns.
+        }
+        
+        @Steps {
+            @Step {
+                Centrally manage all app patterns with a HapticPattern enum.
+                
+                @Code(name: "HapticPatternLibrary.swift", file: "03-11-pattern-library.swift")
+            }
+            
+            @Step {
+                Add pattern playback functionality to HapticManager.
+                
+                @Code(name: "HapticManager+Patterns.swift", file: "03-12-manager-patterns.swift")
+            }
+            
+            @Step {
+                Create a ViewModifier for easy haptic usage in Views.
+                
+                @Code(name: "HapticModifier.swift", file: "03-13-view-modifier.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does relativeTime in CHHapticEvent mean?
+            
+            @Choice(isCorrect: false) {
+                Wait time after the previous event ends
+                
+                @Justification(reaction: "Not quite.") {
+                    relativeTime is not relative to the previous event 
+                    but to the pattern start point.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Relative start time from the pattern's beginning
+                
+                @Justification(reaction: "Correct! ⏱️") {
+                    relativeTime: 0.1 means the event starts 
+                    0.1 seconds after the pattern begins.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Total duration of the event
+                
+                @Justification(reaction: "Incorrect.") {
+                    Duration is set with the duration parameter.
+                    relativeTime only defines the start point.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the generally recommended approach when designing 
+            success and failure feedback?
+            
+            @Choice(isCorrect: true) {
+                Success is light and bright, failure is heavy and strong
+                
+                @Justification(reaction: "Good choice! ✅") {
+                    Give physical characteristics matching the emotion
+                    so users can intuitively recognize the result.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Both success and failure at the same intensity for consistency
+                
+                @Justification(reaction: "Think again.") {
+                    Consistency is important, but the purpose of haptics is 
+                    information delivery. They need to be distinguishable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Handle failure quietly without haptics
+                
+                @Justification(reaction: "Not recommended.") {
+                    Failures should also be clearly communicated 
+                    so users can take appropriate action.
+                }
+            }
+        }
+    }
+}

@@ -1,41 +1,41 @@
 @Tutorial(time: 20) {
     @Intro(title: "Sealed Box") {
-        Sealed Box는 암호화된 데이터를 안전하게 패키징하는 컨테이너입니다.
-        Nonce, 암호문, 인증 태그를 하나의 구조로 묶어 관리합니다.
+        Sealed Box is a container that securely packages encrypted data.
+        It bundles the Nonce, ciphertext, and authentication tag into a single structure for easy management.
     }
     
-    @Section(title: "Sealed Box 이해하기") {
+    @Section(title: "Understanding Sealed Box") {
         @ContentAndMedia {
-            Sealed Box는 AES.GCM.SealedBox 타입으로 암호화 결과를 캡슐화합니다.
-            combined 속성으로 전송/저장에 적합한 단일 Data를 얻을 수 있습니다.
+            Sealed Box encapsulates encryption results using the AES.GCM.SealedBox type.
+            The combined property provides a single Data suitable for transmission or storage.
         }
         @Steps {
             @Step {
-                Sealed Box를 생성하고 구조를 확인합니다.
+                Create a Sealed Box and examine its structure.
                 @Code(name: "SealedBox.swift", file: "05-01-create.swift")
             }
             @Step {
-                combined 데이터로 Sealed Box를 복원합니다.
+                Restore a Sealed Box from combined data.
                 @Code(name: "SealedBox.swift", file: "05-02-restore.swift")
             }
             @Step {
-                ChaChaPoly의 Sealed Box도 사용해봅니다.
+                Also try using ChaChaPoly's Sealed Box.
                 @Code(name: "SealedBox.swift", file: "05-03-chacha.swift")
             }
         }
     }
     
-    @Section(title: "메시지 전송 구현") {
+    @Section(title: "Implementing Message Transmission") {
         @ContentAndMedia {
-            Sealed Box를 활용하여 암호화된 메시지를 네트워크로 전송합니다.
+            Use Sealed Box to encrypt messages and transmit them over the network.
         }
         @Steps {
             @Step {
-                메시지를 Sealed Box로 암호화하고 Base64로 인코딩합니다.
+                Encrypt a message into a Sealed Box and encode it as Base64.
                 @Code(name: "SealedBox.swift", file: "05-04-transmit.swift")
             }
             @Step {
-                수신한 메시지를 복호화합니다.
+                Decrypt the received message.
                 @Code(name: "SealedBox.swift", file: "05-05-receive.swift")
             }
         }
@@ -43,23 +43,23 @@
     
     @Assessments {
         @MultipleChoice {
-            Sealed Box의 combined 속성에 포함되지 않는 것은?
+            What is NOT included in the Sealed Box's combined property?
             @Choice(isCorrect: false) {
                 Nonce
-                @Justification(reaction: "다시 생각해보세요.") {
-                    Nonce는 combined에 포함됩니다.
+                @Justification(reaction: "Think again.") {
+                    The Nonce is included in combined.
                 }
             }
             @Choice(isCorrect: false) {
-                암호문(Ciphertext)
-                @Justification(reaction: "다시 생각해보세요.") {
-                    암호문은 combined의 핵심 요소입니다.
+                Ciphertext
+                @Justification(reaction: "Think again.") {
+                    The ciphertext is a core element of combined.
                 }
             }
             @Choice(isCorrect: true) {
-                암호화 키
-                @Justification(reaction: "정답입니다!") {
-                    암호화 키는 절대 Sealed Box에 포함되지 않습니다. 별도로 안전하게 관리해야 합니다.
+                Encryption key
+                @Justification(reaction: "Correct!") {
+                    The encryption key is never included in the Sealed Box. It must be managed separately and securely.
                 }
             }
         }

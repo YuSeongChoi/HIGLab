@@ -1,0 +1,161 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to PassKit & Wallet") {
+        Understand the core concepts of the PassKit framework and
+        the features provided by the Wallet app.
+        
+        @Image(source: "passkit-intro.png", alt: "PassKit Overview")
+    }
+    
+    @Section(title: "What is PassKit?") {
+        @ContentAndMedia {
+            PassKit is a framework that interacts with Apple's Wallet app.
+            It provides two main features:
+            
+            - **Pass Management**: Membership cards, tickets, coupons, boarding passes, etc.
+            - **Apple Pay**: Secure contactless payment system
+            
+            @Image(source: "wallet-app.png", alt: "Wallet App")
+        }
+        
+        @Steps {
+            @Step {
+                Import the PassKit framework.
+                Supported from iOS 6, now available on all Apple platforms.
+                
+                @Code(name: "PassKitImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Check Wallet app availability.
+                Wallet may be disabled in some regions or devices.
+                
+                @Code(name: "WalletAvailability.swift", file: "01-02-availability.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pass Types Supported by Wallet") {
+        @ContentAndMedia {
+            Wallet supports various types of passes.
+            Each type provides layout and features suited to its purpose.
+            
+            - **Boarding Pass**: Airline tickets, train tickets
+            - **Coupon**: Discount coupons, promotions
+            - **Event Ticket**: Concert, movie tickets
+            - **Store Card**: Membership, point cards
+            - **Generic**: Other general-purpose passes
+        }
+        
+        @Steps {
+            @Step {
+                Display style in Wallet varies by pass type.
+                Membership card apps typically use the `storeCard` type.
+                
+                @Code(name: "PassTypes.swift", file: "01-03-pass-types.swift")
+            }
+            
+            @Step {
+                Use PKPassLibrary to manage user's passes.
+                Operations like add, delete, update are available.
+                
+                @Code(name: "PassLibrary.swift", file: "01-04-pass-library.swift")
+            }
+            
+            @Step {
+                You can check if the user already has a pass.
+                Prevents duplicate additions and improves UX.
+                
+                @Code(name: "ContainsPass.swift", file: "01-05-contains-pass.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Apple Pay Overview") {
+        @ContentAndMedia {
+            Apple Pay is a secure contactless payment system.
+            It uses tokenized information instead of actual card numbers.
+            
+            - **Security**: Device Account Number protects real card info
+            - **Convenience**: Fast authentication with Face ID / Touch ID
+            - **Privacy**: Apple doesn't store transaction information
+        }
+        
+        @Steps {
+            @Step {
+                Check Apple Pay payment availability.
+                The device must support NFC and have payment cards registered.
+                
+                @Code(name: "ApplePayAvailability.swift", file: "01-06-apple-pay-check.swift")
+            }
+            
+            @Step {
+                Display standard Apple Pay buttons with PKPaymentButton.
+                Provides design following Human Interface Guidelines.
+                
+                @Code(name: "PaymentButton.swift", file: "01-07-payment-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What are the two main features provided by the PassKit framework?
+            
+            @Choice(isCorrect: true) {
+                Pass management and Apple Pay payments
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    PassKit handles both Wallet passes (membership, tickets, etc.)
+                    and Apple Pay payments.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Push notifications and location-based services
+                
+                @Justification(reaction: "Think again.") {
+                    Passes do support location-based notifications,
+                    but this is an additional feature, not core functionality.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Photo management and document scanning
+                
+                @Justification(reaction: "Incorrect.") {
+                    Photos and documents are handled by PhotosUI and VisionKit respectively.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the most appropriate pass type for creating a membership card?
+            
+            @Choice(isCorrect: false) {
+                boardingPass
+                
+                @Justification(reaction: "Not quite.") {
+                    boardingPass is suited for airline or train tickets.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                storeCard
+                
+                @Justification(reaction: "Correct! ✨") {
+                    storeCard is optimized for membership cards, point cards,
+                    and loyalty programs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                eventTicket
+                
+                @Justification(reaction: "Incorrect.") {
+                    eventTicket is suited for one-time events
+                    like concerts or movie tickets.
+                }
+            }
+        }
+    }
+}

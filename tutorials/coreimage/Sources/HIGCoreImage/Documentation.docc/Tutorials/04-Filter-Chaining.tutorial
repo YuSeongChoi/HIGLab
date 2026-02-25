@@ -1,0 +1,255 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Filter Chaining") {
+        Learn filter chaining techniques to connect multiple filters 
+        and create complex effects.
+        
+        @Image(source: "filter-chaining.png", alt: "Filter Chaining")
+    }
+    
+    @Section(title: "Principles of Filter Chaining") {
+        @ContentAndMedia {
+            Thanks to CoreImage's lazy evaluation, multiple filters can be connected efficiently.
+            They are processed at once during final rendering without creating intermediate images.
+            
+            ```
+            CIImage → Filter A → Filter B → Filter C → CIContext → Result
+                      (chain)    (chain)    (chain)    (render)
+            ```
+            
+            @Image(source: "chaining-pipeline.png", alt: "Chaining Pipeline")
+        }
+        
+        @Steps {
+            @Step {
+                The most basic filter chaining method.
+                Connect the output of the previous filter to the input of the next filter.
+                
+                @Code(name: "BasicChaining.swift", file: "04-01-basic-chaining.swift")
+            }
+            
+            @Step {
+                Chain more concisely with the applyingFilter method.
+                Leverage CIImage extension methods.
+                
+                @Code(name: "ApplyingFilter.swift", file: "04-02-applying-filter.swift")
+            }
+            
+            @Step {
+                Define custom operators to improve readability.
+                You can chain in a functional programming style.
+                
+                @Code(name: "CustomOperator.swift", file: "04-03-custom-operator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Blending and Compositing") {
+        @ContentAndMedia {
+            Compositing two images is also a type of filter chaining.
+            You can create creative effects with various blend modes.
+            
+            Key blend filters:
+            - CISourceOverCompositing: Basic compositing
+            - CIMultiplyBlendMode: Dark multiply
+            - CIScreenBlendMode: Bright screen
+            - CIOverlayBlendMode: Overlay (enhanced contrast)
+            - CIBlendWithMask: Mask-based blending
+        }
+        
+        @Steps {
+            @Step {
+                Composite two images with CISourceOverCompositing.
+                Specify the image to place on top and the background image.
+                
+                @Code(name: "SourceOverCompositing.swift", file: "04-04-source-over.swift")
+            }
+            
+            @Step {
+                Apply various blend modes.
+                Compare effects like Multiply, Screen, Overlay.
+                
+                @Code(name: "BlendModes.swift", file: "04-05-blend-modes.swift")
+            }
+            
+            @Step {
+                Perform compositing using a mask with CIBlendWithMask.
+                You can blend only selective areas.
+                
+                @Code(name: "BlendWithMask.swift", file: "04-06-blend-mask.swift")
+            }
+            
+            @Step {
+                Create gradient masks for natural transitions.
+                Use CILinearGradient and CIRadialGradient.
+                
+                @Code(name: "GradientMask.swift", file: "04-07-gradient-mask.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complex Filter Combinations") {
+        @ContentAndMedia {
+            Implement complex filter combinations at a level used in actual apps.
+            Combine multiple techniques to create professional effects.
+            
+            Effects to implement:
+            1. Dramatic black and white (high contrast + vignette)
+            2. Vintage film look (color adjustment + grain + vignette)
+            3. Glow effect (blur + screen blend)
+        }
+        
+        @Steps {
+            @Step {
+                Implement a dramatic black and white effect.
+                Add enhanced contrast and vignette instead of simple black and white.
+                
+                @Code(name: "DramaticBW.swift", file: "04-08-dramatic-bw.swift")
+            }
+            
+            @Step {
+                Implement a vintage film look.
+                Combine color shift, faded feel, and grain.
+                
+                @Code(name: "VintageFilm.swift", file: "04-09-vintage-film.swift")
+            }
+            
+            @Step {
+                Implement a glow (luminance) effect.
+                Screen blend the blurred image with the original.
+                
+                @Code(name: "GlowEffect.swift", file: "04-10-glow-effect.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Reusable Filter Classes") {
+        @ContentAndMedia {
+            Encapsulate complex filter chains into reusable classes.
+            You can subclass CIFilter or use custom protocols.
+            
+            Benefits of encapsulation:
+            - Improved code reusability
+            - Parameter validation
+            - Manage filter combinations as a single unit
+        }
+        
+        @Steps {
+            @Step {
+                Define a custom filter protocol.
+                Clearly separate input, parameters, and output.
+                
+                @Code(name: "FilterProtocol.swift", file: "04-11-filter-protocol.swift")
+            }
+            
+            @Step {
+                Implement the vintage filter as a reusable class.
+                Provide parameter adjustment and preview functionality.
+                
+                @Code(name: "VintageFilterClass.swift", file: "04-12-vintage-class.swift")
+            }
+            
+            @Step {
+                Manage multiple presets with a filter factory pattern.
+                Return the appropriate filter based on user selection.
+                
+                @Code(name: "FilterFactory.swift", file: "04-13-filter-factory.swift")
+            }
+            
+            @Step {
+                Implement filter preview in SwiftUI.
+                See parameter changes in real-time.
+                
+                @Code(name: "FilterPreview.swift", file: "04-14-filter-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why are intermediate images not created during filter chaining?
+            
+            @Choice(isCorrect: true) {
+                CoreImage's lazy evaluation combines all filters at final rendering
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Thanks to lazy evaluation, multiple filters are processed 
+                    as a single optimized GPU operation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because filters copy images without modifying them
+                
+                @Justification(reaction: "That's not the case.") {
+                    CIImage is immutable, but lazy evaluation is the key.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because all processing is done on the CPU
+                
+                @Justification(reaction: "Actually the opposite.") {
+                    CoreImage actively utilizes GPU acceleration.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of the mask image in CIBlendWithMask filter?
+            
+            @Choice(isCorrect: true) {
+                White areas show foreground image, black areas show background image
+                
+                @Justification(reaction: "Correct! ✨") {
+                    The brightness value of the mask determines 
+                    the mixing ratio of the two images.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The mask only adjusts the brightness of the final image
+                
+                @Justification(reaction: "That's not the case.") {
+                    The mask controls the blending ratio of the two images.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The mask only adjusts filter application speed
+                
+                @Justification(reaction: "Not related.") {
+                    The mask controls visual effects.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What blend mode is used to create a glow effect?
+            
+            @Choice(isCorrect: false) {
+                Multiply - makes the image darker
+                
+                @Justification(reaction: "That's the opposite effect.") {
+                    Multiply creates dark effects, not suitable for glow.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Screen - makes bright areas brighter
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Screen blend creates an overlapping light effect, 
+                    suitable for glow/luminance effects.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Difference - shows the difference between two images
+                
+                @Justification(reaction: "Different purpose.") {
+                    Difference is used for special effects or image comparison.
+                }
+            }
+        }
+    }
+}

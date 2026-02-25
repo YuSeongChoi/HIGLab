@@ -1,0 +1,166 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Introduction to Sign in with Apple") {
+        Understand the core concepts of Sign in with Apple and 
+        the privacy protection features it provides to users.
+        
+        @Image(source: "siwa-intro.png", alt: "Sign in with Apple Overview")
+    }
+    
+    @Section(title: "What is Sign in with Apple?") {
+        @ContentAndMedia {
+            Sign in with Apple is a secure, privacy-protecting 
+            authentication system provided by Apple.
+            
+            - **Face ID/Touch ID Support**: Fast authentication without passwords
+            - **Hide My Email**: Protect real email with Private Email Relay
+            - **Cross-Platform**: Supports iOS, macOS, watchOS, tvOS, and web
+            - **App Store Required**: Mandatory when offering third-party login
+            
+            @Image(source: "siwa-features.png", alt: "Sign in with Apple Features")
+        }
+        
+        @Steps {
+            @Step {
+                To use Sign in with Apple, 
+                import the AuthenticationServices framework.
+                
+                @Code(name: "SignInWithApple.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Let's explore the main components of Sign in with Apple.
+                
+                - `ASAuthorizationAppleIDProvider`: Apple ID authentication provider
+                - `ASAuthorizationController`: Manages authentication flow
+                - `ASAuthorizationAppleIDCredential`: Authentication result credentials
+                
+                @Code(name: "CoreComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Privacy Protection Features") {
+        @ContentAndMedia {
+            Sign in with Apple prioritizes user privacy.
+            
+            - **Hide My Email**: Generates unique anonymous email addresses
+            - **Minimal Information Sharing**: Only name and email can be requested
+            - **User Control**: Users choose what information to share
+            - **Anti-Tracking**: Cannot track users across apps
+        }
+        
+        @Steps {
+            @Step {
+                Private Email Relay generates unique emails 
+                in the format @privaterelay.appleid.com.
+                
+                The user's actual email is managed only on Apple servers.
+                
+                @Code(name: "PrivateRelay.swift", file: "01-03-private-relay.swift")
+            }
+            
+            @Step {
+                The User Identifier is generated 
+                differently for each app.
+                
+                This makes cross-app user tracking impossible.
+                
+                @Code(name: "UserIdentifier.swift", file: "01-04-user-identifier.swift")
+            }
+        }
+    }
+    
+    @Section(title: "App Store Guidelines") {
+        @ContentAndMedia {
+            According to App Store Review Guidelines 4.8,
+            apps that offer third-party login must also 
+            provide Sign in with Apple.
+            
+            - Required when using social login (Google, Facebook, etc.)
+            - Place Sign in with Apple equally or more prominently
+            - Exception for apps using only proprietary authentication
+        }
+        
+        @Steps {
+            @Step {
+                To enable Sign in with Apple functionality,
+                add the Capability in Xcode.
+                
+                Add it in Project Settings > Signing & Capabilities.
+                
+                @Code(name: "Entitlements.swift", file: "01-05-entitlements.swift")
+            }
+            
+            @Step {
+                Verify that Sign in with Apple is enabled 
+                for the App ID in the Apple Developer portal.
+                
+                @Code(name: "AppConfiguration.swift", file: "01-06-app-config.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the core feature provided by 
+            Sign in with Apple's Private Email Relay?
+            
+            @Choice(isCorrect: false) {
+                It encrypts and stores user emails.
+                
+                @Justification(reaction: "Think again.") {
+                    Private Email Relay creates anonymous 
+                    relay email addresses, not encryption.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It generates unique anonymous email addresses to hide the real email.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    It protects the user's actual email with unique 
+                    @privaterelay.appleid.com format emails.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It automates the email verification process.
+                
+                @Justification(reaction: "That's not it.") {
+                    The main purpose of Private Email Relay 
+                    is privacy protection.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is Sign in with Apple implementation required?
+            
+            @Choice(isCorrect: true) {
+                When the app offers third-party login like Google or Facebook.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Required per App Store Guidelines 4.8 
+                    when offering third-party login.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's required for all iOS apps.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Apps using only proprietary authentication are exempt.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When the app runs only on Apple devices.
+                
+                @Justification(reaction: "That's not the criteria.") {
+                    The criterion is whether login options are provided, 
+                    not the platform.
+                }
+            }
+        }
+    }
+}

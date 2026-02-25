@@ -1,0 +1,213 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Debugging & Troubleshooting") {
+        Learn about common issues in BLE development
+        and effective debugging methods.
+    }
+    
+    @Section(title: "Common Issues") {
+        @ContentAndMedia {
+            Frequently occurring issues in BLE development.
+            
+            **Common Problems:**
+            - Device not found in scan
+            - Connection keeps failing
+            - Service/Characteristic discovery fails
+            - Data read/write errors
+            - Notifications not received
+        }
+        
+        @Steps {
+            @Step {
+                Create a checklist for problem diagnosis.
+                
+                @Code(name: "DebugChecklist.swift", file: "10-01-debug-checklist.swift")
+            }
+            
+            @Step {
+                Guide for Bluetooth state related issues.
+                
+                @Code(name: "StateDebugging.swift", file: "10-02-state-debugging.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Logging") {
+        @ContentAndMedia {
+            Build a systematic logging system
+            for effective BLE debugging.
+            
+            Using os_log, you can filter and view BLE events
+            in Console.app.
+        }
+        
+        @Steps {
+            @Step {
+                Create a BLE-specific logger.
+                
+                @Code(name: "BLELogger.swift", file: "10-03-ble-logger.swift")
+            }
+            
+            @Step {
+                Log all BLE events.
+                
+                @Code(name: "BluetoothManager+Logging.swift", file: "10-04-logging-extension.swift")
+            }
+            
+            @Step {
+                Convert data to hex strings for logging.
+                
+                @Code(name: "DataHexString.swift", file: "10-05-hex-string.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Debugging Tools") {
+        @ContentAndMedia {
+            Useful tools for BLE development.
+            
+            **Recommended Tools:**
+            - **LightBlue**: iOS/Mac BLE explorer
+            - **nRF Connect**: Nordic's BLE tool
+            - **Bluetooth Explorer**: Apple developer tool
+            - **Wireshark + PacketLogger**: Packet analysis
+        }
+        
+        @Steps {
+            @Step {
+                Check device service structure with LightBlue.
+                
+                @Code(name: "LightBlueUsage.swift", file: "10-06-lightblue.swift")
+            }
+            
+            @Step {
+                Testing BLE in the simulator.
+                Since the simulator doesn't support BLE, use alternatives.
+                
+                @Code(name: "SimulatorTesting.swift", file: "10-07-simulator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Performance Optimization") {
+        @ContentAndMedia {
+            Improve BLE app performance and battery efficiency.
+            
+            **Optimization Points:**
+            - Minimize unnecessary scanning
+            - Filter by service UUID
+            - Manage connection duration
+            - Optimize MTU size
+        }
+        
+        @Steps {
+            @Step {
+                Implement battery-efficient scan patterns.
+                
+                @Code(name: "EfficientScanning.swift", file: "10-08-efficient-scan.swift")
+            }
+            
+            @Step {
+                Understand MTU (Maximum Transmission Unit) negotiation.
+                
+                @Code(name: "MTUNegotiation.swift", file: "10-09-mtu.swift")
+            }
+            
+            @Step {
+                Connection parameter optimization (limited on iOS).
+                
+                @Code(name: "ConnectionParameters.swift", file: "10-10-connection-params.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you test BLE on the iOS Simulator?
+            
+            @Choice(isCorrect: false) {
+                Enable Bluetooth in simulator settings
+                
+                @Justification(reaction: "The simulator doesn't support BLE.") {
+                    Test on a real iOS device or
+                    use mock objects.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Test on a real device or use mocks
+                
+                @Justification(reaction: "Correct! 📱") {
+                    The simulator has no Bluetooth hardware.
+                    Create a mock BluetoothManager for testing
+                    or use a real device.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Connect the Mac's Bluetooth
+                
+                @Justification(reaction: "It doesn't pass through to the simulator.") {
+                    The simulator cannot access the Mac's Bluetooth.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you check first when a device isn't found in a scan?
+            
+            @Choice(isCorrect: true) {
+                Check if the device is advertising
+                
+                @Justification(reaction: "Correct! 📡") {
+                    BLE devices must be in advertising mode to be discovered.
+                    First check if the device appears in apps like LightBlue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check for bugs in the app code
+                
+                @Justification(reaction: "Check device state first.") {
+                    If it's not visible in other apps, it's a device issue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Restart the iPhone
+                
+                @Justification(reaction: "There are things to check before that.") {
+                    First check the device advertising state and Bluetooth state.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you do when CBATTError.insufficientAuthentication error occurs?
+            
+            @Choice(isCorrect: false) {
+                The app doesn't have Bluetooth permission
+                
+                @Justification(reaction: "It's not an app permission issue.") {
+                    App permissions are checked in CBManagerState.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Pairing with the BLE device is required
+                
+                @Justification(reaction: "Correct! 🔐") {
+                    Some Characteristics require a secure connection (pairing).
+                    Pair the device in iOS Settings and try again.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The UUID is wrong
+                
+                @Justification(reaction: "A different error would occur.") {
+                    UUID issues result in service/characteristic not found.
+                }
+            }
+        }
+    }
+}

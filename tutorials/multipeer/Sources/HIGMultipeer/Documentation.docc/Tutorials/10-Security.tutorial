@@ -1,0 +1,195 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Security & Encryption") {
+        Implement secure communication through 
+        MCSession's encryption settings and certificate verification.
+    }
+    
+    @Section(title: "Encryption Settings") {
+        @ContentAndMedia {
+            MCSession offers three encryption options.
+            
+            - none: No encryption
+            - optional: Encrypt if possible
+            - required: Mandatory encryption
+        }
+        
+        @Steps {
+            @Step {
+                Understand MCEncryptionPreference.
+                
+                @Code(name: "SecurityManager.swift", file: "10-01-encryption-pref.swift")
+            }
+            
+            @Step {
+                Create a session with required encryption.
+                
+                @Code(name: "SecurityManager.swift", file: "10-02-required-encryption.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Certificate-Based Authentication") {
+        @ContentAndMedia {
+            You can authenticate peers 
+            using SecurityIdentity.
+            
+            Allow connections only from trusted peers.
+        }
+        
+        @Steps {
+            @Step {
+                Understand the securityIdentity parameter.
+                
+                @Code(name: "SecurityManager.swift", file: "10-03-security-identity.swift")
+            }
+            
+            @Step {
+                Generate a self-signed certificate.
+                
+                @Code(name: "CertificateManager.swift", file: "10-04-create-cert.swift")
+            }
+            
+            @Step {
+                Create a session with a certificate.
+                
+                @Code(name: "SecurityManager.swift", file: "10-05-cert-session.swift")
+            }
+            
+            @Step {
+                Implement certificate verification callback.
+                
+                @Code(name: "SecurityManager.swift", file: "10-06-verify-cert.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Data Encryption") {
+        @ContentAndMedia {
+            Sensitive data can have additional 
+            encryption applied before transmission.
+            
+            Use CryptoKit.
+        }
+        
+        @Steps {
+            @Step {
+                Generate a symmetric key with CryptoKit.
+                
+                @Code(name: "CryptoManager.swift", file: "10-07-symmetric-key.swift")
+            }
+            
+            @Step {
+                Encrypt data.
+                
+                Use AES-GCM.
+                
+                @Code(name: "CryptoManager.swift", file: "10-08-encrypt.swift")
+            }
+            
+            @Step {
+                Decrypt data.
+                
+                @Code(name: "CryptoManager.swift", file: "10-09-decrypt.swift")
+            }
+            
+            @Step {
+                Implement encrypted message transmission.
+                
+                @Code(name: "SecureMessageManager.swift", file: "10-10-secure-send.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Key Exchange") {
+        @ContentAndMedia {
+            Implement a method to exchange encryption keys 
+            between peers for secure communication.
+        }
+        
+        @Steps {
+            @Step {
+                Understand Diffie-Hellman key exchange.
+                
+                @Code(name: "KeyExchange.swift", file: "10-11-key-exchange.swift")
+            }
+            
+            @Step {
+                Use CryptoKit's key exchange API.
+                
+                @Code(name: "KeyExchange.swift", file: "10-12-ecdh.swift")
+            }
+            
+            @Step {
+                Implement the key exchange protocol.
+                
+                @Code(name: "KeyExchange.swift", file: "10-13-exchange-protocol.swift")
+            }
+            
+            @Step {
+                Establish a secure channel with the exchanged key.
+                
+                @Code(name: "SecureChannel.swift", file: "10-14-secure-channel.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does MCEncryptionPreference.required mean?
+            
+            @Choice(isCorrect: true) {
+                Will not connect with peers that don't support encryption
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    The required option mandates encryption,
+                    and peers that don't support encryption will not connect.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can connect with all peers
+                
+                @Justification(reaction: "Think again.") {
+                    required only connects with encryption-supporting peers.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Data is not encrypted
+                
+                @Justification(reaction: "Think again.") {
+                    required means mandatory encryption.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is required for AES-GCM encryption in CryptoKit?
+            
+            @Choice(isCorrect: false) {
+                Public key and private key
+                
+                @Justification(reaction: "Think again.") {
+                    AES-GCM is symmetric encryption, using only one key.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                SymmetricKey
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    AES-GCM is symmetric encryption, so 
+                    both sides use the same SymmetricKey.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Certificate
+                
+                @Justification(reaction: "Think again.") {
+                    AES-GCM does not require a certificate.
+                }
+            }
+        }
+    }
+}

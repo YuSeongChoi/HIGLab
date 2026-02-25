@@ -1,0 +1,170 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Two-Way Binding with @Bindable") {
+        Learn how to create two-way bindings for @Observable object properties in SwiftUI.
+        Fully understand the role and usage of @Bindable.
+    }
+    
+    @Section(title: "Why @Bindable is Needed") {
+        @ContentAndMedia {
+            Many SwiftUI controls (TextField, Toggle, Slider, etc.)
+            require `Binding<Value>` type.
+            To bind @Observable object properties,
+            @Bindable is needed.
+        }
+        
+        @Steps {
+            @Step {
+                With ObservableObject, binding was possible directly with the `$` prefix.
+                This was because @Published provided Binding as its projectedValue.
+                
+                @Code(name: "OldBinding.swift", file: "03-old-binding.swift")
+            }
+            
+            @Step {
+                With @Observable, you need to use `@Bindable`.
+                @Bindable wraps the object to enable the `$` syntax.
+                
+                @Code(name: "NewBinding.swift", file: "03-new-binding.swift")
+            }
+            
+            @Step {
+                Why is @Bindable needed?
+                @Observable has a different structure for per-property tracking.
+                @Bindable acts as an adapter to bridge that difference.
+                
+                @Code(name: "WhyBindable.swift", file: "03-why-bindable.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Bindable Usage Patterns") {
+        @ContentAndMedia {
+            Learn the three main patterns for using @Bindable.
+            Choose the appropriate pattern based on the situation.
+        }
+        
+        @Steps {
+            @Step {
+                **Pattern 1: Using @Bindable on properties**
+                
+                Add @Bindable when receiving as a view property.
+                This is the most common pattern.
+                
+                @Code(name: "BindableProperty.swift", file: "03-bindable-property.swift")
+            }
+            
+            @Step {
+                **Pattern 2: Using @Bindable inside body**
+                
+                When you can't modify the property (e.g., @Environment),
+                create @Bindable as a local variable inside body.
+                
+                @Code(name: "BindableLocal.swift", file: "03-bindable-local.swift")
+            }
+            
+            @Step {
+                **Pattern 3: With @State**
+                
+                When owning an @Observable object with @State,
+                it automatically behaves like Bindable.
+                
+                @Code(name: "BindableState.swift", file: "03-bindable-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Editing Product Quantity") {
+        @ContentAndMedia {
+            Add functionality to edit product quantity in the CartFlow app.
+            Use @Bindable to connect Stepper and TextField.
+        }
+        
+        @Steps {
+            @Step {
+                Create a cart item row view.
+                Receive the Product object with @Bindable
+                so the quantity can be directly edited.
+                
+                @Code(name: "CartItemRow.swift", file: "03-cart-item-row.swift")
+            }
+            
+            @Step {
+                Add a quantity adjustment stepper.
+                Thanks to @Bindable, binding with `$product.quantity` is possible!
+                
+                @Code(name: "QuantityStepper.swift", file: "03-quantity-stepper.swift")
+            }
+            
+            @Step {
+                Update the cart view.
+                Use the new CartItemRow and verify
+                that the total amount updates automatically.
+                
+                @Code(name: "UpdatedCartView.swift", file: "03-updated-cart-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When do you use @Bindable?
+            
+            @Choice(isCorrect: true) {
+                When creating two-way bindings for @Observable object properties
+                
+                @Justification(reaction: "Correct!") {
+                    @Bindable wraps @Observable objects
+                    to enable creating Bindings with the $ prefix.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Required for all @Observable objects
+                
+                @Justification(reaction: "Not quite") {
+                    @Bindable is not needed for read-only access.
+                    Only use it when two-way binding is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Used instead of @State
+                
+                @Justification(reaction: "Not quite") {
+                    @Bindable and @State have different roles.
+                    @State is for ownership, @Bindable is for creating bindings.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you bind an @Observable object received via @Environment?
+            
+            @Choice(isCorrect: true) {
+                Wrap it with a @Bindable local variable inside body
+                
+                @Justification(reaction: "Perfect!") {
+                    You can't add @Bindable directly to @Environment properties,
+                    so wrap it inside body with @Bindable var bindable = environmentObject.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Add @Bindable directly to @Environment
+                
+                @Justification(reaction: "Not quite") {
+                    You can't use @Environment and @Bindable together.
+                    You must wrap it as a local variable inside body.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Binding is not possible
+                
+                @Justification(reaction: "Not quite") {
+                    It is possible! Use a @Bindable local variable inside body.
+                }
+            }
+        }
+    }
+}

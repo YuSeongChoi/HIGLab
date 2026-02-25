@@ -1,0 +1,251 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Schema Migration: Safe Data Model Changes") {
+        When an app updates, data models change too.
+        Safely migrate user data with VersionedSchema and SchemaMigrationPlan.
+    }
+    
+    @Section(title: "Why Migration is Needed") {
+        @ContentAndMedia {
+            When adding new properties, changing types, or renaming,
+            compatibility with existing data must be maintained.
+            Without migration, the app can crash.
+        }
+        
+        @Steps {
+            @Step {
+                **Migration Scenario**
+                
+                In TaskMaster v2, we change priority from numbers to enum.
+                Such changes cannot be auto-migrated.
+                
+                @Code(name: "MigrationScenario.swift", file: "09-scenario.swift")
+            }
+            
+            @Step {
+                **Lightweight vs Custom Migration**
+                
+                Simple changes like adding new properties auto-migrate (lightweight).
+                Complex changes require custom migration.
+                
+                @Code(name: "MigrationTypes.swift", file: "09-migration-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Defining VersionedSchema") {
+        @ContentAndMedia {
+            Define each version's schema with the VersionedSchema protocol.
+            Keep previous version models for use in migration.
+        }
+        
+        @Steps {
+            @Step {
+                **Version 1 Schema**
+                
+                Define current app models as V1 schema.
+                Distinguish versions with versionIdentifier.
+                
+                @Code(name: "SchemaV1.swift", file: "09-schema-v1.swift")
+            }
+            
+            @Step {
+                **Version 2 Schema**
+                
+                Define changed models as V2 schema.
+                Change Priority to an enum.
+                
+                @Code(name: "SchemaV2.swift", file: "09-schema-v2.swift")
+            }
+            
+            @Step {
+                **Current Schema Type Alias**
+                
+                Specify the current schema to use with typealias.
+                App code uses this type.
+                
+                @Code(name: "CurrentSchema.swift", file: "09-current-schema.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing SchemaMigrationPlan") {
+        @ContentAndMedia {
+            Define migration order and each stage's logic
+            with SchemaMigrationPlan.
+        }
+        
+        @Steps {
+            @Step {
+                **MigrationPlan Basic Structure**
+                
+                Specify version order with schemas array.
+                Define each migration stage with stages array.
+                
+                @Code(name: "MigrationPlan.swift", file: "09-migration-plan.swift")
+            }
+            
+            @Step {
+                **Custom Migration Logic**
+                
+                Write logic converting numeric priority to enum.
+                Handle in MigrationStage.custom's willMigrate.
+                
+                @Code(name: "CustomMigration.swift", file: "09-custom-migration.swift")
+            }
+            
+            @Step {
+                **Lightweight Migration Stage**
+                
+                Simple changes need only lightweight stage.
+                SwiftData handles automatically.
+                
+                @Code(name: "LightweightMigration.swift", file: "09-lightweight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying Migration") {
+        @ContentAndMedia {
+            Apply the written MigrationPlan to ModelContainer.
+            Migration automatically runs at app launch.
+        }
+        
+        @Steps {
+            @Step {
+                **ModelContainer Setup**
+                
+                Pass migration plan with migrationPlan parameter.
+                Required migrations auto-run at app launch.
+                
+                @Code(name: "ContainerSetup.swift", file: "09-container-setup.swift")
+            }
+            
+            @Step {
+                **Testing Migration**
+                
+                Test with previous version data in simulator.
+                Verify migration logic with unit tests.
+                
+                @Code(name: "MigrationTest.swift", file: "09-migration-test.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Practical Migration Tips") {
+        @ContentAndMedia {
+            Practical tips and cautions for safely performing
+            complex migrations.
+        }
+        
+        @Steps {
+            @Step {
+                **Migration Checklist**
+                
+                Things to verify before deployment.
+                Prepare backup, testing, and rollback plan.
+                
+                @Code(name: "MigrationChecklist.swift", file: "09-checklist.swift")
+            }
+            
+            @Step {
+                **Skipping Multiple Versions**
+                
+                When user updates directly from v1 to v3,
+                intermediate migrations run sequentially.
+                
+                @Code(name: "MultiVersionMigration.swift", file: "09-multi-version.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What migration is needed when adding a new property with default value?
+            
+            @Choice(isCorrect: true) {
+                Lightweight migration — handled automatically
+                
+                @Justification(reaction: "Correct!") {
+                    Adding new properties with defaults is lightweight migration;
+                    SwiftData handles it automatically.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Custom migration required
+                
+                @Justification(reaction: "Not quite") {
+                    Simple additions work with lightweight migration.
+                    Use custom when type changes or data transformation needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No migration needed
+                
+                @Justification(reaction: "Not quite") {
+                    Schema changes always need migration setup.
+                    Even lightweight requires VersionedSchema definition recommended.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Difference between MigrationStage.custom's willMigrate and didMigrate?
+            
+            @Choice(isCorrect: true) {
+                willMigrate accesses previous schema data, didMigrate accesses new schema
+                
+                @Justification(reaction: "Exactly right!") {
+                    In willMigrate, read and prepare previous data for conversion;
+                    in didMigrate, set data according to new schema.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                willMigrate runs first, didMigrate runs later
+                
+                @Justification(reaction: "Not quite") {
+                    Execution order is correct, but the key difference is schema version accessed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                willMigrate is cancellable, didMigrate is not
+                
+                @Justification(reaction: "Not quite") {
+                    Not about cancellation. Different schema version access.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of VersionedSchema's versionIdentifier?
+            
+            @Choice(isCorrect: true) {
+                Uniquely identifies schema version for migration tracking
+                
+                @Justification(reaction: "Correct!") {
+                    versionIdentifier checks the schema version of currently stored data
+                    and determines required migrations.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Syncs with App Store version
+                
+                @Justification(reaction: "Not quite") {
+                    Separate from app version. For data schema identification.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Version string to display to users
+                
+                @Justification(reaction: "Not quite") {
+                    For internal schema identification, not UI display.
+                }
+            }
+        }
+    }
+}

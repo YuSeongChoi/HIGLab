@@ -1,0 +1,290 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Notification Handling (Delegate)") {
+        Learn how to handle notifications when the app is running and in the background.
+        
+        Implement UNUserNotificationCenterDelegate to
+        control notification display behavior and user responses.
+    }
+    
+    @Section(title: "Introducing UNUserNotificationCenterDelegate") {
+        @ContentAndMedia {
+            This delegate provides two key methods:
+            
+            1. **willPresent**: Determines how to display notifications when app is in foreground
+            2. **didReceive**: Handles responses when user interacts with notification
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Up the Delegate**
+                
+                Set the delegate for UNUserNotificationCenter.
+                This must be set early during app launch.
+                
+                @Code(name: "SetDelegate.swift", file: "07-set-delegate.swift")
+            }
+            
+            @Step {
+                **Setting Up in AppDelegate**
+                
+                Use @UIApplicationDelegateAdaptor to 
+                set up the delegate at app launch.
+                
+                @Code(name: "AppDelegateSetup.swift", file: "07-app-delegate-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Foreground Notification Handling (willPresent)") {
+        @ContentAndMedia {
+            By default, notifications are not displayed when the app is in the foreground.
+            
+            Return display options in the willPresent method
+            to control banner, sound, badge, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing willPresent Method**
+                
+                Called when a notification arrives while the app is active.
+                Decide how to display it.
+                
+                @Code(name: "WillPresent.swift", file: "07-will-present.swift")
+            }
+            
+            @Step {
+                **Choosing Display Options**
+                
+                You can choose different display methods based on the situation.
+                - Empty array: Don't display
+                - [.banner, .sound]: Banner and sound
+                - [.list]: Add only to Notification Center
+                
+                @Code(name: "PresentationOptions.swift", file: "07-presentation-options.swift")
+            }
+            
+            @Step {
+                **Conditional Display**
+                
+                Handle differently based on current screen or notification content.
+                If already viewing that screen, you might not need to display.
+                
+                @Code(name: "ConditionalPresent.swift", file: "07-conditional-present.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Notification Response Handling (didReceive)") {
+        @ContentAndMedia {
+            didReceive is called when the user taps a notification or action button.
+            
+            Read data from the notification and navigate to the appropriate screen
+            or perform background tasks.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing didReceive Method**
+                
+                Check notification info and action from the response parameter.
+                Must call completionHandler.
+                
+                @Code(name: "DidReceive.swift", file: "07-did-receive.swift")
+            }
+            
+            @Step {
+                **Distinguishing Default Tap from Actions**
+                
+                Distinguish the type of interaction with actionIdentifier.
+                - UNNotificationDefaultActionIdentifier: Notification tap
+                - UNNotificationDismissActionIdentifier: Notification dismiss
+                - Custom action IDs
+                
+                @Code(name: "ActionIdentifier.swift", file: "07-action-identifier.swift")
+            }
+            
+            @Step {
+                **Extracting Data from userInfo**
+                
+                Read custom data attached to notifications for navigation.
+                
+                @Code(name: "ExtractUserInfo.swift", file: "07-extract-userinfo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Deep Link Navigation") {
+        @ContentAndMedia {
+            Implement the pattern for navigating to specific screens on notification tap.
+            
+            Use NavigationPath or @Environment for
+            clean navigation in SwiftUI apps.
+        }
+        
+        @Steps {
+            @Step {
+                **Managing Navigation State**
+                
+                Manage the screen info to open from notifications as app state.
+                Use an @Observable object.
+                
+                @Code(name: "NavigationState.swift", file: "07-navigation-state.swift")
+            }
+            
+            @Step {
+                **Defining Deep Link Enum**
+                
+                Define deep link destinations supported by the app.
+                
+                @Code(name: "DeepLink.swift", file: "07-deep-link.swift")
+            }
+            
+            @Step {
+                **Triggering Deep Link from Notification**
+                
+                Update deep link state in didReceive.
+                
+                @Code(name: "TriggerDeepLink.swift", file: "07-trigger-deep-link.swift")
+            }
+            
+            @Step {
+                **Reacting in SwiftUI Views**
+                
+                Perform navigation in response to deep link state changes.
+                
+                @Code(name: "ReactToDeepLink.swift", file: "07-react-to-deep-link.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completing Action Response Handling") {
+        @ContentAndMedia {
+            Complete the actual handling logic for actions defined in Chapter 5.
+            
+            Implement business logic for each action: "Complete", "Snooze", "Delete".
+        }
+        
+        @Steps {
+            @Step {
+                **Handling Complete Action**
+                
+                Change the reminder to completed status.
+                Handle database update and UI refresh.
+                
+                @Code(name: "CompleteAction.swift", file: "07-complete-action.swift")
+            }
+            
+            @Step {
+                **Handling Snooze Action**
+                
+                Schedule a new notification for 10 minutes later.
+                Preserve the original notification info.
+                
+                @Code(name: "SnoozeAction.swift", file: "07-snooze-action.swift")
+            }
+            
+            @Step {
+                **Complete Response Handler**
+                
+                The complete didReceive implementation handling all actions.
+                
+                @Code(name: "FullResponseHandler.swift", file: "07-full-response-handler.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you display notification banners when the app is in the foreground?
+            
+            @Choice(isCorrect: false) {
+                They display by default
+                
+                @Justification(reaction: "Not quite") {
+                    By default, foreground notifications are not displayed.
+                    You must explicitly set it in the willPresent delegate.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Return .banner option in willPresent delegate
+                
+                @Justification(reaction: "Correct!") {
+                    Pass options like [.banner] to the willPresent completionHandler
+                    to display notifications even in foreground.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Add configuration to Info.plist
+                
+                @Justification(reaction: "Not quite") {
+                    Not Info.plist but implementing the delegate in code.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the actionIdentifier when a user taps the notification banner?
+            
+            @Choice(isCorrect: true) {
+                UNNotificationDefaultActionIdentifier
+                
+                @Justification(reaction: "Correct!") {
+                    Default tap (not an action button) is identified
+                    by UNNotificationDefaultActionIdentifier.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                "tap"
+                
+                @Justification(reaction: "Not quite") {
+                    Use the system-defined constant UNNotificationDefaultActionIdentifier.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                nil
+                
+                @Justification(reaction: "Not quite") {
+                    There's always an actionIdentifier.
+                    Default tap is UNNotificationDefaultActionIdentifier.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if you forget to call completionHandler in the didReceive delegate method?
+            
+            @Choice(isCorrect: true) {
+                The system may determine the task is incomplete, causing issues
+                
+                @Justification(reaction: "Caution needed!") {
+                    completionHandler must be called.
+                    Otherwise, the system may terminate the app or
+                    have issues with subsequent notification handling.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No problem
+                
+                @Justification(reaction: "That's dangerous") {
+                    Not calling completionHandler causes serious issues.
+                    Always call it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The app crashes immediately
+                
+                @Justification(reaction: "Not exactly") {
+                    It won't crash immediately, but after timeout the system
+                    may force-terminate the app.
+                }
+            }
+        }
+    }
+}

@@ -1,61 +1,61 @@
 @Tutorial(time: 25) {
-    @Intro(title: "구독 관리 심화") {
-        구독 갱신, 업그레이드/다운그레이드, 취소 및 복원까지
-        실제 서비스에 필요한 모든 구독 관리 기능을 구현합니다.
+    @Intro(title: "Advanced Subscription Management") {
+        Implement all subscription management features needed for a real service,
+        including subscription renewal, upgrades/downgrades, cancellation, and restoration.
     }
     
-    @Section(title: "구독 그룹과 레벨") {
+    @Section(title: "Subscription Groups and Levels") {
         @ContentAndMedia {
-            App Store Connect에서 설정한 구독 그룹과 서비스 레벨을 
-            코드에서 효과적으로 관리하는 방법을 학습합니다.
+            Learn how to effectively manage subscription groups and service levels
+            configured in App Store Connect from your code.
             
-            - 구독 그룹: 상호 배타적인 구독 옵션 묶음
-            - 서비스 레벨: 업그레이드/다운그레이드 우선순위
+            - Subscription Group: A collection of mutually exclusive subscription options
+            - Service Level: Priority for upgrades/downgrades
         }
         
         @Steps {
             @Step {
-                구독 그룹을 정의하고 관리하는 SubscriptionManager를 구현합니다.
+                Implement a SubscriptionManager that defines and manages subscription groups.
                 @Code(name: "SubscriptionManager.swift", file: "07-subscription-manager.swift")
             }
             @Step {
-                현재 활성 구독과 만료 예정 정보를 확인합니다.
+                Check current active subscription and expiration information.
                 @Code(name: "SubscriptionManager.swift", file: "07-subscription-info.swift")
             }
         }
     }
     
-    @Section(title: "구독 업그레이드 & 다운그레이드") {
+    @Section(title: "Subscription Upgrades & Downgrades") {
         @ContentAndMedia {
-            사용자가 플랜을 변경할 때 StoreKit 2가 자동으로 
-            비례 배분(proration)을 처리합니다.
+            When users change plans, StoreKit 2 automatically
+            handles proration.
             
-            HIG 가이드라인:
-            - 변경 시 명확한 비용 안내
-            - 즉시 적용 vs 다음 갱신 시 적용 옵션 제공
+            HIG Guidelines:
+            - Provide clear cost information when changing
+            - Offer options for immediate vs. next renewal application
         }
         
         @Steps {
             @Step {
-                구독 변경 UI를 구현합니다.
+                Implement the subscription change UI.
                 @Code(name: "SubscriptionChangeView.swift", file: "07-subscription-change.swift")
             }
             @Step {
-                업그레이드 확인 다이얼로그를 추가합니다.
+                Add an upgrade confirmation dialog.
                 @Code(name: "UpgradeConfirmView.swift", file: "07-upgrade-confirm.swift")
             }
         }
     }
     
-    @Section(title: "구독 갱신 상태") {
+    @Section(title: "Subscription Renewal Status") {
         @ContentAndMedia {
-            구독 자동 갱신 여부와 만료 시점을 추적하여
-            사용자에게 적절한 리텐션 메시지를 표시합니다.
+            Track subscription auto-renewal status and expiration timing
+            to display appropriate retention messages to users.
         }
         
         @Steps {
             @Step {
-                갱신 상태와 만료 정보를 표시하는 뷰를 구현합니다.
+                Implement a view that displays renewal status and expiration information.
                 @Code(name: "RenewalStatusView.swift", file: "07-renewal-status.swift")
             }
         }
@@ -63,58 +63,58 @@
     
     @Assessments {
         @MultipleChoice {
-            구독 그룹 내에서 사용자가 다른 플랜으로 변경하면 어떻게 되나요?
+            What happens when a user changes to a different plan within a subscription group?
             
             @Choice(isCorrect: false) {
-                두 구독이 동시에 활성화됩니다.
+                Both subscriptions become active simultaneously.
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    같은 구독 그룹 내 플랜들은 상호 배타적입니다.
+                @Justification(reaction: "Think again!") {
+                    Plans within the same subscription group are mutually exclusive.
                 }
             }
             
             @Choice(isCorrect: true) {
-                기존 구독이 새 구독으로 교체됩니다.
+                The existing subscription is replaced with the new subscription.
                 
-                @Justification(reaction: "정확합니다!") {
-                    구독 그룹 내에서는 하나의 구독만 활성 상태가 됩니다.
-                    업그레이드는 즉시, 다운그레이드는 다음 갱신 시 적용됩니다.
+                @Justification(reaction: "Correct!") {
+                    Only one subscription can be active within a subscription group.
+                    Upgrades apply immediately, while downgrades apply at the next renewal.
                 }
             }
             
             @Choice(isCorrect: false) {
-                변경이 거부됩니다.
+                The change is rejected.
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    사용자는 언제든 구독 그룹 내 다른 플랜으로 변경할 수 있습니다.
+                @Justification(reaction: "Think again!") {
+                    Users can change to a different plan within a subscription group at any time.
                 }
             }
         }
         
         @MultipleChoice {
-            구독 자동 갱신이 해제되었는지 확인하는 방법은?
+            How do you check if subscription auto-renewal has been turned off?
             
             @Choice(isCorrect: false) {
-                Transaction.currentEntitlements 확인
+                Check Transaction.currentEntitlements
                 
-                @Justification(reaction: "아쉽네요!") {
-                    currentEntitlements는 현재 권한을 보여주지만, 갱신 의도는 알 수 없습니다.
+                @Justification(reaction: "Not quite!") {
+                    currentEntitlements shows current entitlements but not renewal intent.
                 }
             }
             
             @Choice(isCorrect: true) {
-                Product.SubscriptionInfo.RenewalState 확인
+                Check Product.SubscriptionInfo.RenewalState
                 
-                @Justification(reaction: "훌륭합니다!") {
-                    RenewalState에서 .willRenew, .expired, .revoked 등 상태를 확인할 수 있습니다.
+                @Justification(reaction: "Excellent!") {
+                    RenewalState lets you check states like .willRenew, .expired, .revoked, etc.
                 }
             }
             
             @Choice(isCorrect: false) {
-                App Store Connect에서만 확인 가능
+                Can only be checked in App Store Connect
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    StoreKit 2 API로 앱 내에서 직접 갱신 상태를 확인할 수 있습니다.
+                @Justification(reaction: "Think again!") {
+                    StoreKit 2 API allows you to check renewal status directly within the app.
                 }
             }
         }

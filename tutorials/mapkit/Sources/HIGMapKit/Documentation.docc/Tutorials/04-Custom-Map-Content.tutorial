@@ -1,0 +1,185 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Custom MapContent") {
+        Utilize various MapContent like MapCircle, MapPolygon, and MapPolyline to
+        visualize restaurant proximity zones, delivery areas, and more.
+    }
+    
+    @Section(title: "Displaying Radius with MapCircle") {
+        @ContentAndMedia {
+            MapCircle draws a circular area centered on specific coordinates.
+            It's ideal for showing walking distance or delivery radius around a restaurant.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic MapCircle**
+                
+                Draw a circle by specifying center coordinates and radius (in meters).
+                Visualize a 500m walking distance radius.
+                
+                @Code(name: "MapCircleView.swift", file: "04-basic-circle.swift")
+            }
+            
+            @Step {
+                **Customizing Style**
+                
+                Set fill color and transparency with .foregroundStyle.
+                Add a border with .stroke.
+                
+                @Code(name: "MapCircleView.swift", file: "04-circle-style.swift")
+            }
+            
+            @Step {
+                **Displaying Multiple Radii Simultaneously**
+                
+                Display 5-minute walk (400m) and 10-minute walk (800m) radii 
+                in different colors simultaneously.
+                
+                @Code(name: "MapCircleView.swift", file: "04-multiple-circles.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Areas with MapPolygon") {
+        @ContentAndMedia {
+            MapPolygon draws polygonal areas.
+            You can display delivery zones or specific neighborhood boundaries.
+        }
+        
+        @Steps {
+            @Step {
+                **Delivery Zone Polygon**
+                
+                Define a polygonal area with a coordinate array.
+                Display part of the Gangnam district as a delivery zone.
+                
+                @Code(name: "MapPolygonView.swift", file: "04-basic-polygon.swift")
+            }
+            
+            @Step {
+                **Styling Polygons**
+                
+                Apply semi-transparent fill and dashed border.
+                Use different color themes for each zone.
+                
+                @Code(name: "MapPolygonView.swift", file: "04-polygon-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Paths with MapPolyline") {
+        @ContentAndMedia {
+            MapPolyline draws a line connecting multiple coordinates.
+            You can preview the walking path to a restaurant.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Polyline**
+                
+                Draw a line connecting an array of coordinates.
+                Display the path from the current location to the restaurant.
+                
+                @Code(name: "MapPolylineView.swift", file: "04-basic-polyline.swift")
+            }
+            
+            @Step {
+                **Setting Line Style**
+                
+                Customize line thickness, color, and dash patterns.
+                You can also use gradient lines to indicate direction.
+                
+                @Code(name: "MapPolylineView.swift", file: "04-polyline-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Integrating into the Restaurant Map") {
+        @ContentAndMedia {
+            Combine MapContent elements to create 
+            an information-rich map.
+        }
+        
+        @Steps {
+            @Step {
+                **Highlighting Selected Restaurant**
+                
+                Highlight the selected restaurant along with its surrounding radius.
+                Lower the opacity of other restaurants.
+                
+                @Code(name: "ContentView.swift", file: "04-highlight-selected.swift")
+            }
+            
+            @Step {
+                **Displaying Zones by Filter**
+                
+                When filtering by "Within 10 minutes walk," highlight only that area.
+                Conditionally control MapCircle visibility.
+                
+                @Code(name: "ContentView.swift", file: "04-filter-zone.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the unit for MapCircle's radius parameter?
+            
+            @Choice(isCorrect: true) {
+                Meters (m)
+                
+                @Justification(reaction: "Correct!") {
+                    The radius in MapCircle(center:radius:) is in meters.
+                    Entering 500 draws a circle with a 500m radius.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Kilometers (km)
+                
+                @Justification(reaction: "Not quite") {
+                    It's in meters. Enter 1000 for a 1km radius.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Points (pt)
+                
+                @Justification(reaction: "Not quite") {
+                    MapCircle's radius is in real distance units (meters).
+                    It displays real distances regardless of screen size.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the difference between MapPolyline and MKRoute?
+            
+            @Choice(isCorrect: true) {
+                MapPolyline is a simple line, MKRoute is actual route calculation result
+                
+                @Justification(reaction: "Exactly right!") {
+                    MapPolyline simply connects given coordinates.
+                    MKRoute is the actual path calculated following roads.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                They're the same functionality with different names
+                
+                @Justification(reaction: "Not quite") {
+                    MapPolyline connects coordinates, MKRoute is a route search result.
+                    They serve different purposes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MapPolyline is more accurate
+                
+                @Justification(reaction: "Not quite") {
+                    MKRoute is the accurate path that reflects actual roads and traffic information.
+                }
+            }
+        }
+    }
+}

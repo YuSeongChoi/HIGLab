@@ -1,0 +1,220 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Reading Steps (HKQuantityType)") {
+        Query step count data using HKQuantityType.
+        Use HKSampleQuery and Predicate to fetch data for the desired period.
+    }
+    
+    @Section(title: "Understanding HKQuantityType") {
+        @ContentAndMedia {
+            **HKQuantityType** represents health data measured as numbers.
+            Steps, distance, calories, heart rate, etc. belong to this category.
+        }
+        
+        @Steps {
+            @Step {
+                **Define Step Count Type**
+                
+                Use HKQuantityType to define the step count type.
+                Use the .stepCount identifier.
+                
+                @Code(name: "StepType.swift", file: "04-step-type.swift")
+            }
+            
+            @Step {
+                **Understanding HKUnit**
+                
+                Each QuantityType is used with a specific unit (Unit).
+                Step count uses the .count() unit.
+                
+                @Code(name: "Units.swift", file: "04-units.swift")
+            }
+            
+            @Step {
+                **Check Compatible Units**
+                
+                Use is(compatibleWith:) to check unit compatibility.
+                Using an incorrect unit will cause a runtime error.
+                
+                @Code(name: "UnitCheck.swift", file: "04-unit-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Querying Data with HKSampleQuery") {
+        @ContentAndMedia {
+            **HKSampleQuery** is the most basic query for retrieving
+            sample data from HealthKit. Use Predicate to specify conditions.
+        }
+        
+        @Steps {
+            @Step {
+                **Create Predicate**
+                
+                Use HKQuery.predicateForSamples to
+                specify the query period.
+                
+                @Code(name: "Predicate.swift", file: "04-predicate.swift")
+            }
+            
+            @Step {
+                **Query Today's Steps**
+                
+                Query steps from midnight today to the current time.
+                Data from multiple sources (Apple Watch, iPhone) are all included.
+                
+                @Code(name: "TodaySteps.swift", file: "04-today-steps.swift")
+            }
+            
+            @Step {
+                **Process Results**
+                
+                Query results are returned as an [HKSample] array.
+                Cast to HKQuantitySample to extract values.
+                
+                @Code(name: "ProcessResults.swift", file: "04-process-results.swift")
+            }
+            
+            @Step {
+                **async/await Wrapper**
+                
+                Using async/await instead of completion handlers
+                makes the code cleaner.
+                
+                @Code(name: "AsyncWrapper.swift", file: "04-async-wrapper.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Steps UI") {
+        @ContentAndMedia {
+            Display the queried step count in a SwiftUI View.
+            Visualize progress toward the goal as a ring.
+        }
+        
+        @Steps {
+            @Step {
+                **Create StepsView**
+                
+                Create a card-style View that displays step count.
+                
+                @Code(name: "StepsView.swift", file: "04-steps-view.swift")
+            }
+            
+            @Step {
+                **Add Progress Ring**
+                
+                Display progress toward step goal as a circular progress.
+                Implement Apple Fitness-style ring design.
+                
+                @Code(name: "ProgressRing.swift", file: "04-progress-ring.swift")
+            }
+            
+            @Step {
+                **Integrate into HealthManager**
+                
+                Add step query logic to HealthManager.
+                Bind to UI with @Published properties.
+                
+                @Code(name: "HealthManager.swift", file: "04-health-manager-steps.swift")
+            }
+            
+            @Step {
+                **Auto Refresh**
+                
+                Fetch the latest data whenever the View appears.
+                Use the .task modifier.
+                
+                @Code(name: "AutoRefresh.swift", file: "04-auto-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the HKUnit for step count data?
+            
+            @Choice(isCorrect: true) {
+                .count()
+                
+                @Justification(reaction: "Correct!") {
+                    Step count is a count, so it uses the .count() unit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .meter()
+                
+                @Justification(reaction: "Not quite") {
+                    .meter() is a distance unit. Steps use .count().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .kilocalorie()
+                
+                @Justification(reaction: "Not quite") {
+                    .kilocalorie() is a calorie unit.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when HKSampleQuery results include data from multiple sources?
+            
+            @Choice(isCorrect: true) {
+                All samples are returned, so duplicate handling may be needed
+                
+                @Justification(reaction: "Correct!") {
+                    Steps recorded simultaneously by Apple Watch and iPhone
+                    may all be returned, requiring appropriate aggregation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Duplicates are automatically removed
+                
+                @Justification(reaction: "Not quite") {
+                    HKSampleQuery returns all samples.
+                    Use HKStatisticsQuery for deduplication.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only the most accurate source is returned
+                
+                @Justification(reaction: "Not quite") {
+                    Data from all sources are returned.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should startDate be when querying today's steps?
+            
+            @Choice(isCorrect: true) {
+                Today's midnight (Calendar.startOfDay)
+                
+                @Justification(reaction: "Correct!") {
+                    You can get today's midnight with
+                    Calendar.current.startOfDay(for: Date()).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                24 hours ago
+                
+                @Justification(reaction: "Not quite") {
+                    24 hours ago may include yesterday's data.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                nil (entire period)
+                
+                @Justification(reaction: "Not quite") {
+                    Querying the entire period returns too much data.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,221 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Continuous Location Updates") {
+        Learn how to receive continuous location updates
+        to record running routes in real-time.
+    }
+    
+    @Section(title: "Starting/Stopping Location Updates") {
+        @ContentAndMedia {
+            When you call `startUpdatingLocation()`,
+            the delegate method is called whenever the location changes.
+            
+            You must call `stopUpdatingLocation()` when the run ends
+            to reduce battery consumption.
+        }
+        
+        @Steps {
+            @Step {
+                **Starting Location Updates**
+                
+                Call `startUpdatingLocation()` when the run starts.
+                After that, the delegate is called whenever the location changes.
+                
+                @Code(name: "LocationManager.swift", file: "04-start-updates.swift")
+            }
+            
+            @Step {
+                **Stopping Location Updates**
+                
+                Always stop updates when the run ends.
+                If not stopped, tracking continues in the background
+                and drains the battery quickly.
+                
+                @Code(name: "LocationManager.swift", file: "04-stop-updates.swift")
+            }
+            
+            @Step {
+                **Setting activityType**
+                
+                Setting `activityType` to `.fitness`
+                optimizes location tracking for running/workout patterns.
+                
+                @Code(name: "LocationManager.swift", file: "04-activity-type.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Filtering and Accuracy") {
+        @ContentAndMedia {
+            Receiving all location updates produces too much data.
+            Set distanceFilter to record only meaningful movements.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting distanceFilter**
+                
+                `distanceFilter` determines the minimum distance (in meters)
+                to travel before receiving new location updates.
+                5-10m is appropriate for running.
+                
+                @Code(name: "LocationManager.swift", file: "04-distance-filter.swift")
+            }
+            
+            @Step {
+                **Optimizing desiredAccuracy**
+                
+                Use `kCLLocationAccuracyBest` during running,
+                but switch to lower accuracy when stationary to save battery.
+                
+                @Code(name: "LocationManager.swift", file: "04-accuracy-switch.swift")
+            }
+            
+            @Step {
+                **Noise Filtering**
+                
+                Filter out erratic coordinates caused by GPS errors.
+                Exclude cases with low horizontal accuracy or unrealistic speed.
+                
+                @Code(name: "LocationManager.swift", file: "04-noise-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Route Recording and Distance Calculation") {
+        @ContentAndMedia {
+            Store continuous location data in an array
+            and calculate total distance and current pace.
+        }
+        
+        @Steps {
+            @Step {
+                **Storing Route Coordinates**
+                
+                Add coordinates to the route array
+                each time a location update is received.
+                
+                @Code(name: "RunSession.swift", file: "04-route-array.swift")
+            }
+            
+            @Step {
+                **Calculating Total Distance**
+                
+                Accumulate the distance from the previous location
+                each time a new location is added.
+                
+                @Code(name: "RunSession.swift", file: "04-total-distance.swift")
+            }
+            
+            @Step {
+                **Real-time Pace Calculation**
+                
+                Calculate current pace (min/km) from distance and time.
+                Using only recent points shows current speed.
+                
+                @Code(name: "RunSession.swift", file: "04-pace-calculation.swift")
+            }
+            
+            @Step {
+                **Running Dashboard UI**
+                
+                Create a UI that displays distance, time, and pace in real-time.
+                
+                @Code(name: "RunningDashboard.swift", file: "04-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How does setting distanceFilter to 10 work?
+            
+            @Choice(isCorrect: true) {
+                Receive new location updates only after moving 10 meters or more
+                
+                @Justification(reaction: "Correct!") {
+                    distanceFilter is in meters.
+                    Movements less than this distance are ignored to save battery.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Receive location updates every 10 seconds
+                
+                @Justification(reaction: "Not quite") {
+                    distanceFilter is based on distance, not time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only receive updates when accuracy is within 10m
+                
+                @Justification(reaction: "Not quite") {
+                    Accuracy filtering is done with desiredAccuracy.
+                    distanceFilter is based on travel distance.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What activityType is suitable for a running app?
+            
+            @Choice(isCorrect: true) {
+                .fitness
+                
+                @Justification(reaction: "Correct!") {
+                    .fitness provides location tracking optimized for
+                    walking, running, cycling, and other exercise activities.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .automotiveNavigation
+                
+                @Justification(reaction: "Not quite") {
+                    This is for car navigation.
+                    .fitness is appropriate for running.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .airborne
+                
+                @Justification(reaction: "Not quite") {
+                    .airborne is for flight activities.
+                    Use .fitness for ground exercise.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What values should you check when filtering GPS noise?
+            
+            @Choice(isCorrect: true) {
+                horizontalAccuracy and speed
+                
+                @Justification(reaction: "Correct!") {
+                    Location data with low accuracy (high values) or unrealistic speed
+                    (e.g., over 50m/s) is likely noise.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check only altitude
+                
+                @Justification(reaction: "Not quite") {
+                    While altitude can be a reference, horizontalAccuracy
+                    is the key indicator of location quality.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check only timestamp
+                
+                @Justification(reaction: "Not quite") {
+                    Noise is hard to determine from timestamp alone.
+                    Check accuracy and physical plausibility.
+                }
+            }
+        }
+    }
+}

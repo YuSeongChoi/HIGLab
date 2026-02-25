@@ -1,0 +1,175 @@
+@Tutorial(time: 10) {
+    @Intro(title: "LAContext Setup") {
+        Learn how to create and configure an LAContext instance.
+        Design an authentication manager class that can be reused throughout the app.
+    }
+    
+    @Section(title: "Creating an LAContext Instance") {
+        @ContentAndMedia {
+            LAContext handles everything about biometric authentication.
+            Learn how to create a new instance and set its properties.
+        }
+        
+        @Steps {
+            @Step {
+                **Basic Instance Creation**
+                
+                An LAContext instance is simply initialized.
+                However, creating a new instance for each authentication is recommended.
+                
+                @Code(name: "ContextCreate.swift", file: "02-context-create.swift")
+            }
+            
+            @Step {
+                **Setting localizedReason**
+                
+                This is the message displayed in the authentication dialog.
+                Write it so users clearly understand why authentication is needed.
+                
+                @Code(name: "LocalizedReason.swift", file: "02-localized-reason.swift")
+            }
+            
+            @Step {
+                **Setting localizedFallbackTitle**
+                
+                This is the text of the button shown when biometric authentication fails.
+                Setting it to an empty string ("") hides the button.
+                
+                @Code(name: "FallbackTitle.swift", file: "02-fallback-title.swift")
+            }
+            
+            @Step {
+                **Setting localizedCancelTitle**
+                
+                You can customize the cancel button text.
+                If nil, the system default ("Cancel") is used.
+                
+                @Code(name: "CancelTitle.swift", file: "02-cancel-title.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Designing AuthenticationManager") {
+        @ContentAndMedia {
+            To provide a consistent authentication experience throughout the app,
+            it's good to wrap LAContext in a separate manager class.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating AuthenticationManager Class**
+                
+                Use the @Observable macro for easy integration with SwiftUI.
+                Manage authentication state, errors, and lock status.
+                
+                @Code(name: "AuthManager.swift", file: "02-auth-manager.swift")
+            }
+            
+            @Step {
+                **Singleton vs Instance**
+                
+                For security apps, explicit injection is recommended over singletons.
+                SwiftUI's @Environment can manage this cleanly.
+                
+                @Code(name: "Injection.swift", file: "02-injection.swift")
+            }
+            
+            @Step {
+                **Authentication State Enum**
+                
+                Define an enum that clearly represents the app's authentication state.
+                
+                @Code(name: "AuthState.swift", file: "02-auth-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Error Handling Preparation") {
+        @ContentAndMedia {
+            Learn how to understand LAError and convert it to user-friendly error messages.
+        }
+        
+        @Steps {
+            @Step {
+                **LAError Types**
+                
+                Various error cases that can occur during authentication.
+                Appropriate handling is needed for each case.
+                
+                @Code(name: "ErrorTypes.swift", file: "02-error-types.swift")
+            }
+            
+            @Step {
+                **Converting to User-Friendly Messages**
+                
+                Convert technical error codes to messages users can understand.
+                
+                @Code(name: "ErrorMessages.swift", file: "02-error-messages.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when LAContext's localizedFallbackTitle is set to an empty string ("")?
+            
+            @Choice(isCorrect: true) {
+                The fallback button is hidden
+                
+                @Justification(reaction: "Correct!") {
+                    Setting an empty string hides the "Enter Password" button.
+                    Useful when you don't want passcode fallback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                System default text is displayed
+                
+                @Justification(reaction: "Not quite") {
+                    Setting nil displays the system default,
+                    but an empty string ("") hides the button itself.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An error occurs
+                
+                @Justification(reaction: "Not quite") {
+                    Empty string is a valid value and doesn't cause an error.
+                    It's intentional behavior to hide the button.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why is creating a new LAContext instance each time recommended?
+            
+            @Choice(isCorrect: true) {
+                Previous authentication results and state are reset, enhancing security
+                
+                @Justification(reaction: "Correct!") {
+                    LAContext caches authentication results and internal state.
+                    Creating a new instance lets you start from a clean state.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Memory usage is reduced
+                
+                @Justification(reaction: "Not quite") {
+                    Creating new instances actually uses more memory.
+                    It's a recommendation for security.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It's a required requirement stated in Apple documentation
+                
+                @Justification(reaction: "Not quite") {
+                    It's not required but recommended for enhanced security.
+                    Reusing the same instance may retain previous state.
+                }
+            }
+        }
+    }
+}

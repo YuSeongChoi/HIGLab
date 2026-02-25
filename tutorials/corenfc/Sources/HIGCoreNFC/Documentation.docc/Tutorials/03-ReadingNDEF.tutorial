@@ -1,0 +1,92 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Reading NDEF Messages") {
+        Learn how to read and process NDEF messages from NFC tags.
+        Understand the NFCNDEFMessage structure and how to access records.
+    }
+    
+    @Section(title: "NDEF Message Structure") {
+        @ContentAndMedia {
+            NDEF (NFC Data Exchange Format) is the standard format for storing data on NFC tags.
+            A single message consists of multiple records.
+        }
+        @Steps {
+            @Step {
+                Access the record array from NFCNDEFMessage.
+                Each record is of type NFCNDEFPayload.
+                @Code(name: "NFCReader.swift", file: "03-01-message.swift")
+            }
+            @Step {
+                Iterate through all records in the message and process them.
+                @Code(name: "NFCReader.swift", file: "03-02-iterate.swift")
+            }
+            @Step {
+                Check the basic properties of records.
+                Read typeNameFormat, type, identifier, and payload.
+                @Code(name: "NFCReader.swift", file: "03-03-properties.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Connecting to Tags Directly") {
+        @ContentAndMedia {
+            The readerSession(_:didDetect:) method allows you to connect directly to tags
+            for more detailed control.
+        }
+        @Steps {
+            @Step {
+                Connect to the first tag in the tag array.
+                @Code(name: "NFCReader.swift", file: "03-04-connect.swift")
+            }
+            @Step {
+                Read NDEF messages from the connected tag.
+                Use the queryNDEFStatus and readNDEF methods.
+                @Code(name: "NFCReader.swift", file: "03-05-read.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is NFCNDEFMessage composed of?
+            @Choice(isCorrect: false) {
+                A single byte array
+                @Justification(reaction: "Think again.") {
+                    NDEF messages are an array of structured records.
+                }
+            }
+            @Choice(isCorrect: true) {
+                An array of NFCNDEFPayload records
+                @Justification(reaction: "Correct!") {
+                    A single NDEF message can contain multiple records.
+                }
+            }
+            @Choice(isCorrect: false) {
+                JSON data
+                @Justification(reaction: "Think again.") {
+                    NDEF is a binary format, not JSON.
+                }
+            }
+        }
+        @MultipleChoice {
+            Which method checks the NDEF status of a tag?
+            @Choice(isCorrect: true) {
+                queryNDEFStatus(completionHandler:)
+                @Justification(reaction: "Correct!") {
+                    This method checks if the tag supports NDEF and whether it's readable/writable.
+                }
+            }
+            @Choice(isCorrect: false) {
+                checkNDEFSupport()
+                @Justification(reaction: "Think again.") {
+                    queryNDEFStatus is the correct method.
+                }
+            }
+            @Choice(isCorrect: false) {
+                getNDEFCapability()
+                @Justification(reaction: "Think again.") {
+                    queryNDEFStatus is the correct method.
+                }
+            }
+        }
+    }
+}

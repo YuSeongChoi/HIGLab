@@ -1,29 +1,29 @@
 @Tutorial(time: 30) {
     @Intro(title: "App Store Server API") {
-        서버 사이드에서 구독 상태를 검증하고,
-        App Store Server Notifications로 실시간 이벤트를 처리합니다.
+        Validate subscription status from the server side
+        and handle real-time events with App Store Server Notifications.
     }
     
-    @Section(title: "Server API 개요") {
+    @Section(title: "Server API Overview") {
         @ContentAndMedia {
-            App Store Server API는 서버에서 구독 상태를 조회하고
-            환불, 갱신 등의 이벤트를 실시간으로 받을 수 있습니다.
+            The App Store Server API allows you to query subscription status
+            and receive real-time events like refunds and renewals from your server.
             
-            주요 엔드포인트:
+            Key Endpoints:
             - Get Transaction History
             - Get All Subscription Statuses
             - Request a Test Notification
             
-            인증: App Store Connect API Key + JWT
+            Authentication: App Store Connect API Key + JWT
         }
         
         @Steps {
             @Step {
-                서버에서 JWT를 생성하여 API 인증을 처리합니다.
+                Generate a JWT on the server to handle API authentication.
                 @Code(name: "AppStoreJWT.swift", file: "09-appstore-jwt.swift")
             }
             @Step {
-                구독 상태 조회 API를 호출합니다.
+                Call the subscription status query API.
                 @Code(name: "AppStoreAPI.swift", file: "09-appstore-api.swift")
             }
         }
@@ -31,42 +31,42 @@
     
     @Section(title: "Server Notifications V2") {
         @ContentAndMedia {
-            App Store Server Notifications V2는 JWS 형식으로 
-            구독 이벤트를 실시간 전달합니다.
+            App Store Server Notifications V2 delivers
+            subscription events in real-time using JWS format.
             
-            주요 알림 타입:
-            - `SUBSCRIBED`: 신규 구독
-            - `DID_RENEW`: 갱신 성공
-            - `DID_FAIL_TO_RENEW`: 갱신 실패
-            - `EXPIRED`: 만료
-            - `REFUND`: 환불
+            Key Notification Types:
+            - `SUBSCRIBED`: New subscription
+            - `DID_RENEW`: Renewal success
+            - `DID_FAIL_TO_RENEW`: Renewal failure
+            - `EXPIRED`: Expiration
+            - `REFUND`: Refund
         }
         
         @Steps {
             @Step {
-                Server Notification 페이로드를 파싱합니다.
+                Parse the Server Notification payload.
                 @Code(name: "NotificationHandler.swift", file: "09-notification-handler.swift")
             }
             @Step {
-                알림 타입에 따른 비즈니스 로직을 구현합니다.
+                Implement business logic based on notification types.
                 @Code(name: "SubscriptionEventProcessor.swift", file: "09-event-processor.swift")
             }
         }
     }
     
-    @Section(title: "JWS 검증") {
+    @Section(title: "JWS Verification") {
         @ContentAndMedia {
-            App Store에서 전송하는 JWS(JSON Web Signature)를 
-            검증하여 위변조를 방지합니다.
+            Verify the JWS (JSON Web Signature) sent by App Store
+            to prevent tampering.
             
-            클라이언트와 서버 모두에서 검증 가능:
-            - 클라이언트: StoreKit 2가 자동 검증
-            - 서버: Apple 인증서 체인 검증 필요
+            Verification is possible on both client and server:
+            - Client: StoreKit 2 verifies automatically
+            - Server: Apple certificate chain verification required
         }
         
         @Steps {
             @Step {
-                JWS 페이로드를 디코딩하고 서명을 검증합니다.
+                Decode the JWS payload and verify the signature.
                 @Code(name: "JWSVerifier.swift", file: "09-jws-verifier.swift")
             }
         }
@@ -74,88 +74,88 @@
     
     @Assessments {
         @MultipleChoice {
-            App Store Server Notifications V2의 데이터 형식은?
+            What is the data format of App Store Server Notifications V2?
             
             @Choice(isCorrect: false) {
-                일반 JSON
+                Plain JSON
                 
-                @Justification(reaction: "아쉽네요!") {
-                    V2는 보안을 위해 서명된 형식을 사용합니다.
+                @Justification(reaction: "Not quite!") {
+                    V2 uses a signed format for security.
                 }
             }
             
             @Choice(isCorrect: true) {
-                JWS(JSON Web Signature)
+                JWS (JSON Web Signature)
                 
-                @Justification(reaction: "정확합니다!") {
-                    V2는 JWS 형식으로 서명되어 전송되며, 
-                    Apple의 인증서 체인으로 검증합니다.
+                @Justification(reaction: "Correct!") {
+                    V2 is transmitted signed in JWS format,
+                    verified using Apple's certificate chain.
                 }
             }
             
             @Choice(isCorrect: false) {
-                암호화된 바이너리
+                Encrypted binary
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    JWS는 Base64URL 인코딩된 텍스트 형식입니다.
+                @Justification(reaction: "Think again!") {
+                    JWS is a Base64URL encoded text format.
                 }
             }
         }
         
         @MultipleChoice {
-            DID_FAIL_TO_RENEW 알림을 받았을 때 어떻게 해야 하나요?
+            What should you do when receiving a DID_FAIL_TO_RENEW notification?
             
             @Choice(isCorrect: false) {
-                즉시 사용자 접근을 차단합니다.
+                Immediately block user access.
                 
-                @Justification(reaction: "너무 급해요!") {
-                    Apple은 billing retry 기간 동안 여러 번 재시도합니다.
-                    즉시 차단하면 사용자 경험이 나빠집니다.
+                @Justification(reaction: "That's too hasty!") {
+                    Apple retries multiple times during the billing retry period.
+                    Immediate blocking leads to poor user experience.
                 }
             }
             
             @Choice(isCorrect: true) {
-                유예 기간(grace period)을 적용하고 결제 업데이트를 안내합니다.
+                Apply a grace period and guide the user to update payment information.
                 
-                @Justification(reaction: "훌륭합니다!") {
-                    HIG 가이드라인에 따라 유예 기간을 제공하고,
-                    사용자에게 결제 정보 업데이트를 안내해야 합니다.
+                @Justification(reaction: "Excellent!") {
+                    According to HIG guidelines, provide a grace period
+                    and guide users to update their payment information.
                 }
             }
             
             @Choice(isCorrect: false) {
-                아무 조치도 하지 않습니다.
+                Take no action.
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    갱신 실패 시 사용자에게 적절한 안내가 필요합니다.
+                @Justification(reaction: "Think again!") {
+                    Users need appropriate guidance when renewal fails.
                 }
             }
         }
         
         @MultipleChoice {
-            App Store Server API 인증에 필요한 것은?
+            What is required for App Store Server API authentication?
             
             @Choice(isCorrect: false) {
-                App Store Connect 로그인 세션
+                App Store Connect login session
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    서버 API는 세션이 아닌 토큰 기반 인증을 사용합니다.
+                @Justification(reaction: "Think again!") {
+                    The server API uses token-based authentication, not sessions.
                 }
             }
             
             @Choice(isCorrect: true) {
-                App Store Connect API Key로 생성한 JWT
+                JWT generated with App Store Connect API Key
                 
-                @Justification(reaction: "정확합니다!") {
-                    Private Key로 서명한 JWT를 Authorization 헤더에 포함하여 인증합니다.
+                @Justification(reaction: "Correct!") {
+                    Include a JWT signed with your Private Key in the Authorization header for authentication.
                 }
             }
             
             @Choice(isCorrect: false) {
-                사용자의 Apple ID
+                User's Apple ID
                 
-                @Justification(reaction: "아쉽네요!") {
-                    Server API는 개발자 자격 증명으로 인증합니다.
+                @Justification(reaction: "Not quite!") {
+                    The Server API authenticates with developer credentials.
                 }
             }
         }

@@ -1,0 +1,199 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Dynamic Haptics (CHHapticDynamicParameter)") {
+        Learn how to modulate playing haptics in real-time 
+        using CHHapticDynamicParameter.
+        
+        @Image(source: "dynamic-haptics.png", alt: "Dynamic Haptic Parameters")
+    }
+    
+    @Section(title: "Understanding Dynamic Parameters") {
+        @ContentAndMedia {
+            CHHapticDynamicParameter allows you to change 
+            characteristics of already-playing haptics in real-time.
+            
+            - Vibration intensity changes based on speed in games
+            - Haptic feedback according to slider values
+            - Interactive haptics responding to user gestures
+        }
+        
+        @Steps {
+            @Step {
+                Learn about dynamically adjustable parameter types.
+                
+                - `hapticIntensityControl`: Adjust overall intensity
+                - `hapticSharpnessControl`: Adjust overall sharpness
+                - `hapticAttackTimeControl`: Adjust attack time
+                - `hapticDecayTimeControl`: Adjust decay time
+                
+                @Code(name: "DynamicParameters.swift", file: "04-01-parameter-types.swift")
+            }
+            
+            @Step {
+                Create an AdvancedPatternPlayer.
+                You must use advancedPlayer to apply 
+                dynamic parameters.
+                
+                @Code(name: "DynamicPlayer.swift", file: "04-02-advanced-player.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Intensity Control") {
+        @ContentAndMedia {
+            Dynamically adjust haptic intensity based on 
+            user input in games or interactive apps.
+            
+            For example, in a racing game, you can implement 
+            an effect where vibration increases as speed increases.
+        }
+        
+        @Steps {
+            @Step {
+                Prepare a Continuous pattern.
+                This pattern will have its intensity changed during playback.
+                
+                @Code(name: "IntensityControl.swift", file: "04-03-continuous-pattern.swift")
+            }
+            
+            @Step {
+                Example of adjusting intensity based on slider value.
+                Apply real-time changes using the sendParameters() method.
+                
+                @Code(name: "IntensityControl.swift", file: "04-04-slider-intensity.swift")
+            }
+            
+            @Step {
+                Implement speed-based intensity control.
+                A good pattern for integrating with game physics engines.
+                
+                @Code(name: "SpeedHaptics.swift", file: "04-05-speed-based.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Parameter Curves") {
+        @ContentAndMedia {
+            CHHapticParameterCurve lets you pre-define 
+            parameter changes over time.
+            
+            This enables more efficient and smoother transitions 
+            than calling sendParameters at runtime repeatedly.
+        }
+        
+        @Steps {
+            @Step {
+                Create a linearly increasing intensity curve.
+                Suitable for a "buildup" effect that gradually intensifies.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-06-linear-curve.swift")
+            }
+            
+            @Step {
+                Define complex curves with multiple control points.
+                Create vibration patterns that rise and fall like waves.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-07-multi-point-curve.swift")
+            }
+            
+            @Step {
+                Apply the parameter curve to a pattern.
+                
+                @Code(name: "ParameterCurve.swift", file: "04-08-apply-curve.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Gesture-linked Haptics") {
+        @ContentAndMedia {
+            Linking haptics with user gestures like 
+            pan and pinch creates highly intuitive interfaces.
+        }
+        
+        @Steps {
+            @Step {
+                Implement haptics linked to drag gestures.
+                Intensity changes based on drag distance.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-09-drag-haptic.swift")
+            }
+            
+            @Step {
+                Haptic feedback when zooming with pinch gesture.
+                The feeling changes based on zoom ratio.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-10-pinch-haptic.swift")
+            }
+            
+            @Step {
+                Express the progress of a long press 
+                through haptics.
+                
+                @Code(name: "GestureHaptics.swift", file: "04-11-long-press-haptic.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What Player is required to use CHHapticDynamicParameter?
+            
+            @Choice(isCorrect: false) {
+                CHHapticPatternPlayer
+                
+                @Justification(reaction: "Not quite.") {
+                    The basic PatternPlayer doesn't support dynamic parameters.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CHHapticAdvancedPatternPlayer
+                
+                @Justification(reaction: "Correct! 🎮") {
+                    Only AdvancedPatternPlayer created with 
+                    makeAdvancedPlayer() supports sendParameters().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Any Player works
+                
+                @Justification(reaction: "Incorrect.") {
+                    Dynamic parameter functionality is only 
+                    available in AdvancedPatternPlayer.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the advantage of CHHapticParameterCurve?
+            
+            @Choice(isCorrect: false) {
+                It can create stronger haptics
+                
+                @Justification(reaction: "Not related.") {
+                    ParameterCurve defines changes over time, 
+                    not intensity.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Pre-defining parameter changes over time enables 
+                efficient and smooth transitions
+                
+                @Justification(reaction: "Correct! 📈") {
+                    It's more efficient than repeatedly 
+                    calling sendParameters at runtime.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can synchronize audio and haptics
+                
+                @Justification(reaction: "That's a different feature.") {
+                    Audio synchronization is a separate topic.
+                    ParameterCurve focuses on haptic parameter changes.
+                }
+            }
+        }
+    }
+}

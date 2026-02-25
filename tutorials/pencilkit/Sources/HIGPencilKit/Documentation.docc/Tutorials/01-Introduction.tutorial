@@ -1,103 +1,103 @@
 @Tutorial(time: 15) {
-    @Intro(title: "PencilKit 소개") {
-        PencilKit 프레임워크의 핵심 개념과 
-        드로잉 앱 개발의 기초를 이해합니다.
+    @Intro(title: "Introduction to PencilKit") {
+        Understand the core concepts of the PencilKit framework 
+        and the basics of drawing app development.
         
-        @Image(source: "pencilkit-intro.png", alt: "PencilKit 개요")
+        @Image(source: "pencilkit-intro.png", alt: "PencilKit Overview")
     }
     
-    @Section(title: "PencilKit이란?") {
+    @Section(title: "What is PencilKit?") {
         @ContentAndMedia {
-            PencilKit은 Apple이 iOS 13에서 도입한 드로잉 프레임워크로,
-            Apple Pencil과 손가락 입력을 모두 지원합니다.
+            PencilKit is a drawing framework introduced by Apple in iOS 13,
+            supporting both Apple Pencil and finger input.
             
-            - **네이티브 성능**: Metal 기반의 고성능 렌더링
-            - **자연스러운 필기감**: 압력, 기울기, 방위각 감지
-            - **다양한 도구**: 펜, 마커, 연필, 지우개 등 내장
-            - **표준 데이터 형식**: PKDrawing으로 저장 및 공유
+            - **Native Performance**: High-performance Metal-based rendering
+            - **Natural Writing Feel**: Pressure, tilt, and azimuth detection
+            - **Various Tools**: Built-in pen, marker, pencil, eraser, and more
+            - **Standard Data Format**: Save and share with PKDrawing
             
-            @Image(source: "pencilkit-overview.png", alt: "PencilKit 구성요소")
+            @Image(source: "pencilkit-overview.png", alt: "PencilKit Components")
         }
         
         @Steps {
             @Step {
-                PencilKit을 사용하려면 먼저 프레임워크를 import합니다.
-                PencilKit은 iOS 13+, iPadOS 13+, macOS 10.15+에서 사용 가능합니다.
+                To use PencilKit, first import the framework.
+                PencilKit is available on iOS 13+, iPadOS 13+, and macOS 10.15+.
                 
                 @Code(name: "PencilKitImport.swift", file: "01-01-import.swift")
             }
             
             @Step {
-                PencilKit의 주요 구성요소를 살펴봅니다.
+                Let's explore the main components of PencilKit.
                 
-                - `PKCanvasView`: 드로잉이 이루어지는 캔버스 뷰
-                - `PKDrawing`: 드로잉 데이터를 담는 모델
-                - `PKToolPicker`: 도구 선택 팔레트
-                - `PKStroke`: 개별 획 데이터
+                - `PKCanvasView`: The canvas view where drawing occurs
+                - `PKDrawing`: The model that holds drawing data
+                - `PKToolPicker`: The tool selection palette
+                - `PKStroke`: Individual stroke data
                 
                 @Code(name: "PencilKitComponents.swift", file: "01-02-components.swift")
             }
         }
     }
     
-    @Section(title: "PKDrawing 이해하기") {
+    @Section(title: "Understanding PKDrawing") {
         @ContentAndMedia {
-            PKDrawing은 드로잉 데이터의 핵심 모델입니다.
-            모든 획(strokes)의 컬렉션을 담고 있습니다.
+            PKDrawing is the core model for drawing data.
+            It contains a collection of all strokes.
             
-            - **불변성**: PKDrawing은 값 타입(struct)으로 설계됨
-            - **효율적 저장**: Data로 직렬화 가능
-            - **합성 가능**: 여러 PKDrawing을 하나로 합칠 수 있음
+            - **Immutability**: PKDrawing is designed as a value type (struct)
+            - **Efficient Storage**: Can be serialized to Data
+            - **Composable**: Multiple PKDrawings can be merged into one
         }
         
         @Steps {
             @Step {
-                PKDrawing은 strokes 배열을 포함하며,
-                각 stroke는 path, ink, transform 정보를 담고 있습니다.
+                PKDrawing contains an array of strokes,
+                where each stroke holds path, ink, and transform information.
                 
                 @Code(name: "PKDrawingStructure.swift", file: "01-03-drawing-structure.swift")
             }
             
             @Step {
-                PKDrawing을 Data로 변환하여 저장하거나,
-                Data에서 PKDrawing을 복원할 수 있습니다.
+                You can convert PKDrawing to Data for storage,
+                or restore PKDrawing from Data.
                 
                 @Code(name: "PKDrawingSerialization.swift", file: "01-04-serialization.swift")
             }
             
             @Step {
-                두 개의 PKDrawing을 합쳐서 새로운 PKDrawing을 만들 수 있습니다.
-                이 기능은 레이어 합성이나 협업 드로잉에 유용합니다.
+                You can combine two PKDrawings to create a new PKDrawing.
+                This feature is useful for layer compositing or collaborative drawing.
                 
                 @Code(name: "PKDrawingMerge.swift", file: "01-05-merge.swift")
             }
         }
     }
     
-    @Section(title: "PKStroke와 PKInk") {
+    @Section(title: "PKStroke and PKInk") {
         @ContentAndMedia {
-            각 획(stroke)은 PKStroke 객체로 표현됩니다.
-            PKInk는 펜의 종류와 색상을 정의합니다.
+            Each stroke is represented as a PKStroke object.
+            PKInk defines the pen type and color.
             
-            | 속성 | 설명 |
-            |-----|------|
-            | path | PKStrokePath - 획의 경로 |
-            | ink | PKInk - 펜 타입과 색상 |
-            | transform | CGAffineTransform - 변환 행렬 |
-            | mask | PKStrokePath? - 마스크 경로 |
+            | Property | Description |
+            |----------|-------------|
+            | path | PKStrokePath - The stroke's path |
+            | ink | PKInk - Pen type and color |
+            | transform | CGAffineTransform - Transformation matrix |
+            | mask | PKStrokePath? - Mask path |
         }
         
         @Steps {
             @Step {
-                PKInk는 펜 타입(pen, pencil, marker)과 색상을 정의합니다.
-                각 타입은 고유한 렌더링 특성을 가집니다.
+                PKInk defines pen types (pen, pencil, marker) and colors.
+                Each type has unique rendering characteristics.
                 
                 @Code(name: "PKInkTypes.swift", file: "01-06-ink-types.swift")
             }
             
             @Step {
-                PKStrokePath는 획의 실제 경로 데이터를 담고 있습니다.
-                각 포인트에는 위치, 압력, 기울기 등의 정보가 포함됩니다.
+                PKStrokePath contains the actual path data of a stroke.
+                Each point includes position, pressure, tilt, and other information.
                 
                 @Code(name: "PKStrokePath.swift", file: "01-07-stroke-path.swift")
             }
@@ -106,61 +106,61 @@
     
     @Assessments {
         @MultipleChoice {
-            PencilKit에서 드로잉 데이터를 저장하고 관리하는 핵심 객체는 무엇인가요?
+            What is the core object that stores and manages drawing data in PencilKit?
             
             @Choice(isCorrect: false) {
                 PKCanvasView
                 
-                @Justification(reaction: "다시 생각해보세요.") {
-                    PKCanvasView는 드로잉이 이루어지는 뷰입니다.
-                    데이터 자체는 PKDrawing에 저장됩니다.
+                @Justification(reaction: "Think again.") {
+                    PKCanvasView is the view where drawing occurs.
+                    The data itself is stored in PKDrawing.
                 }
             }
             
             @Choice(isCorrect: true) {
                 PKDrawing
                 
-                @Justification(reaction: "정확합니다! 🎨") {
-                    PKDrawing은 모든 획(strokes)을 담고 있는 값 타입으로,
-                    Data로 직렬화하여 저장할 수 있습니다.
+                @Justification(reaction: "Correct! 🎨") {
+                    PKDrawing is a value type that contains all strokes
+                    and can be serialized to Data for storage.
                 }
             }
             
             @Choice(isCorrect: false) {
                 PKToolPicker
                 
-                @Justification(reaction: "아쉽습니다.") {
-                    PKToolPicker는 도구 선택 UI를 제공하는 컴포넌트입니다.
-                    드로잉 데이터 저장과는 관련이 없습니다.
+                @Justification(reaction: "Not quite.") {
+                    PKToolPicker is a component that provides the tool selection UI.
+                    It's not related to storing drawing data.
                 }
             }
         }
         
         @MultipleChoice {
-            PKInk에서 지원하는 펜 타입이 아닌 것은?
+            Which is NOT a pen type supported by PKInk?
             
             @Choice(isCorrect: false) {
-                pen (볼펜)
+                pen
                 
-                @Justification(reaction: "pen은 지원됩니다.") {
-                    pen은 기본 볼펜 타입으로, 일정한 불투명도를 가집니다.
+                @Justification(reaction: "pen is supported.") {
+                    pen is the basic ballpoint type with consistent opacity.
                 }
             }
             
             @Choice(isCorrect: false) {
-                marker (마커)
+                marker
                 
-                @Justification(reaction: "marker도 지원됩니다.") {
-                    marker는 형광펜처럼 반투명한 특성을 가집니다.
+                @Justification(reaction: "marker is also supported.") {
+                    marker has semi-transparent characteristics like a highlighter.
                 }
             }
             
             @Choice(isCorrect: true) {
-                brush (브러시)
+                brush
                 
-                @Justification(reaction: "맞습니다! ✨") {
-                    PencilKit은 pen, pencil, marker를 기본 제공합니다.
-                    커스텀 브러시는 직접 구현해야 합니다.
+                @Justification(reaction: "Correct! ✨") {
+                    PencilKit provides pen, pencil, and marker by default.
+                    Custom brushes need to be implemented separately.
                 }
             }
         }

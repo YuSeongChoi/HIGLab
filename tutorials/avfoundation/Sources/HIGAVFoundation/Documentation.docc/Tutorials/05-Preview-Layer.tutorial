@@ -1,0 +1,191 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Preview Layer (AVCaptureVideoPreviewLayer)") {
+        Display the camera preview on screen with AVCaptureVideoPreviewLayer.
+        Implement real-time preview by connecting SwiftUI and UIKit.
+    }
+    
+    @Section(title: "Understanding PreviewLayer") {
+        @ContentAndMedia {
+            AVCaptureVideoPreviewLayer is a subclass of CALayer.
+            It renders real-time video from the capture session to the screen.
+            
+            **Key Features:**
+            - Hardware-accelerated rendering
+            - Automatic rotation support
+            - Video gravity settings
+        }
+        
+        @Steps {
+            @Step {
+                Understand the basic concept of PreviewLayer.
+                When connected to a session, video is automatically displayed.
+                
+                @Code(name: "PreviewConcept.swift", file: "05-preview-concept.swift")
+            }
+            
+            @Step {
+                Learn about videoGravity options.
+                - `.resizeAspect`: Maintain ratio, letterbox possible
+                - `.resizeAspectFill`: Maintain ratio, fill screen
+                - `.resize`: Ignore ratio, fill screen
+                
+                @Code(name: "PreviewGravity.swift", file: "05-video-gravity.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Connecting SwiftUI with UIViewRepresentable") {
+        @ContentAndMedia {
+            To use PreviewLayer in SwiftUI, UIViewRepresentable is needed.
+            Wrap UIKit views for use in SwiftUI.
+        }
+        
+        @Steps {
+            @Step {
+                Create a UIView to hold the PreviewLayer.
+                Ensure the layer size adjusts to fit the view.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-preview-uiview.swift")
+            }
+            
+            @Step {
+                Implement UIViewRepresentable.
+                Define makeUIView and updateUIView.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-uiview-representable.swift")
+            }
+            
+            @Step {
+                Create previewLayer in CameraManager.
+                Connect to session and set up video preview.
+                
+                @Code(name: "CameraManager.swift", file: "05-create-preview-layer.swift")
+            }
+            
+            @Step {
+                Display preview in SwiftUI view.
+                Place CameraPreviewView on screen.
+                
+                @Code(name: "CameraView.swift", file: "05-show-preview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Screen Rotation") {
+        @ContentAndMedia {
+            The preview layer should rotate with the device.
+            Adjust the connection's videoRotationAngle.
+        }
+        
+        @Steps {
+            @Step {
+                Calculate rotation angle based on device orientation.
+                Determine angle based on UIDevice.orientation.
+                
+                @Code(name: "CameraManager.swift", file: "05-rotation-angle.swift")
+            }
+            
+            @Step {
+                Set up orientation change detection.
+                Detect orientation changes with NotificationCenter.
+                
+                @Code(name: "CameraManager.swift", file: "05-orientation-observer.swift")
+            }
+            
+            @Step {
+                Apply preview layer rotation.
+                Update videoRotationAngle.
+                
+                @Code(name: "CameraManager.swift", file: "05-apply-rotation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Tap to Focus") {
+        @ContentAndMedia {
+            Focus on the point when the user taps the screen.
+            Convert PreviewLayer coordinates to camera coordinates.
+        }
+        
+        @Steps {
+            @Step {
+                Add tap gesture.
+                Detect tap location and pass to CameraManager.
+                
+                @Code(name: "CameraPreviewView.swift", file: "05-tap-gesture.swift")
+            }
+            
+            @Step {
+                Convert screen coordinates to camera coordinates.
+                Use captureDevicePointConverted.
+                
+                @Code(name: "CameraManager.swift", file: "05-convert-point.swift")
+            }
+            
+            @Step {
+                Set focus and exposure.
+                Lock device with lockForConfiguration and configure settings.
+                
+                @Code(name: "CameraManager.swift", file: "05-focus-exposure.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which videoGravity option fills the preview while maintaining aspect ratio?
+            
+            @Choice(isCorrect: false) {
+                `.resizeAspect`
+                
+                @Justification(reaction: "Think again.") {
+                    resizeAspect maintains ratio but may create letterboxes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.resizeAspectFill`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    resizeAspectFill fills the screen while maintaining aspect ratio.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.resize`
+                
+                @Justification(reaction: "Think again.") {
+                    resize ignores ratio and fills the screen, causing distortion.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which protocol is adopted to use UIKit views in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                `UIViewRepresentable`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    UIViewRepresentable allows using UIView in SwiftUI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `UIViewControllerRepresentable`
+                
+                @Justification(reaction: "Think again.") {
+                    This protocol is used to wrap UIViewController.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `ObservableObject`
+                
+                @Justification(reaction: "Think again.") {
+                    ObservableObject is a protocol for data binding.
+                }
+            }
+        }
+    }
+}

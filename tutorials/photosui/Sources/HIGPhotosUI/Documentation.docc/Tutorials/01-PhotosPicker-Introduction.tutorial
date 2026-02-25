@@ -1,0 +1,216 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Introduction to PhotosUI & PhotosPicker") {
+        Learn about the PhotosUI framework and SwiftUI's PhotosPicker.
+        Master the most modern way to integrate photo selection UI into your app.
+    }
+    
+    @Section(title: "What is the PhotosUI Framework?") {
+        @ContentAndMedia {
+            PhotosUI provides UI components for accessing the iOS photo library.
+            
+            - **PhotosPicker**: SwiftUI-native photo picker
+            - **PHPickerViewController**: UIKit-based picker
+            - **PHLivePhotoView**: Live Photo display
+            
+            Since iOS 16, PhotosPicker has been added to SwiftUI,
+            making photo selection easier and safer.
+        }
+        
+        @Steps {
+            @Step {
+                **Advantages of PhotosUI**
+                
+                Unlike the old UIImagePickerController, PhotosUI:
+                - Requires no permission requests (only selected photos are accessible)
+                - Supports multiple selection by default
+                - Has built-in filtering and search
+                - Provides a modern UI/UX
+                
+                @Code(name: "PhotosUIAdvantages.swift", file: "01-advantages.swift")
+            }
+            
+            @Step {
+                **Project Setup**
+                
+                Create a new SwiftUI project and import PhotosUI.
+                No separate permission settings are required!
+                
+                @Code(name: "GalleryApp.swift", file: "01-gallery-app.swift")
+            }
+            
+            @Step {
+                **Adding a Basic PhotosPicker**
+                
+                PhotosPicker works with just a selection binding and a label.
+                Use the matching parameter to filter media types.
+                
+                @Code(name: "BasicPicker.swift", file: "01-basic-picker.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Core Concepts of PhotosPicker") {
+        @ContentAndMedia {
+            The core of PhotosPicker is **PhotosPickerItem**.
+            
+            When the user selects a photo, a PhotosPickerItem is returned.
+            It's lightweight because it contains a **reference**, not actual image data.
+        }
+        
+        @Steps {
+            @Step {
+                **Understanding PhotosPickerItem**
+                
+                PhotosPickerItem contains metadata for the selected media.
+                Actual data is loaded asynchronously using loadTransferable(type:).
+                
+                @Code(name: "PhotosPickerItem.swift", file: "01-picker-item.swift")
+            }
+            
+            @Step {
+                **Matching Filters**
+                
+                Use PHPickerFilter to restrict selectable media.
+                Filter by images, videos, Live Photos, etc., individually or in combination.
+                
+                @Code(name: "MatchingFilter.swift", file: "01-matching-filter.swift")
+            }
+            
+            @Step {
+                **Styling PhotosPicker**
+                
+                PhotosPicker can be customized like a regular button.
+                Put any View in the label to freely change the design.
+                
+                @Code(name: "PickerStyling.swift", file: "01-picker-styling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting the GalleryApp Project") {
+        @ContentAndMedia {
+            Let's introduce the app we'll build in this tutorial.
+            
+            **GalleryApp** is a gallery app for managing photos and videos.
+            - Select and display photos/videos
+            - Play Live Photos
+            - Browse albums
+            - Display iCloud sync status
+        }
+        
+        @Steps {
+            @Step {
+                **Designing the App Structure**
+                
+                Structure the app using the MVVM pattern.
+                GalleryViewModel manages photo selection and loading.
+                
+                @Code(name: "AppStructure.swift", file: "01-app-structure.swift")
+            }
+            
+            @Step {
+                **Implementing the Main View**
+                
+                Separate gallery and settings with tab-based navigation.
+                Use PhotosPicker in the first tab.
+                
+                @Code(name: "ContentView.swift", file: "01-content-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Do you need photo library access permission when using PhotosPicker?
+            
+            @Choice(isCorrect: true) {
+                Not required - only user-selected photos are accessible
+                
+                @Justification(reaction: "Correct!") {
+                    PhotosPicker operates out-of-process, and
+                    only photos explicitly selected by the user are passed to the app.
+                    No separate permission request is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always required
+                
+                @Justification(reaction: "Not quite") {
+                    PhotosPicker works without permission.
+                    Permission is only needed when directly accessing the library with the Photos framework.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only not required on iOS 17 and above
+                
+                @Justification(reaction: "Not quite") {
+                    PhotosPicker was introduced in iOS 16,
+                    and works without permission on all versions.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you get actual image data from PhotosPickerItem?
+            
+            @Choice(isCorrect: true) {
+                Use the loadTransferable(type:) method
+                
+                @Justification(reaction: "That's right!") {
+                    PhotosPickerItem only contains a reference,
+                    and actual data is loaded asynchronously using loadTransferable(type:).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Access the image property directly
+                
+                @Justification(reaction: "Not quite") {
+                    PhotosPickerItem doesn't have an image property.
+                    You need to load data using loadTransferable(type:).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use Data(contentsOf:)
+                
+                @Justification(reaction: "Not quite") {
+                    PhotosPickerItem is not a URL.
+                    Load data through the Transferable protocol.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you filter to only allow image selection in PhotosPicker?
+            
+            @Choice(isCorrect: true) {
+                Use the matching: .images parameter
+                
+                @Justification(reaction: "Correct!") {
+                    Pass a PHPickerFilter to the matching parameter
+                    to filter by .images, .videos, .livePhotos, etc.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use the filter: .imagesOnly parameter
+                
+                @Justification(reaction: "Not quite") {
+                    The correct parameter name is matching,
+                    and you use the .images filter.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Filtering not possible - user must select manually
+                
+                @Justification(reaction: "Not quite") {
+                    You can filter media types using the matching parameter.
+                }
+            }
+        }
+    }
+}

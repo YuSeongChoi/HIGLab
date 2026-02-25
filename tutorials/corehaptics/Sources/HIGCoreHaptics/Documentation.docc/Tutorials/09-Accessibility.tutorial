@@ -1,0 +1,205 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Accessibility Considerations") {
+        Design inclusive haptic experiences for all users 
+        and learn how to respect system accessibility settings.
+        
+        @Image(source: "accessibility.png", alt: "Accessibility Considerations")
+    }
+    
+    @Section(title: "Haptics and Accessibility") {
+        @ContentAndMedia {
+            Haptics are a double-edged sword in terms of accessibility.
+            
+            **Helpful cases:**
+            - Provides additional feedback channel for visually impaired
+            - Alternative notification method for hearing impaired
+            
+            **Cases requiring caution:**
+            - Can be uncomfortable or painful for some users
+            - Potential interference with assistive devices
+            - Need to consider hypersensitivity or certain conditions
+        }
+        
+        @Steps {
+            @Step {
+                Check system haptic settings.
+                If the user has disabled haptics system-wide, 
+                you should respect that.
+                
+                @Code(name: "AccessibilityCheck.swift", file: "09-01-system-haptics.swift")
+            }
+            
+            @Step {
+                Provide in-app haptic settings option.
+                Give choices like completely off, intensity adjustment, etc.
+                
+                @Code(name: "HapticSettings.swift", file: "09-02-app-settings.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Providing Alternative Feedback") {
+        @ContentAndMedia {
+            For users who cannot use haptics, 
+            you must provide equivalent information in other ways.
+            
+            - Visual feedback (animation, color change)
+            - Auditory feedback (sound effects)
+            - VoiceOver announcements
+        }
+        
+        @Steps {
+            @Step {
+                Provide visual alternative feedback when haptics are disabled.
+                Use screen flashing or highlight effects instead of vibration.
+                
+                @Code(name: "AlternativeFeedback.swift", file: "09-03-visual-alternative.swift")
+            }
+            
+            @Step {
+                Design haptics that work with VoiceOver.
+                Provide additional voice guidance for VoiceOver users.
+                
+                @Code(name: "VoiceOverHaptics.swift", file: "09-04-voiceover-support.swift")
+            }
+            
+            @Step {
+                Build a multimodal feedback system.
+                Select appropriate channels based on user settings.
+                
+                @Code(name: "MultimodalFeedback.swift", file: "09-05-multimodal.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Addressing Hypersensitivity") {
+        @ContentAndMedia {
+            Some users may be hypersensitive to vibration.
+            
+            - Tactile hypersensitivity
+            - Certain conditions (Parkinson's disease, etc.)
+            - Pregnant women or those with heart conditions
+            - Users who simply dislike vibration
+            
+            Provide thoughtful options for them.
+        }
+        
+        @Steps {
+            @Step {
+                Provide an intensity adjustment slider.
+                Fine-tune within the app separate from system settings.
+                
+                @Code(name: "IntensitySettings.swift", file: "09-06-intensity-slider.swift")
+            }
+            
+            @Step {
+                Allow selectively turning off haptics by situation.
+                Provide options like keeping only essential alerts and turning off the rest.
+                
+                @Code(name: "SelectiveHaptics.swift", file: "09-07-selective-haptics.swift")
+            }
+            
+            @Step {
+                Ask about haptic preferences during onboarding.
+                Let users choose on first run.
+                
+                @Code(name: "HapticOnboarding.swift", file: "09-08-onboarding.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Testing and Verification") {
+        @ContentAndMedia {
+            Test that accessibility features work properly 
+            in various scenarios.
+        }
+        
+        @Steps {
+            @Step {
+                Test while changing system accessibility settings.
+                Check various combinations like haptics off, screen reading, etc.
+                
+                @Code(name: "AccessibilityTesting.swift", file: "09-09-testing-scenarios.swift")
+            }
+            
+            @Step {
+                Verify with Accessibility Inspector.
+                Check that UI elements have appropriate accessibility labels.
+                
+                @Code(name: "AccessibilityLabels.swift", file: "09-10-accessibility-labels.swift")
+            }
+            
+            @Step {
+                The complete accessibility-supporting haptic system.
+                Verify the inclusive design for all users.
+                
+                @Code(name: "AccessibleHapticManager.swift", file: "09-11-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When a user has disabled haptics in system settings, 
+            how should the app behave?
+            
+            @Choice(isCorrect: true) {
+                Respect system settings and don't play haptics, 
+                providing alternative feedback when needed
+                
+                @Justification(reaction: "Perfect! ♿") {
+                    Respecting user's explicit choice 
+                    is the basic principle of accessibility.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Play important haptics as exceptions
+                
+                @Justification(reaction: "Ignores user choice.") {
+                    "Importance" is the app developer's judgment, 
+                    not the user's need.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Guide the user to turn it back on in app settings
+                
+                @Justification(reaction: "Cumbersome and disrespectful.") {
+                    Inducing users to bypass system settings 
+                    is not good UX.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which is NOT an appropriate alternative feedback 
+            for users who cannot use haptics?
+            
+            @Choice(isCorrect: false) {
+                Visual animation
+                
+                @Justification(reaction: "Good alternative.") {
+                    Visual feedback is an effective substitute.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VoiceOver announcement
+                
+                @Justification(reaction: "Core to accessibility.") {
+                    Essential feedback for screen reader users.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Provide no feedback at all
+                
+                @Justification(reaction: "Correct - this is inappropriate! ⚠️") {
+                    If the information haptics conveyed disappears completely, 
+                    it creates a gap in user experience.
+                }
+            }
+        }
+    }
+}

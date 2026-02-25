@@ -1,59 +1,59 @@
 @Tutorial(time: 20) {
-    @Intro(title: "가족 공유 지원") {
-        Family Sharing을 통해 하나의 구독으로 
-        최대 6명의 가족 구성원이 앱을 사용할 수 있게 합니다.
+    @Intro(title: "Supporting Family Sharing") {
+        Enable up to 6 family members to use the app
+        with a single subscription through Family Sharing.
     }
     
-    @Section(title: "Family Sharing 이해하기") {
+    @Section(title: "Understanding Family Sharing") {
         @ContentAndMedia {
-            Family Sharing은 App Store Connect에서 활성화하며,
-            StoreKit 2에서는 Transaction의 ownershipType으로 구분합니다.
+            Family Sharing is enabled in App Store Connect,
+            and StoreKit 2 distinguishes it through the Transaction's ownershipType.
             
-            - `.purchased`: 직접 구매한 사용자
-            - `.familyShared`: 가족 공유로 접근하는 사용자
+            - `.purchased`: User who made the purchase directly
+            - `.familyShared`: User accessing through family sharing
             
-            HIG 가이드라인:
-            - 가족 공유 사용자에게 동일한 경험 제공
-            - 구매자만 관리할 수 있는 기능 명확히 구분
+            HIG Guidelines:
+            - Provide the same experience to family sharing users
+            - Clearly distinguish features that only the purchaser can manage
         }
         
         @Steps {
             @Step {
-                가족 공유 상태를 확인하는 로직을 구현합니다.
+                Implement logic to check family sharing status.
                 @Code(name: "FamilyShareManager.swift", file: "08-family-share-manager.swift")
             }
         }
     }
     
-    @Section(title: "소유권 타입에 따른 UI 분기") {
+    @Section(title: "UI Branching by Ownership Type") {
         @ContentAndMedia {
-            구매자와 가족 공유 사용자에게 다른 UI를 제공합니다.
+            Provide different UI to purchasers and family sharing users.
             
-            - 구매자: 구독 관리, 취소 옵션 표시
-            - 가족 공유: 구매자 안내, 제한된 관리 옵션
+            - Purchaser: Show subscription management, cancellation options
+            - Family Sharing: Guide to purchaser, limited management options
         }
         
         @Steps {
             @Step {
-                소유권 타입을 확인하는 EntitlementManager를 구현합니다.
+                Implement an EntitlementManager that checks ownership type.
                 @Code(name: "EntitlementManager.swift", file: "08-entitlement-manager.swift")
             }
             @Step {
-                가족 공유 사용자를 위한 정보 뷰를 추가합니다.
+                Add an information view for family sharing users.
                 @Code(name: "FamilyShareInfoView.swift", file: "08-family-info-view.swift")
             }
         }
     }
     
-    @Section(title: "가족 공유 취소 처리") {
+    @Section(title: "Handling Family Sharing Cancellation") {
         @ContentAndMedia {
-            가족 공유가 해제되면 접근 권한도 함께 사라집니다.
-            Transaction.updates 스트림에서 revocation을 감지하여 처리합니다.
+            When family sharing is revoked, access permissions are also removed.
+            Detect revocation from the Transaction.updates stream and handle accordingly.
         }
         
         @Steps {
             @Step {
-                가족 공유 취소 시 적절한 안내를 표시합니다.
+                Display appropriate guidance when family sharing is cancelled.
                 @Code(name: "FamilyShareRevokedView.swift", file: "08-family-revoked.swift")
             }
         }
@@ -61,58 +61,58 @@
     
     @Assessments {
         @MultipleChoice {
-            가족 공유 사용자의 Transaction.ownershipType 값은?
+            What is the Transaction.ownershipType value for a family sharing user?
             
             @Choice(isCorrect: false) {
                 .purchased
                 
-                @Justification(reaction: "아쉽네요!") {
-                    .purchased는 직접 구매한 사용자를 나타냅니다.
+                @Justification(reaction: "Not quite!") {
+                    .purchased indicates a user who made the purchase directly.
                 }
             }
             
             @Choice(isCorrect: true) {
                 .familyShared
                 
-                @Justification(reaction: "정확합니다!") {
-                    가족 공유로 접근하는 사용자는 .familyShared 타입을 가집니다.
+                @Justification(reaction: "Correct!") {
+                    Users accessing through family sharing have the .familyShared type.
                 }
             }
             
             @Choice(isCorrect: false) {
                 .shared
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    StoreKit 2에서는 .familyShared가 올바른 값입니다.
+                @Justification(reaction: "Think again!") {
+                    In StoreKit 2, .familyShared is the correct value.
                 }
             }
         }
         
         @MultipleChoice {
-            가족 공유 사용자가 구독을 취소할 수 있나요?
+            Can a family sharing user cancel the subscription?
             
             @Choice(isCorrect: false) {
-                네, 본인의 기기에서 언제든 가능합니다.
+                Yes, they can do it anytime from their device.
                 
-                @Justification(reaction: "아쉽네요!") {
-                    가족 공유 사용자는 구독 관리 권한이 없습니다.
+                @Justification(reaction: "Not quite!") {
+                    Family sharing users don't have subscription management permissions.
                 }
             }
             
             @Choice(isCorrect: true) {
-                아니오, 원래 구매자만 관리할 수 있습니다.
+                No, only the original purchaser can manage it.
                 
-                @Justification(reaction: "정확합니다!") {
-                    구독 관리(취소, 변경)는 원래 구매자만 가능합니다.
-                    가족 공유 사용자에게는 이를 명확히 안내해야 합니다.
+                @Justification(reaction: "Correct!") {
+                    Subscription management (cancellation, changes) is only available to the original purchaser.
+                    This should be clearly communicated to family sharing users.
                 }
             }
             
             @Choice(isCorrect: false) {
-                Apple에 직접 요청해야 합니다.
+                They must request directly from Apple.
                 
-                @Justification(reaction: "다시 생각해보세요!") {
-                    원래 구매자가 설정 앱에서 직접 관리합니다.
+                @Justification(reaction: "Think again!") {
+                    The original purchaser manages it directly from the Settings app.
                 }
             }
         }

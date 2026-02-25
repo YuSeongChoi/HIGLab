@@ -1,0 +1,250 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Face Detection Filters") {
+        Learn how to detect faces in images using CIDetector 
+        and apply face-based filters.
+        
+        @Image(source: "face-detection.png", alt: "Face Detection")
+    }
+    
+    @Section(title: "CIDetector Basics") {
+        @ContentAndMedia {
+            CIDetector is CoreImage's image analysis class.
+            It can detect faces, QR codes, rectangles, text, and more.
+            
+            Detectable types:
+            - **CIDetectorTypeFace**: Face detection
+            - **CIDetectorTypeQRCode**: QR code detection
+            - **CIDetectorTypeRectangle**: Rectangle detection
+            - **CIDetectorTypeText**: Text region detection
+            
+            @Image(source: "cidetector-types.png", alt: "CIDetector Types")
+        }
+        
+        @Steps {
+            @Step {
+                Create a CIDetector for face detection.
+                You can set the accuracy option to high or low.
+                
+                @Code(name: "CreateDetector.swift", file: "05-01-create-detector.swift")
+            }
+            
+            @Step {
+                Detect faces in an image.
+                Detected faces are returned as an array of CIFaceFeature.
+                
+                @Code(name: "DetectFaces.swift", file: "05-02-detect-faces.swift")
+            }
+            
+            @Step {
+                Extract face information from CIFaceFeature.
+                You can get position, size, eye/mouth coordinates, etc.
+                
+                @Code(name: "FaceFeatures.swift", file: "05-03-face-features.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying Masks to Face Positions") {
+        @ContentAndMedia {
+            You can apply various effects to detected face positions.
+            Apply blur, mosaic, stickers, etc. only to face regions.
+            
+            Use cases:
+            - Face blur for privacy protection
+            - Skin retouching in beauty cameras
+            - AR-style sticker application
+        }
+        
+        @Steps {
+            @Step {
+                Create a mask image based on the face region.
+                Create a soft circular mask with CIRadialGradient.
+                
+                @Code(name: "FaceMask.swift", file: "05-04-face-mask.swift")
+            }
+            
+            @Step {
+                Apply blur only to the face region.
+                Implement selective blurring using a mask.
+                
+                @Code(name: "FaceBlur.swift", file: "05-05-face-blur.swift")
+            }
+            
+            @Step {
+                Apply pixelation (mosaic) effect to faces.
+                Useful for privacy protection before social media uploads.
+                
+                @Code(name: "FacePixelate.swift", file: "05-06-face-pixelate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using Eye and Mouth Positions") {
+        @ContentAndMedia {
+            CIFaceFeature also provides precise positions of eyes and mouth.
+            Use this to implement more sophisticated effects.
+            
+            Detectable feature points:
+            - leftEyePosition: Left eye position
+            - rightEyePosition: Right eye position
+            - mouthPosition: Mouth position
+            - faceAngle: Face rotation angle
+            - hasSmile: Smile detection (iOS 7+)
+        }
+        
+        @Steps {
+            @Step {
+                Apply special effects to eye positions.
+                You can implement laser eyes or sparkle effects.
+                
+                @Code(name: "EyeEffects.swift", file: "05-07-eye-effects.swift")
+            }
+            
+            @Step {
+                Implement auto-capture using smile detection.
+                Automatically take a photo when the user smiles.
+                
+                @Code(name: "SmileDetection.swift", file: "05-08-smile-detection.swift")
+            }
+            
+            @Step {
+                Apply effects considering face rotation angle.
+                Position effects accurately even on tilted faces.
+                
+                @Code(name: "FaceRotation.swift", file: "05-09-face-rotation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Real-time Face Detection") {
+        @ContentAndMedia {
+            How to detect faces in real-time from camera preview.
+            Use tracking mode for performance optimization.
+            
+            Optimization tips:
+            - Use CIDetectorTracking for frame-to-frame tracking
+            - Detect on low resolution, apply effects on original
+            - Adjust detection frequency (don't do it on every frame)
+        }
+        
+        @Steps {
+            @Step {
+                Integrate face detection with AVCaptureSession.
+                Process camera frames in real-time.
+                
+                @Code(name: "RealtimeDetection.swift", file: "05-10-realtime-detection.swift")
+            }
+            
+            @Step {
+                Optimize performance using tracking mode.
+                Track the same face using trackingID.
+                
+                @Code(name: "FaceTracking.swift", file: "05-11-face-tracking.swift")
+            }
+            
+            @Step {
+                Save battery by adjusting detection frequency.
+                Detect at intervals rather than every frame.
+                
+                @Code(name: "ThrottledDetection.swift", file: "05-12-throttled-detection.swift")
+            }
+            
+            @Step {
+                Implement a complete real-time face filter camera.
+                Can be used with both SwiftUI and UIKit.
+                
+                @Code(name: "FaceFilterCamera.swift", file: "05-13-face-filter-camera.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the difference between CIDetectorAccuracyHigh and 
+            CIDetectorAccuracyLow when creating CIDetector?
+            
+            @Choice(isCorrect: true) {
+                High is more accurate but slower, Low is faster but less accurate.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Choose Low for real-time processing, High for precise analysis.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                High uses GPU, Low uses only CPU.
+                
+                @Justification(reaction: "That's not the case.") {
+                    Both options use the same hardware;
+                    the algorithm complexity differs.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                High detects multiple faces, Low detects only one face.
+                
+                @Justification(reaction: "Not related.") {
+                    Both options can detect multiple faces.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What information cannot be obtained from CIFaceFeature?
+            
+            @Choice(isCorrect: false) {
+                Face position and size
+                
+                @Justification(reaction: "It can be obtained.") {
+                    Can be checked with the bounds property.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Smile presence (hasSmile)
+                
+                @Justification(reaction: "It can be obtained.") {
+                    The hasSmile property is available on iOS 7+.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Person's age estimation
+                
+                @Justification(reaction: "Correct! ✨") {
+                    CIFaceFeature does not provide age estimation.
+                    You need to use the Vision framework or ML models.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is NOT an appropriate way to improve real-time face detection performance?
+            
+            @Choice(isCorrect: false) {
+                Frame-to-frame tracking with CIDetectorTracking option
+                
+                @Justification(reaction: "Good approach.") {
+                    Tracking uses previous frame information to improve performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Detect on low resolution and apply effects on original
+                
+                @Justification(reaction: "Efficient approach.") {
+                    Fast detection with high-quality rendering is good practice.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Analyze every frame with CIDetectorAccuracyHigh
+                
+                @Justification(reaction: "Correct! ✨") {
+                    For real-time processing, AccuracyLow and detection 
+                    frequency adjustment are more efficient.
+                }
+            }
+        }
+    }
+}

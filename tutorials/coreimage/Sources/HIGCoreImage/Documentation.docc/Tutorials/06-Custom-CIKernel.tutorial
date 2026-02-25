@@ -1,0 +1,246 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Custom CIKernel") {
+        Write CIKernels to implement your own filter algorithms.
+        Learn and utilize the Core Image Kernel Language.
+        
+        @Image(source: "custom-cikernel.png", alt: "Custom CIKernel")
+    }
+    
+    @Section(title: "CIKernel Basics") {
+        @ContentAndMedia {
+            CIKernel is an image processing program that runs on the GPU.
+            There are three types of kernels to choose from based on purpose.
+            
+            Kernel types:
+            - **CIColorKernel**: Per-pixel color transformation (fastest)
+            - **CIWarpKernel**: Pixel position movement (distortion effects)
+            - **CIKernel**: Can reference neighboring pixels (blur, etc.)
+            
+            @Image(source: "kernel-types.png", alt: "Kernel Types")
+        }
+        
+        @Steps {
+            @Step {
+                Understand the basic structure of CIColorKernel.
+                Write kernels in Metal Shading Language.
+                
+                @Code(name: "ColorKernelBasic.swift", file: "06-01-color-kernel-basic.swift")
+            }
+            
+            @Step {
+                Load and compile kernel source code.
+                Define kernels in .ci.metal files or as strings.
+                
+                @Code(name: "LoadKernel.swift", file: "06-02-load-kernel.swift")
+            }
+            
+            @Step {
+                Wrap the custom filter as a CIFilter subclass.
+                Add parameter management and input validation.
+                
+                @Code(name: "WrapKernel.swift", file: "06-03-wrap-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing CIColorKernel") {
+        @ContentAndMedia {
+            CIColorKernel only transforms the color of each pixel.
+            It cannot reference neighboring pixels but provides the fastest performance.
+            
+            Use cases:
+            - Color inversion (Invert)
+            - Channel swap (RGB → BGR)
+            - Custom color filters
+            - Threshold effect
+        }
+        
+        @Steps {
+            @Step {
+                Write a color inversion kernel.
+                Subtract each pixel's RGB value from 1.
+                
+                @Code(name: "InvertKernel.swift", file: "06-04-invert-kernel.swift")
+            }
+            
+            @Step {
+                Write a threshold kernel.
+                Convert to white if brightness is above threshold, otherwise black.
+                
+                @Code(name: "ThresholdKernel.swift", file: "06-05-threshold-kernel.swift")
+            }
+            
+            @Step {
+                Write a color matrix transformation kernel.
+                Implement various color effects through matrix multiplication.
+                
+                @Code(name: "ColorMatrixKernel.swift", file: "06-06-color-matrix-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Writing CIWarpKernel") {
+        @ContentAndMedia {
+            CIWarpKernel transforms pixel positions.
+            You can implement distortion, swirl, wave effects, and more.
+            
+            Return value:
+            - Returns the coordinates to sample from the original image
+            - Determines which original pixel to bring to the current pixel position
+        }
+        
+        @Steps {
+            @Step {
+                Write a swirl effect kernel.
+                The rotation angle decreases as distance from center increases.
+                
+                @Code(name: "SwirlKernel.swift", file: "06-07-swirl-kernel.swift")
+            }
+            
+            @Step {
+                Write a wave effect kernel.
+                Create wavy distortion using sine functions.
+                
+                @Code(name: "WaveKernel.swift", file: "06-08-wave-kernel.swift")
+            }
+            
+            @Step {
+                Write a bulge/pinch lens effect kernel.
+                Move pixels in a direction away from center.
+                
+                @Code(name: "BulgeKernel.swift", file: "06-09-bulge-kernel.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIKernel and Neighboring Pixels") {
+        @ContentAndMedia {
+            CIKernel can reference neighboring pixels,
+            enabling effects like blur and edge detection.
+            
+            Key functions:
+            - `sample()`: Get pixel value at specified coordinates
+            - `samplerTransform()`: Coordinate transformation
+            - `samplerExtent()`: Check sampler bounds
+        }
+        
+        @Steps {
+            @Step {
+                Write an edge detection kernel.
+                Implement the Sobel operator.
+                
+                @Code(name: "EdgeDetectionKernel.swift", file: "06-10-edge-detection.swift")
+            }
+            
+            @Step {
+                Write a custom blur kernel.
+                Implement box blur or weighted blur.
+                
+                @Code(name: "CustomBlurKernel.swift", file: "06-11-custom-blur.swift")
+            }
+            
+            @Step {
+                Write a sharpening kernel.
+                Directly implement the unsharp mask algorithm.
+                
+                @Code(name: "SharpenKernel.swift", file: "06-12-sharpen-kernel.swift")
+            }
+            
+            @Step {
+                Write a general-purpose convolution-based kernel.
+                Apply various 3x3 or 5x5 kernel matrices.
+                
+                @Code(name: "ConvolutionKernel.swift", file: "06-13-convolution.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which statement correctly describes CIColorKernel?
+            
+            @Choice(isCorrect: true) {
+                Cannot reference neighboring pixels but is the fastest.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    CIColorKernel processes only the current pixel,
+                    making it optimized for parallel processing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can implement blur effects.
+                
+                @Justification(reaction: "That's not the case.") {
+                    Blur requires neighboring pixels, so CIKernel must be used.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Can move pixel positions.
+                
+                @Justification(reaction: "That's CIWarpKernel.") {
+                    Position transformation is the role of CIWarpKernel.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What does the return value of CIWarpKernel represent?
+            
+            @Choice(isCorrect: true) {
+                The sampling coordinates from the original image for the current pixel position
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Distortion effects determine which original pixel 
+                    to use for each output pixel.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The new color value of the current pixel
+                
+                @Justification(reaction: "That's CIColorKernel.") {
+                    CIWarpKernel returns coordinates; colors are sampled automatically.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A boolean value of whether to display the current pixel
+                
+                @Justification(reaction: "That's not the case.") {
+                    The return value is vec2 type coordinates.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What effect can be implemented with the Sobel operator?
+            
+            @Choice(isCorrect: true) {
+                Edge (contour) detection
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    The Sobel operator calculates pixel value gradients 
+                    to detect edges.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Gaussian blur
+                
+                @Justification(reaction: "Different algorithm.") {
+                    Blur averages neighboring pixels with Gaussian weights.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Color inversion
+                
+                @Justification(reaction: "There's an easier way.") {
+                    Color inversion can be simply implemented with CIColorKernel.
+                }
+            }
+        }
+    }
+}

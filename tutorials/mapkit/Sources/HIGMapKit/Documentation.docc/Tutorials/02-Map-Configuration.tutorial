@@ -1,0 +1,175 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Map Configuration") {
+        Control the map's initial position, zoom level, and rotation angle 
+        using MapCamera and MapCameraPosition.
+    }
+    
+    @Section(title: "Understanding MapCameraPosition") {
+        @ContentAndMedia {
+            MapCameraPosition defines where the map should display.
+            It supports various methods including automatic positioning, specific coordinates, and regions.
+        }
+        
+        @Steps {
+            @Step {
+                **Automatic Position (.automatic)**
+                
+                Automatically adjusts camera position to fit the content.
+                It auto-zooms so all markers are visible.
+                
+                @Code(name: "MapConfigView.swift", file: "02-automatic-position.swift")
+            }
+            
+            @Step {
+                **Centering on Specific Coordinates (.camera)**
+                
+                Specify an exact position using CLLocationCoordinate2D.
+                Let's display the map centered on Seoul City Hall.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-position.swift")
+            }
+            
+            @Step {
+                **Specifying a Region (.region)**
+                
+                Define the visible area using MKCoordinateRegion.
+                Fine-tune the zoom level with span.
+                
+                @Code(name: "MapConfigView.swift", file: "02-region-position.swift")
+            }
+            
+            @Step {
+                **Two-way Connection with @Binding**
+                
+                When the user moves the map, the position updates.
+                When you programmatically change the position, the map moves.
+                
+                @Code(name: "MapConfigView.swift", file: "02-binding-position.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MapCamera Detailed Settings") {
+        @ContentAndMedia {
+            Fine-tune the camera's distance, pitch (tilt), and heading (direction) 
+            with MapCamera.
+        }
+        
+        @Steps {
+            @Step {
+                **Camera Distance (distance)**
+                
+                Set the distance in meters between the camera and the ground.
+                Smaller values zoom in, larger values zoom out.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-distance.swift")
+            }
+            
+            @Step {
+                **Camera Pitch (pitch)**
+                
+                0° is vertical (looking straight down), and you can tilt up to 85°.
+                Combined with 3D building views, it creates an immersive experience.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-pitch.swift")
+            }
+            
+            @Step {
+                **Camera Heading (heading)**
+                
+                0° is north, 90° is east, 180° is south.
+                Controls the rotation direction of the map.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-heading.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying to the Restaurant Map") {
+        @ContentAndMedia {
+            Apply what you've learned to the restaurant map app.
+            Set the Gangnam area in Seoul as the default location.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting the App's Starting Position**
+                
+                Set an appropriate zoom level centered on Gangnam Station.
+                Adjust the span to show approximately a 2km radius.
+                
+                @Code(name: "ContentView.swift", file: "02-initial-location.swift")
+            }
+            
+            @Step {
+                **Adding a Location Navigation Button**
+                
+                Implement a button that moves to a specific restaurant.
+                Use withAnimation for smooth transitions.
+                
+                @Code(name: "ContentView.swift", file: "02-move-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does MapCameraPosition.automatic do?
+            
+            @Choice(isCorrect: true) {
+                Automatically adjusts to show all map content (markers, etc.)
+                
+                @Justification(reaction: "Correct!") {
+                    Automatic adjusts the camera position and zoom 
+                    so all content inside the Map is visible on screen.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Moves to the current user location
+                
+                @Justification(reaction: "Not quite") {
+                    Use .userLocation() to move to the user's location.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Fixed to the center of Seoul
+                
+                @Justification(reaction: "Not quite") {
+                    Automatic adjusts dynamically based on map content.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the viewpoint when MapCamera's pitch value is 0°?
+            
+            @Choice(isCorrect: true) {
+                A vertical top-down view looking straight down
+                
+                @Justification(reaction: "Exactly right!") {
+                    A pitch of 0° is a completely vertical top-down view.
+                    As the value increases, it tilts toward the horizon.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A side view parallel to the horizon
+                
+                @Justification(reaction: "Not quite") {
+                    To get closer to a side view, increase the pitch (up to 85°).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A view looking up from below
+                
+                @Justification(reaction: "Not quite") {
+                    MapCamera's pitch ranges from 0° to 85°.
+                    Looking up from below is not supported.
+                }
+            }
+        }
+    }
+}

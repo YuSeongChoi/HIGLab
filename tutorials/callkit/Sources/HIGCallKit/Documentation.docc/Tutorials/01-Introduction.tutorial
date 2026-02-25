@@ -1,0 +1,151 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Introduction to CallKit") {
+        Learn the core concepts of the CallKit framework and
+        how to provide a native phone experience in VoIP apps.
+    }
+    
+    @Section(title: "What is CallKit?") {
+        @ContentAndMedia {
+            CallKit is a framework that allows VoIP apps to provide
+            the same user experience as the system Phone app.
+            
+            You can integrate native phone features like incoming call UI,
+            call history, and block lists into your app.
+        }
+        
+        @Steps {
+            @Step {
+                Let's explore the main classes in CallKit.
+                
+                - `CXProvider`: Reports incoming calls and manages call state
+                - `CXCallController`: Requests outgoing calls
+                - `CXTransaction`: A collection of call-related actions
+                - `CXAction`: Individual call actions (answer, end, etc.)
+                
+                @Code(name: "CallKitOverview.swift", file: "01-01-overview.swift")
+            }
+            
+            @Step {
+                Import CallKit into your project.
+                
+                @Code(name: "CallManager.swift", file: "01-02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CallKit Architecture") {
+        @ContentAndMedia {
+            CallKit acts as an intermediary between your app and the system.
+            
+            You report call state to the system via CXProvider,
+            and request call actions via CXCallController.
+        }
+        
+        @Steps {
+            @Step {
+                Understand the CallKit call flow.
+                
+                Incoming call: App → CXProvider → System UI
+                Outgoing call: App → CXCallController → CXProvider → System
+                
+                @Code(name: "CallKitArchitecture.swift", file: "01-03-architecture.swift")
+            }
+            
+            @Step {
+                Summarize the main scenarios CallKit handles.
+                
+                @Code(name: "CallKitScenarios.swift", file: "01-04-scenarios.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Project Setup") {
+        @ContentAndMedia {
+            Configure your Xcode project
+            to use CallKit.
+        }
+        
+        @Steps {
+            @Step {
+                Enable Voice over IP in Background Modes.
+                
+                @Code(name: "Info.plist", file: "01-05-background-modes.swift")
+            }
+            
+            @Step {
+                Create the basic structure of the CallManager class.
+                
+                @Code(name: "CallManager.swift", file: "01-06-call-manager.swift")
+            }
+            
+            @Step {
+                Define the call model.
+                
+                @Code(name: "Call.swift", file: "01-07-call-model.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which class is used to report incoming calls to the system in CallKit?
+            
+            @Choice(isCorrect: true) {
+                `CXProvider`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    `CXProvider` is the core class for reporting
+                    call events from VoIP apps to the system.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CXCallController`
+                
+                @Justification(reaction: "Think again.") {
+                    `CXCallController` is used to request
+                    call actions from the app.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `CXTransaction`
+                
+                @Justification(reaction: "Think again.") {
+                    `CXTransaction` is used to bundle
+                    multiple call actions together.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which Background Mode should be enabled to use CallKit?
+            
+            @Choice(isCorrect: true) {
+                Voice over IP
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    VoIP apps need this mode to handle calls
+                    even when in the background.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Audio, AirPlay, and Picture in Picture
+                
+                @Justification(reaction: "Think again.") {
+                    This mode is for general audio playback.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Remote notifications
+                
+                @Justification(reaction: "Think again.") {
+                    Remote notifications are a separate feature.
+                    PushKit is used for VoIP.
+                }
+            }
+        }
+    }
+}

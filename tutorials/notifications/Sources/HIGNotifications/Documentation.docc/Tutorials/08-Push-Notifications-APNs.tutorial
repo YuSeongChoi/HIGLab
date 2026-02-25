@@ -1,0 +1,286 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Push Notification Basics (APNs)") {
+        Understand and configure Apple Push Notification service.
+        
+        Learn how to send notifications from server to user devices,
+        and build basic push infrastructure with device token management.
+    }
+    
+    @Section(title: "Understanding APNs Architecture") {
+        @ContentAndMedia {
+            APNs (Apple Push Notification service) is Apple's push service.
+            
+            **Flow:**
+            1. App registers with APNs and receives device token
+            2. Token sent to app server
+            3. Server sends push request to APNs
+            4. APNs delivers notification to device
+        }
+        
+        @Steps {
+            @Step {
+                **APNs Communication Flow**
+                
+                Understand the overall architecture of push notifications.
+                Grasp the relationship between app, server, and APNs.
+                
+                @Code(name: "APNsArchitecture.swift", file: "08-apns-architecture.swift")
+            }
+            
+            @Step {
+                **Local vs Push Notifications**
+                
+                Compare the differences and use cases of both notification types.
+                
+                @Code(name: "LocalVsPush.swift", file: "08-local-vs-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Push Notification Permission and Registration") {
+        @ContentAndMedia {
+            To receive push notifications, you must register with APNs.
+            
+            On successful registration, you receive a device token,
+            which is stored on the server for sending pushes later.
+        }
+        
+        @Steps {
+            @Step {
+                **Requesting Push Notification Registration**
+                
+                Call UIApplication.shared.registerForRemoteNotifications().
+                Best to call after permission request.
+                
+                @Code(name: "RegisterForPush.swift", file: "08-register-for-push.swift")
+            }
+            
+            @Step {
+                **Receiving Device Token**
+                
+                On successful registration, didRegisterForRemoteNotificationsWithDeviceToken is called.
+                Convert the Data type token to a string.
+                
+                @Code(name: "ReceiveToken.swift", file: "08-receive-token.swift")
+            }
+            
+            @Step {
+                **Handling Registration Failure**
+                
+                Handle failures with didFailToRegisterForRemoteNotificationsWithError.
+                Push registration fails on simulator.
+                
+                @Code(name: "RegistrationFailed.swift", file: "08-registration-failed.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Xcode and Apple Developer Setup") {
+        @ContentAndMedia {
+            Using push notifications requires project and Apple Developer settings.
+            
+            - Add Push Notifications capability in Xcode
+            - Configure App ID in Apple Developer
+            - Generate certificate or key
+        }
+        
+        @Steps {
+            @Step {
+                **Adding Xcode Capability**
+                
+                Add Push Notifications in Project Settings > Signing & Capabilities.
+                
+                @Code(name: "XcodeCapability.swift", file: "08-xcode-capability.swift")
+            }
+            
+            @Step {
+                **Creating APNs Auth Key**
+                
+                Generate APNs authentication key (.p8) in Apple Developer.
+                The key can only be downloaded once, so keep it safe.
+                
+                @Code(name: "AuthKey.swift", file: "08-auth-key.swift")
+            }
+            
+            @Step {
+                **Recording Key Information**
+                
+                Record information needed for server setup.
+                - Key ID
+                - Team ID
+                - Bundle ID
+                - .p8 file
+                
+                @Code(name: "KeyInfo.swift", file: "08-key-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sending Push from Server") {
+        @ContentAndMedia {
+            Send pushes using the APNs HTTP/2 API.
+            
+            Understand JWT authentication and payload format.
+            Actual server implementation requires separate backend knowledge.
+        }
+        
+        @Steps {
+            @Step {
+                **APNs Payload Structure**
+                
+                Understand the JSON format payload.
+                The aps dictionary is key.
+                
+                @Code(name: "APNsPayload.swift", file: "08-apns-payload.swift")
+            }
+            
+            @Step {
+                **Payload Examples**
+                
+                Explore various types of push payload examples.
+                alert, badge, sound, category, etc.
+                
+                @Code(name: "PayloadExamples.swift", file: "08-payload-examples.swift")
+            }
+            
+            @Step {
+                **Silent Push (Background Notification)**
+                
+                Wake the app in background with content-available: 1.
+                Used for data synchronization without UI display.
+                
+                @Code(name: "SilentPush.swift", file: "08-silent-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Testing Push Notifications") {
+        @ContentAndMedia {
+            Learn how to test actual push notifications.
+            
+            Use Xcode's simulator push feature,
+            terminal curl, third-party tools, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Testing on Simulator**
+                
+                Drag .apns file or test with simctl.
+                Supported from Xcode 11.4+.
+                
+                @Code(name: "SimulatorTest.swift", file: "08-simulator-test.swift")
+            }
+            
+            @Step {
+                **APNS File Format**
+                
+                Create .apns files for simulator testing.
+                
+                @Code(name: "APNSFile.swift", file: "08-apns-file.swift")
+            }
+            
+            @Step {
+                **Sending Directly with curl**
+                
+                Send push directly to APNs from terminal.
+                Useful for development and debugging.
+                
+                @Code(name: "CurlTest.swift", file: "08-curl-test.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When can APNs device tokens change?
+            
+            @Choice(isCorrect: true) {
+                App reinstall, device restore, iOS update, etc.
+                
+                @Justification(reaction: "Correct!") {
+                    Device tokens are not permanent.
+                    Always register fresh on app launch and update the server.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Never changes
+                
+                @Justification(reaction: "Not quite") {
+                    Tokens can change in various situations.
+                    Always store the latest token on the server.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Auto-renewed at midnight daily
+                
+                @Justification(reaction: "Not quite") {
+                    It's not renewed at a set time.
+                    It can change due to system events.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Can you test push notifications on the simulator?
+            
+            @Choice(isCorrect: true) {
+                Yes, with .apns files or simctl command from Xcode 11.4+
+                
+                @Justification(reaction: "Correct!") {
+                    Actual APNs registration is not possible on simulator,
+                    but there are simulation features for local testing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No, only on real devices
+                
+                @Justification(reaction: "That used to be true but...") {
+                    Simulator push testing has been supported since Xcode 11.4.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only with development certificate
+                
+                @Justification(reaction: "Not quite") {
+                    There's a separate test feature for simulator regardless of certificates.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the main purpose of Silent Push (content-available: 1)?
+            
+            @Choice(isCorrect: true) {
+                Wake the app in background for data synchronization without UI display
+                
+                @Justification(reaction: "Correct!") {
+                    Silent Push is invisible to users while
+                    allowing the app to perform background tasks.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Display notification without sound in Do Not Disturb mode
+                
+                @Justification(reaction: "Don't confuse them") {
+                    That's interruption level configuration.
+                    Silent Push doesn't display UI at all.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Encrypt notification content
+                
+                @Justification(reaction: "Not quite") {
+                    It's unrelated to encryption.
+                    It's for triggering background tasks.
+                }
+            }
+        }
+    }
+}

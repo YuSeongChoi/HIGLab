@@ -1,0 +1,176 @@
+@Tutorial(time: 8) {
+    @Intro(title: "Introduction to LocalAuthentication") {
+        Learn what Apple's LocalAuthentication framework is,
+        why biometric authentication matters, and how to use it in a secure vault app.
+    }
+    
+    @Section(title: "What is LocalAuthentication?") {
+        @ContentAndMedia {
+            **LocalAuthentication** is Apple's biometric authentication framework.
+            It allows you to securely verify user identity through
+            Face ID, Touch ID, and device passcode.
+        }
+        
+        @Steps {
+            @Step {
+                LocalAuthentication was first introduced in iOS 8.
+                It was provided so that app developers could utilize Touch ID
+                when it first appeared on iPhone 5s.
+                
+                @Code(name: "Overview.swift", file: "01-framework-overview.swift")
+            }
+            
+            @Step {
+                **Core Class: LAContext**
+                
+                All authentication operations are done through an LAContext instance.
+                - Check biometric authentication availability
+                - Request authentication and handle results
+                - Customize authentication UI
+                
+                @Code(name: "LAContextBasics.swift", file: "01-lacontext-basics.swift")
+            }
+            
+            @Step {
+                **Supported Authentication Methods**
+                
+                - **Face ID**: iPhone X and later (TrueDepth camera)
+                - **Touch ID**: iPhone 5s-8, SE, some iPads
+                - **Optic ID**: Apple Vision Pro
+                - **Passcode**: Fallback when biometric auth fails
+                
+                @Code(name: "BiometryTypes.swift", file: "01-biometry-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Designing the Secure Vault App") {
+        @ContentAndMedia {
+            The app we'll build is **SecureVault**.
+            It's a personal vault app that protects sensitive notes and files with Face ID/Touch ID.
+        }
+        
+        @Steps {
+            @Step {
+                **App Structure Design**
+                
+                Key screens of the secure vault app:
+                1. Lock screen (authentication request)
+                2. Vault list (protected items)
+                3. Item detail (sensitive information)
+                
+                @Code(name: "AppStructure.swift", file: "01-app-structure.swift")
+            }
+            
+            @Step {
+                **When to Request Authentication?**
+                
+                - On initial app launch
+                - When returning from background (depending on settings)
+                - Before performing sensitive actions (delete, export, etc.)
+                
+                @Code(name: "AuthTriggers.swift", file: "01-auth-triggers.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                The `NSFaceIDUsageDescription` key is **required** to use Face ID.
+                Clearly explain to users why biometric authentication is needed.
+                
+                @Code(name: "InfoPlist.swift", file: "01-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Getting Started with the Project") {
+        @ContentAndMedia {
+            Create a new project in Xcode and
+            add the LocalAuthentication framework.
+        }
+        
+        @Steps {
+            @Step {
+                **Create Project**
+                
+                In Xcode, select the iOS App template and
+                name the project "SecureVault".
+                Interface: SwiftUI, Language: Swift
+                
+                @Code(name: "ProjectSetup.swift", file: "01-project-setup.swift")
+            }
+            
+            @Step {
+                **Import Framework**
+                
+                Add the import statement at the top of files that use LocalAuthentication.
+                
+                @Code(name: "Import.swift", file: "01-import.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the core class of the LocalAuthentication framework?
+            
+            @Choice(isCorrect: true) {
+                LAContext
+                
+                @Justification(reaction: "Correct!") {
+                    LAContext is central to all biometric authentication operations.
+                    Availability checks, authentication requests, and UI customization are all done through this class.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                BiometricAuth
+                
+                @Justification(reaction: "Not quite") {
+                    There is no class called BiometricAuth.
+                    The core class of LocalAuthentication is LAContext.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                FaceIDManager
+                
+                @Justification(reaction: "Not quite") {
+                    Apple doesn't provide a class called FaceIDManager.
+                    LAContext handles both Face ID and Touch ID.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What key must be added to Info.plist to use Face ID?
+            
+            @Choice(isCorrect: true) {
+                NSFaceIDUsageDescription
+                
+                @Justification(reaction: "Correct!") {
+                    Without this key, the app will crash.
+                    Provide a string that clearly explains the purpose of Face ID usage.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSBiometricUsageDescription
+                
+                @Justification(reaction: "Not quite") {
+                    The correct key name is NSFaceIDUsageDescription.
+                    Touch ID doesn't require a separate key, but Face ID does.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No separate key is needed
+                
+                @Justification(reaction: "Not quite") {
+                    The NSFaceIDUsageDescription key is required when using Face ID.
+                    The app will crash at runtime if it's missing.
+                }
+            }
+        }
+    }
+}

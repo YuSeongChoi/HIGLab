@@ -1,0 +1,217 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Visit Monitoring (CLVisit)") {
+        Use visit monitoring to automatically detect
+        when a user has stayed at a specific location.
+        
+        Automatically record frequently visited running locations.
+    }
+    
+    @Section(title: "Understanding CLVisit") {
+        @ContentAndMedia {
+            `CLVisit` is a feature where the system automatically detects
+            and notifies when a user arrives at and leaves a location.
+            
+            You can receive visit records without directly tracking location,
+            making it very battery efficient.
+        }
+        
+        @Steps {
+            @Step {
+                **Understanding CLVisit Properties**
+                
+                CLVisit provides the following information:
+                - `coordinate`: Coordinates of the visited location
+                - `arrivalDate`: Arrival time
+                - `departureDate`: Departure time
+                - `horizontalAccuracy`: Location accuracy
+                
+                @Code(name: "VisitData.swift", file: "08-visit-properties.swift")
+            }
+            
+            @Step {
+                **Starting Visit Monitoring**
+                
+                Calling `startMonitoringVisits()`
+                makes the system detect visits in the background.
+                
+                @Code(name: "VisitManager.swift", file: "08-start-monitoring.swift")
+            }
+            
+            @Step {
+                **Receiving Visit Events**
+                
+                Receive visit information in the
+                `locationManager(_:didVisit:)` delegate method.
+                
+                @Code(name: "VisitManager.swift", file: "08-did-visit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using Visit Data") {
+        @ContentAndMedia {
+            Analyze visit data to understand the user's running patterns
+            and suggest frequently visited places as favorites.
+        }
+        
+        @Steps {
+            @Step {
+                **Storing Visit Records**
+                
+                Save visit data to Core Data or files
+                to build a running history.
+                
+                @Code(name: "VisitStorage.swift", file: "08-visit-storage.swift")
+            }
+            
+            @Step {
+                **Calculating Stay Duration**
+                
+                Calculate how long the user stayed by finding
+                the difference between arrivalDate and departureDate.
+                
+                Note: If departureDate is `.distantFuture`, the user is still there.
+                
+                @Code(name: "VisitAnalytics.swift", file: "08-duration.swift")
+            }
+            
+            @Step {
+                **Analyzing Frequent Places**
+                
+                Group visits with similar coordinates
+                to identify frequent running locations.
+                
+                @Code(name: "VisitAnalytics.swift", file: "08-frequent-places.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Running Location Recommendations") {
+        @ContentAndMedia {
+            Recommend running locations based on visit data
+            and display running statistics for each place.
+        }
+        
+        @Steps {
+            @Step {
+                **Creating the Place Model**
+                
+                Create a model to store frequently visited places.
+                Include name, coordinates, visit count, and total running distance.
+                
+                @Code(name: "FavoritePlace.swift", file: "08-place-model.swift")
+            }
+            
+            @Step {
+                **Places List UI**
+                
+                Display frequently visited running locations as a list.
+                Show statistics and last visit time for each place.
+                
+                @Code(name: "PlacesListView.swift", file: "08-places-list.swift")
+            }
+            
+            @Step {
+                **Location-Based Quick Start**
+                
+                Allow selecting a favorite place to navigate there
+                and start running immediately.
+                
+                @Code(name: "QuickStartView.swift", file: "08-quick-start.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does it mean when CLVisit's departureDate is .distantFuture?
+            
+            @Choice(isCorrect: true) {
+                The user is still at that location
+                
+                @Justification(reaction: "Correct!") {
+                    .distantFuture means the departure time has not been determined yet.
+                    When the user leaves, it will be updated to the actual time.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The visit data is invalid
+                
+                @Justification(reaction: "Not quite") {
+                    .distantFuture is a normal value indicating the user is currently there.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Planning to stay forever
+                
+                @Justification(reaction: "Not quite") {
+                    This means the system hasn't detected departure yet.
+                    When the user leaves, it changes to the actual time.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the advantage of visit monitoring?
+            
+            @Choice(isCorrect: true) {
+                Very battery efficient
+                
+                @Justification(reaction: "Correct!") {
+                    Visit monitoring uses data the system is already collecting,
+                    so there's almost no additional battery consumption.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                More accurate than real-time location tracking
+                
+                @Justification(reaction: "Not quite") {
+                    Visit monitoring only detects approximate locations.
+                    It's not suitable for precise route tracking.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Records all movements
+                
+                @Justification(reaction: "Not quite") {
+                    Visit monitoring only detects when staying at specific places.
+                    It doesn't record routes while moving.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What permission level is required for visit monitoring?
+            
+            @Choice(isCorrect: true) {
+                Always permission
+                
+                @Justification(reaction: "Correct!") {
+                    Visit monitoring works in the background,
+                    so "Always" location permission is required.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When In Use permission
+                
+                @Justification(reaction: "Not quite") {
+                    Visit monitoring needs to work even when the app is in background,
+                    so "Always" permission is required.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No permission needed
+                
+                @Justification(reaction: "Not quite") {
+                    All location services require user permission.
+                }
+            }
+        }
+    }
+}

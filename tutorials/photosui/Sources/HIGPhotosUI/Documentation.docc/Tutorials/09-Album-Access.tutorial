@@ -1,0 +1,253 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Album Access (PHAsset)") {
+        Access the photo library directly with the Photos framework.
+        Utilize PHAsset, PHFetchResult, and PHAssetCollection.
+    }
+    
+    @Section(title: "Photos Framework vs PhotosUI") {
+        @ContentAndMedia {
+            PhotosUI and the Photos framework serve different purposes.
+            
+            - **PhotosUI**: Access only user-selected photos (no permission needed)
+            - **Photos**: Access entire library (permission required)
+            
+            Use the Photos framework when deeper integration is needed.
+        }
+        
+        @Steps {
+            @Step {
+                **Requesting Permission**
+                
+                Explicit permission is required for photo library access.
+                Add NSPhotoLibraryUsageDescription to Info.plist.
+                
+                @Code(name: "PhotosPermission.swift", file: "09-photos-permission.swift")
+            }
+            
+            @Step {
+                **Handling PHAuthorizationStatus**
+                
+                Display different UI based on authorization status.
+                Handle .authorized, .limited, .denied, etc.
+                
+                @Code(name: "AuthorizationStatus.swift", file: "09-authorization-status.swift")
+            }
+            
+            @Step {
+                **Limited Photos Library**
+                
+                Since iOS 14, users can share only selected photos.
+                In .limited state, only selected photos are accessible.
+                
+                @Code(name: "LimitedLibrary.swift", file: "09-limited-library.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PHAsset and PHFetchResult") {
+        @ContentAndMedia {
+            PHAsset represents an individual item in the photo library.
+            Query results are received as PHFetchResult.
+        }
+        
+        @Steps {
+            @Step {
+                **Fetching PHAssets**
+                
+                Fetch photos with PHAsset.fetchAssets(with:options:).
+                Set sorting and filters with PHFetchOptions.
+                
+                @Code(name: "FetchAssets.swift", file: "09-fetch-assets.swift")
+            }
+            
+            @Step {
+                **PHAsset Properties**
+                
+                Access various metadata from PHAsset:
+                - Creation date
+                - Location information
+                - Media type
+                - Favorite status
+                
+                @Code(name: "AssetProperties.swift", file: "09-asset-properties.swift")
+            }
+            
+            @Step {
+                **Requesting Images**
+                
+                Load images from PHAsset using PHImageManager.
+                Specify various size and quality options.
+                
+                @Code(name: "RequestImage.swift", file: "09-request-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Albums and Collections") {
+        @ContentAndMedia {
+            Access albums with PHAssetCollection.
+            There are system albums, user albums, smart albums, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **Fetching Album List**
+                
+                Fetch albums with PHAssetCollection.fetchAssetCollections.
+                Specify album type with the type parameter.
+                
+                @Code(name: "FetchAlbums.swift", file: "09-fetch-albums.swift")
+            }
+            
+            @Step {
+                **Smart Albums**
+                
+                Access system-managed smart albums:
+                - Recents, Favorites, Screenshots
+                - Selfies, Panoramas, Live Photos
+                
+                @Code(name: "SmartAlbums.swift", file: "09-smart-albums.swift")
+            }
+            
+            @Step {
+                **Fetching Photos in an Album**
+                
+                Fetch PHAssets belonging to a specific album.
+                Use PHAsset.fetchAssets(in:options:).
+                
+                @Code(name: "FetchAssetsInAlbum.swift", file: "09-fetch-assets-in-album.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Detecting Photo Library Changes") {
+        @ContentAndMedia {
+            Detect library changes with PHPhotoLibraryChangeObserver.
+            Update UI in real-time.
+        }
+        
+        @Steps {
+            @Step {
+                **Registering Change Observer**
+                
+                Register an observer with PHPhotoLibrary.shared().register.
+                The photoLibraryDidChange method will be called.
+                
+                @Code(name: "RegisterObserver.swift", file: "09-register-observer.swift")
+            }
+            
+            @Step {
+                **Processing Changes**
+                
+                Check changed items from PHChange.
+                Identify differences with insertedIndexes, removedIndexes, etc.
+                
+                @Code(name: "HandleChanges.swift", file: "09-handle-changes.swift")
+            }
+            
+            @Step {
+                **Updating FetchResult**
+                
+                Update existing FetchResult with changeDetails(for:).
+                No need to fetch everything again.
+                
+                @Code(name: "UpdateFetchResult.swift", file: "09-update-fetch-result.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you access the entire library with the Photos framework?
+            
+            @Choice(isCorrect: true) {
+                Request permission with PHPhotoLibrary.requestAuthorization
+                
+                @Justification(reaction: "Correct!") {
+                    The Photos framework requires explicit permission
+                    for full library access.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Access without permission like PhotosPicker
+                
+                @Justification(reaction: "Not quite") {
+                    Unlike PhotosPicker, the Photos framework
+                    requires permission.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Info.plist settings alone are sufficient
+                
+                @Justification(reaction: "Not quite") {
+                    Along with Info.plist settings,
+                    runtime permission request is needed.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which class loads actual images from PHAsset?
+            
+            @Choice(isCorrect: true) {
+                PHImageManager
+                
+                @Justification(reaction: "Correct!") {
+                    Use PHImageManager.default() to
+                    request images from PHAsset.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHAssetLoader
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such class.
+                    Use PHImageManager.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHAsset.image property
+                
+                @Justification(reaction: "Not quite") {
+                    PHAsset doesn't have an image property.
+                    You must load asynchronously with PHImageManager.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you detect photo library changes in real-time?
+            
+            @Choice(isCorrect: true) {
+                Implement and register PHPhotoLibraryChangeObserver protocol
+                
+                @Justification(reaction: "Exactly right!") {
+                    Implement PHPhotoLibraryChangeObserver and
+                    register with PHPhotoLibrary.shared().register.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Subscribe to notifications via NotificationCenter
+                
+                @Justification(reaction: "Not quite") {
+                    The Photos framework uses its own observer pattern.
+                    Implement PHPhotoLibraryChangeObserver.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Periodic polling with a timer
+                
+                @Justification(reaction: "Not quite") {
+                    That's inefficient. Using PHPhotoLibraryChangeObserver
+                    notifies only when changes occur.
+                }
+            }
+        }
+    }
+}

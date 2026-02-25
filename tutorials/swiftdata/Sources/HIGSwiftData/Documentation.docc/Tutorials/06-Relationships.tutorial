@@ -1,0 +1,223 @@
+@Tutorial(time: 20) {
+    @Intro(title: "The Art of Relationships: Connecting Task and Category") {
+        Real app data is interconnected.
+        Set up relationships between models with the @Relationship macro,
+        and ensure data integrity with delete rules.
+    }
+    
+    @Section(title: "Creating the Category Model") {
+        @ContentAndMedia {
+            Add a Category model to classify tasks by category.
+            Design a 1:N relationship where multiple Tasks belong to one Category.
+        }
+        
+        @Steps {
+            @Step {
+                **Defining Category Model**
+                
+                Create a Category model with name, color, and icon.
+                Include a unique ID and creation date as well.
+                
+                @Code(name: "Category.swift", file: "06-category-model.swift")
+            }
+            
+            @Step {
+                **Understanding @Relationship Macro**
+                
+                @Relationship defines connections between models.
+                deleteRule specifies how children are handled when parent is deleted.
+                
+                @Code(name: "RelationshipBasics.swift", file: "06-relationship-basics.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Setting Up Bidirectional Relationships") {
+        @ContentAndMedia {
+            Set up bidirectional relationships accessible from Task to Category
+            and Category to Task. The inverse parameter is key.
+        }
+        
+        @Steps {
+            @Step {
+                **Adding Category to Task**
+                
+                Add an optional Category property to TaskItem.
+                It's optional because a task can exist without a category.
+                
+                @Code(name: "TaskItem.swift", file: "06-task-with-category.swift")
+            }
+            
+            @Step {
+                **Adding Task Array to Category**
+                
+                Add an array so Category can access its Tasks.
+                Specify bidirectional connection with inverse.
+                
+                @Code(name: "Category.swift", file: "06-category-with-tasks.swift")
+            }
+            
+            @Step {
+                **Complete Bidirectional Relationship**
+                
+                The completed form of both models.
+                Relationships are automatically synchronized on both sides.
+                
+                @Code(name: "Models.swift", file: "06-bidirectional-complete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Mastering Delete Rules") {
+        @ContentAndMedia {
+            deleteRule determines how to handle children when parent is deleted.
+            Choose the appropriate rule among cascade, nullify, deny, and noAction.
+        }
+        
+        @Steps {
+            @Step {
+                **cascade: Cascading Delete**
+                
+                Children are deleted along with the parent.
+                Use when "deleting category = delete all belonging tasks" is needed.
+                
+                @Code(name: "DeleteRuleCascade.swift", file: "06-delete-cascade.swift")
+            }
+            
+            @Step {
+                **nullify: Only Unlink Relationship**
+                
+                Child's reference becomes nil when parent is deleted.
+                Appropriate for "keep tasks even when category is deleted."
+                
+                @Code(name: "DeleteRuleNullify.swift", file: "06-delete-nullify.swift")
+            }
+            
+            @Step {
+                **deny: Prevent Deletion**
+                
+                Parent deletion fails if children exist.
+                Use when data integrity is important.
+                
+                @Code(name: "DeleteRuleDeny.swift", file: "06-delete-deny.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Relationship-Based UI") {
+        @ContentAndMedia {
+            Implement UI utilizing relationships.
+            Create category-based task filtering and category selection picker.
+        }
+        
+        @Steps {
+            @Step {
+                **Category Selection Picker**
+                
+                Implement UI for selecting category when creating/editing tasks.
+                Combine Picker with @Query.
+                
+                @Code(name: "CategoryPicker.swift", file: "06-category-picker.swift")
+            }
+            
+            @Step {
+                **Category-Based Filtering**
+                
+                Display only tasks of the selected category.
+                Easy filtering through relationships.
+                
+                @Code(name: "CategoryFilterView.swift", file: "06-category-filter.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            To delete belonging Tasks when a Category is deleted?
+            
+            @Choice(isCorrect: true) {
+                @Relationship(deleteRule: .cascade)
+                
+                @Justification(reaction: "Correct!") {
+                    The cascade rule deletes connected children
+                    along with the parent deletion.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Relationship(deleteRule: .nullify)
+                
+                @Justification(reaction: "Not quite") {
+                    nullify only unlinks the relationship (nil), not deleting children.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Relationship(deleteRule: .deny)
+                
+                @Justification(reaction: "Not quite") {
+                    deny prevents deletion if children exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of the inverse parameter in bidirectional relationships?
+            
+            @Choice(isCorrect: true) {
+                Specifies the opposite relationship property for automatic sync
+                
+                @Justification(reaction: "Exactly right!") {
+                    inverse connects both relationship sides so that
+                    changes on one side automatically update the other.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Reverses the direction of the relationship
+                
+                @Justification(reaction: "Not quite") {
+                    inverse doesn't reverse direction but specifies
+                    the opposite property for bidirectional sync.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Sorts in reverse order when querying relationships
+                
+                @Justification(reaction: "Not quite") {
+                    Unrelated to sorting. It's for bidirectional relationship sync.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What type is the "N" side in a 1:N relationship?
+            
+            @Choice(isCorrect: true) {
+                [ModelType] (Array)
+                
+                @Justification(reaction: "Correct!") {
+                    The "N" side needs to hold multiple objects,
+                    so an array type is used.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set<ModelType>
+                
+                @Justification(reaction: "Not quite") {
+                    Unlike Core Data, SwiftData uses arrays.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ModelType? (Optional)
+                
+                @Justification(reaction: "Not quite") {
+                    Optional is appropriate for the "1" side (or 0..1).
+                }
+            }
+        }
+    }
+}

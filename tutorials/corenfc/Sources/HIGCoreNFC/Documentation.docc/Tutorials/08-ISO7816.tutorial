@@ -1,0 +1,96 @@
+@Tutorial(time: 30) {
+    @Intro(title: "ISO 7816 Tags") {
+        Learn how to communicate with ISO 7816 standard tags.
+        Send APDU commands and process responses.
+    }
+    
+    @Section(title: "Accessing ISO 7816 Tags") {
+        @ContentAndMedia {
+            ISO 7816 is the international standard for smart card communication.
+            Used in credit cards, ID cards, passports, and other chip-based cards.
+        }
+        @Steps {
+            @Step {
+                Check the properties of the NFCISO7816Tag protocol.
+                Includes identifier, historicalBytes, applicationData, and more.
+                @Code(name: "ISO7816Reader.swift", file: "08-01-properties.swift")
+            }
+            @Step {
+                Read the initial UID and ATS (Answer To Select) data.
+                @Code(name: "ISO7816Reader.swift", file: "08-02-initial.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sending APDU Commands") {
+        @ContentAndMedia {
+            APDU (Application Protocol Data Unit) is the command-response protocol
+            for communicating with smart cards.
+        }
+        @Steps {
+            @Step {
+                Create an NFCISO7816APDU object.
+                Composed of CLA, INS, P1, P2, Data, and Le fields.
+                @Code(name: "ISO7816Reader.swift", file: "08-03-apdu.swift")
+            }
+            @Step {
+                Select an application using the SELECT command.
+                @Code(name: "ISO7816Reader.swift", file: "08-04-select.swift")
+            }
+            @Step {
+                Read data using the READ BINARY command.
+                @Code(name: "ISO7816Reader.swift", file: "08-05-read.swift")
+            }
+            @Step {
+                Interpret the response status codes (SW1, SW2).
+                0x9000 is success, others are error codes.
+                @Code(name: "ISO7816Reader.swift", file: "08-06-status.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does SW1=0x90, SW2=0x00 mean in an APDU response?
+            @Choice(isCorrect: true) {
+                Command processed successfully
+                @Justification(reaction: "Correct!") {
+                    0x9000 is the standard success code in ISO 7816.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Data not found
+                @Justification(reaction: "Think again.") {
+                    Data not found is indicated by a different status code.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Authentication failed
+                @Justification(reaction: "Think again.") {
+                    Authentication failure uses 0x6300 series codes.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is the INS byte value for the ISO 7816 SELECT command?
+            @Choice(isCorrect: false) {
+                0xB0
+                @Justification(reaction: "Think again.") {
+                    0xB0 is the READ BINARY command.
+                }
+            }
+            @Choice(isCorrect: true) {
+                0xA4
+                @Justification(reaction: "Correct!") {
+                    The SELECT command's INS is 0xA4.
+                }
+            }
+            @Choice(isCorrect: false) {
+                0xD6
+                @Justification(reaction: "Think again.") {
+                    0xD6 is the UPDATE BINARY command.
+                }
+            }
+        }
+    }
+}

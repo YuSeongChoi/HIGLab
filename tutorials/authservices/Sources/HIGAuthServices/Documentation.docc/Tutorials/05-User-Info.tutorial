@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Collecting User Information") {
+        Safely collect user information such as name and email, 
+        and process it in a privacy-respecting manner.
+        
+        @Image(source: "user-info.png", alt: "Collecting User Information")
+    }
+    
+    @Section(title: "Handling PersonNameComponents") {
+        @ContentAndMedia {
+            fullName is provided as a PersonNameComponents type.
+            
+            - `givenName`: First Name
+            - `familyName`: Last Name
+            - `middleName`: Middle Name
+            - `namePrefix`: Title (Dr., Mr., etc.)
+            - `nameSuffix`: Suffix (Jr., III, etc.)
+            - `nickname`: Nickname
+            
+            Available fields vary by culture.
+        }
+        
+        @Steps {
+            @Step {
+                Extract names from PersonNameComponents.
+                givenName and familyName are the most common.
+                
+                @Code(name: "ExtractName.swift", file: "05-01-extract-name.swift")
+            }
+            
+            @Step {
+                Generate a localized full name 
+                with PersonNameComponentsFormatter.
+                
+                @Code(name: "FormatName.swift", file: "05-02-format-name.swift")
+            }
+            
+            @Step {
+                Utilize various format styles.
+                - `.short`: Brief name
+                - `.medium`: Standard name
+                - `.long`: Full name
+                
+                @Code(name: "NameStyles.swift", file: "05-03-name-styles.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Email Handling") {
+        @ContentAndMedia {
+            Users can choose between their actual email or 
+            a Private Email Relay address.
+            
+            - Actual email: user@example.com
+            - Relay email: xxx@privaterelay.appleid.com
+            
+            Both can be used the same way, but 
+            Relay emails require additional setup.
+        }
+        
+        @Steps {
+            @Step {
+                Extract and save the email.
+                Nil checking is required.
+                
+                @Code(name: "ExtractEmail.swift", file: "05-04-extract-email.swift")
+            }
+            
+            @Step {
+                Check if it's a Private Relay email.
+                It can be easily identified by the domain.
+                
+                @Code(name: "CheckRelay.swift", file: "05-05-check-relay.swift")
+            }
+            
+            @Step {
+                To send emails to Private Relay, 
+                you must register your sending domain with Apple.
+                
+                @Code(name: "RelaySetup.swift", file: "05-06-relay-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Private Email Relay Setup") {
+        @ContentAndMedia {
+            To send emails to Private Email Relay:
+            
+            1. Register domain in Apple Developer portal
+            2. Set up SPF record
+            3. Register sender email address
+            
+            Without this setup, emails cannot be sent to Relay addresses.
+        }
+        
+        @Steps {
+            @Step {
+                Go to Certificates, Identifiers & Profiles 
+                in the Apple Developer portal.
+                
+                Configure Services > Sign in with Apple for Email Communication.
+                
+                @Code(name: "DomainRegistration.swift", file: "05-07-domain-registration.swift")
+            }
+            
+            @Step {
+                Add an SPF record to your DNS.
+                Apple's mail servers must be allowed.
+                
+                @Code(name: "SPFRecord.swift", file: "05-08-spf-record.swift")
+            }
+            
+            @Step {
+                Register the sender email address.
+                noreply@yourdomain.com format is common.
+                
+                @Code(name: "SenderEmail.swift", file: "05-09-sender-email.swift")
+            }
+        }
+    }
+    
+    @Section(title: "User Information Storage Strategy") {
+        @ContentAndMedia {
+            Since user information is only provided once, 
+            it must be stored safely and permanently.
+            
+            - Keychain: Sensitive information (user identifier)
+            - Core Data/Realm: General profile information
+            - Server: Backup and synchronization
+        }
+        
+        @Steps {
+            @Step {
+                Store the User Identifier in the Keychain.
+                It persists even after app reinstallation.
+                
+                @Code(name: "KeychainStorage.swift", file: "05-10-keychain.swift")
+            }
+            
+            @Step {
+                Sync profile information to the server.
+                Allows recovery when changing devices.
+                
+                @Code(name: "ServerSync.swift", file: "05-11-server-sync.swift")
+            }
+            
+            @Step {
+                Prepare a fallback strategy for lost information.
+                You can ask users to input directly.
+                
+                @Code(name: "FallbackStrategy.swift", file: "05-12-fallback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is required to send messages 
+            to Private Email Relay emails?
+            
+            @Choice(isCorrect: true) {
+                The sending domain must be registered in the Apple Developer portal.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    You must register the domain and sender email address, 
+                    and set up SPF records.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can be used immediately without special setup.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Emails from unregistered domains 
+                    will not be delivered.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                You need to know the user's actual email address.
+                
+                @Justification(reaction: "Privacy violation.") {
+                    The purpose of Relay email is 
+                    to hide the actual email.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why use PersonNameComponentsFormatter?
+            
+            @Choice(isCorrect: false) {
+                To encrypt names.
+                
+                @Justification(reaction: "Unrelated.") {
+                    Formatter is for formatting purposes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To properly combine names according to culture.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Automatically handles different formats 
+                    like "Family+Given" in Korea vs "Given+Family" in the West.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To validate names.
+                
+                @Justification(reaction: "Not the Formatter's role.") {
+                    Formatter specifies display format.
+                }
+            }
+        }
+    }
+}

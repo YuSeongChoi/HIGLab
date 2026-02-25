@@ -1,127 +1,127 @@
 @Tutorial(time: 15) {
-    @Intro(title: "생성된 이미지 저장") {
-        ImagePlayground에서 생성된 이미지를 
-        사진 앱이나 파일 시스템에 영구 저장하는 방법을 배웁니다.
+    @Intro(title: "Saving Generated Images") {
+        Learn how to permanently save images generated from ImagePlayground 
+        to the Photos app or file system.
         
-        @Image(source: "saving-images.png", alt: "이미지 저장")
+        @Image(source: "saving-images.png", alt: "Saving Images")
     }
     
-    @Section(title: "임시 파일 이해하기") {
+    @Section(title: "Understanding Temporary Files") {
         @ContentAndMedia {
-            ImagePlayground가 반환하는 URL은 
-            임시 디렉토리의 파일을 가리킵니다.
+            The URL returned by ImagePlayground 
+            points to a file in a temporary directory.
             
-            **임시 파일의 특성:**
-            - 시스템이 언제든 삭제할 수 있음
-            - 앱 재시작 후 접근 불가능할 수 있음
-            - 저장 공간 부족 시 우선 삭제 대상
+            **Characteristics of Temporary Files:**
+            - System can delete them at any time
+            - May not be accessible after app restart
+            - First to be deleted when storage is low
             
-            따라서 사용자가 보관하고 싶은 이미지는 
-            반드시 영구 저장소로 복사해야 합니다.
+            Therefore, images that users want to keep 
+            must be copied to permanent storage.
         }
         
         @Steps {
             @Step {
-                임시 URL에서 영구 저장소로 
-                파일을 복사하는 기본 패턴입니다.
+                Here's the basic pattern for copying files 
+                from temporary URL to permanent storage.
                 
                 @Code(name: "CopyFile.swift", file: "06-01-copy.swift")
             }
             
             @Step {
-                앱의 Documents 디렉토리에 저장하는 
-                전체 구현 예시입니다.
+                Here's a complete implementation example 
+                for saving to the app's Documents directory.
                 
                 @Code(name: "SaveToDocuments.swift", file: "06-02-documents.swift")
             }
         }
     }
     
-    @Section(title: "사진 앱에 저장하기") {
+    @Section(title: "Saving to Photos App") {
         @ContentAndMedia {
-            가장 일반적인 저장 방식은 
-            기기의 사진 앱(Photos)에 저장하는 것입니다.
+            The most common saving method is 
+            saving to the device's Photos app.
             
-            **필요한 권한:**
-            - `NSPhotoLibraryAddUsageDescription`: 쓰기 전용
-            - `NSPhotoLibraryUsageDescription`: 읽기/쓰기
+            **Required Permissions:**
+            - `NSPhotoLibraryAddUsageDescription`: Write only
+            - `NSPhotoLibraryUsageDescription`: Read/Write
             
-            쓰기 전용 권한만으로도 사진 추가가 가능하며,
-            더 제한된 권한 요청으로 사용자 신뢰를 얻을 수 있습니다.
+            Write-only permission is sufficient for adding photos,
+            and a more limited permission request can earn user trust.
         }
         
         @Steps {
             @Step {
-                Info.plist에 사진 라이브러리 권한 설명을 추가합니다.
+                Add the photo library permission description to Info.plist.
                 
                 @Code(name: "InfoPlist.plist", file: "06-03-plist.swift")
             }
             
             @Step {
-                PHPhotoLibrary를 사용하여 
-                사진 앱에 이미지를 저장합니다.
+                Save images to the Photos app 
+                using PHPhotoLibrary.
                 
                 @Code(name: "SaveToPhotos.swift", file: "06-04-photos.swift")
             }
             
             @Step {
-                async/await 패턴으로 더 깔끔하게 구현할 수 있습니다.
+                You can implement it more cleanly with async/await pattern.
                 
                 @Code(name: "SaveToPhotosAsync.swift", file: "06-05-photos-async.swift")
             }
         }
     }
     
-    @Section(title: "파일 시스템에 저장하기") {
+    @Section(title: "Saving to File System") {
         @ContentAndMedia {
-            앱 내부에서만 사용하는 이미지는 
-            앱의 Documents 디렉토리에 저장할 수 있습니다.
+            Images used only within the app can be saved 
+            to the app's Documents directory.
             
-            **저장 위치 옵션:**
-            - Documents: iCloud 백업 대상, 사용자 데이터
-            - Library/Caches: 재생성 가능한 캐시 데이터
-            - Application Support: 앱 관련 데이터
+            **Storage Location Options:**
+            - Documents: iCloud backup target, user data
+            - Library/Caches: Regenerable cache data
+            - Application Support: App-related data
             
-            생성된 이미지는 사용자 데이터이므로 
-            Documents가 적합합니다.
+            Generated images are user data, 
+            so Documents is appropriate.
         }
         
         @Steps {
             @Step {
-                FileManager를 사용하여 Documents에 저장합니다.
-                고유한 파일명을 생성하여 중복을 방지합니다.
+                Save to Documents using FileManager.
+                Generate unique filenames to prevent duplicates.
                 
                 @Code(name: "FileManagerSave.swift", file: "06-06-filemanager.swift")
             }
             
             @Step {
-                저장된 이미지를 나중에 로드하는 방법입니다.
-                파일 경로를 UserDefaults나 Core Data에 기록합니다.
+                Here's how to load saved images later.
+                Record file paths in UserDefaults or Core Data.
                 
                 @Code(name: "LoadSaved.swift", file: "06-07-load-saved.swift")
             }
         }
     }
     
-    @Section(title: "공유 기능 추가하기") {
+    @Section(title: "Adding Share Functionality") {
         @ContentAndMedia {
-            생성된 이미지를 다른 앱이나 
-            소셜 미디어에 공유하는 기능도 유용합니다.
+            It's also useful to share generated images 
+            with other apps or social media.
             
-            ShareLink를 사용하면 시스템 공유 시트를 
-            쉽게 표시할 수 있습니다.
+            Using ShareLink makes it easy to display 
+            the system share sheet.
         }
         
         @Steps {
             @Step {
-                SwiftUI의 ShareLink를 사용한 공유 구현입니다.
+                Here's sharing implementation using SwiftUI's ShareLink.
                 
                 @Code(name: "ShareImage.swift", file: "06-08-share.swift")
             }
             
             @Step {
-                저장과 공유 버튼을 함께 제공하는 
-                완전한 UI 예시입니다.
+                Here's a complete UI example providing 
+                both save and share buttons.
                 
                 @Code(name: "SaveShareUI.swift", file: "06-09-save-share.swift")
             }
@@ -130,65 +130,65 @@
     
     @Assessments {
         @MultipleChoice {
-            ImagePlayground에서 받은 이미지를 사진 앱에 저장하려면 
-            어떤 Info.plist 키가 필요한가요?
+            What Info.plist key is required to save images 
+            from ImagePlayground to the Photos app?
             
             @Choice(isCorrect: true) {
                 NSPhotoLibraryAddUsageDescription
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    쓰기 전용 권한인 Add 키만으로도 
-                    사진 추가가 가능하며, 더 제한된 권한으로 
-                    사용자 신뢰를 얻을 수 있습니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    The write-only Add key is sufficient for 
+                    adding photos, and a more limited permission 
+                    can earn user trust.
                 }
             }
             
             @Choice(isCorrect: false) {
                 NSCameraUsageDescription
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    카메라 권한은 사진 촬영에 필요하며,
-                    사진 저장과는 관련 없습니다.
+                @Justification(reaction: "Incorrect.") {
+                    Camera permission is needed for taking photos,
+                    not for saving photos.
                 }
             }
             
             @Choice(isCorrect: false) {
                 NSAppleMusicUsageDescription
                 
-                @Justification(reaction: "전혀 관련 없습니다.") {
-                    이 키는 Apple Music 접근에 사용됩니다.
+                @Justification(reaction: "Completely unrelated.") {
+                    This key is used for Apple Music access.
                 }
             }
         }
         
         @MultipleChoice {
-            사용자가 생성한 이미지를 앱 내부에 저장할 때 
-            가장 적합한 디렉토리는?
+            What is the most appropriate directory for saving 
+            user-generated images within the app?
             
             @Choice(isCorrect: false) {
-                Library/Caches - 임시 캐시 데이터
+                Library/Caches - Temporary cache data
                 
-                @Justification(reaction: "적합하지 않습니다.") {
-                    Caches는 시스템이 공간 부족 시 삭제할 수 있어
-                    사용자 데이터 저장에 부적합합니다.
+                @Justification(reaction: "Not appropriate.") {
+                    Caches can be deleted by the system when space is low,
+                    making it unsuitable for user data.
                 }
             }
             
             @Choice(isCorrect: true) {
-                Documents - iCloud 백업 대상, 사용자 데이터
+                Documents - iCloud backup target, user data
                 
-                @Justification(reaction: "맞습니다! ✨") {
-                    Documents는 사용자가 생성한 데이터에 적합하며,
-                    iCloud 백업도 지원됩니다.
+                @Justification(reaction: "Correct! ✨") {
+                    Documents is appropriate for user-generated data 
+                    and also supports iCloud backup.
                 }
             }
             
             @Choice(isCorrect: false) {
-                tmp - 임시 파일 디렉토리
+                tmp - Temporary file directory
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    tmp는 ImagePlayground가 이미 사용하는 
-                    임시 위치와 동일하게 불안정합니다.
+                @Justification(reaction: "Incorrect.") {
+                    tmp is just as unstable as the temporary location 
+                    that ImagePlayground already uses.
                 }
             }
         }

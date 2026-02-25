@@ -1,0 +1,159 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Batch Processing") {
+        Learn how to efficiently process multiple images with batch operations.
+        
+        Process large amounts of images optimally with ExtensibleImage's batch API.
+        
+        @Image(source: "batch-processing-hero.png", alt: "Batch Processing Example")
+    }
+    
+    @Section(title: "Batch Operation Basics") {
+        @ContentAndMedia {
+            `ExtensibleImage.BatchProcessor` efficiently utilizes resources when applying the same operation to multiple images.
+            
+            It reuses Neural Engine warmup and optimizes memory allocation.
+        }
+        
+        @Steps {
+            @Step {
+                Create a BatchProcessor and prepare the list of images to process.
+                
+                @Code(name: "BatchBasics.swift", file: "08-batch-01.swift")
+            }
+            
+            @Step {
+                Define operations to process and add them to the batch.
+                
+                @Code(name: "BatchBasics.swift", file: "08-batch-02.swift")
+            }
+            
+            @Step {
+                Execute the batch and handle each result.
+                
+                @Code(name: "BatchBasics.swift", file: "08-batch-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Progress Tracking") {
+        @ContentAndMedia {
+            It's important to show users the progress during bulk processing.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a delegate that tracks progress.
+                
+                @Code(name: "Progress.swift", file: "08-batch-04.swift")
+            }
+            
+            @Step {
+                Integrate with ProgressView in SwiftUI.
+                
+                @Code(name: "Progress.swift", file: "08-batch-05.swift")
+            }
+            
+            @Step {
+                Display individual image statuses in a list.
+                
+                @Code(name: "Progress.swift", file: "08-batch-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Error Handling and Retry") {
+        @ContentAndMedia {
+            Continue processing without stopping the entire operation even if some images fail during batch processing.
+        }
+        
+        @Steps {
+            @Step {
+                Set up error handling strategy.
+                
+                @Code(name: "ErrorHandling.swift", file: "08-batch-07.swift")
+            }
+            
+            @Step {
+                Implement logic to retry only failed items.
+                
+                @Code(name: "ErrorHandling.swift", file: "08-batch-08.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Concurrency Control") {
+        @ContentAndMedia {
+            Balance memory usage and processing speed by adjusting the number of images to process simultaneously.
+        }
+        
+        @Steps {
+            @Step {
+                Set the concurrency level.
+                
+                @Code(name: "Concurrency.swift", file: "08-batch-09.swift")
+            }
+            
+            @Step {
+                Dynamically adjust concurrency based on device performance.
+                
+                @Code(name: "Concurrency.swift", file: "08-batch-10.swift")
+            }
+            
+            @Step {
+                Implement cancellable batch operations.
+                
+                @Code(name: "Concurrency.swift", file: "08-batch-11.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pipeline Configuration") {
+        @ContentAndMedia {
+            Configure complex processing pipelines by chaining multiple operations.
+        }
+        
+        @Steps {
+            @Step {
+                Chain multiple operations sequentially.
+                
+                @Code(name: "Pipeline.swift", file: "08-batch-12.swift")
+            }
+            
+            @Step {
+                Configure pipelines with conditional branching.
+                
+                @Code(name: "Pipeline.swift", file: "08-batch-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you prevent memory exhaustion when batch processing 100 high-resolution images?
+            
+            @Choice(isCorrect: false) {
+                Process as fast as possible with .concurrency(.unlimited)
+                
+                @Justification(reaction: "Try again.") {
+                    Unlimited concurrency rapidly consumes memory and can cause crashes.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Use .concurrency(.limited(4)) with .memoryPolicy(.conservative) together
+                
+                @Justification(reaction: "Correct!") {
+                    Limited concurrency and conservative memory policy enable stable processing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Preload all images into memory
+                
+                @Justification(reaction: "Try again.") {
+                    This causes memory exhaustion. You should use lazy loading.
+                }
+            }
+        }
+    }
+}

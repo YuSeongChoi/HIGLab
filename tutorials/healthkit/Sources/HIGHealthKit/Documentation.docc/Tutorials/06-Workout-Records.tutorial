@@ -1,0 +1,231 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Workout Records (HKWorkout)") {
+        Query workout session records using HKWorkout.
+        Handle detailed information like workout type, calories burned, distance, etc.
+    }
+    
+    @Section(title: "Understanding HKWorkout") {
+        @ContentAndMedia {
+            **HKWorkout** is a special sample type representing an entire workout session.
+            It includes start/end time, workout type, calories burned, distance, etc.
+        }
+        
+        @Steps {
+            @Step {
+                **HKWorkout Structure**
+                
+                HKWorkout is a subclass of HKSample with
+                additional properties like workoutActivityType, totalEnergyBurned,
+                and totalDistance.
+                
+                @Code(name: "WorkoutStructure.swift", file: "06-workout-structure.swift")
+            }
+            
+            @Step {
+                **Workout Activity Types**
+                
+                HKWorkoutActivityType defines over 80 workout types.
+                Includes running, walking, swimming, cycling, yoga, etc.
+                
+                @Code(name: "ActivityTypes.swift", file: "06-activity-types.swift")
+            }
+            
+            @Step {
+                **Request Permission**
+                
+                Use HKWorkoutType.workoutType() to request
+                workout data read permission.
+                
+                @Code(name: "WorkoutPermission.swift", file: "06-workout-permission.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Querying Workout Records") {
+        @ContentAndMedia {
+            Use HKSampleQuery to query workout records.
+            You can filter by specific workout type or query by period.
+        }
+        
+        @Steps {
+            @Step {
+                **Query Recent Workouts**
+                
+                Query workouts from the last 7 days in reverse chronological order.
+                
+                @Code(name: "RecentWorkouts.swift", file: "06-recent-workouts.swift")
+            }
+            
+            @Step {
+                **Filter by Specific Workout Type**
+                
+                Filter for specific types like only running.
+                Use HKQuery.predicateForWorkouts.
+                
+                @Code(name: "FilterByType.swift", file: "06-filter-by-type.swift")
+            }
+            
+            @Step {
+                **Extract Workout Details**
+                
+                Extract calories burned, distance, average heart rate, etc.
+                Use statistics(for:) to query related statistics.
+                
+                @Code(name: "WorkoutDetails.swift", file: "06-workout-details.swift")
+            }
+            
+            @Step {
+                **Workout Route Data (Optional)**
+                
+                GPS route data for running, cycling, etc. can be queried.
+                Use HKWorkoutRouteBuilder.
+                
+                @Code(name: "WorkoutRoute.swift", file: "06-workout-route.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Workout List UI") {
+        @ContentAndMedia {
+            Implement UI that displays workout records in a list format.
+            Display icons and statistics for each workout type.
+        }
+        
+        @Steps {
+            @Step {
+                **Workout Model**
+                
+                Transform HKWorkout data into a UI-suitable format.
+                
+                @Code(name: "WorkoutModel.swift", file: "06-workout-model.swift")
+            }
+            
+            @Step {
+                **Workout Type Icons**
+                
+                Return appropriate SF Symbol based on HKWorkoutActivityType.
+                
+                @Code(name: "WorkoutIcon.swift", file: "06-workout-icon.swift")
+            }
+            
+            @Step {
+                **WorkoutRow Component**
+                
+                Create a row View that displays each workout record.
+                
+                @Code(name: "WorkoutRow.swift", file: "06-workout-row.swift")
+            }
+            
+            @Step {
+                **WorkoutsListView**
+                
+                Complete the View that displays the entire workout list.
+                
+                @Code(name: "WorkoutsListView.swift", file: "06-workouts-list-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HealthManager Integration") {
+        @ContentAndMedia {
+            Add workout query functionality to HealthManager.
+        }
+        
+        @Steps {
+            @Step {
+                **Add fetchWorkouts Method**
+                
+                Add workout query logic to HealthManager.
+                
+                @Code(name: "HealthManager.swift", file: "06-health-manager-workouts.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you check calories burned in HKWorkout?
+            
+            @Choice(isCorrect: true) {
+                totalEnergyBurned property
+                
+                @Justification(reaction: "Correct!") {
+                    totalEnergyBurned is an HKQuantity that can be
+                    converted to .kilocalorie() unit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                quantity property
+                
+                @Justification(reaction: "Not quite") {
+                    HKWorkout doesn't have a quantity property.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Requires a separate query
+                
+                @Justification(reaction: "Not quite") {
+                    totalEnergyBurned is provided directly.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How to query only a specific workout type (e.g., running)?
+            
+            @Choice(isCorrect: true) {
+                HKQuery.predicateForWorkouts(with: .running)
+                
+                @Justification(reaction: "Correct!") {
+                    predicateForWorkouts can filter for specific activity types.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Query with HKQuantityType(.running)
+                
+                @Justification(reaction: "Not quite") {
+                    Workouts use HKWorkoutType.workoutType().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Filter in Swift after receiving results
+                
+                @Justification(reaction: "Not quite") {
+                    Possible, but using Predicate is more efficient.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How many workout types are included in HKWorkoutActivityType?
+            
+            @Choice(isCorrect: true) {
+                Over 80
+                
+                @Justification(reaction: "Correct!") {
+                    Various workouts like running, swimming, yoga, golf are defined.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Less than 10
+                
+                @Justification(reaction: "Not quite") {
+                    Apple supports a very diverse range of workout types.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Users must define them
+                
+                @Justification(reaction: "Not quite") {
+                    Use types pre-defined by Apple.
+                }
+            }
+        }
+    }
+}

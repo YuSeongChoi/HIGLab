@@ -1,26 +1,26 @@
 # ``HIGPencilKit``
 
-PencilKit 프레임워크를 활용한 드로잉 앱 구현 가이드입니다.
+A guide to implementing drawing apps using the PencilKit framework.
 
 ## Overview
 
-이 튜토리얼에서는 Apple의 PencilKit 프레임워크를 사용하여
-전문가 수준의 드로잉 앱을 만드는 방법을 단계별로 배웁니다.
+In this tutorial, you'll learn step-by-step how to create
+a professional-grade drawing app using Apple's PencilKit framework.
 
-PencilKit은 iOS 13에서 도입된 프레임워크로,
-Apple Pencil과 손가락 입력을 모두 지원하는 강력한 드로잉 엔진입니다.
+PencilKit is a framework introduced in iOS 13,
+providing a powerful drawing engine that supports both Apple Pencil and finger input.
 
-### 학습 내용
+### What You'll Learn
 
-- PKCanvasView를 활용한 드로잉 캔버스 구성
-- PKToolPicker로 도구 팔레트 통합
-- 드로잉 데이터 저장 및 불러오기
-- 드로잉을 이미지로 변환 및 공유
-- 손글씨 인식 (PKDrawing의 strokes 분석)
-- 손가락과 Apple Pencil 입력 구분
-- Ruler 도구로 정확한 직선 그리기
-- 드로잉 편집 및 선택 기능
-- 실시간 협업 드로잉 구현
+- Setting up a drawing canvas with PKCanvasView
+- Integrating the tool palette with PKToolPicker
+- Saving and loading drawing data
+- Converting and sharing drawings as images
+- Handwriting recognition (analyzing PKDrawing strokes)
+- Distinguishing between finger and Apple Pencil input
+- Drawing precise straight lines with the Ruler tool
+- Drawing editing and selection features
+- Implementing real-time collaborative drawing
 
 ## Topics
 

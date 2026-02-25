@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Button UI (ASAuthorizationAppleIDButton)") {
+        Implement a Sign in with Apple button that complies 
+        with Apple's Human Interface Guidelines.
+        
+        @Image(source: "apple-button.png", alt: "Sign in with Apple Button")
+    }
+    
+    @Section(title: "Introduction to ASAuthorizationAppleIDButton") {
+        @ContentAndMedia {
+            ASAuthorizationAppleIDButton is the official 
+            login button provided by Apple.
+            
+            - **HIG Compliant**: Design that meets Apple guidelines
+            - **Auto-Localization**: Text changes based on system language
+            - **Various Styles**: Light/dark themes, multiple button types
+            - **Accessibility Support**: Automatic VoiceOver, Dynamic Type support
+        }
+        
+        @Steps {
+            @Step {
+                Create a basic button.
+                Initialize with type and style.
+                
+                @Code(name: "BasicButton.swift", file: "03-01-basic-button.swift")
+            }
+            
+            @Step {
+                Connect an action to the button.
+                Configure it to start the authentication flow on tap.
+                
+                @Code(name: "ButtonAction.swift", file: "03-02-button-action.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Choosing Button Type") {
+        @ContentAndMedia {
+            Select the appropriate button type for the situation.
+            
+            | Type | Usage |
+            |-----|------|
+            | `.signIn` | General login |
+            | `.continue` | Continue existing account |
+            | `.signUp` | Sign up |
+            | `.default` | Default (Sign in) |
+        }
+        
+        @Steps {
+            @Step {
+                Use the .signUp type on screens 
+                for acquiring new users.
+                
+                @Code(name: "SignUpButton.swift", file: "03-03-signup-button.swift")
+            }
+            
+            @Step {
+                Provide a natural UX for returning users 
+                with the .continue type.
+                
+                @Code(name: "ContinueButton.swift", file: "03-04-continue-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Customizing Button Style") {
+        @ContentAndMedia {
+            Select a style that matches your app's design theme.
+            
+            - `.black`: Black background, white text
+            - `.white`: White background, black text  
+            - `.whiteOutline`: White background, black border
+        }
+        
+        @Steps {
+            @Step {
+                The .white style is suitable on dark backgrounds.
+                Make the button stand out.
+                
+                @Code(name: "WhiteStyle.swift", file: "03-05-white-style.swift")
+            }
+            
+            @Step {
+                Use .black or .whiteOutline styles 
+                on light backgrounds.
+                
+                @Code(name: "DarkBackgroundStyle.swift", file: "03-06-dark-style.swift")
+            }
+            
+            @Step {
+                Adjust cornerRadius to harmonize 
+                with your app design.
+                
+                @Code(name: "CornerRadius.swift", file: "03-07-corner-radius.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using in SwiftUI") {
+        @ContentAndMedia {
+            In SwiftUI, use SignInWithAppleButton.
+            Native implementation is possible without UIViewRepresentable.
+        }
+        
+        @Steps {
+            @Step {
+                SignInWithAppleButton is a SwiftUI-specific button.
+                It provides onRequest and onCompletion closures.
+                
+                @Code(name: "SwiftUIButton.swift", file: "03-08-swiftui-button.swift")
+            }
+            
+            @Step {
+                Specify the button type with the label parameter.
+                Choose from .signIn, .continue, or .signUp.
+                
+                @Code(name: "SwiftUILabel.swift", file: "03-09-swiftui-label.swift")
+            }
+            
+            @Step {
+                Change the style with the 
+                signInWithAppleButtonStyle modifier.
+                
+                @Code(name: "SwiftUIStyle.swift", file: "03-10-swiftui-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HIG Guidelines Compliance") {
+        @ContentAndMedia {
+            Requirements from Apple Human Interface Guidelines 
+            for Sign in with Apple buttons:
+            
+            - Minimum width of 140pt or more
+            - Same size or larger than other login buttons
+            - Place at the top of the screen or in a prominent location
+            - No custom buttons (use official buttons only)
+        }
+        
+        @Steps {
+            @Step {
+                Place buttons at the same size as other login buttons.
+                It's best to place Sign in with Apple at the top.
+                
+                @Code(name: "ButtonPlacement.swift", file: "03-11-button-placement.swift")
+            }
+            
+            @Step {
+                Set responsive sizing with 
+                Auto Layout constraints.
+                
+                @Code(name: "ResponsiveSize.swift", file: "03-12-responsive-size.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which button type is appropriate for returning users?
+            
+            @Choice(isCorrect: false) {
+                .signUp
+                
+                @Justification(reaction: "Think again.") {
+                    .signUp is suitable for new user registration.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .continue
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    Displays as "Continue with Apple" 
+                    which feels natural for existing users.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .signIn
+                
+                @Justification(reaction: "Usable but not optimal.") {
+                    .continue is more appropriate for returning user UX.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What view is used to implement the Sign in with Apple 
+            button in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                SignInWithAppleButton
+                
+                @Justification(reaction: "Correct! ✨") {
+                    A SwiftUI-native button that doesn't 
+                    require UIViewRepresentable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Wrap ASAuthorizationAppleIDButton with UIViewRepresentable
+                
+                @Justification(reaction: "Possible but unnecessary.") {
+                    It's better to use SignInWithAppleButton 
+                    directly in SwiftUI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Button with Apple logo
+                
+                @Justification(reaction: "HIG violation.") {
+                    Custom buttons violate Apple guidelines.
+                }
+            }
+        }
+    }
+}

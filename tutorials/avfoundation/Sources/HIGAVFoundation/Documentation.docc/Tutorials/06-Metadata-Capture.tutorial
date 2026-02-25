@@ -1,0 +1,189 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Metadata Capture (Barcodes)") {
+        Scan barcodes and QR codes with AVCaptureMetadataOutput.
+        Recognize and process metadata in real-time.
+    }
+    
+    @Section(title: "Metadata Output Setup") {
+        @ContentAndMedia {
+            AVCaptureMetadataOutput extracts metadata from video frames.
+            It supports various types including barcodes, QR codes, and faces.
+            
+            **Supported Barcode Types:**
+            - QR code (.qr)
+            - EAN-13 (.ean13)
+            - Code 128 (.code128)
+            - And many more
+        }
+        
+        @Steps {
+            @Step {
+                Add metadataOutput property.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-output-property.swift")
+            }
+            
+            @Step {
+                Add metadataOutput to the session.
+                Set up a delegate queue for metadata processing.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-add-metadata-output.swift")
+            }
+            
+            @Step {
+                Set metadata types to recognize.
+                Selectively enable only needed barcode types.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Processing Barcode Recognition") {
+        @ContentAndMedia {
+            Implement AVCaptureMetadataOutputObjectsDelegate 
+            to process recognized barcode information.
+        }
+        
+        @Steps {
+            @Step {
+                Adopt AVCaptureMetadataOutputObjectsDelegate.
+                Callback is called when metadata is detected.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-metadata-delegate.swift")
+            }
+            
+            @Step {
+                Parse recognized metadata.
+                Extract values from AVMetadataMachineReadableCodeObject.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-parse-metadata.swift")
+            }
+            
+            @Step {
+                Get barcode position information.
+                Get barcode corner coordinates from the corners property.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-barcode-corners.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Displaying Scan Area") {
+        @ContentAndMedia {
+            Display a highlight at the recognized barcode position.
+            Provide visual feedback to the user.
+        }
+        
+        @Steps {
+            @Step {
+                Calculate barcode bounding box.
+                Convert to PreviewLayer coordinate system.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-bounding-box.swift")
+            }
+            
+            @Step {
+                Draw highlight view.
+                Overlay a rectangle at the barcode position with SwiftUI.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-highlight-view.swift")
+            }
+            
+            @Step {
+                Add vibration feedback on scan success.
+                Provide haptic feedback with UINotificationFeedbackGenerator.
+                
+                @Code(name: "BarcodeScanner.swift", file: "06-haptic-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complete Barcode Scanner") {
+        @ContentAndMedia {
+            Complete the overall barcode scanner UI.
+            Display scan results and add copy functionality.
+        }
+        
+        @Steps {
+            @Step {
+                Configure the overall layout of the scanner view.
+                Arrange preview, highlight, and result display areas.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-scanner-layout.swift")
+            }
+            
+            @Step {
+                Add scan result sheet.
+                Display barcode value and type.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-result-sheet.swift")
+            }
+            
+            @Step {
+                Add automatic URL opening feature.
+                Allow opening QR code URLs in Safari.
+                
+                @Code(name: "BarcodeScannerView.swift", file: "06-open-url.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What metadataObjectTypes value is set to recognize QR codes?
+            
+            @Choice(isCorrect: false) {
+                `.barcode`
+                
+                @Justification(reaction: "Think again.") {
+                    A type called .barcode doesn't exist.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.qr`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    QR code is specified as AVMetadataObject.ObjectType.qr.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.qrCode`
+                
+                @Justification(reaction: "Think again.") {
+                    The correct type name is .qr.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which delegate method is called on barcode recognition?
+            
+            @Choice(isCorrect: true) {
+                `metadataOutput(_:didOutput:from:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    This method receives an array of recognized metadata objects.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `metadataOutput(_:didDetect:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This is not the correct method signature.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `captureOutput(_:didOutput:from:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This is a delegate method for AVCaptureVideoDataOutput.
+                }
+            }
+        }
+    }
+}

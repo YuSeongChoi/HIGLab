@@ -1,144 +1,144 @@
 @Tutorial(time: 20) {
-    @Intro(title: "PDF 문서 로드") {
-        다양한 소스에서 PDF 문서를 로드하고 
-        로딩 상태와 에러를 적절히 처리하는 방법을 배웁니다.
+    @Intro(title: "Loading PDF Documents") {
+        Learn how to load PDF documents from various sources 
+        and properly handle loading states and errors.
         
-        @Image(source: "loading-documents.png", alt: "PDF 문서 로드")
+        @Image(source: "loading-documents.png", alt: "Loading PDF Documents")
     }
     
-    @Section(title: "Bundle에서 로드하기") {
+    @Section(title: "Loading from Bundle") {
         @ContentAndMedia {
-            앱에 포함된 PDF 파일을 로드하는 가장 간단한 방법입니다.
+            This is the simplest way to load PDF files included in your app.
             
-            Bundle.main.url(forResource:withExtension:)로 URL을 얻고
-            PDFDocument(url:)로 문서를 생성합니다.
+            Get the URL with Bundle.main.url(forResource:withExtension:) 
+            and create a document with PDFDocument(url:).
         }
         
         @Steps {
             @Step {
-                Bundle에서 PDF 파일의 URL을 가져옵니다.
-                파일이 없을 경우를 대비해 guard let을 사용합니다.
+                Get the URL of a PDF file from the Bundle.
+                Use guard let to handle cases where the file doesn't exist.
                 
                 @Code(name: "LoadFromBundle.swift", file: "03-01-bundle.swift")
             }
             
             @Step {
-                확장자가 다른 경우나 하위 디렉토리에 있는 경우를 처리합니다.
-                subdirectory 매개변수를 활용합니다.
+                Handle cases with different extensions or files in subdirectories.
+                Use the subdirectory parameter.
                 
                 @Code(name: "BundleSubdirectory.swift", file: "03-02-subdirectory.swift")
             }
         }
     }
     
-    @Section(title: "URL에서 로드하기") {
+    @Section(title: "Loading from URL") {
         @ContentAndMedia {
-            원격 서버나 클라우드 스토리지의 PDF를 로드할 수 있습니다.
+            You can load PDFs from remote servers or cloud storage.
             
-            URLSession을 사용해 비동기로 다운로드하고,
-            Data로부터 PDFDocument를 생성합니다.
+            Download asynchronously using URLSession 
+            and create a PDFDocument from the Data.
         }
         
         @Steps {
             @Step {
-                URLSession으로 PDF 데이터를 비동기 다운로드합니다.
-                async/await 패턴을 사용합니다.
+                Download PDF data asynchronously with URLSession.
+                Use the async/await pattern.
                 
                 @Code(name: "LoadFromURL.swift", file: "03-03-remote-url.swift")
             }
             
             @Step {
-                다운로드 진행률을 표시합니다.
-                URLSessionDownloadDelegate를 구현하거나 
-                bytes(from:) 메서드를 사용합니다.
+                Display download progress.
+                Implement URLSessionDownloadDelegate or 
+                use the bytes(from:) method.
                 
                 @Code(name: "DownloadProgress.swift", file: "03-04-progress.swift")
             }
             
             @Step {
-                다운로드한 PDF를 캐시에 저장하여 
-                오프라인에서도 접근 가능하게 합니다.
+                Save downloaded PDFs to cache 
+                for offline access.
                 
                 @Code(name: "CacheDocument.swift", file: "03-05-cache.swift")
             }
         }
     }
     
-    @Section(title: "파일 선택기에서 로드하기") {
+    @Section(title: "Loading from File Picker") {
         @ContentAndMedia {
-            사용자가 직접 PDF 파일을 선택할 수 있게 합니다.
+            Allow users to select PDF files directly.
             
-            UIDocumentPickerViewController 또는 
-            SwiftUI의 fileImporter를 사용합니다.
+            Use UIDocumentPickerViewController or 
+            SwiftUI's fileImporter.
         }
         
         @Steps {
             @Step {
-                UIKit에서 UIDocumentPickerViewController를 사용합니다.
-                public.pdf UTI를 지정하여 PDF만 선택되게 합니다.
+                Use UIDocumentPickerViewController in UIKit.
+                Specify the public.pdf UTI to select only PDFs.
                 
                 @Code(name: "DocumentPicker.swift", file: "03-06-document-picker.swift")
             }
             
             @Step {
-                SwiftUI에서 fileImporter 모디파이어를 사용합니다.
-                더 간결한 코드로 같은 기능을 구현합니다.
+                Use the fileImporter modifier in SwiftUI.
+                Implement the same functionality with more concise code.
                 
                 @Code(name: "FileImporter.swift", file: "03-07-file-importer.swift")
             }
             
             @Step {
-                선택된 파일에 대한 보안 범위 URL 접근을 처리합니다.
-                startAccessingSecurityScopedResource()를 호출해야 합니다.
+                Handle security-scoped URL access for selected files.
+                You must call startAccessingSecurityScopedResource().
                 
                 @Code(name: "SecurityScopedAccess.swift", file: "03-08-security-scope.swift")
             }
         }
     }
     
-    @Section(title: "Data에서 로드하기") {
+    @Section(title: "Loading from Data") {
         @ContentAndMedia {
-            메모리의 Data 객체로부터 PDFDocument를 생성할 수 있습니다.
+            You can create a PDFDocument from a Data object in memory.
             
-            네트워크 응답, 클립보드, 또는 다른 앱에서 
-            공유받은 데이터를 처리할 때 유용합니다.
+            Useful for processing data from network responses, 
+            clipboard, or shared from other apps.
         }
         
         @Steps {
             @Step {
-                Data로부터 PDFDocument를 직접 생성합니다.
+                Create a PDFDocument directly from Data.
                 
                 @Code(name: "LoadFromData.swift", file: "03-09-from-data.swift")
             }
             
             @Step {
-                Base64 인코딩된 PDF 데이터를 처리합니다.
-                웹 API 응답에서 자주 사용되는 형식입니다.
+                Process Base64-encoded PDF data.
+                A format commonly used in web API responses.
                 
                 @Code(name: "Base64PDF.swift", file: "03-10-base64.swift")
             }
         }
     }
     
-    @Section(title: "에러 처리와 유효성 검사") {
+    @Section(title: "Error Handling and Validation") {
         @ContentAndMedia {
-            PDF 로드 실패에 대비한 적절한 에러 처리가 필요합니다.
+            Proper error handling for PDF loading failures is essential.
             
-            손상된 파일, 지원되지 않는 버전, 암호화 등 
-            다양한 실패 원인을 사용자에게 안내합니다.
+            Inform users about various failure causes such as 
+            corrupted files, unsupported versions, encryption, etc.
         }
         
         @Steps {
             @Step {
-                문서 로드 결과를 검증하고 
-                적절한 에러 메시지를 표시합니다.
+                Validate document loading results and 
+                display appropriate error messages.
                 
                 @Code(name: "ValidateDocument.swift", file: "03-11-validate.swift")
             }
             
             @Step {
-                암호화된 PDF의 경우 비밀번호 입력을 요청합니다.
-                isEncrypted와 isLocked 상태를 확인합니다.
+                Request password input for encrypted PDFs.
+                Check the isEncrypted and isLocked states.
                 
                 @Code(name: "HandleEncrypted.swift", file: "03-12-encrypted.swift")
             }
@@ -147,91 +147,91 @@
     
     @Assessments {
         @MultipleChoice {
-            보안 범위 URL에서 파일을 읽기 전에 반드시 호출해야 하는 메서드는?
+            Which method must be called before reading a file from a security-scoped URL?
             
             @Choice(isCorrect: true) {
                 startAccessingSecurityScopedResource()
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    Document Picker에서 얻은 URL은 보안 범위 URL이며,
-                    이 메서드를 호출해야 파일에 접근할 수 있습니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    URLs obtained from Document Picker are security-scoped URLs, 
+                    and you must call this method to access the file.
                 }
             }
             
             @Choice(isCorrect: false) {
                 requestFileAccess()
                 
-                @Justification(reaction: "그런 메서드는 없습니다.") {
-                    iOS의 보안 범위 URL 접근에는 
-                    특정 메서드명이 사용됩니다.
+                @Justification(reaction: "There is no such method.") {
+                    iOS uses a specific method name for 
+                    security-scoped URL access.
                 }
             }
             
             @Choice(isCorrect: false) {
                 grantReadPermission()
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    URL의 보안 범위 접근과 관련된 
-                    정확한 API를 확인해보세요.
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact API related to 
+                    URL security-scoped access.
                 }
             }
         }
         
         @MultipleChoice {
-            SwiftUI에서 사용자가 PDF 파일을 선택하게 하는 모디파이어는?
+            Which modifier allows users to select a PDF file in SwiftUI?
             
             @Choice(isCorrect: false) {
                 .documentPicker
                 
-                @Justification(reaction: "아쉽습니다.") {
-                    SwiftUI에는 다른 이름의 모디파이어가 있습니다.
+                @Justification(reaction: "Not quite.") {
+                    SwiftUI has a modifier with a different name.
                 }
             }
             
             @Choice(isCorrect: true) {
                 .fileImporter
                 
-                @Justification(reaction: "맞습니다! ✨") {
-                    fileImporter 모디파이어로 파일 선택 UI를 표시하고
-                    선택된 파일의 URL을 받을 수 있습니다.
+                @Justification(reaction: "That's right! ✨") {
+                    The fileImporter modifier displays a file selection UI 
+                    and returns the URL of the selected file.
                 }
             }
             
             @Choice(isCorrect: false) {
                 .filePicker
                 
-                @Justification(reaction: "틀렸습니다.") {
-                    정확한 SwiftUI 모디파이어명을 확인해보세요.
+                @Justification(reaction: "Incorrect.") {
+                    Check the exact SwiftUI modifier name.
                 }
             }
         }
         
         @MultipleChoice {
-            PDFDocument가 암호로 보호되어 있는지 확인하는 속성은?
+            Which property checks if a PDFDocument is password-protected?
             
             @Choice(isCorrect: false) {
                 isProtected
                 
-                @Justification(reaction: "그런 속성은 없습니다.") {
-                    PDFDocument의 정확한 속성명을 확인해보세요.
+                @Justification(reaction: "There is no such property.") {
+                    Check the exact property name in PDFDocument.
                 }
             }
             
             @Choice(isCorrect: true) {
                 isEncrypted
                 
-                @Justification(reaction: "정확합니다! 🎯") {
-                    isEncrypted는 문서가 암호화되어 있는지 나타내고,
-                    isLocked는 현재 잠겨 있는지를 나타냅니다.
+                @Justification(reaction: "Correct! 🎯") {
+                    isEncrypted indicates whether the document is encrypted, 
+                    and isLocked indicates whether it's currently locked.
                 }
             }
             
             @Choice(isCorrect: false) {
                 hasPassword
                 
-                @Justification(reaction: "아쉽습니다.") {
-                    PDFDocument API에서 사용하는 
-                    정확한 용어를 확인해보세요.
+                @Justification(reaction: "Not quite.") {
+                    Check the exact terminology used 
+                    in the PDFDocument API.
                 }
             }
         }

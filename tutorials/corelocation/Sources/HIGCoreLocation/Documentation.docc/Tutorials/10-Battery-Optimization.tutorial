@@ -1,0 +1,261 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Battery Optimization Strategies") {
+        Learn various optimization strategies to minimize battery consumption,
+        the biggest challenge for location tracking apps.
+    }
+    
+    @Section(title: "Trade-off Between Accuracy and Battery") {
+        @ContentAndMedia {
+            Higher accuracy consumes more battery.
+            The key is adjusting accuracy based on the situation.
+        }
+        
+        @Steps {
+            @Step {
+                **Battery Impact by Accuracy**
+                
+                Approximate battery consumption for each accuracy option:
+                - `bestForNavigation`: Highest (GPS + sensor fusion)
+                - `best`: High (maximum GPS usage)
+                - `nearestTenMeters`: Medium
+                - `hundredMeters`: Low (Wi-Fi/cellular focused)
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-accuracy-impact.swift")
+            }
+            
+            @Step {
+                **Dynamic Accuracy Adjustment**
+                
+                High accuracy during running, lower accuracy when paused,
+                pause tracking when stationary for a long time.
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-dynamic-accuracy.swift")
+            }
+            
+            @Step {
+                **Using significantLocationChanges**
+                
+                When only approximate location is needed,
+                use `startMonitoringSignificantLocationChanges()`.
+                Battery consumption is very low.
+                
+                @Code(name: "BatteryOptimizer.swift", file: "10-significant-changes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Update Frequency Optimization") {
+        @ContentAndMedia {
+            Reducing unnecessary location updates
+            is key to battery savings.
+        }
+        
+        @Steps {
+            @Step {
+                **Optimizing distanceFilter**
+                
+                Dynamically adjust distanceFilter based on running speed.
+                Larger values can be used when running fast.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-distance-filter.swift")
+            }
+            
+            @Step {
+                **Skipping Unnecessary Updates**
+                
+                Ignore locations with low accuracy or nearly identical to previous location
+                to reduce processing load.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-skip-updates.swift")
+            }
+            
+            @Step {
+                **Batch Processing**
+                
+                Collect location data instead of processing immediately.
+                Reduce UI update and save frequency for efficiency.
+                
+                @Code(name: "UpdateOptimizer.swift", file: "10-batch-processing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Background Efficiency") {
+        @ContentAndMedia {
+            Location tracking in background is especially battery sensitive.
+            Minimize unnecessary work.
+        }
+        
+        @Steps {
+            @Step {
+                **Lowering Accuracy in Background**
+                
+                Lower accuracy by one level when transitioning to background.
+                Save battery without being noticeable to the user.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-bg-accuracy.swift")
+            }
+            
+            @Step {
+                **Using Deferred Updates**
+                
+                Let iOS batch location updates for delivery at once
+                to reduce CPU wake frequency.
+                
+                Note: On recent iOS versions, the system automatically optimizes this.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-deferred.swift")
+            }
+            
+            @Step {
+                **Setting activityType Correctly**
+                
+                Setting activityType correctly allows the system
+                to optimize location tracking for that activity.
+                
+                @Code(name: "BackgroundOptimizer.swift", file: "10-activity-type.swift")
+            }
+        }
+    }
+    
+    @Section(title: "User Experience Considerations") {
+        @ContentAndMedia {
+            Along with battery optimization, transparently inform users
+            about battery usage and give them control.
+        }
+        
+        @Steps {
+            @Step {
+                **Monitoring Battery Status**
+                
+                Adjust tracking strategy based on device battery level.
+                Suggest power saving mode when battery is low.
+                
+                @Code(name: "BatteryMonitor.swift", file: "10-battery-level.swift")
+            }
+            
+            @Step {
+                **Providing Power Saving Options**
+                
+                Provide user-selectable power saving modes:
+                - High Performance: Best accuracy
+                - Balanced: Appropriate accuracy and battery
+                - Power Saver: Battery priority
+                
+                @Code(name: "PowerModeSettings.swift", file: "10-power-modes.swift")
+            }
+            
+            @Step {
+                **Battery Usage Statistics**
+                
+                Calculate and display approximate battery consumption per run.
+                Let users be aware and plan accordingly.
+                
+                @Code(name: "BatteryStatsView.swift", file: "10-battery-stats.swift")
+            }
+            
+            @Step {
+                **Complete Running Tracker**
+                
+                Complete the full running tracker app
+                integrating all features learned.
+                
+                @Code(name: "RunningTrackerApp.swift", file: "10-final-app.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the most battery-efficient location tracking method?
+            
+            @Choice(isCorrect: true) {
+                startMonitoringSignificantLocationChanges()
+                
+                @Justification(reaction: "Correct!") {
+                    Significant location changes only notifies on cellular tower changes,
+                    so battery consumption is very low.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                startUpdatingLocation() with kCLLocationAccuracyBest
+                
+                @Justification(reaction: "Not quite") {
+                    This method is most accurate but also has the highest battery consumption.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Setting distanceFilter to 1
+                
+                @Justification(reaction: "Not quite") {
+                    Receiving updates every 1 meter causes
+                    very frequent processing and rapid battery drain.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the benefit of setting activityType correctly?
+            
+            @Choice(isCorrect: true) {
+                The system optimizes location tracking for that activity
+                
+                @Justification(reaction: "Correct!") {
+                    Setting .fitness optimizes for walking/running patterns,
+                    .automotive optimizes for driving patterns.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Accuracy is automatically set to maximum
+                
+                @Justification(reaction: "Not quite") {
+                    activityType is an optimization hint,
+                    it doesn't force accuracy settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Background tracking is automatically enabled
+                
+                @Justification(reaction: "Not quite") {
+                    Background tracking requires separate configuration.
+                    It's not related to activityType.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What strategy is recommended when battery is below 20%?
+            
+            @Choice(isCorrect: true) {
+                Lower accuracy and reduce update frequency
+                
+                @Justification(reaction: "Correct!") {
+                    Switch to power saving mode to conserve battery
+                    while allowing the run to continue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Stop location tracking completely
+                
+                @Justification(reaction: "Not quite") {
+                    Suddenly stopping would break the route record.
+                    It's better to continue recording even with lower accuracy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Continue with no changes
+                
+                @Justification(reaction: "Not quite") {
+                    Maintaining the same settings when battery is low
+                    could cause the battery to die during the run.
+                }
+            }
+        }
+    }
+}

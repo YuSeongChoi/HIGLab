@@ -1,0 +1,180 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Setting Up ModelContainer & ModelContext") {
+        ModelContainer is where data is stored,
+        and ModelContext is the workspace for manipulating data.
+        
+        Learn how to connect SwiftData to your SwiftUI app.
+    }
+    
+    @Section(title: "ModelContainer Setup") {
+        @ContentAndMedia {
+            ModelContainer is your app's data store.
+            Typically, you create it once at the app entry point and share it across the entire app.
+            
+            You can easily set it up with SwiftUI's `.modelContainer` modifier.
+        }
+        
+        @Steps {
+            @Step {
+                **The Simplest Setup**
+                
+                Call `.modelContainer(for:)` at the app entry point.
+                SwiftData setup is complete in just one line.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-simple.swift")
+            }
+            
+            @Step {
+                **Registering Multiple Models**
+                
+                Pass an array when using multiple @Models in your app.
+                We'll add a Category model later.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-multiple.swift")
+            }
+            
+            @Step {
+                **Custom Configuration**
+                
+                Use ModelConfiguration for fine-grained control like
+                memory-only storage, read-only mode, App Group sharing, etc.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-config.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using ModelContext") {
+        @ContentAndMedia {
+            ModelContext is the workspace where actual CRUD operations happen.
+            In SwiftUI views, it's automatically injected through the Environment.
+        }
+        
+        @Steps {
+            @Step {
+                **Getting from Environment**
+                
+                Access the context with `@Environment(\.modelContext)`.
+                It's automatically available if a parent view has set `.modelContainer`.
+                
+                @Code(name: "ContentView.swift", file: "03-context-environment.swift")
+            }
+            
+            @Step {
+                **mainContext vs New Context**
+                
+                Use mainContext in SwiftUI views.
+                Create a new Context for background work.
+                
+                @Code(name: "BackgroundWork.swift", file: "03-context-background.swift")
+            }
+            
+            @Step {
+                **Understanding Autosave**
+                
+                SwiftData has autosave enabled by default.
+                Explicit save() is unnecessary in most cases.
+                
+                @Code(name: "AutoSave.swift", file: "03-context-autosave.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying to TaskMaster App") {
+        @ContentAndMedia {
+            Apply what we've learned to the TaskMaster app.
+            Connect the TaskItem model and prepare the basic UI.
+        }
+        
+        @Steps {
+            @Step {
+                **Update App Entry Point**
+                
+                Add modelContainer to TaskMasterApp.swift.
+                Now all child views can use SwiftData.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-app-setup.swift")
+            }
+            
+            @Step {
+                **Prepare ContentView**
+                
+                Inject ModelContext and create the basic UI structure.
+                We'll display data with @Query in the next chapter.
+                
+                @Code(name: "ContentView.swift", file: "03-contentview-setup.swift")
+            }
+            
+            @Step {
+                **Using SwiftData in Previews**
+                
+                You need to set modelContainer for Previews too.
+                Inject test data with a memory-only container.
+                
+                @Code(name: "ContentView.swift", file: "03-preview-setup.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you access ModelContext in SwiftUI views?
+            
+            @Choice(isCorrect: true) {
+                @Environment(\.modelContext)
+                
+                @Justification(reaction: "Correct!") {
+                    ModelContext is automatically injected through SwiftUI Environment.
+                    A parent view must have set .modelContainer.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State var context: ModelContext
+                
+                @Justification(reaction: "Not quite") {
+                    ModelContext is injected via @Environment, not @State.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ModelContext.shared
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData doesn't have a shared singleton.
+                    Access it through Environment.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is SwiftData's default autosave behavior?
+            
+            @Choice(isCorrect: true) {
+                Enabled — automatically saves changes
+                
+                @Justification(reaction: "Exactly right!") {
+                    SwiftData has autosave enabled by default,
+                    so explicit save() calls are usually unnecessary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Disabled — manual save() always required
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData has autosave enabled by default.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Saves automatically every 30 seconds
+                
+                @Justification(reaction: "Not quite") {
+                    SwiftData's autosave is run-loop based,
+                    not time-based, saving at appropriate moments.
+                }
+            }
+        }
+    }
+}

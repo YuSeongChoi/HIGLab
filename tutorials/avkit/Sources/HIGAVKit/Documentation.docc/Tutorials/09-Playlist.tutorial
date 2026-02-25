@@ -1,0 +1,215 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Video Playlist") {
+        Implement continuous playback and playlist features
+        using AVQueuePlayer.
+        
+        @Image(source: "playlist.png", alt: "Video Playlist")
+    }
+    
+    @Section(title: "Introduction to AVQueuePlayer") {
+        @ContentAndMedia {
+            AVQueuePlayer is a subclass of AVPlayer that
+            plays multiple items sequentially.
+            
+            - Automatic next video playback
+            - Dynamic item add/remove
+            - Current item and queue management
+            
+            @Image(source: "queue-player.png", alt: "AVQueuePlayer Structure")
+        }
+        
+        @Steps {
+            @Step {
+                Create AVQueuePlayer and add multiple items.
+                
+                @Code(name: "CreateQueuePlayer.swift", file: "09-01-create-queue.swift")
+            }
+            
+            @Step {
+                Check the currently playing item and queue.
+                
+                @Code(name: "QueueItems.swift", file: "09-02-queue-items.swift")
+            }
+            
+            @Step {
+                Move to the next item with advanceToNextItem().
+                
+                @Code(name: "AdvanceNext.swift", file: "09-03-advance-next.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Dynamic Playlist Management") {
+        @ContentAndMedia {
+            You can dynamically modify the playlist during playback.
+            
+            - Add items (at end or specific position)
+            - Remove items
+            - Reorder queue
+        }
+        
+        @Steps {
+            @Step {
+                Add item at specific position with insert(_:after:).
+                
+                @Code(name: "InsertItem.swift", file: "09-04-insert-item.swift")
+            }
+            
+            @Step {
+                Remove item from queue with remove(_:).
+                
+                @Code(name: "RemoveItem.swift", file: "09-05-remove-item.swift")
+            }
+            
+            @Step {
+                Clear the queue completely with removeAllItems().
+                
+                @Code(name: "ClearQueue.swift", file: "09-06-clear-queue.swift")
+            }
+            
+            @Step {
+                Check if item can be added with canInsert(_:after:).
+                
+                @Code(name: "CanInsert.swift", file: "09-07-can-insert.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Playlist UI") {
+        @ContentAndMedia {
+            Implement UI for users to browse
+            and manage the playlist.
+            
+            - Current playback indicator
+            - Drag to reorder
+            - Swipe to delete
+        }
+        
+        @Steps {
+            @Step {
+                Define the playlist model.
+                Adopt Identifiable for SwiftUI List compatibility.
+                
+                @Code(name: "PlaylistModel.swift", file: "09-08-playlist-model.swift")
+            }
+            
+            @Step {
+                Implement playlist UI with List.
+                Highlight currently playing item.
+                
+                @Code(name: "PlaylistView.swift", file: "09-09-playlist-view.swift")
+            }
+            
+            @Step {
+                Implement drag and drop reordering with onMove.
+                
+                @Code(name: "ReorderPlaylist.swift", file: "09-10-reorder.swift")
+            }
+            
+            @Step {
+                Implement swipe to delete with onDelete.
+                
+                @Code(name: "DeleteFromPlaylist.swift", file: "09-11-delete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Repeat and Shuffle") {
+        @ContentAndMedia {
+            Implement repeat all, repeat one, and shuffle features.
+            
+            - Single repeat
+            - All repeat
+            - Random shuffle
+        }
+        
+        @Steps {
+            @Step {
+                Implement current item repeat playback.
+                Set actionAtItemEnd to .none.
+                
+                @Code(name: "RepeatOne.swift", file: "09-12-repeat-one.swift")
+            }
+            
+            @Step {
+                Implement full playlist repeat.
+                Return to beginning when last item ends.
+                
+                @Code(name: "RepeatAll.swift", file: "09-13-repeat-all.swift")
+            }
+            
+            @Step {
+                Implement shuffle feature.
+                Randomly shuffle playlist order.
+                
+                @Code(name: "Shuffle.swift", file: "09-14-shuffle.swift")
+            }
+            
+            @Step {
+                Define an enum to manage repeat/shuffle state.
+                
+                @Code(name: "RepeatMode.swift", file: "09-15-repeat-mode.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What method do you use in AVQueuePlayer to skip to the next video?
+            
+            @Choice(isCorrect: true) {
+                advanceToNextItem()
+                
+                @Justification(reaction: "Exactly right! ▶️") {
+                    This method ends the current item and
+                    plays the next item in the queue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                next()
+                
+                @Justification(reaction: "Different method name.") {
+                    Use advanceToNextItem() in AVQueuePlayer.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                playNextItem()
+                
+                @Justification(reaction: "That method doesn't exist.") {
+                    advanceToNextItem() is the correct method.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you implement repeat one?
+            
+            @Choice(isCorrect: false) {
+                Set repeat property to true
+                
+                @Justification(reaction: "That property doesn't exist.") {
+                    AVPlayer doesn't have a repeat property.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Set actionAtItemEnd to .none and seek(to: .zero) on playback end
+                
+                @Justification(reaction: "Correct! 🔁") {
+                    .none prevents advancing to next on playback end,
+                    and manually returning to start implements repeat.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Add the same item to queue multiple times
+                
+                @Justification(reaction: "Inefficient.") {
+                    Memory issues arise if infinite repeat is needed.
+                }
+            }
+        }
+    }
+}

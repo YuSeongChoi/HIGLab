@@ -1,0 +1,215 @@
+@Tutorial(time: 20) {
+    @Intro(title: "AVPlayerViewController") {
+        Implement a basic video player using AVPlayerViewController.
+        
+        @Image(source: "player-vc.png", alt: "AVPlayerViewController")
+    }
+    
+    @Section(title: "Basic Player Setup") {
+        @ContentAndMedia {
+            AVPlayerViewController provides a fully-featured 
+            video player UI.
+            
+            - Play/pause button
+            - Timeline slider
+            - Fullscreen toggle
+            - Volume control
+            
+            @Image(source: "player-controls.png", alt: "Player Controls")
+        }
+        
+        @Steps {
+            @Step {
+                Create an AVPlayerViewController instance and
+                connect it to an AVPlayer.
+                
+                @Code(name: "BasicPlayer.swift", file: "02-01-basic-player.swift")
+            }
+            
+            @Step {
+                In SwiftUI, use UIViewControllerRepresentable to
+                wrap AVPlayerViewController.
+                
+                @Code(name: "VideoPlayerView.swift", file: "02-02-swiftui-wrapper.swift")
+            }
+            
+            @Step {
+                In SwiftUI 14+, you can use the VideoPlayer view directly.
+                A native solution suitable for simple playback.
+                
+                @Code(name: "NativeVideoPlayer.swift", file: "02-03-native-videoplayer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Player Presentation") {
+        @ContentAndMedia {
+            There are several ways to present 
+            AVPlayerViewController on screen.
+            
+            - **Modal Presentation**: Fullscreen player
+            - **Embedded**: Inserted into view hierarchy
+            - **Inline**: Inline playback within content
+        }
+        
+        @Steps {
+            @Step {
+                Display the player fullscreen as a modal.
+                Suitable for fully immersive video experiences.
+                
+                @Code(name: "ModalPresentation.swift", file: "02-04-modal.swift")
+            }
+            
+            @Step {
+                Embedding as a Child View Controller allows 
+                placement alongside other UI elements.
+                
+                @Code(name: "EmbeddedPlayer.swift", file: "02-05-embedded.swift")
+            }
+            
+            @Step {
+                Set automatic fullscreen transition on playback start
+                with the entersFullScreenWhenPlaybackBegins property.
+                
+                @Code(name: "AutoFullscreen.swift", file: "02-06-auto-fullscreen.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Player Customization") {
+        @ContentAndMedia {
+            Adjust various properties of AVPlayerViewController
+            to provide a player experience suited to your app.
+            
+            - Control visibility
+            - Gesture activation
+            - Video gravity settings
+        }
+        
+        @Steps {
+            @Step {
+                Hide the control UI with showsPlaybackControls.
+                Useful when creating custom overlays.
+                
+                @Code(name: "HideControls.swift", file: "02-07-hide-controls.swift")
+            }
+            
+            @Step {
+                Set how video fits the view with videoGravity.
+                
+                - `.resizeAspect`: Maintain ratio (letterbox)
+                - `.resizeAspectFill`: Maintain ratio (crop)
+                - `.resize`: Stretch to fill
+                
+                @Code(name: "VideoGravity.swift", file: "02-08-video-gravity.swift")
+            }
+            
+            @Step {
+                Setting requiresLinearPlayback to true
+                prevents users from seeking.
+                Useful for ads or mandatory viewing content.
+                
+                @Code(name: "LinearPlayback.swift", file: "02-09-linear-playback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Observing Playback State") {
+        @ContentAndMedia {
+            Use KVO (Key-Value Observing) to detect 
+            player state changes.
+            
+            - Loading state
+            - Play/pause state
+            - Buffering progress
+        }
+        
+        @Steps {
+            @Step {
+                Observe the AVPlayer's status property to
+                detect when media loading completes.
+                
+                @Code(name: "ObserveStatus.swift", file: "02-10-observe-status.swift")
+            }
+            
+            @Step {
+                Check the current playback state with timeControlStatus.
+                
+                - `.paused`: Paused
+                - `.playing`: Playing
+                - `.waitingToPlayAtSpecifiedRate`: Buffering
+                
+                @Code(name: "TimeControlStatus.swift", file: "02-11-time-control.swift")
+            }
+            
+            @Step {
+                Use Combine for a more modern approach
+                to subscribing to state changes.
+                
+                @Code(name: "CombineObserve.swift", file: "02-12-combine-observe.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you use AVPlayerViewController in SwiftUI?
+            
+            @Choice(isCorrect: true) {
+                Wrap it with UIViewControllerRepresentable or use VideoPlayer view.
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    In iOS 14+, you can use the VideoPlayer view directly,
+                    or use UIViewControllerRepresentable for more control.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayerViewController cannot be used in SwiftUI.
+                
+                @Justification(reaction: "Incorrect.") {
+                    SwiftUI can wrap and use UIKit components.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use AVPlayerViewController directly as a SwiftUI view.
+                
+                @Justification(reaction: "Not quite.") {
+                    UIViewController cannot be used directly in SwiftUI.
+                    You must implement the Representable protocol.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens when you set videoGravity to .resizeAspectFill?
+            
+            @Choice(isCorrect: false) {
+                The video ratio stretches to fit the view.
+                
+                @Justification(reaction: "Think again.") {
+                    Stretching while maintaining ratio is not .resize.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                The video fills the view while maintaining ratio, and some parts are cropped.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    .resizeAspectFill maintains the ratio while filling the view completely,
+                    so parts of the video may be cropped.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Letterboxing (black bars) appears.
+                
+                @Justification(reaction: "That's .resizeAspect.") {
+                    Letterboxing appears with .resizeAspect,
+                    which maintains ratio while showing the entire video.
+                }
+            }
+        }
+    }
+}

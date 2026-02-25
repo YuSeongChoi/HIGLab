@@ -1,0 +1,161 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Nested Observable Objects") {
+        Learn the pattern of including Observable objects within other Observable objects.
+        Understand observation behavior and considerations in nested structures.
+    }
+    
+    @Section(title: "Basics of Nested Observable") {
+        @ContentAndMedia {
+            In real apps, one object often has another Observable object
+            as a property.
+            Let's examine how observation works in this nested structure.
+        }
+        
+        @Steps {
+            @Step {
+                A basic nested structure.
+                User contains Address as an Observable.
+                
+                @Code(name: "NestedBasic.swift", file: "06-nested-basic.swift")
+            }
+            
+            @Step {
+                Important point: **Only reference changes are detected!**
+                Replacing address itself is detected,
+                but changing address.city is not detected at the User level.
+                
+                @Code(name: "ReferenceVsValue.swift", file: "06-reference-vs-value.swift")
+            }
+            
+            @Step {
+                To detect inner object changes,
+                you must **directly access** that property.
+                
+                @Code(name: "DirectAccess.swift", file: "06-direct-access.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Nested Structure Design Patterns") {
+        @ContentAndMedia {
+            Learn design patterns and best practices
+            for effectively using nested Observable.
+        }
+        
+        @Steps {
+            @Step {
+                **Pattern 1**: Keep a flat structure
+                When possible, avoid nesting and design flat structures.
+                
+                @Code(name: "FlatStructure.swift", file: "06-flat-structure.swift")
+            }
+            
+            @Step {
+                **Pattern 2**: When nesting is necessary - Separate views
+                Create views matching each Observable level
+                for natural tracking.
+                
+                @Code(name: "ViewSeparation.swift", file: "06-view-separation.swift")
+            }
+            
+            @Step {
+                **Pattern 3**: Composition pattern
+                Combine multiple Observables to manage complex state.
+                
+                @Code(name: "CompositionPattern.swift", file: "06-composition-pattern.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Order Shipping Address Management") {
+        @ContentAndMedia {
+            Add shipping address management functionality to CartFlow.
+            Apply nested Observable patterns in practice.
+        }
+        
+        @Steps {
+            @Step {
+                Create a ShippingAddress model to hold shipping information.
+                
+                @Code(name: "ShippingAddress.swift", file: "06-shipping-address.swift")
+            }
+            
+            @Step {
+                Create OrderStore and include ShippingAddress.
+                
+                @Code(name: "OrderStore.swift", file: "06-order-store.swift")
+            }
+            
+            @Step {
+                Create a shipping address edit view using nested Observable.
+                Two-way binding is also possible through @Bindable.
+                
+                @Code(name: "ShippingAddressView.swift", file: "06-shipping-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you detect inner object property changes in nested Observable?
+            
+            @Choice(isCorrect: true) {
+                You must directly access the inner object's property in the view
+                
+                @Justification(reaction: "Correct!") {
+                    For example, reading user.address.city
+                    automatically tracks changes to address's city.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Observing the outer object automatically detects inner changes
+                
+                @Justification(reaction: "Not quite") {
+                    No. The outer object only detects reference changes.
+                    Inner object property changes require direct access.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                You need to add a special macro
+                
+                @Justification(reaction: "Not quite") {
+                    No additional macros needed.
+                    Just read the needed properties directly.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the most recommended design approach for nested Observable structures?
+            
+            @Choice(isCorrect: true) {
+                Separate into smaller views matching each Observable level
+                
+                @Justification(reaction: "Perfect!") {
+                    When views are separated, each view naturally tracks
+                    only its relevant level of Observable, achieving optimal performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Flatten all properties to the top-level object
+                
+                @Justification(reaction: "Not quite") {
+                    Flattening isn't always good.
+                    Maintain logical grouping while separating views appropriately.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Never use nesting
+                
+                @Justification(reaction: "Not quite") {
+                    Nested structures are useful for expressing complex domains.
+                    Use them with appropriate view separation.
+                }
+            }
+        }
+    }
+}

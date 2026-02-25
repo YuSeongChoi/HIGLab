@@ -1,0 +1,282 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Customizing Notification Content") {
+        Control the appearance and behavior of notifications in detail.
+        
+        Explore various options from title, subtitle, body to sound, badge, and threading
+        to enhance the user experience.
+    }
+    
+    @Section(title: "Basic Content Properties") {
+        @ContentAndMedia {
+            UNMutableNotificationContent contains all notification content.
+            
+            - **title**: Bold title text
+            - **subtitle**: Smaller text below the title
+            - **body**: Main notification content
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Title and Body**
+                
+                Set basic text content.
+                Concise and clear wording is best.
+                
+                @Code(name: "BasicContent.swift", file: "04-basic-content.swift")
+            }
+            
+            @Step {
+                **Using Subtitle**
+                
+                Provide additional context with subtitle.
+                Good for displaying app name or category.
+                
+                @Code(name: "SubtitleContent.swift", file: "04-subtitle-content.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sound and Badge") {
+        @ContentAndMedia {
+            Notification sound is an important element that captures user attention.
+            Badge displays a number on the app icon.
+            
+            **HIG Tip**: Too aggressive sounds annoy users.
+            Choose appropriate sounds based on importance.
+        }
+        
+        @Steps {
+            @Step {
+                **System Default Sound**
+                
+                Using UNNotificationSound.default plays the system default notification sound.
+                This is sufficient for most cases.
+                
+                @Code(name: "DefaultSound.swift", file: "04-default-sound.swift")
+            }
+            
+            @Step {
+                **Custom Sound**
+                
+                You can use audio files included in the bundle.
+                Supported formats: aiff, wav, caf (under 30 seconds)
+                
+                @Code(name: "CustomSound.swift", file: "04-custom-sound.swift")
+            }
+            
+            @Step {
+                **Critical Alert**
+                
+                Critical alerts that make sound even in Do Not Disturb mode.
+                This is a special entitlement requiring Apple approval.
+                
+                @Code(name: "CriticalSound.swift", file: "04-critical-sound.swift")
+            }
+            
+            @Step {
+                **Setting Badge Number**
+                
+                Set the badge number on the app icon with the badge property.
+                Setting to 0 removes the badge.
+                
+                @Code(name: "BadgeNumber.swift", file: "04-badge-number.swift")
+            }
+        }
+    }
+    
+    @Section(title: "userInfo and Data Passing") {
+        @ContentAndMedia {
+            Attach custom data to notifications using the userInfo dictionary.
+            
+            You can pass information about which screen the app should open
+            or what data to display when the user taps the notification.
+        }
+        
+        @Steps {
+            @Step {
+                **Attaching Custom Data**
+                
+                Store data as a dictionary in userInfo.
+                
+                @Code(name: "UserInfoData.swift", file: "04-userinfo-data.swift")
+            }
+            
+            @Step {
+                **Passing Reminder ID**
+                
+                In the RemindMe app, pass the reminder ID so
+                tapping the notification opens that reminder's detail screen.
+                
+                @Code(name: "ReminderUserInfo.swift", file: "04-reminder-userinfo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Threading and Grouping") {
+        @ContentAndMedia {
+            iOS groups related notifications into stacks.
+            
+            Specify notifications belonging to the same group with threadIdentifier,
+            and customize the group summary message with summaryArgument.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Thread Identifier**
+                
+                Notifications with the same threadIdentifier are grouped together.
+                Useful for grouping by chat room in messaging apps.
+                
+                @Code(name: "ThreadId.swift", file: "04-thread-id.swift")
+            }
+            
+            @Step {
+                **Grouping by Category**
+                
+                Group notifications by reminder category in the RemindMe app.
+                Use categories like "Work", "Personal", "Health".
+                
+                @Code(name: "CategoryGrouping.swift", file: "04-category-grouping.swift")
+            }
+            
+            @Step {
+                **Setting Summary Argument**
+                
+                Customize the group header summary text with
+                summaryArgument and summaryArgumentCount.
+                
+                @Code(name: "SummaryArgument.swift", file: "04-summary-argument.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Interruption Level (iOS 15+)") {
+        @ContentAndMedia {
+            Starting with iOS 15, you can finely control notification importance.
+            
+            - **passive**: Quietly appears only in Notification Center
+            - **active**: Default behavior (banner + sound)
+            - **timeSensitive**: Can break through Focus mode
+            - **critical**: Critical alerts (special entitlement required)
+        }
+        
+        @Steps {
+            @Step {
+                **Setting Interruption Level**
+                
+                Choose the appropriate level based on notification importance.
+                Time Sensitive requires Info.plist configuration.
+                
+                @Code(name: "InterruptionLevel.swift", file: "04-interruption-level.swift")
+            }
+            
+            @Step {
+                **Info.plist Configuration**
+                
+                To use Time Sensitive notifications,
+                add NSUserNotificationsTimeSensitiveAlertsUsageDescription.
+                
+                @Code(name: "InfoPlist.swift", file: "04-info-plist.swift")
+            }
+            
+            @Step {
+                **Choosing Level by Context**
+                
+                Apply different levels based on reminder priority.
+                
+                @Code(name: "LevelByPriority.swift", file: "04-level-by-priority.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the maximum length for custom sounds in notifications?
+            
+            @Choice(isCorrect: true) {
+                30 seconds
+                
+                @Justification(reaction: "Correct!") {
+                    Notification sounds longer than 30 seconds are replaced with the system default.
+                    Use short, clear notification sounds.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 minute
+                
+                @Justification(reaction: "Not quite") {
+                    30 seconds is the maximum. Anything longer is cut or replaced with default sound.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    There's a 30-second limit for user experience and system resources.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which interruptionLevel should you use to display notifications even in Focus mode?
+            
+            @Choice(isCorrect: false) {
+                .active
+                
+                @Justification(reaction: "Not quite") {
+                    .active is the default level and may be filtered by Focus mode.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .timeSensitive
+                
+                @Justification(reaction: "Correct!") {
+                    Time Sensitive notifications can break through Do Not Disturb
+                    depending on the Focus mode's "Allow Time Sensitive Notifications" setting.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .passive
+                
+                @Justification(reaction: "That's the opposite") {
+                    .passive is the lowest priority,
+                    appearing only quietly in Notification Center.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the purpose of threadIdentifier?
+            
+            @Choice(isCorrect: true) {
+                Group related notifications together for display
+                
+                @Justification(reaction: "Correct!") {
+                    Notifications with the same threadIdentifier
+                    are grouped into stacks in Notification Center.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Process notifications on a specific thread
+                
+                @Justification(reaction: "Don't confuse them") {
+                    Thread here is not a programming thread but
+                    a grouping concept like "conversation thread."
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Specify notification delivery order
+                
+                @Justification(reaction: "Not quite") {
+                    threadIdentifier is for grouping and unrelated to order.
+                }
+            }
+        }
+    }
+}

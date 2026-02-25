@@ -1,0 +1,177 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Authentication Policies: biometryAny vs biometryCurrentSet") {
+        Understand the differences between the two biometric authentication policies 
+        and learn how to choose the appropriate policy for your security requirements.
+    }
+    
+    @Section(title: "Key Differences Between the Two Policies") {
+        @ContentAndMedia {
+            Apple provides two policies that use only biometric authentication.
+            You should choose the appropriate policy based on your security level.
+        }
+        
+        @Steps {
+            @Step {
+                **biometryAny (Default)**
+                
+                Allows authentication with any registered biometric data.
+                Authentication is maintained even when new faces/fingerprints are added.
+                
+                @Code(name: "BiometryAny.swift", file: "06-biometry-any.swift")
+            }
+            
+            @Step {
+                **biometryCurrentSet (Strict)**
+                
+                Only allows biometric data from the time of authentication setup.
+                Authentication is invalidated when new data is added or changed.
+                
+                @Code(name: "BiometryCurrentSet.swift", file: "06-biometry-currentset.swift")
+            }
+            
+            @Step {
+                **Which Policy to Choose?**
+                
+                - **biometryAny**: General apps, convenience priority
+                - **biometryCurrentSet**: Financial apps, security priority
+                
+                @Code(name: "PolicyChoice.swift", file: "06-policy-choice.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using evaluatedPolicyDomainState") {
+        @ContentAndMedia {
+            A key property for detecting biometric data changes.
+            Store this value and compare to know if changes occurred.
+        }
+        
+        @Steps {
+            @Step {
+                **What is domainState?**
+                
+                evaluatedPolicyDomainState is a hash of the currently registered biometric data.
+                When data changes, this value also changes.
+                
+                @Code(name: "DomainState.swift", file: "06-domain-state.swift")
+            }
+            
+            @Step {
+                **Storing domainState**
+                
+                Store domainState in keychain upon first successful authentication.
+                
+                @Code(name: "SaveDomainState.swift", file: "06-save-domain-state.swift")
+            }
+            
+            @Step {
+                **Change Detection Logic**
+                
+                Compare stored value with current value during re-authentication.
+                If different, biometric data has changed.
+                
+                @Code(name: "DetectChange.swift", file: "06-detect-change.swift")
+            }
+            
+            @Step {
+                **Responding to Changes**
+                
+                Depending on security level, require re-registration 
+                or display a notification to the user.
+                
+                @Code(name: "HandleChange.swift", file: "06-handle-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying to Secure Vault App") {
+        @ContentAndMedia {
+            Secure vault apps require high security levels.
+            Combine biometryCurrentSet with domainState detection.
+        }
+        
+        @Steps {
+            @Step {
+                **Policy Settings**
+                
+                Use biometryCurrentSet for secure vault apps.
+                Require master password re-authentication when new faces/fingerprints are added.
+                
+                @Code(name: "SecureVaultPolicy.swift", file: "06-secure-vault-policy.swift")
+            }
+            
+            @Step {
+                **Integrated Change Detection**
+                
+                Add domainState check logic to AuthenticationManager.
+                
+                @Code(name: "IntegratedCheck.swift", file: "06-integrated-check.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when using the biometryCurrentSet policy in this situation?
+            "User opened the app after adding a new fingerprint"
+            
+            @Choice(isCorrect: true) {
+                Previous authentication is invalidated and new authentication setup is required
+                
+                @Justification(reaction: "Correct!") {
+                    biometryCurrentSet only recognizes biometric data from the setup time.
+                    Previous authentication is invalidated when a new fingerprint is added.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Authentication works normally with the new fingerprint
+                
+                @Justification(reaction: "Not quite") {
+                    That's how the biometryAny policy behaves.
+                    biometryCurrentSet is stricter.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The app crashes
+                
+                @Justification(reaction: "Not quite") {
+                    It's not a crash but normal security behavior.
+                    The app will require re-authentication.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the role of evaluatedPolicyDomainState?
+            
+            @Choice(isCorrect: true) {
+                A hash value representing the state of currently registered biometric data
+                
+                @Justification(reaction: "Correct!") {
+                    Comparing this value allows detection of biometric data changes.
+                    It's an essential feature for security apps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A value that stores the last authentication time
+                
+                @Justification(reaction: "Not quite") {
+                    domainState represents biometric data state, not time.
+                    This value changes when data changes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A value that counts authentication success/failure
+                
+                @Justification(reaction: "Not quite") {
+                    domainState is a biometric data hash, not a count.
+                    It's used for change detection.
+                }
+            }
+        }
+    }
+}

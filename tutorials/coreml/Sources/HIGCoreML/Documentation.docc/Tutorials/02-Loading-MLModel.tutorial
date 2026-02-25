@@ -1,0 +1,164 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Loading & Using MLModel") {
+        Learn how to add .mlmodel files to your project
+        and load and use models in Swift.
+    }
+    
+    @Section(title: "Adding an MLModel") {
+        @ContentAndMedia {
+            When you add a .mlmodel file in Xcode,
+            a Swift class is automatically generated.
+            
+            This auto-generated class allows you to use the model in a type-safe manner.
+        }
+        
+        @Steps {
+            @Step {
+                Add the MobileNetV2.mlmodel file to your Xcode project
+                via drag and drop.
+                
+                Xcode automatically generates the MobileNetV2 class.
+                
+                @Code(name: "MobileNetV2.swift", file: "02-model-generated.swift")
+            }
+            
+            @Step {
+                When you select the model file, you can view
+                the input/output information in Xcode.
+                
+                - **Input**: 224×224 color image
+                - **Output**: 1000 class probabilities, predicted label
+                
+                @Code(name: "ModelInspector.swift", file: "02-model-inspector.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Model Loading Patterns") {
+        @ContentAndMedia {
+            Learn various patterns for loading Core ML models.
+            Cover synchronous/asynchronous loading and error handling.
+        }
+        
+        @Steps {
+            @Step {
+                **Synchronous Loading**: Simple but may block the UI.
+                Use for small models or at app launch.
+                
+                @Code(name: "SyncLoading.swift", file: "02-sync-loading.swift")
+            }
+            
+            @Step {
+                **Asynchronous Loading**: Recommended for large models.
+                The UI remains responsive during loading.
+                
+                @Code(name: "AsyncLoading.swift", file: "02-async-loading.swift")
+            }
+            
+            @Step {
+                **Using MLModelConfiguration**
+                
+                You can configure compute units, memory constraints, and more.
+                Restrict to Neural Engine only or CPU only.
+                
+                @Code(name: "ModelConfiguration.swift", file: "02-configuration.swift")
+            }
+            
+            @Step {
+                **Error Handling Patterns**
+                
+                Write robust code to handle model loading failures.
+                Include fallback strategies and user feedback.
+                
+                @Code(name: "ErrorHandling.swift", file: "02-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ImageClassifier Service") {
+        @ContentAndMedia {
+            Create a service class that encapsulates model loading logic.
+            Design a structure that can be reused throughout the app.
+        }
+        
+        @Steps {
+            @Step {
+                Create the ImageClassifierService class.
+                Use a singleton pattern to load the model only once.
+                
+                @Code(name: "ImageClassifierService.swift", file: "02-classifier-service.swift")
+            }
+            
+            @Step {
+                Use the service in a SwiftUI View.
+                Manage the service with @StateObject.
+                
+                @Code(name: "ContentView.swift", file: "02-content-view-service.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is automatically generated when you add a .mlmodel file to Xcode?
+            
+            @Choice(isCorrect: true) {
+                A type-safe Swift class
+                
+                @Justification(reaction: "Correct!") {
+                    Xcode analyzes the mlmodel file and automatically generates
+                    a Swift class with defined input/output types.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                A JSON configuration file
+                
+                @Justification(reaction: "Not quite") {
+                    Xcode generates a Swift class.
+                    This class allows you to use the model in a type-safe manner.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Nothing is generated
+                
+                @Justification(reaction: "Not quite") {
+                    Xcode automatically generates a Swift class.
+                    This is one of the great advantages of Core ML.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the recommended approach for loading large ML models?
+            
+            @Choice(isCorrect: true) {
+                Asynchronous loading — maintains UI responsiveness
+                
+                @Justification(reaction: "That's right!") {
+                    Large models may take time to load, so
+                    async loading keeps the UI from freezing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always use synchronous loading
+                
+                @Justification(reaction: "Not quite") {
+                    Synchronous loading can block the UI.
+                    Asynchronous loading is recommended for large models.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Synchronous loading on a background thread
+                
+                @Justification(reaction: "Not quite") {
+                    While possible, using Swift's async/await
+                    for asynchronous loading is more modern and recommended.
+                }
+            }
+        }
+    }
+}

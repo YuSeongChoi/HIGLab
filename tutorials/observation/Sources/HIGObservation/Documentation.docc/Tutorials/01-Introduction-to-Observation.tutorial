@@ -1,0 +1,187 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Introduction to Observation & Differences from ObservableObject") {
+        Learn why the Observation framework introduced in Swift 5.9 is a game changer.
+        Compare the limitations of the existing ObservableObject with the innovations of the new @Observable.
+    }
+    
+    @Section(title: "Limitations of ObservableObject") {
+        @ContentAndMedia {
+            The Combine-based ObservableObject has been with SwiftUI from the beginning,
+            but it has several **structural limitations**.
+            
+            Let's examine why these limitations are problematic through code.
+        }
+        
+        @Steps {
+            @Step {
+                **The Entire View Re-rendering Problem**
+                
+                When using ObservableObject, if **any** `@Published` property changes,
+                **all views** observing that object are re-rendered.
+                
+                In this code, even if only `name` changes, the view showing `count` is also updated.
+                
+                @Code(name: "OldWayProblem.swift", file: "01-old-way-problem.swift")
+            }
+            
+            @Step {
+                **@StateObject vs @ObservedObject Confusion**
+                
+                Developers were always confused about when to use `@StateObject`
+                and when to use `@ObservedObject`.
+                
+                Using them incorrectly can cause memory leaks or unexpected view updates.
+                
+                @Code(name: "OwnershipConfusion.swift", file: "01-ownership-confusion.swift")
+            }
+            
+            @Step {
+                **Combine Dependency**
+                
+                ObservableObject internally uses Combine's `ObjectWillChangePublisher`.
+                You simply want to track state changes,
+                but you had to depend on an entire reactive programming framework.
+                
+                @Code(name: "CombineDependency.swift", file: "01-combine-dependency.swift")
+            }
+        }
+    }
+    
+    @Section(title: "The Innovation of Observation") {
+        @ContentAndMedia {
+            Apple announced the **Observation framework** at WWDC23.
+            Using Swift 5.9's macro capabilities,
+            it elegantly solves all the problems mentioned above.
+        }
+        
+        @Steps {
+            @Step {
+                **Granular Observation**
+                
+                With @Observable, views only observe **the properties they actually read**.
+                A view reading `name` updates only when `name` changes,
+                and a view reading `count` updates only when `count` changes.
+                
+                @Code(name: "NewWayBetter.swift", file: "01-new-way-better.swift")
+            }
+            
+            @Step {
+                **Simplified Ownership**
+                
+                @Observable objects can be treated like regular classes.
+                Store them with `@State`, `@Environment`, or just as properties.
+                No more @StateObject/@ObservedObject dilemma.
+                
+                @Code(name: "SimpleOwnership.swift", file: "01-simple-ownership.swift")
+            }
+            
+            @Step {
+                **No Combine Required**
+                
+                Observation doesn't depend on Combine.
+                It's implemented in pure Swift, making it lighter and more intuitive.
+                Of course, you can still use it with Combine if needed.
+                
+                @Code(name: "NoCombine.swift", file: "01-no-combine.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Starting the CartFlow Project") {
+        @ContentAndMedia {
+            From now on, let's build the **CartFlow** shopping cart app together.
+            We'll learn how to utilize all of Observation's features in practice.
+            
+            Let's set up the project structure and create our first @Observable model.
+        }
+        
+        @Steps {
+            @Step {
+                Create a new iOS project in Xcode.
+                Choose **App** template with **SwiftUI** interface.
+                Name the project `CartFlow`.
+                
+                @Code(name: "CartFlowApp.swift", file: "01-cartflow-app.swift")
+            }
+            
+            @Step {
+                Create our first @Observable model, `Product`.
+                A simple model containing the product's name, price, and quantity.
+                
+                @Code(name: "Product.swift", file: "01-product-model.swift")
+            }
+            
+            @Step {
+                Create `CartStore` to manage the shopping cart.
+                It includes the product list and total price calculation logic.
+                
+                This will be the main state store used throughout the app.
+                
+                @Code(name: "CartStore.swift", file: "01-cart-store.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the biggest problem with ObservableObject?
+            
+            @Choice(isCorrect: true) {
+                All observing views re-render when any @Published property changes
+                
+                @Justification(reaction: "Correct!") {
+                    ObservableObject notifies changes at the object level,
+                    so it can't track precisely which property changed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can't be used on iOS 13 or below
+                
+                @Justification(reaction: "Not quite") {
+                    ObservableObject is supported from iOS 13.
+                    The issue is about performance and complexity.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can't be used with struct
+                
+                @Justification(reaction: "Not quite") {
+                    @Observable also only works with class.
+                    The core issue is the lack of observation granularity.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the key advantage of the Observation framework?
+            
+            @Choice(isCorrect: true) {
+                Views only observe properties they actually read, preventing unnecessary updates
+                
+                @Justification(reaction: "Perfect!") {
+                    This is called "Granular Observation" and is the most revolutionary part of Observation.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It can be used with struct
+                
+                @Justification(reaction: "Not quite") {
+                    @Observable only works with class.
+                    Structs are value types, so the observation pattern doesn't fit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Backward compatible to iOS 14
+                
+                @Justification(reaction: "Not quite") {
+                    Observation requires iOS 17 or later
+                    because it uses Swift 5.9's macro feature.
+                }
+            }
+        }
+    }
+}

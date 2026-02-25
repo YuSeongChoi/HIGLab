@@ -1,0 +1,96 @@
+@Tutorial(time: 25) {
+    @Intro(title: "FeliCa & MIFARE") {
+        Learn how to work with Japan's FeliCa and NXP's MIFARE tags.
+        These tag types are used in transit cards and electronic money.
+    }
+    
+    @Section(title: "FeliCa Tags") {
+        @ContentAndMedia {
+            FeliCa is a contactless RFID technology developed by Sony.
+            Used in Japan's Suica, PASMO, and other transit cards.
+        }
+        @Steps {
+            @Step {
+                Check the main properties of NFCFeliCaTag.
+                Includes IDm (Manufacture ID) and PMm (Manufacture Parameter).
+                @Code(name: "FeliCaReader.swift", file: "09-01-felica-props.swift")
+            }
+            @Step {
+                Poll by specifying a system code.
+                0x88B4 is the common area, 0x0003 is Suica.
+                @Code(name: "FeliCaReader.swift", file: "09-02-felica-polling.swift")
+            }
+            @Step {
+                Read block data by specifying a service code.
+                @Code(name: "FeliCaReader.swift", file: "09-03-felica-read.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MIFARE Tags") {
+        @ContentAndMedia {
+            MIFARE is NXP Semiconductors' contactless smart card technology.
+            Product families include MIFARE Classic, Ultralight, DESFire, and more.
+        }
+        @Steps {
+            @Step {
+                Identify the product family using NFCMiFareTag's mifareFamily property.
+                @Code(name: "MIFAREReader.swift", file: "09-04-mifare-family.swift")
+            }
+            @Step {
+                Read pages from a MIFARE Ultralight tag.
+                @Code(name: "MIFAREReader.swift", file: "09-05-ultralight-read.swift")
+            }
+            @Step {
+                Send native MIFARE commands.
+                Use the sendMiFareCommand method.
+                @Code(name: "MIFAREReader.swift", file: "09-06-mifare-command.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the IDm of a FeliCa tag?
+            @Choice(isCorrect: true) {
+                Manufacture ID
+                @Justification(reaction: "Correct!") {
+                    IDm is an 8-byte unique manufacture identifier.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Internet Domain
+                @Justification(reaction: "Think again.") {
+                    IDm is the tag's unique identifier.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Data Memory
+                @Justification(reaction: "Think again.") {
+                    IDm stands for Identification.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is a characteristic of MIFARE Ultralight?
+            @Choice(isCorrect: false) {
+                Large storage capacity (several MB)
+                @Justification(reaction: "Think again.") {
+                    Ultralight has small capacity (64-192 bytes).
+                }
+            }
+            @Choice(isCorrect: true) {
+                Low-cost, small-capacity disposable/low-price tags
+                @Justification(reaction: "Correct!") {
+                    Used for disposable transit tickets, event tickets, etc.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Advanced encryption support
+                @Justification(reaction: "Think again.") {
+                    Advanced encryption is supported by the DESFire product family.
+                }
+            }
+        }
+    }
+}

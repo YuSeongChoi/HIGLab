@@ -1,0 +1,248 @@
+@Tutorial(time: 15) {
+    @Intro(title: "iCloud Photo Sync") {
+        Learn how to sync with iCloud Photo Library
+        and manage download states.
+    }
+    
+    @Section(title: "Understanding iCloud Photos") {
+        @ContentAndMedia {
+            When iCloud Photo Library is enabled,
+            photos are stored in the cloud and synced across devices.
+            
+            With "Optimize Storage" enabled,
+            only thumbnails may remain on the device instead of originals.
+        }
+        
+        @Steps {
+            @Step {
+                **Checking iCloud Status**
+                
+                Check the photo's source with PHAsset's sourceType.
+                Options include .typeCloudShared, .typeUserLibrary, etc.
+                
+                @Code(name: "iCloudStatus.swift", file: "10-icloud-status.swift")
+            }
+            
+            @Step {
+                **Checking Local Availability**
+                
+                Check if a photo is locally available with PHAssetResource.
+                Download is needed if it's only in the cloud.
+                
+                @Code(name: "LocalAvailability.swift", file: "10-local-availability.swift")
+            }
+            
+            @Step {
+                **Configuring PHImageRequestOptions**
+                
+                Allow network download with isNetworkAccessAllowed.
+                If false, only local data is returned.
+                
+                @Code(name: "NetworkAccessOptions.swift", file: "10-network-access-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Image Downloads") {
+        @ContentAndMedia {
+            Display progress and handle errors when downloading
+            images from iCloud.
+        }
+        
+        @Steps {
+            @Step {
+                **Displaying Download Progress**
+                
+                Receive download progress in the progressHandler closure.
+                Display to users with ProgressView.
+                
+                @Code(name: "DownloadProgress.swift", file: "10-download-progress.swift")
+            }
+            
+            @Step {
+                **Cancelling Downloads**
+                
+                Cancel in-progress downloads with
+                PHImageManager.cancelImageRequest.
+                
+                @Code(name: "CancelDownload.swift", file: "10-cancel-download.swift")
+            }
+            
+            @Step {
+                **Handling Offline Mode**
+                
+                Display local version when there's no network.
+                It's better to show even a low-resolution image.
+                
+                @Code(name: "OfflineMode.swift", file: "10-offline-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Sync Status UI") {
+        @ContentAndMedia {
+            Clearly display sync status to users.
+            Distinguish between needs download, in progress, and completed states.
+        }
+        
+        @Steps {
+            @Step {
+                **Sync Status Model**
+                
+                Define an enum representing photo sync status.
+                Display appropriate UI for each state.
+                
+                @Code(name: "SyncStatus.swift", file: "10-sync-status.swift")
+            }
+            
+            @Step {
+                **Status Indicator View**
+                
+                Display sync status with cloud icons.
+                Utilize SF Symbols cloud icons.
+                
+                @Code(name: "SyncIndicator.swift", file: "10-sync-indicator.swift")
+            }
+            
+            @Step {
+                **Batch Download**
+                
+                Download multiple photos at once.
+                Calculate and display overall progress.
+                
+                @Code(name: "BatchDownload.swift", file: "10-batch-download.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complete iCloud Gallery") {
+        @ContentAndMedia {
+            Implement a gallery with perfect iCloud sync support.
+            Provide optimal experience even offline.
+        }
+        
+        @Steps {
+            @Step {
+                **Implementing CloudGalleryViewModel**
+                
+                Separate iCloud state management and download logic into a ViewModel.
+                Also detect network status changes.
+                
+                @Code(name: "CloudGalleryViewModel.swift", file: "10-cloud-gallery-view-model.swift")
+            }
+            
+            @Step {
+                **Smart Loading Strategy**
+                
+                Load fast thumbnail → high quality image in sequence.
+                Use .deliveryMode = .opportunistic.
+                
+                @Code(name: "SmartLoading.swift", file: "10-smart-loading.swift")
+            }
+            
+            @Step {
+                **Completed CloudGalleryView**
+                
+                A gallery screen with all features integrated.
+                Fully supports iCloud status, downloads, and offline mode.
+                
+                @Code(name: "CloudGalleryView.swift", file: "10-cloud-gallery-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What option is needed to download iCloud photos?
+            
+            @Choice(isCorrect: true) {
+                isNetworkAccessAllowed = true
+                
+                @Justification(reaction: "Correct!") {
+                    Set PHImageRequestOptions' isNetworkAccessAllowed
+                    to true to download from iCloud.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iCloudEnabled = true
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such option.
+                    Use isNetworkAccessAllowed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Always downloads by default
+                
+                @Justification(reaction: "Not quite") {
+                    The default is false.
+                    You must explicitly allow network access.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you receive download progress?
+            
+            @Choice(isCorrect: true) {
+                Set PHImageRequestOptions' progressHandler
+                
+                @Justification(reaction: "Correct!") {
+                    You can receive progress in the range 0.0-1.0
+                    from the progressHandler closure.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Set PHImageManager's delegate
+                
+                @Justification(reaction: "Not quite") {
+                    PHImageManager doesn't have a delegate.
+                    Use requestOptions' progressHandler.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Check the completion handler's info dictionary
+                
+                @Justification(reaction: "Not quite") {
+                    The info dictionary contains result information,
+                    not progress.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which option loads a fast thumbnail followed by high-quality image?
+            
+            @Choice(isCorrect: true) {
+                deliveryMode = .opportunistic
+                
+                @Justification(reaction: "Exactly right!") {
+                    .opportunistic delivers a low-quality version as quickly as possible,
+                    then delivers the high-quality version when ready.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                deliveryMode = .progressive
+                
+                @Justification(reaction: "Not quite") {
+                    There's no such option.
+                    .opportunistic provides similar behavior.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                resizeMode = .fast
+                
+                @Justification(reaction: "Not quite") {
+                    resizeMode sets the resizing method.
+                    Loading strategy is set with deliveryMode.
+                }
+            }
+        }
+    }
+}

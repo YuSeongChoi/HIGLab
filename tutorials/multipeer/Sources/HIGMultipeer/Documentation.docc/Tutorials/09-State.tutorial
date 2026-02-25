@@ -1,0 +1,179 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Connection State Management") {
+        Track peer connection states,
+        and handle disconnection and reconnection appropriately.
+    }
+    
+    @Section(title: "Understanding Connection State") {
+        @ContentAndMedia {
+            MCSessionState represents the connection state of each peer.
+            
+            - notConnected: Not connected
+            - connecting: Connecting
+            - connected: Connected
+        }
+        
+        @Steps {
+            @Step {
+                Understand the MCSessionState enum.
+                
+                @Code(name: "StateManager.swift", file: "09-01-session-state.swift")
+            }
+            
+            @Step {
+                Create a structure to track state changes.
+                
+                @Code(name: "StateManager.swift", file: "09-02-peer-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling State Changes") {
+        @ContentAndMedia {
+            Perform UI updates and necessary logic 
+            in the state change callback.
+        }
+        
+        @Steps {
+            @Step {
+                Implement the state change delegate.
+                
+                @Code(name: "StateManager.swift", file: "09-03-state-delegate.swift")
+            }
+            
+            @Step {
+                Add processing logic when connection succeeds.
+                
+                @Code(name: "StateManager.swift", file: "09-04-on-connected.swift")
+            }
+            
+            @Step {
+                Add processing logic when disconnected.
+                
+                @Code(name: "StateManager.swift", file: "09-05-on-disconnected.swift")
+            }
+            
+            @Step {
+                Display connecting state in the UI.
+                
+                @Code(name: "StateManager.swift", file: "09-06-connecting-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Reconnection Strategy") {
+        @ContentAndMedia {
+            Implement a strategy to automatically attempt 
+            reconnection when disconnected.
+        }
+        
+        @Steps {
+            @Step {
+                Implement reconnection logic.
+                
+                Apply exponential backoff.
+                
+                @Code(name: "ReconnectManager.swift", file: "09-07-reconnect.swift")
+            }
+            
+            @Step {
+                Limit reconnection attempts.
+                
+                @Code(name: "ReconnectManager.swift", file: "09-08-retry-limit.swift")
+            }
+            
+            @Step {
+                Notify the user of connection status.
+                
+                @Code(name: "ConnectionBanner.swift", file: "09-09-banner.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Connection Status UI") {
+        @ContentAndMedia {
+            Implement a UI that displays the list of connected peers 
+            and each peer's status in real-time.
+        }
+        
+        @Steps {
+            @Step {
+                Create a peer status icon component.
+                
+                @Code(name: "PeerStatusIcon.swift", file: "09-10-status-icon.swift")
+            }
+            
+            @Step {
+                Implement a connected peers list View.
+                
+                @Code(name: "ConnectedPeersView.swift", file: "09-11-peers-view.swift")
+            }
+            
+            @Step {
+                Complete the connection status dashboard.
+                
+                @Code(name: "ConnectionDashboard.swift", file: "09-12-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            When does the MCSessionState.connecting state occur?
+            
+            @Choice(isCorrect: true) {
+                While establishing connection after sending or receiving an invitation
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    connecting indicates that the connection handshake 
+                    is in progress.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                While disconnecting
+                
+                @Justification(reaction: "Think again.") {
+                    When disconnecting, it changes to notConnected.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                While transferring data
+                
+                @Justification(reaction: "Think again.") {
+                    During data transfer, it's in the connected state.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why is exponential backoff used during reconnection?
+            
+            @Choice(isCorrect: false) {
+                For faster reconnection
+                
+                @Justification(reaction: "Think again.") {
+                    Exponential backoff increases wait time.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                To reduce network load and allow recovery time
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Repeated immediate reconnection attempts burden the network
+                    and don't allow time for temporary issues to resolve.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To enhance security
+                
+                @Justification(reaction: "Think again.") {
+                    Exponential backoff is not directly related to security.
+                }
+            }
+        }
+    }
+}

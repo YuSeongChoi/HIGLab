@@ -1,0 +1,94 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Parsing NDEF Records") {
+        Analyze the structure of NFCNDEFPayload and parse various record types.
+        Learn how to interpret records based on TNF (Type Name Format).
+    }
+    
+    @Section(title: "Understanding Type Name Format") {
+        @ContentAndMedia {
+            TNF defines how to interpret the type of a record.
+            Types include Empty, Well-Known, Media, URI, External, Unknown, and Unchanged.
+        }
+        @Steps {
+            @Step {
+                Check each case of the NFCTypeNameFormat enumeration.
+                @Code(name: "RecordParser.swift", file: "04-01-tnf.swift")
+            }
+            @Step {
+                Create a parser that branches records based on TNF.
+                @Code(name: "RecordParser.swift", file: "04-02-switch.swift")
+            }
+            @Step {
+                Handle subtypes of the Well-Known type.
+                "T" represents text, "U" represents URI.
+                @Code(name: "RecordParser.swift", file: "04-03-wellknown.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Parsing Payload Data") {
+        @ContentAndMedia {
+            Interpret payload bytes according to each record type.
+        }
+        @Steps {
+            @Step {
+                Extract MIME type and data from Media type records.
+                @Code(name: "RecordParser.swift", file: "04-04-media.swift")
+            }
+            @Step {
+                Handle External type records.
+                Used for storing custom domain data.
+                @Code(name: "RecordParser.swift", file: "04-05-external.swift")
+            }
+            @Step {
+                Complete a comprehensive record parser class.
+                @Code(name: "RecordParser.swift", file: "04-06-parser.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does "T" mean in the Well-Known type?
+            @Choice(isCorrect: true) {
+                Text record
+                @Justification(reaction: "Correct!") {
+                    "T" is text data encoded in UTF-8 or UTF-16.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Timestamp
+                @Justification(reaction: "Think again.") {
+                    "T" stands for Text.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Tag information
+                @Justification(reaction: "Think again.") {
+                    "T" represents a text record.
+                }
+            }
+        }
+        @MultipleChoice {
+            What is the main purpose of External type records?
+            @Choice(isCorrect: false) {
+                Storing standard URLs
+                @Justification(reaction: "Think again.") {
+                    URLs use the Well-Known "U" type.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Storing application-specific data for custom domains
+                @Justification(reaction: "Correct!") {
+                    External type allows defining app-specific data formats.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Storing image files
+                @Justification(reaction: "Think again.") {
+                    Media type is more suitable for images.
+                }
+            }
+        }
+    }
+}

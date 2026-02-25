@@ -1,0 +1,148 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Calendar Synchronization") {
+        Learn about detecting external database changes, 
+        refreshing, and handling conflicts.
+    }
+    
+    @Section(title: "Handling Change Notifications") {
+        @ContentAndMedia {
+            When the calendar is modified by other apps or the system, 
+            your app needs to detect this and update the UI.
+        }
+        
+        @Steps {
+            @Step {
+                Subscribe to the `EKEventStoreChanged` notification.
+                
+                @Code(name: "CalendarManager.swift", file: "09-01-notification.swift")
+            }
+            
+            @Step {
+                Refresh data when receiving change notifications.
+                
+                @Code(name: "CalendarManager.swift", file: "09-02-refresh.swift")
+            }
+            
+            @Step {
+                Refactor using the Async/Await pattern.
+                
+                @Code(name: "CalendarManager.swift", file: "09-03-async.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Managing Event Identifiers") {
+        @ContentAndMedia {
+            You need to understand identifiers and use them correctly 
+            to track events.
+        }
+        
+        @Steps {
+            @Step {
+                Understand the difference between `eventIdentifier` and `calendarItemIdentifier`.
+                
+                @Code(name: "IdentifierGuide.swift", file: "09-04-identifiers.swift")
+            }
+            
+            @Step {
+                Store an identifier and fetch the event later.
+                
+                @Code(name: "CalendarManager.swift", file: "09-05-store-id.swift")
+            }
+            
+            @Step {
+                Check if an event has been deleted.
+                
+                @Code(name: "CalendarManager.swift", file: "09-06-check-exists.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Batch Operations and Commits") {
+        @ContentAndMedia {
+            Save multiple events efficiently and 
+            manage them like transactions.
+        }
+        
+        @Steps {
+            @Step {
+                Batch multiple operations with `commit: false`.
+                
+                @Code(name: "CalendarManager.swift", file: "09-07-batch.swift")
+            }
+            
+            @Step {
+                Call `commit()` only once at the end.
+                
+                @Code(name: "CalendarManager.swift", file: "09-08-commit.swift")
+            }
+            
+            @Step {
+                Implement rollback handling on error.
+                
+                @Code(name: "CalendarManager.swift", file: "09-09-rollback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What identifier distinguishes each occurrence of a recurring event?
+            
+            @Choice(isCorrect: true) {
+                `eventIdentifier`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    `eventIdentifier` uniquely identifies 
+                    each occurrence of a recurring event.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `calendarItemIdentifier`
+                
+                @Justification(reaction: "Try again.") {
+                    `calendarItemIdentifier` identifies the entire 
+                    recurring event as one.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `uniqueId`
+                
+                @Justification(reaction: "Try again.") {
+                    This property doesn't exist.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do you efficiently save multiple events?
+            
+            @Choice(isCorrect: false) {
+                Save each event with `commit: true`
+                
+                @Justification(reaction: "Try again.") {
+                    Committing each time degrades performance.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Save with `commit: false` then call `commit()` at the end
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Batch operations that collect multiple changes 
+                    and commit once improve performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use the `batchSave()` method
+                
+                @Justification(reaction: "Try again.") {
+                    This method doesn't exist.
+                }
+            }
+        }
+    }
+}

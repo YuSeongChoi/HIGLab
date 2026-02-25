@@ -1,0 +1,164 @@
+@Tutorial(time: 12) {
+    @Intro(title: "View Update Optimization") {
+        Learn how to maximize the benefits of Granular Observation.
+        Reduce unnecessary view updates and improve app performance.
+    }
+    
+    @Section(title: "Principles of Granular Observation") {
+        @ContentAndMedia {
+            The most powerful feature of Observation is **granular observation**.
+            Views only observe properties they actually read,
+            so unnecessary updates are naturally eliminated.
+        }
+        
+        @Steps {
+            @Step {
+                Use Self._printChanges() to track view updates.
+                You can see when and why views are re-rendered.
+                
+                @Code(name: "PrintChanges.swift", file: "05-print-changes.swift")
+            }
+            
+            @Step {
+                Compare update differences between ObservableObject and @Observable.
+                The number of updates is significantly reduced for the same UI.
+                
+                @Code(name: "UpdateComparison.swift", file: "05-update-comparison.swift")
+            }
+            
+            @Step {
+                Optimization through conditional reading.
+                If you don't read a property, it's not tracked!
+                
+                @Code(name: "ConditionalReading.swift", file: "05-conditional-reading.swift")
+            }
+        }
+    }
+    
+    @Section(title: "View Separation Strategy") {
+        @ContentAndMedia {
+            The key to optimization is **separating into smaller views**.
+            Design each view to read only the properties it needs.
+        }
+        
+        @Steps {
+            @Step {
+                **Anti-pattern**: Handling everything in one large view
+                
+                The entire view is re-rendered when any property changes.
+                
+                @Code(name: "BadMonolithicView.swift", file: "05-bad-monolithic.swift")
+            }
+            
+            @Step {
+                **Recommended pattern**: Separate into smaller views
+                
+                Each view reads only related properties and updates independently.
+                
+                @Code(name: "GoodSeparatedViews.swift", file: "05-good-separated.swift")
+            }
+            
+            @Step {
+                Performance measurement: Using Instruments' SwiftUI profiler
+                
+                Measure view update counts and time in real apps.
+                
+                @Code(name: "PerformanceTips.swift", file: "05-performance-tips.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: Applying Performance Optimization") {
+        @ContentAndMedia {
+            Apply view separation strategy to the CartFlow app
+            to improve cart screen performance.
+        }
+        
+        @Steps {
+            @Step {
+                Separate the cart summary area into a separate view.
+                When quantity changes, only the summary updates, not the entire list.
+                
+                @Code(name: "CartSummary.swift", file: "05-cart-summary.swift")
+            }
+            
+            @Step {
+                Optimize product rows too.
+                Separate image, info, and quantity controls.
+                
+                @Code(name: "OptimizedItemRow.swift", file: "05-optimized-row.swift")
+            }
+            
+            @Step {
+                The final optimized cart view.
+                Each area updates independently.
+                
+                @Code(name: "OptimizedCartView.swift", file: "05-optimized-cart.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the most effective way to minimize view updates?
+            
+            @Choice(isCorrect: true) {
+                Separate into smaller views so each reads only needed properties
+                
+                @Justification(reaction: "Correct!") {
+                    When separated into smaller views, each view only tracks related properties,
+                    naturally eliminating unnecessary updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use @ObservationIgnored as much as possible
+                
+                @Justification(reaction: "Not quite") {
+                    @ObservationIgnored completely disables tracking,
+                    which can also block necessary updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Gather all state in one large object
+                
+                @Justification(reaction: "Not quite") {
+                    Appropriately separated smaller objects
+                    enable more fine-grained updates than one large object.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is Self._printChanges() used for?
+            
+            @Choice(isCorrect: true) {
+                Debugging - checking when and why views update
+                
+                @Justification(reaction: "Perfect!") {
+                    _printChanges() prints information to the console when views update,
+                    helping find unnecessary updates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Performance optimization - improving view update speed
+                
+                @Justification(reaction: "Not quite") {
+                    _printChanges() is a debugging tool
+                    that doesn't directly improve performance.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Required setting - must be added to all views
+                
+                @Justification(reaction: "Not quite") {
+                    _printChanges() is an optional debugging tool.
+                    It should be removed in production.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,169 @@
+@Tutorial(time: 15) {
+    @Intro(title: "PushKit Integration") {
+        Learn how to receive VoIP push notifications using PushKit
+        and handle incoming calls in the background.
+    }
+    
+    @Section(title: "PushKit Setup") {
+        @ContentAndMedia {
+            Set up the PushKit framework and
+            implement VoIP push registration.
+        }
+        
+        @Steps {
+            @Step {
+                Import PushKit and create PKPushRegistry.
+                
+                @Code(name: "PushKitManager.swift", file: "10-01-import.swift")
+            }
+            
+            @Step {
+                Register for VoIP push type.
+                
+                @Code(name: "PushKitManager.swift", file: "10-02-register.swift")
+            }
+            
+            @Step {
+                Implement PKPushRegistryDelegate.
+                
+                @Code(name: "PushKitManager.swift", file: "10-03-delegate.swift")
+            }
+            
+            @Step {
+                Send the device token to your server.
+                
+                @Code(name: "PushKitManager.swift", file: "10-04-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling VoIP Push") {
+        @ContentAndMedia {
+            When a VoIP push arrives, integrate with CallKit
+            to display the incoming call.
+        }
+        
+        @Steps {
+            @Step {
+                Implement didReceiveIncomingPush.
+                
+                @Code(name: "PushKitManager.swift", file: "10-05-receive-push.swift")
+            }
+            
+            @Step {
+                Parse call information from the push payload.
+                
+                @Code(name: "PushKitManager.swift", file: "10-06-parse-payload.swift")
+            }
+            
+            @Step {
+                Report the incoming call to CallKit.
+                
+                You must call reportNewIncomingCall within the push callback.
+                
+                @Code(name: "PushKitManager.swift", file: "10-07-report-call.swift")
+            }
+            
+            @Step {
+                Handle errors when push processing fails.
+                
+                @Code(name: "PushKitManager.swift", file: "10-08-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Server-Side Implementation") {
+        @ContentAndMedia {
+            Explore the server-side implementation
+            for sending VoIP pushes.
+        }
+        
+        @Steps {
+            @Step {
+                Generate VoIP certificate.
+                
+                Create a VoIP Services Certificate in Apple Developer.
+                
+                @Code(name: "VoIPCertificate.md", file: "10-09-certificate.swift")
+            }
+            
+            @Step {
+                Check the format for sending VoIP push to APNs.
+                
+                @Code(name: "ServerPayload.swift", file: "10-10-payload.swift")
+            }
+            
+            @Step {
+                Use JWT-based authentication.
+                
+                @Code(name: "JWTAuth.swift", file: "10-11-jwt.swift")
+            }
+            
+            @Step {
+                Complete the full VoIP system.
+                
+                @Code(name: "VoIPSystem.swift", file: "10-12-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which push type should be registered to receive VoIP push notifications?
+            
+            @Choice(isCorrect: true) {
+                `.voIP`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    You must register with `PKPushType.voIP`
+                    to receive VoIP pushes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.complication`
+                
+                @Justification(reaction: "Think again.") {
+                    This is for watchOS complications.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.fileProvider`
+                
+                @Justification(reaction: "Think again.") {
+                    This is for file providers.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What must you do when receiving a VoIP push?
+            
+            @Choice(isCorrect: true) {
+                Call `reportNewIncomingCall` within the callback
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    Since iOS 13, when receiving a VoIP push, you must
+                    report a call to CallKit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Show a local notification
+                
+                @Justification(reaction: "Think again.") {
+                    VoIP pushes must integrate with CallKit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Start a background task
+                
+                @Justification(reaction: "Think again.") {
+                    CallKit integration takes priority.
+                }
+            }
+        }
+    }
+}

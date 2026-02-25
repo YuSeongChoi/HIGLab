@@ -1,0 +1,181 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Authentication UI Customization") {
+        Learn how to customize the text of the system authentication dialog to fit your app 
+        and improve user experience.
+    }
+    
+    @Section(title: "Setting Dialog Text") {
+        @ContentAndMedia {
+            You can customize various texts in the authentication dialog 
+            through LAContext properties.
+        }
+        
+        @Steps {
+            @Step {
+                **localizedReason (Required)**
+                
+                The message passed when calling evaluatePolicy.
+                Clearly explain why authentication is needed.
+                
+                @Code(name: "LocalizedReason.swift", file: "07-localized-reason.swift")
+            }
+            
+            @Step {
+                **localizedFallbackTitle**
+                
+                Changes the text of the "Enter Password" button.
+                Set to app-appropriate text or "" to hide it.
+                
+                @Code(name: "FallbackTitle.swift", file: "07-fallback-title.swift")
+            }
+            
+            @Step {
+                **localizedCancelTitle**
+                
+                Changes the cancel button text.
+                If nil, the system default "Cancel" is used.
+                
+                @Code(name: "CancelTitle.swift", file: "07-cancel-title.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Optimizing Messages by Context") {
+        @ContentAndMedia {
+            Even within the same app, showing different messages depending on the situation 
+            makes it easier for users to understand the context.
+        }
+        
+        @Steps {
+            @Step {
+                **When Unlocking the App**
+                
+                "Authenticate to access SecureVault"
+                
+                @Code(name: "UnlockMessage.swift", file: "07-unlock-message.swift")
+            }
+            
+            @Step {
+                **When Confirming Sensitive Actions**
+                
+                "Authentication required to delete this item"
+                
+                @Code(name: "DeleteMessage.swift", file: "07-delete-message.swift")
+            }
+            
+            @Step {
+                **When Confirming Export**
+                
+                "Identity verification required to export data"
+                
+                @Code(name: "ExportMessage.swift", file: "07-export-message.swift")
+            }
+            
+            @Step {
+                **Managing with AuthPurpose Enumeration**
+                
+                Systematically manage messages by purpose.
+                
+                @Code(name: "AuthPurpose.swift", file: "07-auth-purpose.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling UI Before and After Authentication") {
+        @ContentAndMedia {
+            Smoothly handle UI transitions while the authentication dialog is displayed 
+            and when processing results.
+        }
+        
+        @Steps {
+            @Step {
+                **Showing Loading State**
+                
+                Show a brief loading state before the authentication dialog appears.
+                
+                @Code(name: "LoadingState.swift", file: "07-loading-state.swift")
+            }
+            
+            @Step {
+                **Success Animation**
+                
+                Display an unlock animation on authentication success.
+                Use SF Symbols lock.open.
+                
+                @Code(name: "SuccessAnimation.swift", file: "07-success-animation.swift")
+            }
+            
+            @Step {
+                **Failure Feedback**
+                
+                Show retry guidance with haptic feedback on failure.
+                
+                @Code(name: "FailureFeedback.swift", file: "07-failure-feedback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What's the difference between localizedReason and localizedFallbackTitle?
+            
+            @Choice(isCorrect: true) {
+                reason explains authentication purpose, fallbackTitle is fallback button text
+                
+                @Justification(reaction: "Correct!") {
+                    localizedReason explains "why authentication is needed", 
+                    localizedFallbackTitle is the text for the passcode switch button.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Both are displayed in the same location
+                
+                @Justification(reaction: "Not quite") {
+                    reason is displayed in the dialog body, 
+                    fallbackTitle is displayed on the button.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                reason is optional, fallbackTitle is required
+                
+                @Justification(reaction: "Not quite") {
+                    It's the opposite. reason is a required parameter of evaluatePolicy, 
+                    fallbackTitle is optionally set.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What's the recommended approach when transitioning to app content after successful authentication?
+            
+            @Choice(isCorrect: true) {
+                Provide unlock feedback with smooth animation
+                
+                @Justification(reaction: "Correct!") {
+                    Using animation instead of abrupt screen transition 
+                    provides a more natural user experience.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Immediately display content and show a notification
+                
+                @Justification(reaction: "Not quite") {
+                    Notifications are unnecessary. 
+                    Smooth transition animations provide better UX.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Display success message for 2 seconds before transitioning
+                
+                @Justification(reaction: "Not quite") {
+                    2 seconds is too long.
+                    Transition immediately with a short animation.
+                }
+            }
+        }
+    }
+}

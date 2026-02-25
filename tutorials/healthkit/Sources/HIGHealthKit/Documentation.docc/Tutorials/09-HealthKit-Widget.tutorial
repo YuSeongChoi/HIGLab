@@ -1,0 +1,240 @@
+@Tutorial(time: 20) {
+    @Intro(title: "HealthKit Widget") {
+        Create a widget that displays health data on the home screen using WidgetKit.
+        Cover data sharing through App Groups and permission handling.
+    }
+    
+    @Section(title: "Creating Widget Extension") {
+        @ContentAndMedia {
+            Add a Widget Extension and configure basic settings
+            for HealthKit integration.
+        }
+        
+        @Steps {
+            @Step {
+                **Add Widget Extension**
+                
+                Select Widget Extension from File > New > Target.
+                Check "Include Configuration App Intent".
+                
+                @Code(name: "WidgetTarget.swift", file: "09-widget-target.swift")
+            }
+            
+            @Step {
+                **Add HealthKit Capability**
+                
+                HealthKit capability must also be added to the Widget Extension.
+                Settings are needed separately from the main app.
+                
+                @Code(name: "WidgetCapability.swift", file: "09-widget-capability.swift")
+            }
+            
+            @Step {
+                **App Groups Setup**
+                
+                App Groups are needed for the main app and widget to share data.
+                Add the same group to both the main app and widget.
+                
+                @Code(name: "AppGroups.swift", file: "09-app-groups.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using HealthKit in Widget") {
+        @ContentAndMedia {
+            There are limitations to directly querying HealthKit data in widgets,
+            so an appropriate strategy is needed.
+        }
+        
+        @Steps {
+            @Step {
+                **Widget HealthKit Limitations**
+                
+                You can use HKHealthStore directly in widgets,
+                but you cannot fetch data without permission.
+                Permission must be obtained in the main app first.
+                
+                @Code(name: "WidgetLimitations.swift", file: "09-widget-limitations.swift")
+            }
+            
+            @Step {
+                **Implement TimelineProvider**
+                
+                Query HealthKit data to create Timeline Entry.
+                Use async getTimeline.
+                
+                @Code(name: "TimelineProvider.swift", file: "09-timeline-provider.swift")
+            }
+            
+            @Step {
+                **Define Entry Model**
+                
+                Define an Entry that holds data to display in the widget.
+                
+                @Code(name: "WidgetEntry.swift", file: "09-widget-entry.swift")
+            }
+            
+            @Step {
+                **HealthKit Query for Widget**
+                
+                Write simple HealthKit query logic for the widget.
+                
+                @Code(name: "WidgetHealthQuery.swift", file: "09-widget-health-query.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Widget UI") {
+        @ContentAndMedia {
+            Create widget views that display step count and goal achievement.
+            Provide different layouts for different sizes.
+        }
+        
+        @Steps {
+            @Step {
+                **Small Widget View**
+                
+                Display current step count and ring-style progress.
+                
+                @Code(name: "SmallWidgetView.swift", file: "09-small-widget-view.swift")
+            }
+            
+            @Step {
+                **Medium Widget View**
+                
+                Display heart rate and calories along with step count.
+                
+                @Code(name: "MediumWidgetView.swift", file: "09-medium-widget-view.swift")
+            }
+            
+            @Step {
+                **Handle No Permission State**
+                
+                Display a guidance message when HealthKit permission is not granted.
+                
+                @Code(name: "NoPermissionView.swift", file: "09-no-permission-view.swift")
+            }
+            
+            @Step {
+                **Widget Definition**
+                
+                Define the complete widget structure and connect size-specific views.
+                
+                @Code(name: "FitnessWidget.swift", file: "09-fitness-widget.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Widget Refresh Strategy") {
+        @ContentAndMedia {
+            Set an appropriate refresh strategy so the widget displays the latest data.
+        }
+        
+        @Steps {
+            @Step {
+                **Timeline Policy**
+                
+                Set the next refresh time with .atEnd or .after(date).
+                15 minutes to 1 hour intervals are appropriate for health data.
+                
+                @Code(name: "TimelinePolicy.swift", file: "09-timeline-policy.swift")
+            }
+            
+            @Step {
+                **Background Delivery Integration**
+                
+                Integrating with enableBackgroundDelivery from earlier
+                allows immediate widget refresh when data changes.
+                
+                @Code(name: "BackgroundWidgetRefresh.swift", file: "09-background-widget-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What setup is needed to use HealthKit in widgets?
+            
+            @Choice(isCorrect: true) {
+                Add HealthKit capability to Widget Extension as well
+                
+                @Justification(reaction: "Correct!") {
+                    The widget is a separate target, so capabilities must be set independently.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Main app settings are automatically applied
+                
+                @Justification(reaction: "Not quite") {
+                    Extensions are separate targets, each requiring their own settings.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HealthKit cannot be used in widgets
+                
+                @Justification(reaction: "Not quite") {
+                    HealthKit can be used in widgets too.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How do the main app and widget share data?
+            
+            @Choice(isCorrect: true) {
+                Set up App Groups
+                
+                @Justification(reaction: "Correct!") {
+                    UserDefaults or files can be shared through App Groups.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Automatically shared
+                
+                @Justification(reaction: "Not quite") {
+                    Apps and Extensions run in separate sandboxes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Use NotificationCenter
+                
+                @Justification(reaction: "Not quite") {
+                    NotificationCenter only works within the same process.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What happens if the widget doesn't have HealthKit permission?
+            
+            @Choice(isCorrect: true) {
+                Cannot fetch data, so display guidance message
+                
+                @Justification(reaction: "Correct!") {
+                    Widgets cannot request permissions,
+                    so guidance to set permissions in the app is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Permission request UI appears in the widget
+                
+                @Justification(reaction: "Not quite") {
+                    Widgets cannot display permission request UI.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Default values are displayed
+                
+                @Justification(reaction: "Not quite") {
+                    Informing users of the situation is good UX.
+                }
+            }
+        }
+    }
+}

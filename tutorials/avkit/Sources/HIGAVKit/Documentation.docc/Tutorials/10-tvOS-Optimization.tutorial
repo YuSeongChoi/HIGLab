@@ -1,0 +1,219 @@
+@Tutorial(time: 25) {
+    @Intro(title: "tvOS Optimization") {
+        Create a video player experience optimized for tvOS
+        to build an app suitable for the living room environment.
+        
+        @Image(source: "tvos-optimization.png", alt: "tvOS Optimization")
+    }
+    
+    @Section(title: "tvOS Player Basics") {
+        @ContentAndMedia {
+            AVPlayerViewController on tvOS provides
+            UI optimized for the living room environment.
+            
+            - Siri Remote-based navigation
+            - Automatic Info panel support
+            - Swipe seeking
+            
+            @Image(source: "tvos-player.png", alt: "tvOS Player")
+        }
+        
+        @Steps {
+            @Step {
+                Set up basic AVPlayerViewController on tvOS.
+                You can start with the same code as iOS.
+                
+                @Code(name: "TVOSBasicPlayer.swift", file: "10-01-tvos-basic.swift")
+            }
+            
+            @Step {
+                Use #if os(tvOS) compile directive
+                to separate tvOS-specific code.
+                
+                @Code(name: "PlatformSpecific.swift", file: "10-02-platform-specific.swift")
+            }
+            
+            @Step {
+                tvOS player UI automatically integrates
+                with the focus system.
+                
+                @Code(name: "TVOSFocus.swift", file: "10-03-focus.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Info Panel") {
+        @ContentAndMedia {
+            Provide additional metadata to the Info panel
+            shown via the Info tab.
+            
+            - Title, description
+            - Thumbnail image
+            - Additional info tabs
+        }
+        
+        @Steps {
+            @Step {
+                Set basic info with AVPlayerItem's externalMetadata.
+                
+                @Code(name: "ExternalMetadata.swift", file: "10-04-external-metadata.swift")
+            }
+            
+            @Step {
+                Create AVMetadataItem to add
+                title, description, and artwork.
+                
+                @Code(name: "MetadataItems.swift", file: "10-05-metadata-items.swift")
+            }
+            
+            @Step {
+                Customize next content suggestion UI
+                with contentProposalViewController.
+                
+                @Code(name: "ContentProposal.swift", file: "10-06-content-proposal.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Siri Remote Support") {
+        @ContentAndMedia {
+            Implement intuitive controls using
+            Siri Remote gestures and buttons.
+            
+            - Touch surface swipes
+            - Click gestures
+            - Menu button handling
+        }
+        
+        @Steps {
+            @Step {
+                Support quick seeking with touch surface swipes.
+                AVPlayerViewController provides this by default.
+                
+                @Code(name: "SwipeSeek.swift", file: "10-07-swipe-seek.swift")
+            }
+            
+            @Step {
+                Set skip intervals with skipForwardInterval
+                and skipBackwardInterval.
+                
+                @Code(name: "SkipIntervals.swift", file: "10-08-skip-intervals.swift")
+            }
+            
+            @Step {
+                Handle remote button events with pressesHandler.
+                
+                @Code(name: "RemotePress.swift", file: "10-09-remote-press.swift")
+            }
+            
+            @Step {
+                Play/Pause button is handled automatically,
+                but you can add custom behavior.
+                
+                @Code(name: "PlayPauseButton.swift", file: "10-10-play-pause.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Continuous Playback and Top Shelf") {
+        @ContentAndMedia {
+            Utilize tvOS-specific features like
+            continuous playback (Up Next) and Top Shelf.
+            
+            - Auto-play episodes
+            - Next content suggestions
+            - Top Shelf content provision
+        }
+        
+        @Steps {
+            @Step {
+                Handle next content with AVPlayerViewControllerDelegate's
+                willTransition(to:) method.
+                
+                @Code(name: "UpNext.swift", file: "10-11-up-next.swift")
+            }
+            
+            @Step {
+                Suggest next content with AVContentProposal.
+                Ask user about auto-play.
+                
+                @Code(name: "ContentProposalSetup.swift", file: "10-12-proposal-setup.swift")
+            }
+            
+            @Step {
+                Display content in home screen Top Shelf
+                with TVTopShelfContentProvider.
+                
+                @Code(name: "TopShelf.swift", file: "10-13-top-shelf.swift")
+            }
+            
+            @Step {
+                Handle deep links to start playback immediately
+                when content is selected from Top Shelf.
+                
+                @Code(name: "DeepLink.swift", file: "10-14-deep-link.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            How do you display metadata in the Info panel on tvOS?
+            
+            @Choice(isCorrect: false) {
+                Add a separate view controller
+                
+                @Justification(reaction: "Unnecessary.") {
+                    AVPlayerViewController provides built-in Info panel.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Add AVMetadataItem to AVPlayerItem's externalMetadata
+                
+                @Justification(reaction: "Exactly right! 📺") {
+                    Adding metadata items to the externalMetadata array
+                    makes the system automatically display them in the Info panel.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Define metadata in Info.plist
+                
+                @Justification(reaction: "Incorrect.") {
+                    Info.plist is for app settings,
+                    dynamic media metadata is set in code.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the default behavior of Siri Remote swipe seeking on tvOS?
+            
+            @Choice(isCorrect: true) {
+                AVPlayerViewController automatically supports swipe seeking
+                
+                @Justification(reaction: "Correct! ✨") {
+                    tvOS AVPlayerViewController has built-in
+                    touch surface swipe support.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Developer must add gesture recognizer manually
+                
+                @Justification(reaction: "Not needed.") {
+                    It's automatically supported in the default player.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                tvOS doesn't support swipe seeking
+                
+                @Justification(reaction: "It does support it.") {
+                    Swipe seeking is a core feature of tvOS player.
+                }
+            }
+        }
+    }
+}

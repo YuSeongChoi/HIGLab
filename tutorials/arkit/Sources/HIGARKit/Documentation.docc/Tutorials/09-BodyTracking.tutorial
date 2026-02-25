@@ -1,0 +1,66 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Body Tracking") {
+        Track full-body poses to implement AR character animation and motion capture.
+    }
+    
+    @Section(title: "Body Tracking Setup") {
+        @ContentAndMedia {
+            Track a person's full-body skeleton in real-time with ARBodyTrackingConfiguration. Requires A12 Bionic chip or later.
+        }
+        @Steps {
+            @Step {
+                Check body tracking support and configure the session.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking.swift")
+            }
+            @Step {
+                Extract skeleton joint information from ARBodyAnchor.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-02.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Character Animation") {
+        @ContentAndMedia {
+            Animate 3D characters in real-time using tracked body poses.
+        }
+        @Steps {
+            @Step {
+                Load a character using BodyTrackedEntity.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-03.swift")
+            }
+            @Step {
+                Connect the character to bodyAnchor for synchronization.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-04.swift")
+            }
+            @Step {
+                Implement interactions using specific joint positions.
+                @Code(name: "BodyTracking.swift", file: "09-bodytracking-05.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What coordinate system is returned when getting joint positions from ARBodyAnchor's skeleton?
+            
+            @Choice(isCorrect: false) {
+                World Space
+                @Justification(reaction: "Think again.") {
+                    Joint positions are local coordinates relative to the root joint.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Local coordinate system relative to the root joint
+                @Justification(reaction: "Correct! 🎉") {
+                    `skeleton.localTransform(for:)` returns relative coordinates based on the hip (root) joint.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Camera Space
+                @Justification(reaction: "Think again.") {
+                    It's not camera-relative but body root-relative.
+                }
+            }
+        }
+    }
+}

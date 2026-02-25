@@ -1,0 +1,195 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Understanding PKPass Structure") {
+        Learn in detail about the components of a PKPass bundle
+        and the role of each file.
+        
+        @Image(source: "pkpass-structure.png", alt: "PKPass Structure")
+    }
+    
+    @Section(title: "PKPass Bundle Structure") {
+        @ContentAndMedia {
+            PKPass is a signed bundle with the `.pkpass` extension.
+            It's actually in ZIP file format and contains the following files:
+            
+            - **pass.json**: Defines all pass data and styling
+            - **manifest.json**: SHA1 hashes of all files
+            - **signature**: Data signed with developer certificate
+            - **icon.png / icon@2x.png / icon@3x.png**: App icons
+            - **logo.png**: Pass header logo
+            - **strip.png / thumbnail.png**: Pass images
+        }
+        
+        @Steps {
+            @Step {
+                Load a PKPass file from a URL.
+                Automatically parses the pass.json inside the bundle.
+                
+                @Code(name: "LoadPass.swift", file: "02-01-load-pass.swift")
+            }
+            
+            @Step {
+                Access various information from the PKPass object.
+                Check serial number, organization name, description, etc.
+                
+                @Code(name: "PassProperties.swift", file: "02-02-pass-properties.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Pass Field Structure") {
+        @ContentAndMedia {
+            Pass content is organized into field groups.
+            Each group is displayed at a specific location on the pass.
+            
+            - **headerFields**: Top right of pass (always visible)
+            - **primaryFields**: Main information area
+            - **secondaryFields**: Secondary information
+            - **auxiliaryFields**: Additional information
+            - **backFields**: Back side information
+        }
+        
+        @Steps {
+            @Step {
+                Each field consists of key, label, and value.
+                The key is used to identify fields during updates.
+                
+                @Code(name: "FieldStructure.swift", file: "02-03-field-structure.swift")
+            }
+            
+            @Step {
+                Understand field layout in the storeCard type.
+                Appropriately place membership number, points, tier, etc.
+                
+                @Code(name: "StoreCardLayout.swift", file: "02-04-store-card-layout.swift")
+            }
+            
+            @Step {
+                You can specify data types for fields.
+                Automatically handles formats like dates, currency, numbers.
+                
+                @Code(name: "FieldTypes.swift", file: "02-05-field-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Image Asset Guidelines") {
+        @ContentAndMedia {
+            Pass images must follow clear specifications.
+            Incorrect size or format causes pass creation failure.
+            
+            | Image | Size (1x) | Purpose |
+            |-------|----------|--------|
+            | icon | 29×29 | Notifications, search |
+            | logo | 160×50 | Pass header |
+            | strip | 375×123 | storeCard background |
+            | thumbnail | 90×90 | eventTicket |
+        }
+        
+        @Steps {
+            @Step {
+                Provide @1x, @2x, @3x resolutions for all images.
+                Use PNG format and include alpha channel if transparency is needed.
+                
+                @Code(name: "ImageAssets.swift", file: "02-06-image-assets.swift")
+            }
+            
+            @Step {
+                The strip image determines the visual identity of storeCard.
+                Designs including brand colors and logo are recommended.
+                
+                @Code(name: "StripDesign.swift", file: "02-07-strip-design.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Barcodes and NFC") {
+        @ContentAndMedia {
+            Passes can include barcodes or NFC data for scanning.
+            
+            Supported barcode formats:
+            - **PKBarcodeFormatQR**: QR code (recommended)
+            - **PKBarcodeFormatPDF417**: PDF417
+            - **PKBarcodeFormatAztec**: Aztec
+            - **PKBarcodeFormatCode128**: Code 128
+        }
+        
+        @Steps {
+            @Step {
+                Define barcode information in the barcodes array.
+                Multiple formats can be provided for compatibility.
+                
+                @Code(name: "BarcodeSetup.swift", file: "02-08-barcode.swift")
+            }
+            
+            @Step {
+                If NFC is supported, passes can be recognized with just a tap.
+                Set message and encryption key in the nfc field.
+                
+                @Code(name: "NFCSetup.swift", file: "02-09-nfc.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which file in the PKPass bundle defines pass data and styling?
+            
+            @Choice(isCorrect: true) {
+                pass.json
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    pass.json is the core configuration file
+                    containing all pass information.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                manifest.json
+                
+                @Justification(reaction: "Not quite.") {
+                    manifest.json contains SHA1 hash values
+                    of files in the bundle.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                signature
+                
+                @Justification(reaction: "Incorrect.") {
+                    signature is the signature data
+                    that ensures pass integrity.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which asset is used as the background image for storeCard type?
+            
+            @Choice(isCorrect: false) {
+                logo.png
+                
+                @Justification(reaction: "Check again.") {
+                    logo.png is a small logo image
+                    displayed at the top of the pass.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                thumbnail.png
+                
+                @Justification(reaction: "Not quite.") {
+                    thumbnail is mainly used for eventTicket type.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                strip.png
+                
+                @Justification(reaction: "Correct! ✨") {
+                    The strip image handles the main visual area
+                    for storeCard and coupon types.
+                }
+            }
+        }
+    }
+}

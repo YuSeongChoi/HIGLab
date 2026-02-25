@@ -1,0 +1,239 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Anchoring (AnchorEntity)") {
+        Learn how to anchor virtual content to the real world using AnchorEntity.
+        Explore various anchor types and use cases.
+        
+        @Image(source: "chapter5-anchor.png", alt: "AnchorEntity Anchoring")
+    }
+    
+    @Section(title: "Understanding AnchorEntity") {
+        @ContentAndMedia {
+            AnchorEntity anchors AR content to specific locations or surfaces in the real world.
+            It automatically syncs with ARKit anchors.
+            
+            @Image(source: "anchor-basics.png", alt: "Anchor Basic Concept")
+        }
+        
+        @Steps {
+            @Step {
+                AnchorEntity serves as the root of the scene hierarchy.
+                
+                @Code(name: "AnchorBasics.swift", file: "05-anchor-01.swift")
+            }
+            
+            @Step {
+                You can add multiple AnchorEntities to a single scene.
+                
+                @Code(name: "MultipleAnchors.swift", file: "05-anchor-02.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Plane Anchors") {
+        @ContentAndMedia {
+            Anchor content to horizontal planes (floors, tables) or vertical planes (walls).
+            
+            @Image(source: "plane-anchor.png", alt: "Plane Anchor")
+        }
+        
+        @Steps {
+            @Step {
+                Create an anchor on a horizontal plane.
+                
+                @Code(name: "HorizontalPlane.swift", file: "05-anchor-03.swift")
+            }
+            
+            @Step {
+                Create an anchor on a vertical plane (wall).
+                
+                @Code(name: "VerticalPlane.swift", file: "05-anchor-04.swift")
+            }
+            
+            @Step {
+                Use plane classification for more precise anchoring.
+                (Table, floor, ceiling, etc.)
+                
+                @Code(name: "PlaneClassification.swift", file: "05-anchor-05.swift")
+            }
+            
+            @Step {
+                Specify minimum plane size.
+                
+                @Code(name: "MinimumPlaneSize.swift", file: "05-anchor-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Image Anchors") {
+        @ContentAndMedia {
+            Recognize specific images (posters, book covers, etc.) and display content on them.
+            
+            @Image(source: "image-anchor.png", alt: "Image Anchor")
+        }
+        
+        @Steps {
+            @Step {
+                Add reference images to the AR Resource Group.
+                
+                @Image(source: "add-reference-image.png", alt: "Add Reference Image")
+            }
+            
+            @Step {
+                Create an image anchor.
+                
+                @Code(name: "ImageAnchor.swift", file: "05-anchor-07.swift")
+            }
+            
+            @Step {
+                Track multiple images simultaneously.
+                
+                @Code(name: "MultipleImages.swift", file: "05-anchor-08.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Face and Body Anchors") {
+        @ContentAndMedia {
+            Attach content to the user's face or body.
+            
+            @Image(source: "face-body-anchor.png", alt: "Face and Body Anchors")
+        }
+        
+        @Steps {
+            @Step {
+                Use face anchors to create AR masks or filters.
+                (Requires front camera)
+                
+                @Code(name: "FaceAnchor.swift", file: "05-anchor-09.swift")
+            }
+            
+            @Step {
+                Apply full-body AR effects with body anchors.
+                
+                @Code(name: "BodyAnchor.swift", file: "05-anchor-10.swift")
+            }
+        }
+    }
+    
+    @Section(title: "World Anchors") {
+        @ContentAndMedia {
+            Place anchors directly at specific coordinates.
+            Use raycast to determine precise positions.
+            
+            @Image(source: "world-anchor.png", alt: "World Anchor")
+        }
+        
+        @Steps {
+            @Step {
+                Create a world anchor at specific coordinates.
+                
+                @Code(name: "WorldAnchor.swift", file: "05-anchor-11.swift")
+            }
+            
+            @Step {
+                Place an anchor at the tapped position using raycast.
+                
+                @Code(name: "RaycastAnchor.swift", file: "05-anchor-12.swift")
+            }
+            
+            @Step {
+                Use anchor persistence to maintain content across sessions.
+                
+                @Code(name: "PersistentAnchor.swift", file: "05-anchor-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which anchor type should you use to place AR content only on tables?
+            
+            @Choice(isCorrect: false) {
+                AnchorEntity(.plane(.horizontal, classification: .floor))
+                
+                @Justification(reaction: "Think again.") {
+                    .floor means the floor.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                AnchorEntity(.plane(.horizontal, classification: .table))
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Using .table classification places anchors
+                    only on horizontal planes classified as tables.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AnchorEntity(.plane(.vertical, classification: .wall))
+                
+                @Justification(reaction: "Think again.") {
+                    .vertical means vertical planes (walls).
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What do you need to do first to use image recognition anchors?
+            
+            @Choice(isCorrect: true) {
+                Add reference images to AR Resource Group
+                
+                @Justification(reaction: "Correct! ✅") {
+                    You need to create an AR Resource Group in Xcode Assets
+                    and add the images to recognize as reference images.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Convert the image to USDZ
+                
+                @Justification(reaction: "Not quite.") {
+                    Image anchors recognize 2D images;
+                    USDZ conversion is not needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Disable ARWorldTrackingConfiguration
+                
+                @Justification(reaction: "Think again.") {
+                    ARWorldTrackingConfiguration is also required
+                    for image tracking.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What technology should you use to place content where the user taps the screen?
+            
+            @Choice(isCorrect: false) {
+                Hit Testing (deprecated)
+                
+                @Justification(reaction: "Not quite.") {
+                    Hit Testing is deprecated;
+                    Raycast is currently used.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Raycast
+                
+                @Justification(reaction: "Exactly right! 🎯") {
+                    Use ARView's raycast method to convert
+                    screen coordinates to 3D world coordinates.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Face Detection
+                
+                @Justification(reaction: "Think again.") {
+                    Face Detection is for face recognition,
+                    unrelated to screen tap positions.
+                }
+            }
+        }
+    }
+}

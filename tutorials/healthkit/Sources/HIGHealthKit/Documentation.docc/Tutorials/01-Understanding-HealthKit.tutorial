@@ -1,0 +1,206 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Introduction to HealthKit & Permission Model") {
+        Learn about the concepts and philosophy of Apple HealthKit, and its strict permission model.
+        These are fundamental concepts you must understand before working with health data.
+    }
+    
+    @Section(title: "What is HealthKit?") {
+        @ContentAndMedia {
+            HealthKit is Apple's **unified health data repository**.
+            
+            It securely manages health data collected by iPhone, Apple Watch, 
+            and third-party apps in a single central repository.
+        }
+        
+        @Steps {
+            @Step {
+                **Centralized Health Repository**
+                
+                HealthKit stores over 300 types of health data including
+                steps, heart rate, sleep, and workout records.
+                
+                Each app requests only the data it needs, and can only access data the user has approved.
+                
+                @Code(name: "HealthKitOverview.swift", file: "01-overview.swift")
+            }
+            
+            @Step {
+                **Data Type Categories**
+                
+                HealthKit data is broadly classified into 3 categories:
+                - **Quantity**: Numeric values (steps, weight, heart rate)
+                - **Category**: Category values (sleep analysis, menstrual cycle)
+                - **Workout**: Workout session records
+                
+                @Code(name: "DataTypes.swift", file: "01-data-types.swift")
+            }
+            
+            @Step {
+                **Sample-Based Structure**
+                
+                All data is stored as **HKSample**.
+                Each sample contains value, start time, end time, and source (app/device).
+                
+                @Code(name: "SampleStructure.swift", file: "01-sample.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding the Permission Model") {
+        @ContentAndMedia {
+            Apple treats health data as **the most sensitive personal information**.
+            Therefore, HealthKit follows a very strict permission model.
+        }
+        
+        @Steps {
+            @Step {
+                **Separate Read vs Write Permissions**
+                
+                HealthKit **completely separates** read and write permissions.
+                Being able to write data doesn't mean you can read it.
+                
+                Example: Permission to record steps and permission to read steps are separate.
+                
+                @Code(name: "Permissions.swift", file: "01-permissions.swift")
+            }
+            
+            @Step {
+                **Silent Denial Policy**
+                
+                When the user denies read permission, the app **cannot know this**.
+                
+                The API simply returns "no data".
+                This is designed to protect user privacy.
+                
+                @Code(name: "DenialPolicy.swift", file: "01-denial.swift")
+            }
+            
+            @Step {
+                **Required Info.plist Settings**
+                
+                To use HealthKit, you must specify the purpose of use
+                in Info.plist.
+                
+                - `NSHealthShareUsageDescription`: Displayed when requesting read permission
+                - `NSHealthUpdateUsageDescription`: Displayed when requesting write permission
+                
+                @Code(name: "InfoPlist.swift", file: "01-info-plist.swift")
+            }
+            
+            @Step {
+                **HealthKit Entitlement**
+                
+                You must enable the HealthKit capability in Xcode.
+                Without this setting, you cannot even create an HKHealthStore instance.
+                
+                @Code(name: "Entitlement.swift", file: "01-entitlement.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Checking Device Support") {
+        @ContentAndMedia {
+            HealthKit is not available on all Apple devices.
+            It is not supported on iPad and some iPod touch models.
+        }
+        
+        @Steps {
+            @Step {
+                **isHealthDataAvailable() Check**
+                
+                Always check HealthKit availability at app startup.
+                On unsupported devices, it's best to hide the related UI.
+                
+                @Code(name: "Availability.swift", file: "01-availability.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens in HealthKit when the user denies read permission?
+            
+            @Choice(isCorrect: false) {
+                An error is thrown
+                
+                @Justification(reaction: "Not quite") {
+                    HealthKit does not return an error to protect privacy.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It's treated as "no data"
+                
+                @Justification(reaction: "Correct!") {
+                    Apple doesn't distinguish between permission denial and no data
+                    to protect user privacy.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                The permission denial status can be checked via API
+                
+                @Justification(reaction: "Not quite") {
+                    Read permission denial status is designed to be unknowable to the app.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What type is step count data in HealthKit?
+            
+            @Choice(isCorrect: true) {
+                HKQuantityType
+                
+                @Justification(reaction: "Correct!") {
+                    Step count is a numeric value, so it falls under HKQuantityType.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKCategoryType
+                
+                @Justification(reaction: "Not quite") {
+                    HKCategoryType is used for category-based data like sleep analysis.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKWorkoutType
+                
+                @Justification(reaction: "Not quite") {
+                    HKWorkoutType is used for workout session records.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which device cannot use HealthKit?
+            
+            @Choice(isCorrect: true) {
+                iPad
+                
+                @Justification(reaction: "Correct!") {
+                    iPad does not support HealthKit.
+                    Always check with isHealthDataAvailable().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iPhone
+                
+                @Justification(reaction: "Not quite") {
+                    iPhone fully supports HealthKit.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Watch
+                
+                @Justification(reaction: "Not quite") {
+                    Apple Watch is a core data source for HealthKit.
+                }
+            }
+        }
+    }
+}

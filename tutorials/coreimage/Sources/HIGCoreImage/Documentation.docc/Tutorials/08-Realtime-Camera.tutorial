@@ -1,0 +1,249 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Real-time Camera Filters") {
+        Learn how to implement real-time camera filters 
+        by integrating AVFoundation and CoreImage.
+        
+        @Image(source: "realtime-camera.png", alt: "Real-time Camera")
+    }
+    
+    @Section(title: "AVCaptureSession Setup") {
+        @ContentAndMedia {
+            Configure AVCaptureSession, the foundation of camera filter apps.
+            Set up video input and output to prepare for receiving frames.
+            
+            Components:
+            - **AVCaptureSession**: Capture session management
+            - **AVCaptureDeviceInput**: Camera input
+            - **AVCaptureVideoDataOutput**: Video frame output
+            - **AVCaptureVideoPreviewLayer**: Preview layer
+            
+            @Image(source: "capture-session.png", alt: "Capture Session Setup")
+        }
+        
+        @Steps {
+            @Step {
+                Configure a basic AVCaptureSession.
+                Connect camera input and video data output.
+                
+                @Code(name: "CaptureSession.swift", file: "08-01-capture-session.swift")
+            }
+            
+            @Step {
+                Implement AVCaptureVideoDataOutputSampleBufferDelegate.
+                Set up the delegate method called for each frame.
+                
+                @Code(name: "SampleBufferDelegate.swift", file: "08-02-sample-buffer-delegate.swift")
+            }
+            
+            @Step {
+                Extract CIImage from CMSampleBuffer.
+                Convert efficiently through CVPixelBuffer.
+                
+                @Code(name: "ExtractCIImage.swift", file: "08-03-extract-ciimage.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying Real-time Filters") {
+        @ContentAndMedia {
+            Apply filters to camera frames in real-time.
+            Performance optimization is essential to maintain 30fps or higher.
+            
+            Optimization points:
+            - CIContext reuse
+            - Don't block main thread
+            - Choose appropriate image resolution
+            - Asynchronous rendering
+        }
+        
+        @Steps {
+            @Step {
+                Create CIContext once and reuse it.
+                Use Metal-based context to leverage GPU acceleration.
+                
+                @Code(name: "ReusableContext.swift", file: "08-04-reusable-context.swift")
+            }
+            
+            @Step {
+                Apply filters to frames and render.
+                Process in background thread to avoid blocking UI.
+                
+                @Code(name: "ApplyFilter.swift", file: "08-05-apply-filter.swift")
+            }
+            
+            @Step {
+                Display rendered images on screen.
+                Use MTKView or CALayer for efficient display.
+                
+                @Code(name: "DisplayFiltered.swift", file: "08-06-display-filtered.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Metal-Based Real-time Rendering") {
+        @ContentAndMedia {
+            Using MTKView enables optimal performance filter display 
+            through the Metal pipeline.
+            
+            Advantages:
+            - VSync synchronization
+            - Direct Metal texture rendering
+            - Minimum latency
+            - Minimize frame drops
+        }
+        
+        @Steps {
+            @Step {
+                Set up MTKView and integrate with CIContext.
+                Share Metal device and command queue.
+                
+                @Code(name: "MTKViewSetup.swift", file: "08-07-mtkview-setup.swift")
+            }
+            
+            @Step {
+                Render in MTKViewDelegate's draw method.
+                Render CIImage to the current drawable.
+                
+                @Code(name: "MTKViewDraw.swift", file: "08-08-mtkview-draw.swift")
+            }
+            
+            @Step {
+                Implement frame synchronization.
+                Match camera frames with display refresh.
+                
+                @Code(name: "FrameSync.swift", file: "08-09-frame-sync.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI Integration") {
+        @ContentAndMedia {
+            Use the real-time camera filter view in SwiftUI.
+            Wrap MTKView with UIViewRepresentable.
+            
+            Implementation details:
+            - Wrap view with UIViewRepresentable
+            - Manage camera manager with @StateObject
+            - Reactive filter change processing with Combine
+        }
+        
+        @Steps {
+            @Step {
+                Implement camera manager as ObservableObject.
+                Encapsulate session management and filter application.
+                
+                @Code(name: "CameraManager.swift", file: "08-10-camera-manager.swift")
+            }
+            
+            @Step {
+                Wrap MTKView with UIViewRepresentable.
+                Enable Metal view usage in SwiftUI.
+                
+                @Code(name: "CameraPreviewView.swift", file: "08-11-camera-preview-view.swift")
+            }
+            
+            @Step {
+                Implement filter selection UI in SwiftUI.
+                See filter changes in real-time.
+                
+                @Code(name: "FilterSelectionView.swift", file: "08-12-filter-selection-view.swift")
+            }
+            
+            @Step {
+                Add photo capture functionality.
+                Save photos with the current filter applied.
+                
+                @Code(name: "CapturePhoto.swift", file: "08-13-capture-photo.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why should CIContext be reused in real-time camera filters?
+            
+            @Choice(isCorrect: true) {
+                CIContext creation cost is high, causing performance degradation if created per frame.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    CIContext allocates GPU resources, so it should be 
+                    created once and reused.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because CIContext can only be created once
+                
+                @Justification(reaction: "That's not the case.") {
+                    Multiple can be created, but it's inefficient.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                To prevent memory leaks
+                
+                @Justification(reaction: "Not the main reason.") {
+                    Performance optimization is the key reason.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What should you watch out for when receiving frames from AVCaptureVideoDataOutput?
+            
+            @Choice(isCorrect: true) {
+                Delegate callbacks are called on the specified queue, so use main queue for UI updates
+                
+                @Justification(reaction: "Correct! ✨") {
+                    Process video frames in the background,
+                    and only pass UI updates to the main thread.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Frames are always delivered on the main thread
+                
+                @Justification(reaction: "That's not the case.") {
+                    Callbacks are called on the queue specified by sampleBufferCallbackQueue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Frame buffers are automatically copied so they can be kept long
+                
+                @Justification(reaction: "Caution is needed.") {
+                    To prevent buffer pool exhaustion, process quickly and release.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What are the advantages of camera preview using MTKView?
+            
+            @Choice(isCorrect: true) {
+                Provides minimum latency and VSync synchronization through Metal pipeline
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    MTKView is synchronized with display refresh 
+                    to minimize frame drops.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Automatically detects faces
+                
+                @Justification(reaction: "Not related.") {
+                    Face detection must be implemented separately.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Uses more memory than UIImageView
+                
+                @Justification(reaction: "Actually more efficient.") {
+                    Direct texture rendering reduces memory copying.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,189 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Photo Capture (AVCapturePhotoOutput)") {
+        Capture high-quality photos using AVCapturePhotoOutput.
+        Implement various capture options like flash, HDR, and Live Photo.
+    }
+    
+    @Section(title: "Photo Output Setup") {
+        @ContentAndMedia {
+            AVCapturePhotoOutput handles still image capture.
+            It supports various formats including HEIF, JPEG, and RAW.
+        }
+        
+        @Steps {
+            @Step {
+                Add photoOutput property to CameraManager.
+                
+                @Code(name: "CameraManager.swift", file: "03-photo-output-property.swift")
+            }
+            
+            @Step {
+                Add photoOutput to the session.
+                Check if addition is possible with canAddOutput().
+                
+                @Code(name: "CameraManager.swift", file: "03-add-photo-output.swift")
+            }
+            
+            @Step {
+                Check supported features.
+                Supported features may vary by device.
+                
+                @Code(name: "CameraManager.swift", file: "03-check-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Photo Capture") {
+        @ContentAndMedia {
+            Set capture options with AVCapturePhotoSettings and 
+            capture photos with the capturePhoto() method.
+        }
+        
+        @Steps {
+            @Step {
+                Implement PhotoCaptureDelegate.
+                Adopt AVCapturePhotoCaptureDelegate to receive callbacks on capture completion.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-photo-delegate.swift")
+            }
+            
+            @Step {
+                Configure capture settings.
+                Set flash, HDR, etc. with AVCapturePhotoSettings.
+                
+                @Code(name: "CameraManager.swift", file: "03-photo-settings.swift")
+            }
+            
+            @Step {
+                Implement the capturePhoto() method.
+                Pass the delegate along with the capture request.
+                
+                @Code(name: "CameraManager.swift", file: "03-capture-photo.swift")
+            }
+            
+            @Step {
+                Implement capture completion processing.
+                Extract image data in didFinishProcessingPhoto.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-process-photo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Saving Photos") {
+        @ContentAndMedia {
+            Save captured photos to the photo library.
+            Use PHPhotoLibrary to save to albums.
+        }
+        
+        @Steps {
+            @Step {
+                Add photo library permission to Info.plist.
+                The `NSPhotoLibraryAddUsageDescription` key is required.
+                
+                @Code(name: "Info.plist", file: "03-photo-library-plist.swift")
+            }
+            
+            @Step {
+                Implement PhotoLibraryService.
+                Save photos with PHPhotoLibrary.
+                
+                @Code(name: "PhotoLibraryService.swift", file: "03-photo-library-service.swift")
+            }
+            
+            @Step {
+                Connect auto-save after capture completion.
+                Call PhotoLibraryService from the delegate.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-auto-save.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI Camera View") {
+        @ContentAndMedia {
+            Create the camera interface with SwiftUI.
+            Arrange the capture button and preview.
+        }
+        
+        @Steps {
+            @Step {
+                Create the basic structure of CameraView.
+                
+                @Code(name: "CameraView.swift", file: "03-camera-view.swift")
+            }
+            
+            @Step {
+                Add the capture button.
+                Call capturePhoto() on tap.
+                
+                @Code(name: "CameraView.swift", file: "03-capture-button.swift")
+            }
+            
+            @Step {
+                Display captured image preview.
+                Bind to UI with @Published property.
+                
+                @Code(name: "CameraView.swift", file: "03-photo-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which delegate method receives image data when photo capture is complete?
+            
+            @Choice(isCorrect: false) {
+                `photoOutput(_:willBeginCaptureFor:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This method is called before capture starts.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `photoOutput(_:didFinishProcessingPhoto:error:)`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    This method allows access to image data through the AVCapturePhoto object.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `photoOutput(_:didCapturePhotoFor:)`
+                
+                @Justification(reaction: "Think again.") {
+                    This method is called right after capture but before image processing.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Which property in AVCapturePhotoSettings sets the flash mode?
+            
+            @Choice(isCorrect: true) {
+                `flashMode`
+                
+                @Justification(reaction: "Correct! 🎉") {
+                    flashMode can be set to .auto, .on, or .off.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `torchMode`
+                
+                @Justification(reaction: "Think again.") {
+                    torchMode is a property of AVCaptureDevice.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `lightMode`
+                
+                @Justification(reaction: "Think again.") {
+                    lightMode doesn't exist in AVCapturePhotoSettings.
+                }
+            }
+        }
+    }
+}

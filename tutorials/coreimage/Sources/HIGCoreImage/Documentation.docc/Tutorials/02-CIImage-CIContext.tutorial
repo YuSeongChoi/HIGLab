@@ -1,0 +1,257 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CIImage & CIContext") {
+        Learn in depth about the roles and proper usage of 
+        CoreImage's two core classes: CIImage and CIContext.
+        
+        @Image(source: "ciimage-cicontext.png", alt: "CIImage and CIContext")
+    }
+    
+    @Section(title: "Creating CIImage") {
+        @ContentAndMedia {
+            CIImage can be created from various sources.
+            Understand the characteristics of each creation method and choose appropriately for your situation.
+            
+            - **UIImage/CGImage**: Convert from existing images
+            - **Data**: Encoded data like JPEG, PNG
+            - **URL**: File paths or network URLs
+            - **CVPixelBuffer**: Camera or video frames
+            
+            @Image(source: "ciimage-sources.png", alt: "CIImage Sources")
+        }
+        
+        @Steps {
+            @Step {
+                Create CIImage from UIImage.
+                Useful when loading images from bundle resources or asset catalogs.
+                
+                @Code(name: "CIImageFromUIImage.swift", file: "02-01-from-uiimage.swift")
+            }
+            
+            @Step {
+                Create CIImage directly from Data.
+                Suitable for processing images downloaded from network or file system data.
+                
+                @Code(name: "CIImageFromData.swift", file: "02-02-from-data.swift")
+            }
+            
+            @Step {
+                Creating CIImage from URL can defer loading until needed.
+                Memory efficient for large image processing.
+                
+                @Code(name: "CIImageFromURL.swift", file: "02-03-from-url.swift")
+            }
+            
+            @Step {
+                Create CIImage from CVPixelBuffer.
+                Essential method for camera frames or video processing.
+                
+                @Code(name: "CIImageFromPixelBuffer.swift", file: "02-04-from-pixelbuffer.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Understanding CIImage Coordinate System") {
+        @ContentAndMedia {
+            CIImage uses a different coordinate system than UIKit.
+            Without understanding this, images may appear flipped or positioned incorrectly.
+            
+            - **UIKit**: Origin at top-left (y increases downward)
+            - **CoreImage**: Origin at bottom-left (y increases upward)
+            - **extent**: The bounding rectangle of the image
+            
+            @Image(source: "coordinate-system.png", alt: "Coordinate System Comparison")
+        }
+        
+        @Steps {
+            @Step {
+                Check the image size and position using CIImage's extent property.
+                Be aware that extent may change after applying filters.
+                
+                @Code(name: "ImageExtent.swift", file: "02-05-extent.swift")
+            }
+            
+            @Step {
+                Apply a transform when coordinate conversion is needed.
+                This can solve the problem of images appearing flipped when displaying in UIKit.
+                
+                @Code(name: "CoordinateTransform.swift", file: "02-06-transform.swift")
+            }
+            
+            @Step {
+                Perform cropping to extract only a specific region.
+                Consider the coordinate system to specify the correct region.
+                
+                @Code(name: "ImageCropping.swift", file: "02-07-cropping.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIContext Creation and Options") {
+        @ContentAndMedia {
+            CIContext is the object that performs actual image rendering.
+            Creation cost is high, so reusing it is important.
+            
+            | Option | Description | Default |
+            |--------|-------------|---------|
+            | useSoftwareRenderer | Force CPU rendering | false |
+            | workingColorSpace | Working color space | nil |
+            | outputColorSpace | Output color space | nil |
+            | cacheIntermediates | Cache intermediate results | true |
+        }
+        
+        @Steps {
+            @Step {
+                Create a basic CIContext.
+                The system automatically selects the optimal renderer.
+                
+                @Code(name: "BasicContext.swift", file: "02-08-basic-context.swift")
+            }
+            
+            @Step {
+                Explicitly set GPU rendering by specifying a Metal device.
+                Use when maximum performance is needed.
+                
+                @Code(name: "MetalContext.swift", file: "02-09-metal-context.swift")
+            }
+            
+            @Step {
+                For apps where color management is important, explicitly specify the color space.
+                You can choose Display P3, sRGB, etc.
+                
+                @Code(name: "ColorManagedContext.swift", file: "02-10-color-context.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Rendering with CIContext") {
+        @ContentAndMedia {
+            CIContext can render CIImage to various formats.
+            Choose the appropriate method for your purpose.
+            
+            - `createCGImage`: Create CGImage (most common)
+            - `render(to:)`: Render directly to CVPixelBuffer
+            - `jpegRepresentation`: Create JPEG data
+            - `pngRepresentation`: Create PNG data
+        }
+        
+        @Steps {
+            @Step {
+                Create an image to display in UIImageView using createCGImage.
+                You must specify the extent accurately to get correct results.
+                
+                @Code(name: "CreateCGImage.swift", file: "02-11-create-cgimage.swift")
+            }
+            
+            @Step {
+                Render directly to JPEG or PNG data.
+                Suitable for file saving or network transmission.
+                
+                @Code(name: "RenderToData.swift", file: "02-12-render-to-data.swift")
+            }
+            
+            @Step {
+                Render directly to CVPixelBuffer to create video frames.
+                Essential for real-time camera filters or video processing.
+                
+                @Code(name: "RenderToPixelBuffer.swift", file: "02-13-render-to-buffer.swift")
+            }
+            
+            @Step {
+                Manage CIContext as a singleton to optimize performance.
+                Creating it every time causes severe performance degradation.
+                
+                @Code(name: "ContextSingleton.swift", file: "02-14-singleton.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What problem occurs when creating CIContext every time?
+            
+            @Choice(isCorrect: true) {
+                Severe performance degradation due to high creation cost.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    CIContext creation is an expensive operation that includes 
+                    GPU resource allocation. It must be reused.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Memory leaks occur automatically.
+                
+                @Justification(reaction: "That's not the case.") {
+                    Memory leaks are not inherent to creation itself.
+                    Performance degradation is the main issue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Colors are displayed distorted.
+                
+                @Justification(reaction: "Not related.") {
+                    Color issues are related to color space settings.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How does CIImage's coordinate system differ from UIKit?
+            
+            @Choice(isCorrect: false) {
+                CIImage has x-coordinate starting from the right.
+                
+                @Justification(reaction: "Incorrect.") {
+                    Both have x-coordinate starting from the left.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                CIImage has origin at bottom-left, UIKit has origin at top-left.
+                
+                @Justification(reaction: "Correct! ✨") {
+                    This difference can cause images to appear flipped,
+                    and conversion may be necessary.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIImage uses pixels, UIKit uses points.
+                
+                @Justification(reaction: "Not accurate.") {
+                    The difference is in the origin position, not the units.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When is creating CIImage from CVPixelBuffer useful?
+            
+            @Choice(isCorrect: true) {
+                When processing camera frames or video in real-time
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    AVFoundation provides camera/video frames as 
+                    CVPixelBuffer, so direct conversion is needed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When loading PNG files included in the bundle
+                
+                @Justification(reaction: "There's an easier way.") {
+                    Bundle resources are simpler to load through UIImage or URL.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When downloading JPEG from the network
+                
+                @Justification(reaction: "Not suitable.") {
+                    For network data, you can create CIImage directly from Data.
+                }
+            }
+        }
+    }
+}

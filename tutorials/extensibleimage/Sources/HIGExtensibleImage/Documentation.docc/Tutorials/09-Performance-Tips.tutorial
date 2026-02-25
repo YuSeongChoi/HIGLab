@@ -1,0 +1,163 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Performance Optimization") {
+        Learn best practices and tips for achieving optimal performance when using ExtensibleImage.
+        
+        Cover practical optimization techniques including memory management, Neural Engine utilization, and caching strategies.
+        
+        @Image(source: "performance-hero.png", alt: "Performance Optimization")
+    }
+    
+    @Section(title: "Memory Optimization") {
+        @ContentAndMedia {
+            Image processing uses a lot of memory. Improve app stability with efficient memory management.
+        }
+        
+        @Steps {
+            @Step {
+                Appropriately resize images before processing.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-01.swift")
+            }
+            
+            @Step {
+                Use autorelease pools to immediately reclaim memory from intermediate results.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-02.swift")
+            }
+            
+            @Step {
+                Implement handlers that respond to memory warnings.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Neural Engine Utilization") {
+        @ContentAndMedia {
+            Maximizing Neural Engine utilization significantly improves processing speed and reduces battery consumption.
+        }
+        
+        @Steps {
+            @Step {
+                Enable Neural Engine priority mode.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-04.swift")
+            }
+            
+            @Step {
+                Reduce first-run delay with model warmup.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-05.swift")
+            }
+            
+            @Step {
+                Check Neural Engine availability per device and implement fallback.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Result Caching") {
+        @ContentAndMedia {
+            Cache results to avoid repeated processing of the same images.
+        }
+        
+        @Steps {
+            @Step {
+                Configure memory cache.
+                
+                @Code(name: "Caching.swift", file: "09-perf-07.swift")
+            }
+            
+            @Step {
+                Reuse results after app restart with disk cache.
+                
+                @Code(name: "Caching.swift", file: "09-perf-08.swift")
+            }
+            
+            @Step {
+                Optimize cache key generation strategy.
+                
+                @Code(name: "Caching.swift", file: "09-perf-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Async Processing Patterns") {
+        @ContentAndMedia {
+            Learn patterns for performing heavy image processing while maintaining UI responsiveness.
+        }
+        
+        @Steps {
+            @Step {
+                Separate background processing and main thread updates.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-10.swift")
+            }
+            
+            @Step {
+                Implement parallel processing using TaskGroup.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-11.swift")
+            }
+            
+            @Step {
+                Apply priority-based task scheduling.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-12.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Profiling and Debugging") {
+        @ContentAndMedia {
+            Use Instruments to measure ExtensibleImage performance and find bottlenecks.
+        }
+        
+        @Steps {
+            @Step {
+                Enable performance logging.
+                
+                @Code(name: "Profiling.swift", file: "09-perf-13.swift")
+            }
+            
+            @Step {
+                Analyze Neural Engine usage with the Instruments Core ML template.
+                
+                @Code(name: "Profiling.swift", file: "09-perf-14.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Why is the first run of ExtensibleImage operations slow?
+            
+            @Choice(isCorrect: true) {
+                Because Neural Engine model warmup (compilation) time is needed
+                
+                @Justification(reaction: "Correct!") {
+                    Core ML models need one-time compilation to run on the Neural Engine. You can pre-warmup with preload().
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because of time reading images from disk
+                
+                @Justification(reaction: "Try again.") {
+                    Disk I/O has some impact, but the main cause is model warmup.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because Swift compiler optimizations haven't been applied yet
+                
+                @Justification(reaction: "Try again.") {
+                    Swift code is already compiled at build time.
+                }
+            }
+        }
+    }
+}

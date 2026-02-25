@@ -1,0 +1,216 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Pass Signing & Distribution") {
+        Learn how to sign passes with developer certificates
+        and distribute them to users.
+        
+        @Image(source: "pass-signing.png", alt: "Pass Signing")
+    }
+    
+    @Section(title: "Registering Pass Type ID") {
+        @ContentAndMedia {
+            To distribute passes, you need to register a Pass Type ID
+            in the Apple Developer Portal.
+            
+            **Registration Steps:**
+            1. Go to Certificates, Identifiers & Profiles
+            2. Select Identifiers → Pass Type IDs
+            3. Create new Pass Type ID (e.g., pass.com.myapp.membership)
+            4. Generate and download certificate for the ID
+        }
+        
+        @Steps {
+            @Step {
+                Pass Type ID follows reverse-domain format.
+                The pass. prefix is required.
+                
+                @Code(name: "PassTypeID.swift", file: "04-01-pass-type-id.swift")
+            }
+            
+            @Step {
+                Install the generated certificate in Keychain.
+                Export as .p12 format for server use.
+                
+                @Code(name: "CertificateSetup.swift", file: "04-02-certificate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating manifest.json") {
+        @ContentAndMedia {
+            manifest.json contains SHA1 hashes of all files
+            in the pass bundle. Used for integrity verification.
+            
+            Must include hashes of all resources including
+            pass.json and image files.
+        }
+        
+        @Steps {
+            @Step {
+                Calculate SHA1 hash of all files in the pass directory.
+                Exclude the signature file.
+                
+                @Code(name: "ManifestCreation.swift", file: "04-03-manifest.swift")
+            }
+            
+            @Step {
+                Save calculated hashes as manifest.json file.
+                Use filename as key and hash value as value.
+                
+                @Code(name: "ManifestJson.swift", file: "04-04-manifest-json.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Signing the Pass") {
+        @ContentAndMedia {
+            Sign manifest.json with developer certificate
+            to generate the signature file.
+            
+            Sign in PKCS#7 format and must include
+            Apple WWDR certificate chain.
+        }
+        
+        @Steps {
+            @Step {
+                Use OpenSSL to generate signature.
+                Private key, certificate, and WWDR certificate required.
+                
+                @Code(name: "SigningCommand.swift", file: "04-05-signing.swift")
+            }
+            
+            @Step {
+                Method for programmatic signing on server.
+                Use Node.js or Python libraries.
+                
+                @Code(name: "ServerSigning.swift", file: "04-06-server-signing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating PKPass Bundle") {
+        @ContentAndMedia {
+            Compress all files into ZIP to create .pkpass bundle.
+            
+            **Bundle Structure:**
+            ```
+            membership.pkpass/
+            ├── pass.json
+            ├── manifest.json
+            ├── signature
+            ├── icon.png
+            ├── icon@2x.png
+            ├── logo.png
+            └── strip.png
+            ```
+        }
+        
+        @Steps {
+            @Step {
+                Compress files into ZIP.
+                Must be flat compression without directory structure.
+                
+                @Code(name: "CreateBundle.swift", file: "04-07-create-bundle.swift")
+            }
+            
+            @Step {
+                Change extension to .pkpass.
+                MIME type is application/vnd.apple.pkpass.
+                
+                @Code(name: "BundleMime.swift", file: "04-08-bundle-mime.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Adding Pass from App") {
+        @ContentAndMedia {
+            Add the created pass to user's Wallet.
+            Use PKAddPassesViewController to get user confirmation.
+        }
+        
+        @Steps {
+            @Step {
+                Download pass from server and create PKPass object.
+                Invalid passes will throw errors.
+                
+                @Code(name: "DownloadPass.swift", file: "04-09-download-pass.swift")
+            }
+            
+            @Step {
+                Display add UI with PKAddPassesViewController.
+                When user taps "Add", it's saved to Wallet.
+                
+                @Code(name: "AddPassVC.swift", file: "04-10-add-pass-vc.swift")
+            }
+            
+            @Step {
+                In SwiftUI, display with sheet modifier.
+                Use UIViewControllerRepresentable.
+                
+                @Code(name: "AddPassSwiftUI.swift", file: "04-11-add-pass-swiftui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which file in the pass bundle stores file hashes for integrity verification?
+            
+            @Choice(isCorrect: true) {
+                manifest.json
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    manifest.json contains SHA1 hashes
+                    of all files in the bundle.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                signature
+                
+                @Justification(reaction: "Not quite.") {
+                    signature is the result of signing
+                    manifest.json.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                pass.json
+                
+                @Justification(reaction: "Incorrect.") {
+                    pass.json defines the pass's
+                    data and style.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the actual format of a .pkpass file?
+            
+            @Choice(isCorrect: false) {
+                JSON file
+                
+                @Justification(reaction: "Check again.") {
+                    pass.json is JSON, but
+                    .pkpass itself is a different format.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ZIP archive
+                
+                @Justification(reaction: "Correct! ✨") {
+                    .pkpass is a ZIP-compressed bundle
+                    with just the extension changed.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Binary plist
+                
+                @Justification(reaction: "Incorrect.") {
+                    Not plist format, but ZIP archive.
+                }
+            }
+        }
+    }
+}

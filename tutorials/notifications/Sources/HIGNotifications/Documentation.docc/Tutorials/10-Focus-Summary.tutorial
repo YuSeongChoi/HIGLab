@@ -1,0 +1,275 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Focus Mode & Notification Summary") {
+        Adapt to iOS 15+ Focus mode and notification summary features.
+        
+        Implement a balanced notification strategy that
+        respects user concentration while delivering important notifications.
+    }
+    
+    @Section(title: "Understanding Focus Mode") {
+        @ContentAndMedia {
+            Focus mode replaced Do Not Disturb in iOS 15.
+            
+            - **Do Not Disturb**: Block all notifications
+            - **Work Focus**: Allow only work-related apps
+            - **Sleep**: Minimal notifications during sleep time
+            - **Custom**: Configure as desired
+        }
+        
+        @Steps {
+            @Step {
+                **Checking Focus Status**
+                
+                Check current Focus status in UNNotificationSettings.
+                However, you cannot know the specific Focus type.
+                
+                @Code(name: "CheckFocusStatus.swift", file: "10-check-focus-status.swift")
+            }
+            
+            @Step {
+                **Focus Filter API (iOS 16+)**
+                
+                From iOS 16, apps can provide Focus filters.
+                Users can customize app behavior per Focus.
+                
+                @Code(name: "FocusFilter.swift", file: "10-focus-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Interruption Level Strategy") {
+        @ContentAndMedia {
+            Appropriate interruption level is needed for notifications to be delivered in Focus mode.
+            
+            - **passive**: Always filtered in Focus
+            - **active**: Filtered based on Focus settings
+            - **timeSensitive**: Can break through with "Allow Time Sensitive Notifications" setting
+            - **critical**: Always breaks through (special entitlement required)
+        }
+        
+        @Steps {
+            @Step {
+                **Classifying Notification Importance**
+                
+                Classify your app's notifications by importance.
+                Most should be .active, only urgent ones .timeSensitive.
+                
+                @Code(name: "ClassifyImportance.swift", file: "10-classify-importance.swift")
+            }
+            
+            @Step {
+                **Requesting Time Sensitive Notifications**
+                
+                To send Time Sensitive notifications,
+                Info.plist configuration and permission request are needed.
+                
+                @Code(name: "TimeSensitiveSetup.swift", file: "10-time-sensitive-setup.swift")
+            }
+            
+            @Step {
+                **HIG: Time Sensitive Guidelines**
+                
+                Apple recommends not overusing Time Sensitive.
+                Use only for truly urgent notifications.
+                
+                @Code(name: "TimeSensitiveGuidelines.swift", file: "10-time-sensitive-guidelines.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Notification Summary (Scheduled Summary)") {
+        @ContentAndMedia {
+            In iOS 15+, users can receive notifications as scheduled summaries.
+            
+            Check notification bundles only a few times a day to maintain focus.
+            App developers should optimize notifications for good summary display.
+        }
+        
+        @Steps {
+            @Step {
+                **Standing Out in Summary**
+                
+                Set relevanceScore to influence order in summaries.
+                Values between 0.0 and 1.0 represent relative importance.
+                
+                @Code(name: "RelevanceScore.swift", file: "10-relevance-score.swift")
+            }
+            
+            @Step {
+                **Setting Summary Arguments**
+                
+                Customize group summary text with summaryArgument.
+                Show "3 Work Reminders" instead of "3 Reminders".
+                
+                @Code(name: "SummaryArguments.swift", file: "10-summary-arguments.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Notification Management Settings") {
+        @ContentAndMedia {
+            In iOS 12+, users can change settings directly from notifications.
+            
+            Apps should provide a notification settings screen
+            for users to finely control notifications.
+        }
+        
+        @Steps {
+            @Step {
+                **Provisional Notifications**
+                
+                With .provisional permission, send quiet notifications first
+                and let users decide whether to keep them.
+                
+                @Code(name: "ProvisionalAuth.swift", file: "10-provisional-auth.swift")
+            }
+            
+            @Step {
+                **providesAppNotificationSettings**
+                
+                Tell the system your app has its own notification settings screen.
+                An "In-App Settings" button appears in Settings > Notifications.
+                
+                @Code(name: "AppNotificationSettings.swift", file: "10-app-notification-settings.swift")
+            }
+            
+            @Step {
+                **Handling Settings Open**
+                
+                When user taps "In-App Settings",
+                the openSettingsFor delegate is called.
+                
+                @Code(name: "HandleOpenSettings.swift", file: "10-handle-open-settings.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Completing RemindMe App Notification Strategy") {
+        @ContentAndMedia {
+            Integrate everything learned to complete
+            the RemindMe app's notification strategy.
+            
+            - Regular reminders: .active
+            - High priority: .timeSensitive  
+            - Completed reminders: .passive
+        }
+        
+        @Steps {
+            @Step {
+                **Priority-Based Notification Strategy**
+                
+                Determine interruption level based on reminder priority.
+                
+                @Code(name: "PriorityStrategy.swift", file: "10-priority-strategy.swift")
+            }
+            
+            @Step {
+                **Calculating relevanceScore**
+                
+                Calculate relevanceScore based on due date and priority.
+                
+                @Code(name: "CalculateRelevance.swift", file: "10-calculate-relevance.swift")
+            }
+            
+            @Step {
+                **Final NotificationManager**
+                
+                The final form of NotificationManager with all features integrated.
+                
+                @Code(name: "FinalNotificationManager.swift", file: "10-final-notification-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Which interruption level should you use for notifications to always be delivered in iOS 15+ Focus mode?
+            
+            @Choice(isCorrect: false) {
+                .timeSensitive
+                
+                @Justification(reaction: "Almost but...") {
+                    .timeSensitive can also be blocked depending on the
+                    "Allow Time Sensitive Notifications" setting. Not always delivered.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .critical (special entitlement required)
+                
+                @Justification(reaction: "Correct! But caution needed") {
+                    Only Critical Alerts completely break through Focus.
+                    However, this is a special entitlement requiring Apple approval,
+                    and is only allowed for medical/security apps.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .active
+                
+                @Justification(reaction: "Not quite") {
+                    .active is the default level and is filtered by Focus settings.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the range of relevanceScore?
+            
+            @Choice(isCorrect: true) {
+                0.0 ~ 1.0
+                
+                @Justification(reaction: "Correct!") {
+                    Represents relative importance from 0.0 (lowest)
+                    to 1.0 (highest).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 ~ 100
+                
+                @Justification(reaction: "Not quite") {
+                    It's a Double value between 0.0 and 1.0.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    Normalized values from 0.0 to 1.0 are used.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the characteristic of .provisional permission?
+            
+            @Choice(isCorrect: true) {
+                Send quiet notifications without asking user, let them decide later
+                
+                @Justification(reaction: "Correct!") {
+                    Provisional notifications first appear quietly only in Notification Center,
+                    and users choose whether to keep receiving or turn off.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Send temporary notifications that disappear when app is deleted
+                
+                @Justification(reaction: "Not quite") {
+                    Provisional means "trial" notifications.
+                    Delivered quietly until user decides.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Test-only permission available only during development
+                
+                @Justification(reaction: "Not quite") {
+                    This is an official permission also available in production.
+                }
+            }
+        }
+    }
+}

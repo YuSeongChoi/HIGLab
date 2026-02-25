@@ -1,0 +1,94 @@
+@Tutorial(time: 20) {
+    @Intro(title: "URL & Text Records") {
+        Parse the most commonly used URL and text records in detail.
+        Utilize the wellKnownTypeURIPayload() and wellKnownTypeTextPayload() methods.
+    }
+    
+    @Section(title: "Parsing URL Records") {
+        @ContentAndMedia {
+            URL records are the most common form for storing web links and app schemes.
+            CoreNFC convenience methods make it easy to extract URLs.
+        }
+        @Steps {
+            @Step {
+                Extract the URL using the wellKnownTypeURIPayload() method.
+                @Code(name: "URLTextParser.swift", file: "05-01-uri.swift")
+            }
+            @Step {
+                Understand URL prefix codes.
+                The first byte represents prefixes like http://, https://, etc.
+                @Code(name: "URLTextParser.swift", file: "05-02-prefix.swift")
+            }
+            @Step {
+                Launch Safari or an app with the extracted URL.
+                @Code(name: "URLTextParser.swift", file: "05-03-open.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Parsing Text Records") {
+        @ContentAndMedia {
+            Text records include language code and encoding information.
+        }
+        @Steps {
+            @Step {
+                Extract text and locale using the wellKnownTypeTextPayload() method.
+                @Code(name: "URLTextParser.swift", file: "05-04-text.swift")
+            }
+            @Step {
+                Analyze the byte structure of text records.
+                Composed of status byte, language code, and actual text in order.
+                @Code(name: "URLTextParser.swift", file: "05-05-structure.swift")
+            }
+            @Step {
+                Create a function that handles multilingual text records.
+                @Code(name: "URLTextParser.swift", file: "05-06-multilang.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What does prefix code 0x01 mean in a URL record?
+            @Choice(isCorrect: false) {
+                ftp://
+                @Justification(reaction: "Think again.") {
+                    ftp:// has a different code.
+                }
+            }
+            @Choice(isCorrect: true) {
+                http://www.
+                @Justification(reaction: "Correct!") {
+                    0x01 represents the "http://www." prefix.
+                }
+            }
+            @Choice(isCorrect: false) {
+                https://
+                @Justification(reaction: "Think again.") {
+                    https:// is 0x04.
+                }
+            }
+        }
+        @MultipleChoice {
+            What information does the first byte (status byte) of a text record contain?
+            @Choice(isCorrect: true) {
+                Encoding type and language code length
+                @Justification(reaction: "Correct!") {
+                    Bit 7 indicates UTF-8/UTF-16, bits 0-5 indicate language code length.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Total text length
+                @Justification(reaction: "Think again.") {
+                    Text length is not included in the status byte.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Version information
+                @Justification(reaction: "Think again.") {
+                    The status byte contains encoding and language code information.
+                }
+            }
+        }
+    }
+}

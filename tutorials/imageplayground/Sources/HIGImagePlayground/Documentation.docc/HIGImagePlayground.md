@@ -1,25 +1,26 @@
 # ``HIGImagePlayground``
 
-ImagePlayground 프레임워크를 활용한 AI 이미지 생성 가이드입니다.
+A guide to AI image generation using the ImagePlayground framework.
 
 ## Overview
 
-이 튜토리얼에서는 iOS 18에서 도입된 ImagePlayground 프레임워크를 사용하여
-Apple Intelligence 기반의 AI 이미지 생성 기능을 앱에 통합하는 방법을 배웁니다.
+In this tutorial, you'll learn how to integrate Apple Intelligence-powered 
+AI image generation capabilities into your app using the ImagePlayground 
+framework introduced in iOS 18.
 
-ImagePlayground는 사용자가 텍스트 프롬프트, 개념, 참조 이미지를 통해
-창의적인 이미지를 생성할 수 있게 해주는 혁신적인 프레임워크입니다.
+ImagePlayground is an innovative framework that enables users to create 
+creative images through text prompts, concepts, and reference images.
 
-### 학습 내용
+### What You'll Learn
 
-- Apple Intelligence와 ImagePlayground의 관계
-- ImagePlayground 시트 표시 및 구성
-- 다양한 프롬프트 타입 활용
-- 이미지 스타일 선택 및 커스터마이징
-- 생성된 이미지 처리 및 저장
-- 에러 처리 및 가용성 확인
-- 사용자 경험 최적화
-- 개인정보 보호 및 윤리적 고려사항
+- The relationship between Apple Intelligence and ImagePlayground
+- Displaying and configuring the ImagePlayground sheet
+- Utilizing various prompt types
+- Selecting and customizing image styles
+- Processing and saving generated images
+- Error handling and availability checking
+- Optimizing user experience
+- Privacy protection and ethical considerations
 
 ## Topics
 

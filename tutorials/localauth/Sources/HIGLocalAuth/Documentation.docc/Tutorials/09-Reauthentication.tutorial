@@ -1,0 +1,187 @@
+@Tutorial(time: 12) {
+    @Intro(title: "Reauthentication Requirements") {
+        Learn when to require reauthentication in security apps 
+        and how to use touchIDAuthenticationAllowableReuseDuration.
+    }
+    
+    @Section(title: "Situations Requiring Reauthentication") {
+        @ContentAndMedia {
+            You shouldn't grant eternal access just because someone authenticated once.
+            Require reauthentication at appropriate times.
+        }
+        
+        @Steps {
+            @Step {
+                **On Background Return**
+                
+                It's common to require reauthentication when the app 
+                has been in the background for a certain amount of time.
+                
+                @Code(name: "BackgroundReauth.swift", file: "09-background-reauth.swift")
+            }
+            
+            @Step {
+                **Before Sensitive Operations**
+                
+                For important operations like deletion, export, or settings changes,
+                confirm again even if already authenticated.
+                
+                @Code(name: "SensitiveAction.swift", file: "09-sensitive-action.swift")
+            }
+            
+            @Step {
+                **Session Timeout**
+                
+                Automatically activate lock after a period of inactivity.
+                A common pattern in financial apps.
+                
+                @Code(name: "SessionTimeout.swift", file: "09-session-timeout.swift")
+            }
+        }
+    }
+    
+    @Section(title: "touchIDAuthenticationAllowableReuseDuration") {
+        @ContentAndMedia {
+            This property allows you to skip repeated authentication requests 
+            for a specified duration.
+        }
+        
+        @Steps {
+            @Step {
+                **Setting reuseDuration**
+                
+                Set in seconds.
+                Operations can be performed without additional authentication within this time.
+                
+                @Code(name: "ReuseDuration.swift", file: "09-reuse-duration.swift")
+            }
+            
+            @Step {
+                **Choosing Appropriate Values**
+                
+                - 5 seconds: Allow consecutive operations
+                - 30 seconds: General setting
+                - 0 seconds: Always reauthenticate (highest security)
+                
+                @Code(name: "DurationValues.swift", file: "09-duration-values.swift")
+            }
+            
+            @Step {
+                **Caveats**
+                
+                reuseDuration started with Touch ID but 
+                also works with Face ID.
+                Can be set up to 5 minutes (300 seconds) maximum.
+                
+                @Code(name: "DurationCaveats.swift", file: "09-duration-caveats.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Session Management") {
+        @ContentAndMedia {
+            Implement a systematic session management system.
+            Combine timers and app state to determine reauthentication timing.
+        }
+        
+        @Steps {
+            @Step {
+                **SessionManager Class**
+                
+                Manages authentication time, last activity time, and lock state.
+                
+                @Code(name: "SessionManager.swift", file: "09-session-manager.swift")
+            }
+            
+            @Step {
+                **App Lifecycle Integration**
+                
+                Detect ScenePhase and record background entry time.
+                
+                @Code(name: "LifecycleIntegration.swift", file: "09-lifecycle-integration.swift")
+            }
+            
+            @Step {
+                **Auto-lock Settings UI**
+                
+                Let users choose auto-lock time.
+                Provide options like "Immediately", "After 1 minute", "After 5 minutes".
+                
+                @Code(name: "AutoLockSettings.swift", file: "09-auto-lock-settings.swift")
+            }
+            
+            @Step {
+                **Integrate with Secure Vault App**
+                
+                Integrate all reauthentication logic to complete.
+                
+                @Code(name: "IntegratedReauth.swift", file: "09-integrated-reauth.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the maximum value of touchIDAuthenticationAllowableReuseDuration?
+            
+            @Choice(isCorrect: true) {
+                5 minutes (300 seconds)
+                
+                @Justification(reaction: "Correct!") {
+                    Apple limits it to 5 minutes maximum for security reasons.
+                    Even if you set a longer time, it's capped at 5 minutes.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No limit
+                
+                @Justification(reaction: "Not quite") {
+                    Unlimited would be a security risk.
+                    It's limited to 5 minutes maximum.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 minute (60 seconds)
+                
+                @Justification(reaction: "Not quite") {
+                    You can set it longer than 60 seconds.
+                    Maximum is 5 minutes (300 seconds).
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why do security apps require reauthentication when returning from background?
+            
+            @Choice(isCorrect: true) {
+                Because someone else might have used the unlocked device
+                
+                @Justification(reaction: "Correct!") {
+                    While the user briefly steps away, 
+                    someone else might have used the device.
+                    Reauthentication prevents this.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because it's a system requirement
+                
+                @Justification(reaction: "Not quite") {
+                    It's not a system requirement but part of app security design.
+                    Developers decide whether to implement it.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Because authentication state is released from memory
+                
+                @Justification(reaction: "Not quite") {
+                    App state can be maintained in background.
+                    It's an intentional design for security.
+                }
+            }
+        }
+    }
+}

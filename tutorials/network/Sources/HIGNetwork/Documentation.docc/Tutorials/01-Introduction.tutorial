@@ -1,0 +1,175 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Network Introduction & NWConnection") {
+        Understand Apple's Network framework and the basic concepts
+        of the core type NWConnection.
+        
+        @Image(source: "network-intro.png", alt: "Network Framework Overview")
+    }
+    
+    @Section(title: "What is the Network Framework?") {
+        @ContentAndMedia {
+            The Network framework is a low-level network API
+            introduced in iOS 12.
+            
+            - **Modern API**: Finer control than URLSession
+            - **Protocol Support**: TCP, UDP, QUIC, WebSocket, etc.
+            - **Built-in Security**: Native TLS/DTLS encryption support
+            - **Path Aware**: Manages network paths like Wi-Fi, cellular
+            
+            @Image(source: "network-architecture.png", alt: "Network Architecture")
+        }
+        
+        @Steps {
+            @Step {
+                Import the Network framework.
+                This framework is available on iOS 12+, macOS 10.14+.
+                
+                @Code(name: "NetworkImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Explore the main components of the Network framework.
+                
+                - `NWConnection`: Manages a single connection
+                - `NWListener`: Receives incoming connections (server)
+                - `NWBrowser`: Browses network services
+                - `NWPathMonitor`: Monitors network status
+                
+                @Code(name: "NetworkOverview.swift", file: "01-02-overview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "NWEndpoint and NWParameters") {
+        @ContentAndMedia {
+            To create a connection, you need a destination (Endpoint)
+            and connection settings (Parameters).
+            
+            NWEndpoint represents the connection target:
+            - `.host(NWEndpoint.Host, NWEndpoint.Port)`: Host and port
+            - `.service(name:type:domain:)`: Bonjour service
+            - `.url(URL)`: WebSocket URL
+        }
+        
+        @Steps {
+            @Step {
+                Specify the connection target with NWEndpoint.Host.
+                You can use IP addresses or domain names.
+                
+                @Code(name: "Endpoint.swift", file: "01-03-endpoint.swift")
+            }
+            
+            @Step {
+                Configure connection protocol and options with NWParameters.
+                It provides default settings for TCP and UDP.
+                
+                @Code(name: "Parameters.swift", file: "01-04-parameters.swift")
+            }
+            
+            @Step {
+                Create an NWConnection and check its state.
+                Connection proceeds asynchronously and results are received via a state handler.
+                
+                @Code(name: "Connection.swift", file: "01-05-connection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Comparison with URLSession") {
+        @ContentAndMedia {
+            URLSession is a high-level API at the HTTP level,
+            while the Network framework is a low-level API at the socket level.
+            
+            | Feature | URLSession | Network.framework |
+            |---------|------------|-------------------|
+            | Main Use | HTTP requests | Socket communication |
+            | Protocol | HTTP/HTTPS | TCP/UDP/QUIC |
+            | Abstraction | High | Low |
+            | P2P Communication | Limited | Full support |
+        }
+        
+        @Steps {
+            @Step {
+                URLSession is suitable for REST API calls.
+                It abstracts HTTP methods, headers, and body.
+                
+                @Code(name: "URLSessionExample.swift", file: "01-06-urlsession.swift")
+            }
+            
+            @Step {
+                The Network framework is suitable for:
+                
+                - Custom protocol implementation
+                - Direct P2P communication
+                - Game server connections
+                - IoT device communication
+                
+                @Code(name: "WhenToUseNetwork.swift", file: "01-07-when-to-use.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What role does NWConnection play in the Network framework?
+            
+            @Choice(isCorrect: false) {
+                It sends HTTP requests and receives responses.
+                
+                @Justification(reaction: "Think again.") {
+                    HTTP requests are handled by URLSession.
+                    NWConnection manages TCP/UDP socket-level connections.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                It manages the creation and data transmission of a single network connection.
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    NWConnection represents a single TCP or UDP connection
+                    and is responsible for connection state management and data transmission.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                It acts as a server and receives client connections.
+                
+                @Justification(reaction: "Not quite.") {
+                    The server role is handled by NWListener.
+                    NWConnection is for client-side connections.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            When should you use the Network framework instead of URLSession?
+            
+            @Choice(isCorrect: false) {
+                When calling REST APIs
+                
+                @Justification(reaction: "Incorrect.") {
+                    URLSession is more suitable for REST API calls
+                    because HTTP-level abstraction is needed.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                When implementing P2P communication with a custom protocol
+                
+                @Justification(reaction: "Correct! ✨") {
+                    P2P communication and custom protocols require
+                    low-level socket control, making the Network framework suitable.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When fetching JSON data from a server
+                
+                @Justification(reaction: "Think again.") {
+                    JSON data communication typically uses HTTP,
+                    and URLSession is more convenient.
+                }
+            }
+        }
+    }
+}

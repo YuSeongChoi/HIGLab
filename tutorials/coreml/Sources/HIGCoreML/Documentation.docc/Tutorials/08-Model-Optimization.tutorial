@@ -1,0 +1,242 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Model Optimization & Compression") {
+        Learn optimization techniques to reduce Core ML model size
+        and improve inference speed.
+    }
+    
+    @Section(title: "Why Optimization is Needed") {
+        @ContentAndMedia {
+            Large models put strain on app size, memory, and battery.
+            Optimization can reduce resource usage
+            while maintaining performance.
+        }
+        
+        @Steps {
+            @Step {
+                **Impact of Model Size**
+                
+                - Increased app download size
+                - Loading time on first launch
+                - Memory usage
+                - Battery consumption
+                
+                @Code(name: "ModelSizeImpact.swift", file: "08-size-impact.swift")
+            }
+            
+            @Step {
+                **Overview of Optimization Techniques**
+                
+                1. Quantization
+                2. Pruning
+                3. Palettization
+                4. Knowledge Distillation
+                
+                @Code(name: "OptimizationTechniques.swift", file: "08-techniques.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Quantization") {
+        @ContentAndMedia {
+            Convert Float32 weights to Int8 or Int4
+            to reduce model size by 1/4 to 1/8.
+        }
+        
+        @Steps {
+            @Step {
+                **Types of Quantization**
+                
+                - **Linear Quantization**: Most common. Float → Int8
+                - **Weight-only**: Only weights quantized, activations preserved
+                - **Post-training**: Applied after training
+                
+                @Code(name: "QuantizationTypes.swift", file: "08-quant-types.swift")
+            }
+            
+            @Step {
+                **Applying Quantization with coremltools**
+                
+                Use the quantization API in Python coremltools
+                to quantize models.
+                
+                @Code(name: "ApplyQuantization.swift", file: "08-apply-quant.swift")
+            }
+            
+            @Step {
+                **Validating Quantization Accuracy**
+                
+                Test with a validation dataset to ensure
+                accuracy doesn't drop significantly after quantization.
+                
+                @Code(name: "QuantizationValidation.swift", file: "08-quant-validation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Palettization") {
+        @ContentAndMedia {
+            Group similar weights (clustering)
+            and compress with a lookup table.
+        }
+        
+        @Steps {
+            @Step {
+                **Palettization Principle**
+                
+                Use k-means clustering to reduce weights
+                to n representative values.
+                16-color palette → representable with 4 bits
+                
+                @Code(name: "PalettizationConcept.swift", file: "08-palette-concept.swift")
+            }
+            
+            @Step {
+                **Applying Palettization**
+                
+                Compress the model with coremltools'
+                palettization API.
+                
+                @Code(name: "ApplyPalettization.swift", file: "08-apply-palette.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Neural Engine Optimization") {
+        @ContentAndMedia {
+            Tune models to run optimally
+            on Apple Neural Engine.
+        }
+        
+        @Steps {
+            @Step {
+                **Checking Neural Engine Compatibility**
+                
+                Verify all operations are supported on Neural Engine.
+                Unsupported operations fall back to CPU.
+                
+                @Code(name: "NeuralEngineCompat.swift", file: "08-neural-compat.swift")
+            }
+            
+            @Step {
+                **MLModelConfiguration.computeUnits**
+                
+                Specify which hardware the model runs on.
+                - .all: Auto-select (default)
+                - .cpuAndNeuralEngine: Exclude GPU
+                - .cpuOnly: CPU only
+                
+                @Code(name: "ComputeUnitsConfig.swift", file: "08-compute-units.swift")
+            }
+            
+            @Step {
+                **Batch Size Optimization**
+                
+                Neural Engine operates more efficiently
+                at certain batch sizes.
+                
+                @Code(name: "BatchSizeOptimization.swift", file: "08-batch-size.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Performance Measurement") {
+        @ContentAndMedia {
+            Measure performance before and after optimization
+            to confirm improvement effects.
+        }
+        
+        @Steps {
+            @Step {
+                **Profiling Models in Xcode**
+                
+                Measure inference time in the Predictions tab
+                of Xcode's Model Preview.
+                
+                @Code(name: "XcodeProfileling.swift", file: "08-xcode-profile.swift")
+            }
+            
+            @Step {
+                **Measuring Performance in Code**
+                
+                Measure inference time in the actual app
+                and log it.
+                
+                @Code(name: "PerformanceMeasurement.swift", file: "08-perf-measure.swift")
+            }
+            
+            @Step {
+                **Optimization Results Comparison Table**
+                
+                Compare original vs quantized vs palettized results
+                in a table format.
+                
+                @Code(name: "ComparisonTable.swift", file: "08-comparison.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            By approximately how much does model size decrease when quantizing Float32 weights to Int8?
+            
+            @Choice(isCorrect: true) {
+                About 1/4 (25%)
+                
+                @Justification(reaction: "Correct!") {
+                    32-bit → 8-bit reduces size
+                    to about 1/4.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                About 1/2 (50%)
+                
+                @Justification(reaction: "Not quite") {
+                    32-bit → 8-bit = 4x reduction,
+                    so size becomes 1/4.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                No change in size
+                
+                @Justification(reaction: "Not quite") {
+                    Quantization reduces bit count,
+                    so size decreases significantly.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What is the default value of MLModelConfiguration.computeUnits?
+            
+            @Choice(isCorrect: true) {
+                .all — automatically selects optimal hardware
+                
+                @Justification(reaction: "That's right!") {
+                    The default is .all, where Core ML
+                    automatically selects the optimal combination
+                    of Neural Engine, GPU, and CPU.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .cpuOnly — uses CPU only
+                
+                @Justification(reaction: "Not quite") {
+                    The default is .all.
+                    .cpuOnly is used only in special cases.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .neuralEngineOnly — uses Neural Engine only
+                
+                @Justification(reaction: "Not quite") {
+                    This option doesn't exist.
+                    The default .all automatically prioritizes Neural Engine.
+                }
+            }
+        }
+    }
+}

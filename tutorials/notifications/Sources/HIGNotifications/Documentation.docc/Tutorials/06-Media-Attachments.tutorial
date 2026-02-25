@@ -1,0 +1,271 @@
+@Tutorial(time: 18) {
+    @Intro(title: "Image/Media Attachments") {
+        Add visual elements to notifications.
+        
+        Attach images, GIFs, audio, and video to make
+        notifications more eye-catching and deliver information effectively.
+    }
+    
+    @Section(title: "UNNotificationAttachment Basics") {
+        @ContentAndMedia {
+            Attach media to notifications with UNNotificationAttachment.
+            
+            **Supported Formats:**
+            - Images: JPEG, PNG, GIF
+            - Audio: AIFF, WAV, MP3, M4A
+            - Video: MPEG, MP4, AVI
+        }
+        
+        @Steps {
+            @Step {
+                **Creating Attachments**
+                
+                Create UNNotificationAttachment from a file URL.
+                The file must be within the app sandbox.
+                
+                @Code(name: "CreateAttachment.swift", file: "06-create-attachment.swift")
+            }
+            
+            @Step {
+                **Adding to Notifications**
+                
+                Add to the content.attachments array.
+                You can attach multiple, but the first is displayed as thumbnail.
+                
+                @Code(name: "AddAttachment.swift", file: "06-add-attachment.swift")
+            }
+            
+            @Step {
+                **File Size Limits**
+                
+                Attachments have size limits.
+                Images 10MB, audio 5MB, video 50MB maximum.
+                
+                @Code(name: "SizeLimits.swift", file: "06-size-limits.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Attaching Bundle Images") {
+        @ContentAndMedia {
+            Attach images included in the app bundle to notifications.
+            
+            Bundle resources are read-only, so
+            they must be copied to a temporary directory before attaching.
+        }
+        
+        @Steps {
+            @Step {
+                **Loading Images from Bundle**
+                
+                Get the URL with Bundle.main.url(forResource:withExtension:).
+                
+                @Code(name: "LoadBundleImage.swift", file: "06-load-bundle-image.swift")
+            }
+            
+            @Step {
+                **Copying to Temporary Directory**
+                
+                Copy the bundle file to a temporary location before attaching.
+                The system manages the file after the notification is delivered.
+                
+                @Code(name: "CopyToTemp.swift", file: "06-copy-to-temp.swift")
+            }
+            
+            @Step {
+                **Attaching Icons by Category**
+                
+                Attach different icons based on reminder category.
+                "Work" gets 📋, "Health" gets 💊, "Shopping" gets 🛒, etc.
+                
+                @Code(name: "CategoryIcon.swift", file: "06-category-icon.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Downloading Network Images") {
+        @ContentAndMedia {
+            Download images from remote URLs and attach them.
+            
+            For local notifications, you must download in advance.
+            For push notifications, a Notification Service Extension is needed.
+        }
+        
+        @Steps {
+            @Step {
+                **Image Download Helper**
+                
+                Download images with URLSession and save locally.
+                
+                @Code(name: "DownloadImage.swift", file: "06-download-image.swift")
+            }
+            
+            @Step {
+                **Schedule Notification After Download**
+                
+                Download the image first, then schedule the notification.
+                Handle sequentially with async/await.
+                
+                @Code(name: "ScheduleWithImage.swift", file: "06-schedule-with-image.swift")
+            }
+        }
+    }
+    
+    @Section(title: "GIF Animations") {
+        @ContentAndMedia {
+            Attaching GIFs plays the animation when the notification is expanded.
+            
+            Can be used for celebration messages, fun reminders, etc.
+            Manage file size appropriately.
+        }
+        
+        @Steps {
+            @Step {
+                **Attaching GIFs**
+                
+                Attach GIF files the same way.
+                Explicitly specifying the type hint is recommended.
+                
+                @Code(name: "GifAttachment.swift", file: "06-gif-attachment.swift")
+            }
+            
+            @Step {
+                **Setting Attachment Options**
+                
+                Specify thumbnail frame etc. with UNNotificationAttachmentOptions.
+                
+                @Code(name: "AttachmentOptions.swift", file: "06-attachment-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Video and Audio") {
+        @ContentAndMedia {
+            You can attach short video or audio clips.
+            
+            3D Touch or long-press on the notification plays the media.
+            Be mindful of file size limits.
+        }
+        
+        @Steps {
+            @Step {
+                **Video Attachment**
+                
+                Attach MP4 video to notifications.
+                Short clips (under 10 seconds) are recommended.
+                
+                @Code(name: "VideoAttachment.swift", file: "06-video-attachment.swift")
+            }
+            
+            @Step {
+                **Specifying Thumbnail Time**
+                
+                Use a specific frame from the video as thumbnail.
+                Specify with UNNotificationAttachmentOptionsThumbnailTimeKey.
+                
+                @Code(name: "VideoThumbnail.swift", file: "06-video-thumbnail.swift")
+            }
+            
+            @Step {
+                **Media Attachment Utility**
+                
+                Add media attachment helper to NotificationManager.
+                
+                @Code(name: "MediaHelper.swift", file: "06-media-helper.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What is the maximum size for image attachments in UNNotificationAttachment?
+            
+            @Choice(isCorrect: false) {
+                5MB
+                
+                @Justification(reaction: "That's larger") {
+                    5MB is the limit for audio attachments.
+                    Images can be up to 10MB.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                10MB
+                
+                @Justification(reaction: "Correct!") {
+                    Image attachments max out at 10MB.
+                    Audio is 5MB, video is 50MB maximum.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                50MB
+                
+                @Justification(reaction: "Not quite") {
+                    50MB is the limit for video attachments.
+                    Images are up to 10MB.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Why must you copy app bundle images to a temporary directory to attach them to notifications?
+            
+            @Choice(isCorrect: true) {
+                Bundle is read-only, and the system needs to manage the attachment file
+                
+                @Justification(reaction: "Correct!") {
+                    The notification system copies and manages attachments internally.
+                    This isn't possible from a read-only bundle.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bundle URLs are not supported by UNNotificationAttachment
+                
+                @Justification(reaction: "Not quite") {
+                    Technically URLs can be used, but copying is needed
+                    for the system's file management.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bundle images are too large
+                
+                @Justification(reaction: "Not quite") {
+                    It's unrelated to size.
+                    It's about file system permissions and management.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            How are multiple attachments displayed when added to a notification?
+            
+            @Choice(isCorrect: true) {
+                First file as thumbnail, all shown when expanded
+                
+                @Justification(reaction: "Correct!") {
+                    The first attachment is displayed as thumbnail in the banner,
+                    and all attachments are visible when the notification is expanded.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                All files displayed as a thumbnail grid
+                
+                @Justification(reaction: "Not quite") {
+                    Only the first file appears as thumbnail in the banner.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Only the last file is displayed
+                
+                @Justification(reaction: "Not quite") {
+                    The first file is used as the representative thumbnail.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,176 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CBCentralManager Setup") {
+        Learn how to create a CBCentralManager, the core of the Central role,
+        and monitor Bluetooth state.
+    }
+    
+    @Section(title: "Creating CBCentralManager") {
+        @ContentAndMedia {
+            CBCentralManager is the entry point for the BLE Central role.
+            It handles device scanning, connection, and Bluetooth state management.
+            
+            **Considerations when creating:**
+            - Delegate setup is required
+            - Queue specification (nil defaults to main queue)
+            - Options for state restoration, etc.
+        }
+        
+        @Steps {
+            @Step {
+                Create a BluetoothManager class and
+                instantiate CBCentralManager.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-01-central-manager.swift")
+            }
+            
+            @Step {
+                Implement CBCentralManagerDelegate to
+                detect Bluetooth state changes.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-02-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Handling Bluetooth State") {
+        @ContentAndMedia {
+            CBManagerState represents the device's Bluetooth state.
+            You should provide appropriate UI feedback based on the state.
+            
+            | State | Description |
+            |-------|-------------|
+            | .poweredOn | Bluetooth is available |
+            | .poweredOff | Bluetooth is off |
+            | .unauthorized | No permission |
+            | .unsupported | Device doesn't support BLE |
+        }
+        
+        @Steps {
+            @Step {
+                Provide user-friendly messages
+                for each Bluetooth state.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-03-state-handling.swift")
+            }
+            
+            @Step {
+                Display the Bluetooth state in SwiftUI
+                by binding it to the view.
+                
+                @Code(name: "BluetoothStatusView.swift", file: "02-04-status-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Applying the @Observable Pattern") {
+        @ContentAndMedia {
+            On iOS 17+, you can use the @Observable macro
+            for more concise state management.
+            
+            It has less boilerplate and better performance
+            than the traditional ObservableObject.
+        }
+        
+        @Steps {
+            @Step {
+                Implement a modern BluetoothManager
+                with @Observable applied.
+                
+                @Code(name: "BluetoothManager.swift", file: "02-05-observable.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            What happens when you pass nil to the queue parameter when creating CBCentralManager?
+            
+            @Choice(isCorrect: true) {
+                Delegate callbacks are called on the main queue
+                
+                @Justification(reaction: "Correct! 🎯") {
+                    When queue is nil, the main queue is used.
+                    This is convenient when UI updates are needed,
+                    but a separate queue is recommended for complex processing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Callbacks are called on a background queue
+                
+                @Justification(reaction: "Incorrect.") {
+                    nil means the main queue.
+                    You need to explicitly create a queue for background processing.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                An error occurs
+                
+                @Justification(reaction: "Wrong.") {
+                    nil is a valid value that uses the main queue.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What state should you check before starting a BLE scan?
+            
+            @Choice(isCorrect: false) {
+                .resetting
+                
+                @Justification(reaction: "Incorrect.") {
+                    resetting is a temporary state where scanning cannot be started.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .poweredOn
+                
+                @Justification(reaction: "Correct! ✨") {
+                    BLE operations like scanning and connecting
+                    can only be performed in the .poweredOn state.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .unknown
+                
+                @Justification(reaction: "Wrong.") {
+                    unknown is the initial state, meaning it's not ready yet.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            What state occurs when Bluetooth permission is denied on iOS?
+            
+            @Choice(isCorrect: false) {
+                .poweredOff
+                
+                @Justification(reaction: "That's different.") {
+                    poweredOff means Bluetooth is turned off.
+                    It's not a permission issue.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .unsupported
+                
+                @Justification(reaction: "Incorrect.") {
+                    unsupported means the hardware doesn't support BLE.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .unauthorized
+                
+                @Justification(reaction: "Correct! 🔐") {
+                    When the user denies Bluetooth permission,
+                    the state becomes .unauthorized.
+                    You should guide users to change permissions in Settings.
+                }
+            }
+        }
+    }
+}
