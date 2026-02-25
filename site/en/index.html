@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Apple's core 50 frameworks with blogs, DocC tutorials, and sample projects.">
+    <meta property="og:title" content="HIG Lab — Practice Apple Frameworks with Code">
+    <meta property="og:description" content="Learn Apple's core 50 frameworks with blogs, DocC tutorials, and sample projects.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="HIG Lab — Practice Apple Frameworks with Code">
+    <meta name="twitter:description" content="Learn Apple's core 50 frameworks with blogs, DocC tutorials, and sample projects.">
+<title>HIG Lab — Practice Apple Frameworks with Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--border:#d2d2d7;--tag-bg:#f5f5f7;--green:#34c759;--orange:#ff9500;--purple:#af52de;--red:#ff3b30;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--border);}
+.header-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:17px;font-weight:800;text-decoration:none;color:var(--text);}
+.logo span{color:var(--accent);}
+.nav a{font-size:13px;color:var(--text-2);text-decoration:none;margin-left:20px;font-weight:500;}
+.hero{text-align:center;padding:80px 24px 60px;max-width:720px;margin:0 auto;}
+.hero h1{font-size:clamp(36px,6vw,52px);font-weight:900;letter-spacing:-2px;line-height:1.15;margin-bottom:16px;}
+.hero p{font-size:18px;color:var(--text-2);line-height:1.7;margin-bottom:32px;}
+.hero-stats{display:flex;justify-content:center;gap:40px;margin-bottom:20px;}
+.stat{text-align:center;}
+.stat-num{font-size:28px;font-weight:800;color:var(--accent);}
+.stat-label{font-size:12px;color:var(--text-2);font-weight:500;}
+
+/* Progress Bar */
+.progress-section{max-width:800px;margin:0 auto 40px;padding:0 24px;}
+.progress-bar-container{background:var(--border);border-radius:8px;height:8px;overflow:hidden;}
+.progress-bar{background:linear-gradient(90deg,var(--green),var(--accent));height:100%;width:100%;border-radius:8px;transition:width 0.5s;}
+.progress-text{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--text-2);}
+
+/* Phase Section */
+.phase-section{max-width:1200px;margin:0 auto;padding:0 24px 60px;}
+.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.phase-icon{font-size:28px;}
+.phase-title{font-size:24px;font-weight:800;}
+.phase-count{font-size:13px;color:var(--text-2);margin-left:auto;}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:all .2s;}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.08);}
+.card.disabled{opacity:0.5;pointer-events:none;}
+.card-gradient{height:100px;display:flex;align-items:center;justify-content:center;}
+.card-gradient .icon{font-size:40px;}
+.card-body{padding:16px;}
+.card-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.card-status.done{color:var(--green);}
+.card-status.progress{color:var(--orange);}
+.card-status.planned{color:var(--text-2);}
+.card-status.new{color:var(--purple);}
+.card-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.card-desc{font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:10px;}
+.card-links{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:12px;margin-top:8px;}
+.card-link{display:inline-flex;align-items:center;font-size:11px;padding:5px 11px;border-radius:20px;text-decoration:none;font-weight:600;letter-spacing:.2px;border:1.5px solid transparent;transition:background .15s,color .15s,border-color .15s,box-shadow .15s,transform .15s;}
+.card-link.active{background:transparent;color:var(--accent);border-color:var(--accent);cursor:pointer;}
+.card-link.active:hover{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(0,113,227,.25);transform:translateY(-1px);}
+.card-link.soon{background:var(--tag-bg);color:var(--border);border-color:var(--border);opacity:.5;pointer-events:none;cursor:default;}
+
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2);}
+@media(max-width:640px){.hero-stats{gap:24px;}.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <a href="./" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="https://github.com/M1zz/HIGLab/blob/main/GETTING_STARTED.md" data-i18n="nav_start">🌱 Get Started</a>
+      <a href="roadmap.html" data-i18n="nav_roadmap">🗺️ Roadmap</a>
+      <a href="#ai-reference">🤖 AI Reference</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="https://youtube.com/@leeo25" data-i18n="nav_channel">YouTube</a>
+      <a href="../" style="background:var(--accent);color:#fff;border:none;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600;cursor:pointer;margin-left:8px;text-decoration:none;">🇰🇷 KO</a>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1 data-i18n="hero_title">Practice Apple Frameworks<br>with Code</h1>
+  <p data-i18n="hero_desc">Learn 50 essential frameworks from Apple's 367+ frameworks through hands-on practice.<br>
+  Each topic includes a blog post, DocC tutorial, and sample project.</p>
+  <p style="margin-top:16px;">
+    <a href="https://github.com/M1zz/HIGLab/blob/main/GETTING_STARTED.md" style="background:var(--accent);color:white;padding:10px 20px;border-radius:20px;text-decoration:none;font-weight:600;font-size:14px;" data-i18n="hero_btn">🌱 Getting Started Guide</a>
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">50</div><div class="stat-label" data-i18n="stat_blog">📝 Blog</div></div>
+    <div class="stat"><div class="stat-num">50</div><div class="stat-label" data-i18n="stat_docc">📚 DocC</div></div>
+    <div class="stat"><div class="stat-num">43</div><div class="stat-label" data-i18n="stat_sample">💻 Sample</div></div>
+    <div class="stat"><div class="stat-num">50</div><div class="stat-label" data-i18n="stat_ai">🤖 AI Ref</div></div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-bar-container">
+    <div class="progress-bar" style="width:100%"></div>
+  </div>
+  <div class="progress-text">
+    <span data-i18n="progress_left">🎉 50/50 technologies covered! (43 sample projects)</span>
+    <span data-i18n="progress_right">📝 100% · 📚 100% · 💻 100% (148,411 lines)</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Phase 1: App Frameworks -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phase-section" id="phase1">
+  <div class="phase-header">
+    <span class="phase-icon">🚀</span>
+    <span class="phase-title">Phase 1: App Frameworks</span>
+    <span class="phase-count">📝7 📚7 💻5</span>
+  </div>
+  <div class="grid">
+
+    <!-- WidgetKit ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FFCC02);">
+        <div class="icon">🌤</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">WidgetKit</div>
+        <div class="card-desc">Home/Lock screen widgets. Glanceable, Relevant, Personalized principles.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/" class="card-link active">DocC</a>
+          <a href="widgets/01-weather-widget-challenge.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/WeatherWidget" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/widgets.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ActivityKit ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE);">
+        <div class="icon">🏃</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">ActivityKit</div>
+        <div class="card-desc">Live Activities, Dynamic Island. Build a delivery tracking app.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/activitykit/documentation/higactivitykit/" class="card-link active">DocC</a>
+          <a href="activitykit/01-delivery-tracker.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/DeliveryTracker" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/activitykit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Intents ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158);">
+        <div class="icon">🗣️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">App Intents</div>
+        <div class="card-desc">Siri, 단축어, 위젯 통합. 음성으로 앱 제어하기.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/appintents/documentation/higappintents/" class="card-link active">DocC</a>
+          <a href="appintents/01-siri-todo-app.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SiriTodo" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/appintents.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SwiftUI -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
+        <div class="icon">📱</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">SwiftUI</div>
+        <div class="card-desc">선언적 UI 프레임워크. 기초부터 고급까지.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/swiftui/documentation/higswiftui/" class="card-link active">DocC</a>
+          <a href="swiftui/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/TaskMaster" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/swiftui.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SwiftData -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF6482);">
+        <div class="icon">💾</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">SwiftData</div>
+        <div class="card-desc">현대적 데이터 저장. CRUD 완전 정복.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/swiftdata/documentation/higswiftdata/" class="card-link active">DocC</a>
+          <a href="swiftdata/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/TaskMaster" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/swiftdata.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observation -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#00C7BE);">
+        <div class="icon">👁️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Observation</div>
+        <div class="card-desc">@Observable 상태관리. 최신 패턴 적용.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/observation/documentation/higobservation/" class="card-link active">DocC</a>
+          <a href="observation/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/TaskMaster" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/swiftui-observation.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Foundation Models ✅ 🆕 -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#FF375F);">
+        <div class="icon">🤖</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done 🆕</div>
+        <div class="card-title">Foundation Models</div>
+        <div class="card-desc">온디바이스 LLM. AI 챗봇 앱 만들기.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/foundationmodels/documentation/higfoundationmodels/" class="card-link active">DocC</a>
+          <a href="foundationmodels/01-ai-chatbot.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/AIChatbot" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/foundation-models.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Phase 2: App Services -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phase-section" id="phase2">
+  <div class="phase-header">
+    <span class="phase-icon">💳</span>
+    <span class="phase-title">Phase 2: App Services</span>
+    <span class="phase-count">📝13 📚13 💻12</span>
+  </div>
+  <div class="grid">
+
+    <!-- StoreKit 2 ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
+        <div class="icon">💰</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">StoreKit 2</div>
+        <div class="card-desc">인앱결제, 구독. 수익화 완전 가이드.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/storekit/documentation/higstorekit/" class="card-link active">DocC</a>
+          <a href="storekit/01-subscription-app.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SubscriptionApp" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/storekit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PassKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#1D1D1F,#636366);">
+        <div class="icon">💳</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">PassKit</div>
+        <div class="card-desc">Apple Pay, Wallet 통합. 결제 UX.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/passkit/documentation/higpasskit/" class="card-link active">DocC</a>
+          <a href="passkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/CartFlow" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/passkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CloudKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF);">
+        <div class="icon">☁️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">CloudKit</div>
+        <div class="card-desc">iCloud 데이터 동기화. 무료 백엔드.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/cloudkit/documentation/higcloudkit/" class="card-link active">DocC</a>
+          <a href="cloudkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/CloudNotes" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/cloudkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Authentication Services -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#1D1D1F,#3A3A3C);">
+        <div class="icon">🔐</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Authentication Services</div>
+        <div class="card-desc">Sign in with Apple, 패스키.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/authservices/documentation/higauthservices/" class="card-link active">DocC</a>
+          <a href="authservices/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SecureVault" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/authservices.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HealthKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF6482);">
+        <div class="icon">❤️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">HealthKit</div>
+        <div class="card-desc">건강 데이터 읽기/쓰기. 헬스 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/healthkit/documentation/highealthkit/" class="card-link active">DocC</a>
+          <a href="healthkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/HealthTracker" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/healthkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WeatherKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF);">
+        <div class="icon">🌦</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">WeatherKit</div>
+        <div class="card-desc">Apple 날씨 API. 날씨 앱 만들기.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/weatherkit/documentation/higweatherkit/" class="card-link active">DocC</a>
+          <a href="weatherkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/WeatherWidget" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MapKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158);">
+        <div class="icon">🗺️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">MapKit</div>
+        <div class="card-desc">지도, POI, 경로. 위치 기반 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/mapkit/documentation/higmapkit/" class="card-link active">DocC</a>
+          <a href="mapkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/PlaceExplorer" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/mapkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Location -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#34C759);">
+        <div class="icon">📍</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core Location</div>
+        <div class="card-desc">GPS, 지오펜싱. 위치 권한 UX.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/corelocation/documentation/higcorelocation/" class="card-link active">DocC</a>
+          <a href="corelocation/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/LocationTracker" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/corelocation.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core ML -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#BF5AF2);">
+        <div class="icon">🧠</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core ML</div>
+        <div class="card-desc">온디바이스 ML 추론. AI 통합.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/coreml/documentation/higcoreml/" class="card-link active">DocC</a>
+          <a href="coreml/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/MLClassifier" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/coreml.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vision -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF2D55);">
+        <div class="icon">👁️‍🗨️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Vision</div>
+        <div class="card-desc">이미지 분석, OCR, 얼굴 인식.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/vision/documentation/higvision/" class="card-link active">DocC</a>
+          <a href="vision/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/VisionScanner" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/vision.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Notifications -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF3B30,#FF6961);">
+        <div class="icon">🔔</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">User Notifications</div>
+        <div class="card-desc">푸시/로컬 알림. 알림 완전정복.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/notifications/documentation/hignotifications/" class="card-link active">DocC</a>
+          <a href="notifications/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/NotifyMe" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/notifications.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TipKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FFCC02,#FF9500);">
+        <div class="icon">💡</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">TipKit</div>
+        <div class="card-desc">기능 팁 표시. 온보딩 UX.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/tipkit/documentation/higtipkit/" class="card-link active">DocC</a>
+          <a href="tipkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/TipShowcase" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/tipkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SharePlay -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#5AC8FA);">
+        <div class="icon">🎬</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">SharePlay</div>
+        <div class="card-desc">함께 보기 경험. 공유 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/shareplay/documentation/higshareplay/" class="card-link active">DocC</a>
+          <a href="shareplay/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/WatchParty" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/shareplay.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Phase 3: Graphics & Media -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phase-section" id="phase3">
+  <div class="phase-header">
+    <span class="phase-icon">🎮</span>
+    <span class="phase-title">Phase 3: Graphics & Media</span>
+    <span class="phase-count">📝13 📚13 💻12</span>
+  </div>
+  <div class="grid">
+
+    <!-- ARKit ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#FF2D55);">
+        <div class="icon">🥽</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">ARKit</div>
+        <div class="card-desc">증강현실. visionOS 준비.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/arkit/documentation/higarkit/" class="card-link active">DocC</a>
+          <a href="arkit/01-ar-furniture-app.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/ARFurniture" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/arkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RealityKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#5856D6);">
+        <div class="icon">🎲</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">RealityKit</div>
+        <div class="card-desc">3D 렌더링. 몰입형 경험.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/realitykit/documentation/higrealitykit/" class="card-link active">DocC</a>
+          <a href="realitykit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/ARFurniture" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SpriteKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF2D55);">
+        <div class="icon">👾</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">SpriteKit</div>
+        <div class="card-desc">2D 게임 엔진. 캐주얼 게임.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/spritekit/documentation/higspritekit/" class="card-link active">DocC</a>
+          <a href="spritekit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SpaceShooter" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/spritekit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Image -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#AF52DE);">
+        <div class="icon">🎨</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core Image</div>
+        <div class="card-desc">이미지 필터. 인스타 필터 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/coreimage/documentation/higcoreimage/" class="card-link active">DocC</a>
+          <a href="coreimage/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/FilterLab" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PencilKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FFCC02);">
+        <div class="icon">✏️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">PencilKit</div>
+        <div class="card-desc">드로잉 캔버스. 그림 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/pencilkit/documentation/higpencilkit/" class="card-link active">DocC</a>
+          <a href="pencilkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SketchPad" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/pencilkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDFKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF3B30,#FF6961);">
+        <div class="icon">📄</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">PDFKit</div>
+        <div class="card-desc">PDF 뷰어/편집. 문서 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/pdfkit/documentation/higpdfkit/" class="card-link active">DocC</a>
+          <a href="pdfkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/PDFReader" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/pdfkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVFoundation -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF6482);">
+        <div class="icon">📹</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">AVFoundation</div>
+        <div class="card-desc">카메라, 비디오. 미디어 캡처.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/avfoundation/documentation/higavfoundation/" class="card-link active">DocC</a>
+          <a href="avfoundation/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/CameraApp" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/avfoundation.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#007AFF);">
+        <div class="icon">▶️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">AVKit</div>
+        <div class="card-desc">미디어 플레이어. 영상 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/avkit/documentation/higavkit/" class="card-link active">DocC</a>
+          <a href="avkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/MusicPlayer" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MusicKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF6482);">
+        <div class="icon">🎵</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">MusicKit</div>
+        <div class="card-desc">Apple Music 통합. 음악 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/musickit/documentation/higmusickit/" class="card-link active">DocC</a>
+          <a href="musickit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/MusicPlayer" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/musickit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FFCC02);">
+        <div class="icon">📷</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">PhotosUI</div>
+        <div class="card-desc">사진 라이브러리. 갤러리 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/photosui/documentation/higphotosui/" class="card-link active">DocC</a>
+          <a href="photosui/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/PhotoGallery" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/photosui.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Haptics -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#636366,#8E8E93);">
+        <div class="icon">📳</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core Haptics</div>
+        <div class="card-desc">햅틱 피드백. 촉각 디자인.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/corehaptics/documentation/higcorehaptics/" class="card-link active">DocC</a>
+          <a href="corehaptics/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/HapticDemo" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/corehaptics.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ShazamKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
+        <div class="icon">🎤</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">ShazamKit</div>
+        <div class="card-desc">음악 인식. 이 노래 뭐지?</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/shazamkit/documentation/higshazamkit/" class="card-link active">DocC</a>
+          <a href="shazamkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SoundMatch" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Playground 🆕 -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#FF375F);">
+        <div class="icon">🖼️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">Image Playground</div>
+        <div class="card-desc">AI 이미지 생성. 그림 만들기.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/imageplayground/documentation/higimageplayground/" class="card-link active">DocC</a>
+          <a href="imageplayground/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/ImageMaker" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Phase 4: System -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phase-section" id="phase4">
+  <div class="phase-header">
+    <span class="phase-icon">🔧</span>
+    <span class="phase-title">Phase 4: System & Network</span>
+    <span class="phase-count">📝10 📚10 💻8</span>
+  </div>
+  <div class="grid">
+
+    <!-- Core Bluetooth ✅ -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5856D6);">
+        <div class="icon">📶</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core Bluetooth</div>
+        <div class="card-desc">BLE 기기 연결. IoT 앱.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/bluetooth/documentation/higbluetooth/" class="card-link active">DocC</a>
+          <a href="bluetooth/01-ble-device-scanner.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/BLEScanner" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/core-bluetooth.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core NFC -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158);">
+        <div class="icon">📱</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Core NFC</div>
+        <div class="card-desc">NFC 태그 읽기/쓰기.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/corenfc/documentation/higcorenfc/" class="card-link active">DocC</a>
+          <a href="corenfc/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/NFCReader" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MultipeerConnectivity -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF);">
+        <div class="icon">🔗</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">MultipeerConnectivity</div>
+        <div class="card-desc">P2P 통신. 근거리 공유.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/multipeer/documentation/higmultipeer/" class="card-link active">DocC</a>
+          <a href="multipeer/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/PeerChat" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#636366,#8E8E93);">
+        <div class="icon">🌐</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Network</div>
+        <div class="card-desc">TCP/UDP/QUIC. 네트워킹.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/network/documentation/hignetwork/" class="card-link active">DocC</a>
+          <a href="network/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/NetMonitor" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LocalAuthentication -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#1D1D1F,#3A3A3C);">
+        <div class="icon">🔑</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">LocalAuthentication</div>
+        <div class="card-desc">Face ID / Touch ID.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/localauth/documentation/higlocalauth/" class="card-link active">DocC</a>
+          <a href="localauth/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SecureVault" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/localauth.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CryptoKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF3B30,#FF6961);">
+        <div class="icon">🔒</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">CryptoKit</div>
+        <div class="card-desc">암호화/해싱. 보안 기초.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/cryptokit/documentation/higcryptokit/" class="card-link active">DocC</a>
+          <a href="cryptokit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SecureVault" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/cryptokit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CallKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158);">
+        <div class="icon">📞</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">CallKit</div>
+        <div class="card-desc">VoIP 전화 UI.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/callkit/documentation/higcallkit/" class="card-link active">DocC</a>
+          <a href="callkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/VoIPPhone" class="card-link active">샘플</a>
+          <span class="card-link soon">🤖 AI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EventKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF6482);">
+        <div class="icon">📅</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">EventKit</div>
+        <div class="card-desc">캘린더/리마인더.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/eventkit/documentation/higeventkit/" class="card-link active">DocC</a>
+          <a href="eventkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/CalendarPlus" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/eventkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacts -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
+        <div class="icon">👤</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ Done</div>
+        <div class="card-title">Contacts</div>
+        <div class="card-desc">연락처 접근/편집.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/contacts/documentation/higcontacts/" class="card-link active">DocC</a>
+          <a href="contacts/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/ContactBook" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/contacts.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wi-Fi Aware 🆕 -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF);">
+        <div class="icon">📡</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">Wi-Fi Aware</div>
+        <div class="card-desc">AP 없이 직접 통신.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/wifiaware/documentation/higwifiaware/" class="card-link active">DocC</a>
+          <a href="wifiaware/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/DirectShare" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/wifi-aware.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Phase 5: iOS 26 New -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="phase-section" id="phase5">
+  <div class="phase-header">
+    <span class="phase-icon">🆕</span>
+    <span class="phase-title" data-i18n="phase5_title">Phase 5: iOS 26 신규 기술</span>
+    <span class="phase-count">📝7 📚7 💻7</span>
+  </div>
+  <div class="grid">
+
+    <!-- Foundation Models -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#FF375F);">
+        <div class="icon">🤖</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">Foundation Models</div>
+        <div class="card-desc">온디바이스 LLM. AI 챗봇.</div>
+        <div class="card-links">
+          <span class="card-link soon">DocC</span>
+          <span class="card-link soon">Blog</span>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/VisionScanner" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/foundation-models.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Intelligence -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF2D55);">
+        <div class="icon">👁️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">Visual Intelligence</div>
+        <div class="card-desc">카메라로 사물 인식.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/visualintelligence/documentation/higvisualintelligence/" class="card-link active">DocC</a>
+          <a href="visualintelligence/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/WakeUp" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/visual-intelligence.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Playground -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#BF5AF2);">
+        <div class="icon">🖼️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">Image Playground</div>
+        <div class="card-desc">AI 이미지 생성.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/imageplayground/documentation/higimageplayground/" class="card-link active">DocC</a>
+          <a href="imageplayground/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/GreenCharge" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/image-playground.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AlarmKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FFCC02);">
+        <div class="icon">⏰</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">AlarmKit</div>
+        <div class="card-desc">시스템 알람 설정.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/alarmkit/documentation/higalarmkit/" class="card-link active">DocC</a>
+          <a href="alarmkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/PermissionHub" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/alarmkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- EnergyKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158);">
+        <div class="icon">⚡</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">EnergyKit</div>
+        <div class="card-desc">전력망 예보. 에너지 최적화.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/energykit/documentation/higenergykit/" class="card-link active">DocC</a>
+          <a href="energykit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SmartFeed" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/energykit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PermissionKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA);">
+        <div class="icon">🛡️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">PermissionKit</div>
+        <div class="card-desc">통합 권한 관리.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/permissionkit/documentation/higpermissionkit/" class="card-link active">DocC</a>
+          <a href="permissionkit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/DevicePair" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/permissionkit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RelevanceKit -->
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE);">
+        <div class="icon">🎯</div>
+      </div>
+      <div class="card-body">
+        <div class="card-status done">✅ 🆕 iOS 26</div>
+        <div class="card-title">RelevanceKit</div>
+        <div class="card-desc">상황별 콘텐츠 추천.</div>
+        <div class="card-links">
+          <a href="https://m1zz.github.io/HIGLab/tutorials/relevancekit/documentation/higrelevancekit/" class="card-link active">DocC</a>
+          <a href="relevancekit/01-tutorial.html" class="card-link active">Blog</a>
+          <a href="https://github.com/M1zz/HIGLab/tree/main/samples/SmartCrop" class="card-link active">샘플</a>
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/relevancekit.md" class="card-link active">🤖 AI</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 학습 경로 추천 -->
+<div class="phase-section" id="learning-path" style="background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:20px;margin:0 24px 40px;padding:32px;">
+  <div class="phase-header" style="border:none;padding:0;margin-bottom:20px;">
+    <span class="phase-icon">🎯</span>
+    <span class="phase-title" data-i18n="lp_title">어디서 시작할까요?</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">
+    <div style="background:white;padding:20px;border-radius:12px;">
+      <div style="font-size:24px;margin-bottom:8px;">🌱</div>
+      <div style="font-weight:700;margin-bottom:4px;" data-i18n="lp1_title">완전 초보</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px;" data-i18n="lp1_desc">Swift 막 배웠어요</div>
+      <a href="#swiftui" style="color:var(--accent);font-size:13px;font-weight:600;">SwiftUI → TaskMaster</a>
+    </div>
+    <div style="background:white;padding:20px;border-radius:12px;">
+      <div style="font-size:24px;margin-bottom:8px;">🌿</div>
+      <div style="font-weight:700;margin-bottom:4px;" data-i18n="lp2_title">기초 있음</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px;" data-i18n="lp2_desc">SwiftUI 좀 해봤어요</div>
+      <a href="#phase1" style="color:var(--accent);font-size:13px;font-weight:600;">WidgetKit → WeatherWidget</a>
+    </div>
+    <div style="background:white;padding:20px;border-radius:12px;">
+      <div style="font-size:24px;margin-bottom:8px;">🌳</div>
+      <div style="font-weight:700;margin-bottom:4px;" data-i18n="lp3_title">중급</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px;" data-i18n="lp3_desc">앱 몇 개 만들어봤어요</div>
+      <a href="#phase2" style="color:var(--accent);font-size:13px;font-weight:600;">StoreKit → SubscriptionApp</a>
+    </div>
+    <div style="background:white;padding:20px;border-radius:12px;">
+      <div style="font-size:24px;margin-bottom:8px;">🌲</div>
+      <div style="font-weight:700;margin-bottom:4px;" data-i18n="lp4_title">고급</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px;" data-i18n="lp4_desc">실무 경험 있어요</div>
+      <a href="#phase5" style="color:var(--accent);font-size:13px;font-weight:600;">Foundation Models → AIChatbot</a>
+    </div>
+  </div>
+</div>
+
+<!-- AI Reference -->
+<div class="phase-section" id="ai-reference" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:24px;margin:40px 24px;padding:40px;">
+  <div class="phase-header" style="border:none;padding:0;margin-bottom:16px;">
+    <span class="phase-icon">🤖</span>
+    <span class="phase-title" style="color:white;">AI Reference</span>
+    <span class="phase-count" style="color:rgba(255,255,255,0.7);" data-i18n="ai_count">AI 코드 생성용 참조 문서</span>
+  </div>
+  <p style="color:rgba(255,255,255,0.8);margin-bottom:8px;font-size:15px;">
+    <strong>Claude, GPT, Cursor</strong> 등에 이 문서를 제공하면 정확한 iOS 코드를 생성합니다.
+  </p>
+  <p style="color:rgba(255,255,255,0.6);margin-bottom:24px;font-size:14px;" data-i18n="ai_desc2">
+    예: "widgets.md를 참고해서 날씨 위젯 만들어줘" → 바로 실행 가능한 코드 생성!
+  </p>
+  <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/HOW-TO-USE.md" style="display:inline-block;background:white;color:#1a1a2e;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:600;font-size:14px;margin-bottom:24px;" data-i18n="ai_guide">📖 사용 가이드 보기</a>
+  <div class="grid">
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE)"><span class="icon">📦</span></div>
+      <div class="card-body">
+        <div class="card-title">WidgetKit</div>
+        <div class="card-desc">Timeline, Provider, Widget Family 전체 패턴</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/widgets.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF3B30)"><span class="icon">🏃</span></div>
+      <div class="card-body">
+        <div class="card-title">ActivityKit</div>
+        <div class="card-desc">Live Activity, Dynamic Island 전체 구현</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/activitykit.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158)"><span class="icon">👁️</span></div>
+      <div class="card-body">
+        <div class="card-title">@Observable</div>
+        <div class="card-desc">SwiftUI 최신 상태 관리 패턴</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/swiftui-observation.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5AC8FA)"><span class="icon">💾</span></div>
+      <div class="card-body">
+        <div class="card-title">SwiftData</div>
+        <div class="card-desc">@Model, @Query CRUD 전체 패턴</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/swiftdata.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#FF2D55,#FF375F)"><span class="icon">🧠</span></div>
+      <div class="card-body">
+        <div class="card-title">Foundation Models</div>
+        <div class="card-desc">온디바이스 AI, Tool 사용</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/foundation-models.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#007AFF)"><span class="icon">💳</span></div>
+      <div class="card-body">
+        <div class="card-title">StoreKit 2</div>
+        <div class="card-desc">인앱결제, 구독 전체 플로우</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/storekit.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#64D2FF)"><span class="icon">📡</span></div>
+      <div class="card-body">
+        <div class="card-title">Core Bluetooth</div>
+        <div class="card-desc">BLE 스캔, 연결, 통신</div>
+        <div class="card-links">
+          <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/core-bluetooth.md" class="card-link active">AI Ref</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+    <a href="https://github.com/M1zz/HIGLab/blob/main/GETTING_STARTED.md" style="color:var(--accent);text-decoration:none;font-weight:500;" data-i18n="footer_start">🌱 시작 가이드</a>
+    <a href="#ai-reference" style="color:var(--accent);text-decoration:none;font-weight:500;">🤖 AI Reference</a>
+    <a href="https://github.com/M1zz/HIGLab/blob/main/ai-reference/HOW-TO-USE.md" style="color:var(--accent);text-decoration:none;font-weight:500;" data-i18n="footer_ai_use">📖 AI 활용법</a>
+    <a href="https://github.com/M1zz/HIGLab/blob/main/QUALITY_CHECKLIST.md" style="color:var(--accent);text-decoration:none;font-weight:500;" data-i18n="footer_quality">📋 품질 기준</a>
+  </div>
+  <span data-i18n="footer_by"><strong>HIG Lab</strong> by <a href="https://youtube.com/@leeo25">YouTube</a> · 
+  <a href="https://github.com/M1zz/HIGLab">GitHub</a></span><br>
+  <span style="margin-top:8px;display:block;" data-i18n="footer_motto">367개 프레임워크, 하나씩 정복하자 🚀</span>
+</div>
+<script>
+const i18n = {
+  ko: {
+    nav_start: '🌱 Get Started',
+    nav_roadmap: '🗺️ Roadmap',
+    nav_channel: 'YouTube',
+    hero_title: 'Practice Apple Frameworks<br>with Code',
+    hero_desc: 'Learn 50 essential frameworks from Apple's 367+ frameworks through hands-on practice.<br>Each topic includes a blog post, DocC tutorial, and sample project.',
+    hero_btn: '🌱 Getting Started Guide',
+    stat_blog: '📝 Blog',
+    stat_docc: '📚 DocC',
+    stat_sample: '💻 Sample',
+    stat_ai: '🤖 AI Ref',
+    progress_left: '🎉 50/50 technologies covered! (43 sample projects)',
+    progress_right: '📝 100% · 📚 100% · 💻 100% (148,411 lines)',
+    phase5_title: 'Phase 5: iOS 26 신규 기술',
+    lp_title: '어디서 시작할까요?',
+    lp1_title: '완전 초보',
+    lp1_desc: 'Swift 막 배웠어요',
+    lp2_title: '기초 있음',
+    lp2_desc: 'SwiftUI 좀 해봤어요',
+    lp3_title: '중급',
+    lp3_desc: '앱 몇 개 만들어봤어요',
+    lp4_title: '고급',
+    lp4_desc: '실무 경험 있어요',
+    ai_count: 'AI 코드 생성용 참조 문서',
+    ai_desc1: '<strong>Claude, GPT, Cursor</strong> 등에 이 문서를 제공하면 정확한 iOS 코드를 생성합니다.',
+    ai_desc2: '예: "widgets.md를 참고해서 날씨 위젯 만들어줘" → 바로 실행 가능한 코드 생성!',
+    ai_guide: '📖 사용 가이드 보기',
+    ai_widget_desc: 'Timeline, Provider, Widget Family 전체 패턴',
+    ai_activity_desc: 'Live Activity, Dynamic Island 전체 구현',
+    ai_obs_desc: 'SwiftUI 최신 상태 관리 패턴',
+    ai_sd_desc: '@Model, @Query CRUD 전체 패턴',
+    ai_fm_desc: '온디바이스 AI, Tool 사용',
+    ai_sk_desc: '인앱결제, 구독 전체 플로우',
+    ai_bt_desc: 'BLE 스캔, 연결, 통신',
+    footer_start: '🌱 시작 가이드',
+    footer_ai_use: '📖 AI 활용법',
+    footer_quality: '📋 품질 기준',
+    footer_by: '<strong>HIG Lab</strong> by <a href="https://youtube.com/@leeo25">YouTube</a> · <a href="https://github.com/M1zz/HIGLab">GitHub</a>',
+    footer_motto: '367개 프레임워크, 하나씩 정복하자 🚀',
+    blog: 'Blog',
+    sample: '샘플',
+    done: '✅ Done',
+    done_new: '✅ Done 🆕',
+    done_ios26: '✅ 🆕 iOS 26',
+    // Card descriptions
+    cd_widget: 'Home/Lock screen widgets. Glanceable, Relevant, Personalized principles.',
+    cd_activity: 'Live Activities, Dynamic Island. Build a delivery tracking app.',
+    cd_appintents: 'Siri, 단축어, 위젯 통합. 음성으로 앱 제어하기.',
+    cd_swiftui: '선언적 UI 프레임워크. 기초부터 고급까지.',
+    cd_swiftdata: '현대적 데이터 저장. CRUD 완전 정복.',
+    cd_observation: '@Observable 상태관리. 최신 패턴 적용.',
+    cd_fm: '온디바이스 LLM. AI 챗봇 앱 만들기.',
+    cd_storekit: '인앱결제, 구독. 수익화 완전 가이드.',
+    cd_passkit: 'Apple Pay, Wallet 통합. 결제 UX.',
+    cd_cloudkit: 'iCloud 데이터 동기화. 무료 백엔드.',
+    cd_auth: 'Sign in with Apple, 패스키.',
+    cd_health: '건강 데이터 읽기/쓰기. 헬스 앱.',
+    cd_weather: 'Apple 날씨 API. 날씨 앱 만들기.',
+    cd_map: '지도, POI, 경로. 위치 기반 앱.',
+    cd_location: 'GPS, 지오펜싱. 위치 권한 UX.',
+    cd_coreml: '온디바이스 ML 추론. AI 통합.',
+    cd_vision: '이미지 분석, OCR, 얼굴 인식.',
+    cd_notif: '푸시/로컬 알림. 알림 완전정복.',
+    cd_tipkit: '기능 팁 표시. 온보딩 UX.',
+    cd_shareplay: '함께 보기 경험. 공유 앱.',
+    cd_arkit: '증강현실. visionOS 준비.',
+    cd_realitykit: '3D 렌더링. 몰입형 경험.',
+    cd_spritekit: '2D 게임 엔진. 캐주얼 게임.',
+    cd_coreimage: '이미지 필터. 인스타 필터 앱.',
+    cd_pencilkit: '드로잉 캔버스. 그림 앱.',
+    cd_pdfkit: 'PDF 뷰어/편집. 문서 앱.',
+    cd_avfoundation: '카메라, 비디오. 미디어 캡처.',
+    cd_avkit: '미디어 플레이어. 영상 앱.',
+    cd_musickit: 'Apple Music 통합. 음악 앱.',
+    cd_photosui: '사진 라이브러리. 갤러리 앱.',
+    cd_haptics: '햅틱 피드백. 촉각 디자인.',
+    cd_shazam: '음악 인식. 이 노래 뭐지?',
+    cd_imgplay: 'AI 이미지 생성. 그림 만들기.',
+    cd_bt: 'BLE 기기 연결. IoT 앱.',
+    cd_nfc: 'NFC 태그 읽기/쓰기.',
+    cd_multipeer: 'P2P 통신. 근거리 공유.',
+    cd_network: 'TCP/UDP/QUIC. 네트워킹.',
+    cd_localauth: 'Face ID / Touch ID.',
+    cd_crypto: '암호화/해싱. 보안 기초.',
+    cd_callkit: 'VoIP 전화 UI.',
+    cd_eventkit: '캘린더/리마인더.',
+    cd_contacts: '연락처 접근/편집.',
+    cd_wifiaware: 'AP 없이 직접 통신.',
+    cd_visualint: '카메라로 사물 인식.',
+    cd_alarm: '시스템 알람 설정.',
+    cd_energy: '전력망 예보. 에너지 최적화.',
+    cd_permission: '통합 권한 관리.',
+    cd_relevance: '상황별 콘텐츠 추천.',
+    cd_accessory: '악세서리 페어링.',
+    cd_extimg: '시스템 카메라 확장.',
+    cd_fm2: '온디바이스 LLM. AI 챗봇.',
+    cd_imgplay2: 'AI 이미지 생성.',
+  },
+  en: {
+    nav_start: '🌱 Get Started',
+    nav_roadmap: '🗺️ Roadmap',
+    nav_channel: 'YouTube',
+    hero_title: 'Learn Apple Frameworks<br>Through Code',
+    hero_desc: 'Master 50 essential Apple frameworks out of 367, with hands-on practice.<br>Each topic includes a blog tutorial + DocC tutorial + sample project.',
+    hero_btn: '🌱 Beginner\'s Guide',
+    stat_blog: '📝 Blog',
+    stat_docc: '📚 DocC',
+    stat_sample: '💻 Samples',
+    stat_ai: '🤖 AI Ref',
+    progress_left: '🎉 50/50 technologies fully covered! (43 sample projects)',
+    progress_right: '📝 100% · 📚 100% · 💻 100% (148,411 lines)',
+    phase5_title: 'Phase 5: iOS 26 New APIs',
+    lp_title: 'Where should you start?',
+    lp1_title: 'Absolute Beginner',
+    lp1_desc: 'Just learned Swift',
+    lp2_title: 'Some Basics',
+    lp2_desc: 'Tried SwiftUI a bit',
+    lp3_title: 'Intermediate',
+    lp3_desc: 'Built a few apps',
+    lp4_title: 'Advanced',
+    lp4_desc: 'Professional experience',
+    ai_count: 'Reference docs for AI code generation',
+    ai_desc1: '<strong>Claude, GPT, Cursor</strong> — provide these docs for accurate iOS code generation.',
+    ai_desc2: 'Example: "Use widgets.md to build a weather widget" → production-ready code!',
+    ai_guide: '📖 Usage Guide',
+    ai_widget_desc: 'Timeline, Provider, Widget Family — complete patterns',
+    ai_activity_desc: 'Live Activity, Dynamic Island — full implementation',
+    ai_obs_desc: 'SwiftUI modern state management patterns',
+    ai_sd_desc: '@Model, @Query CRUD — complete patterns',
+    ai_fm_desc: 'On-device AI, Tool usage',
+    ai_sk_desc: 'In-app purchase, subscription — full flow',
+    ai_bt_desc: 'BLE scan, connect, communicate',
+    footer_start: '🌱 Start Guide',
+    footer_ai_use: '📖 AI Usage Guide',
+    footer_quality: '📋 Quality Standards',
+    footer_by: '<strong>HIG Lab</strong> by <a href="https://youtube.com/@leeo25">leeo_dev</a> · <a href="https://github.com/M1zz/HIGLab">GitHub</a>',
+    footer_motto: '367 frameworks, one at a time 🚀',
+    blog: 'Blog',
+    sample: 'Sample',
+    done: '✅ Complete',
+    done_new: '✅ Complete 🆕',
+    done_ios26: '✅ 🆕 iOS 26',
+    cd_widget: 'Home/Lock screen widgets. Glanceable, Relevant, Personalized.',
+    cd_activity: 'Live Activities & Dynamic Island. Build a delivery tracker.',
+    cd_appintents: 'Siri, Shortcuts & Widget integration. Control apps with voice.',
+    cd_swiftui: 'Declarative UI framework. From basics to advanced.',
+    cd_swiftdata: 'Modern data persistence. Master CRUD operations.',
+    cd_observation: '@Observable state management. Latest patterns.',
+    cd_fm: 'On-device LLM. Build an AI chatbot app.',
+    cd_storekit: 'In-app purchases & subscriptions. Complete monetization guide.',
+    cd_passkit: 'Apple Pay & Wallet integration. Payment UX.',
+    cd_cloudkit: 'iCloud data sync. Free backend.',
+    cd_auth: 'Sign in with Apple & Passkeys.',
+    cd_health: 'Read/write health data. Health app.',
+    cd_weather: 'Apple Weather API. Build a weather app.',
+    cd_map: 'Maps, POI & routes. Location-based apps.',
+    cd_location: 'GPS & geofencing. Location permissions UX.',
+    cd_coreml: 'On-device ML inference. AI integration.',
+    cd_vision: 'Image analysis, OCR & face detection.',
+    cd_notif: 'Push/local notifications. Complete guide.',
+    cd_tipkit: 'Feature tips display. Onboarding UX.',
+    cd_shareplay: 'Shared experiences. Co-watching apps.',
+    cd_arkit: 'Augmented reality. visionOS ready.',
+    cd_realitykit: '3D rendering. Immersive experiences.',
+    cd_spritekit: '2D game engine. Casual games.',
+    cd_coreimage: 'Image filters. Instagram-style filter app.',
+    cd_pencilkit: 'Drawing canvas. Sketching app.',
+    cd_pdfkit: 'PDF viewer/editor. Document app.',
+    cd_avfoundation: 'Camera & video. Media capture.',
+    cd_avkit: 'Media player. Video app.',
+    cd_musickit: 'Apple Music integration. Music app.',
+    cd_photosui: 'Photo library. Gallery app.',
+    cd_haptics: 'Haptic feedback. Tactile design.',
+    cd_shazam: 'Music recognition. What song is this?',
+    cd_imgplay: 'AI image generation. Create artwork.',
+    cd_bt: 'BLE device connectivity. IoT apps.',
+    cd_nfc: 'NFC tag read/write.',
+    cd_multipeer: 'P2P communication. Nearby sharing.',
+    cd_network: 'TCP/UDP/QUIC. Networking.',
+    cd_localauth: 'Face ID / Touch ID.',
+    cd_crypto: 'Encryption & hashing. Security basics.',
+    cd_callkit: 'VoIP phone UI.',
+    cd_eventkit: 'Calendar & Reminders.',
+    cd_contacts: 'Contact access & editing.',
+    cd_wifiaware: 'Direct communication without AP.',
+    cd_visualint: 'Object recognition via camera.',
+    cd_alarm: 'System alarm management.',
+    cd_energy: 'Grid forecast. Energy optimization.',
+    cd_permission: 'Unified permission management.',
+    cd_relevance: 'Contextual content recommendations.',
+    cd_accessory: 'Accessory pairing.',
+    cd_extimg: 'System camera extension.',
+    cd_fm2: 'On-device LLM. AI chatbot.',
+    cd_imgplay2: 'AI image generation.',
+  }
+};
+
+let currentLang = localStorage.getItem('higlab-lang') || 'ko';
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('higlab-lang', lang);
+  document.documentElement.lang = lang;
+  document.getElementById('lang-toggle').textContent = lang === 'ko' ? '🌐 EN' : '🌐 KO';
+  
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key]) {
+      if (el.tagName === 'INPUT' || el.tagName === 'BUTTON') {
+        el.textContent = i18n[lang][key];
+      } else {
+        el.innerHTML = i18n[lang][key];
+      }
+    }
+  });
+
+  // Update blog links for EN
+  document.querySelectorAll('a.card-link').forEach(a => {
+    const href = a.getAttribute('href') || '';
+    if (href.match(/\.html$/) && !href.startsWith('http')) {
+      if (lang === 'en') {
+        a.setAttribute('href', href.replace(/\.html$/, '.en.html'));
+      } else {
+        a.setAttribute('href', href.replace(/\.en\.html$/, '.html'));
+      }
+    }
+  });
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'ko' ? 'en' : 'ko');
+}
+
+// Card description translations keyed by card title
+const cardDescMap = {
+  'WidgetKit': ['cd_widget','done'],
+  'ActivityKit': ['cd_activity','done'],
+  'App Intents': ['cd_appintents','done'],
+  'SwiftUI': ['cd_swiftui','done'],
+  'SwiftData': ['cd_swiftdata','done'],
+  'Observation': ['cd_observation','done'],
+  'Foundation Models': ['cd_fm','done_new'],
+  'StoreKit 2': ['cd_storekit','done'],
+  'PassKit': ['cd_passkit','done'],
+  'CloudKit': ['cd_cloudkit','done'],
+  'Authentication Services': ['cd_auth','done'],
+  'HealthKit': ['cd_health','done'],
+  'WeatherKit': ['cd_weather','done'],
+  'MapKit': ['cd_map','done'],
+  'Core Location': ['cd_location','done'],
+  'Core ML': ['cd_coreml','done'],
+  'Vision': ['cd_vision','done'],
+  'User Notifications': ['cd_notif','done'],
+  'TipKit': ['cd_tipkit','done'],
+  'SharePlay': ['cd_shareplay','done'],
+  'ARKit': ['cd_arkit','done'],
+  'RealityKit': ['cd_realitykit','done'],
+  'SpriteKit': ['cd_spritekit','done'],
+  'Core Image': ['cd_coreimage','done'],
+  'PencilKit': ['cd_pencilkit','done'],
+  'PDFKit': ['cd_pdfkit','done'],
+  'AVFoundation': ['cd_avfoundation','done'],
+  'AVKit': ['cd_avkit','done'],
+  'MusicKit': ['cd_musickit','done'],
+  'PhotosUI': ['cd_photosui','done'],
+  'Core Haptics': ['cd_haptics','done'],
+  'ShazamKit': ['cd_shazam','done'],
+  'Image Playground': ['cd_imgplay','done_ios26'],
+  'Core Bluetooth': ['cd_bt','done'],
+  'Core NFC': ['cd_nfc','done'],
+  'MultipeerConnectivity': ['cd_multipeer','done'],
+  'Network': ['cd_network','done'],
+  'LocalAuthentication': ['cd_localauth','done'],
+  'CryptoKit': ['cd_crypto','done'],
+  'CallKit': ['cd_callkit','done'],
+  'EventKit': ['cd_eventkit','done'],
+  'Contacts': ['cd_contacts','done'],
+  'Wi-Fi Aware': ['cd_wifiaware','done_ios26'],
+  'Visual Intelligence': ['cd_visualint','done_ios26'],
+  'AlarmKit': ['cd_alarm','done_ios26'],
+  'EnergyKit': ['cd_energy','done_ios26'],
+  'PermissionKit': ['cd_permission','done_ios26'],
+  'RelevanceKit': ['cd_relevance','done_ios26'],
+  'AccessorySetupKit': ['cd_accessory','done_ios26'],
+  'ExtensibleImage': ['cd_extimg','done_ios26'],
+};
+
+// Blog link label translations
+const blogLabelMap = { 'Blog': 'blog', '샘플': 'sample' };
+
+function applyCardTranslations(lang) {
+  document.querySelectorAll('.card').forEach(card => {
+    const titleEl = card.querySelector('.card-title');
+    if (!titleEl) return;
+    const title = titleEl.textContent.trim();
+    const mapping = cardDescMap[title];
+    if (!mapping) return;
+    const descEl = card.querySelector('.card-desc');
+    const statusEl = card.querySelector('.card-status');
+    if (descEl && i18n[lang][mapping[0]]) descEl.textContent = i18n[lang][mapping[0]];
+    if (statusEl && i18n[lang][mapping[1]]) statusEl.textContent = i18n[lang][mapping[1]];
+    // Translate blog/sample link labels
+    card.querySelectorAll('.card-link').forEach(link => {
+      const txt = link.textContent.trim();
+      if (lang === 'en') {
+        if (txt === 'Blog') link.textContent = 'Blog';
+        else if (txt === '샘플') link.textContent = 'Sample';
+      } else {
+        if (txt === 'Blog') link.textContent = 'Blog';
+        else if (txt === 'Sample') link.textContent = '샘플';
+      }
+    });
+  });
+}
+
+// Patch applyLang to also handle cards
+const _origApplyLang = applyLang;
+applyLang = function(lang) {
+  _origApplyLang(lang);
+  applyCardTranslations(lang);
+};
+
+// Apply saved language on load
+document.addEventListener('DOMContentLoaded', () => applyLang(currentLang));
+</script>
+
+<!-- Learning Progress Checklist -->
+<script>
+(function() {
+  const STORAGE_KEY = 'higlab-progress';
+  
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } 
+    catch { return {}; }
+  }
+  
+  function saveProgress(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+  
+  function updateCounter() {
+    const p = getProgress();
+    const done = Object.values(p).filter(Boolean).length;
+    const total = document.querySelectorAll('.card .higlab-check').length;
+    const el = document.getElementById('higlab-progress-counter');
+    if (el) {
+      const lang = document.documentElement.lang || 'ko';
+      el.textContent = lang === 'en' 
+        ? `✅ ${done}/${total} learned` 
+        : `✅ ${done}/${total} 학습 완료`;
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add progress counter to hero
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+      const counter = document.createElement('div');
+      counter.className = 'stat';
+      counter.innerHTML = '<div class="stat-num" id="higlab-progress-counter" style="font-size:16px;cursor:pointer;" title="Click to reset progress">✅ 0/0</div><div class="stat-label">📋 학습 체크</div>';
+      heroStats.appendChild(counter);
+      // Long-press to reset
+      counter.querySelector('#higlab-progress-counter').addEventListener('dblclick', function() {
+        if (confirm('학습 진행률을 초기화할까요? / Reset progress?')) {
+          localStorage.removeItem(STORAGE_KEY);
+          document.querySelectorAll('.higlab-check').forEach(c => c.textContent = '☐');
+          updateCounter();
+        }
+      });
+    }
+    
+    // Add checkbox to each card
+    const progress = getProgress();
+    document.querySelectorAll('.card').forEach(function(card) {
+      const titleEl = card.querySelector('.card-title');
+      if (!titleEl) return;
+      const key = titleEl.textContent.trim();
+      
+      const check = document.createElement('span');
+      check.className = 'higlab-check';
+      check.textContent = progress[key] ? '☑' : '☐';
+      check.style.cssText = 'position:absolute;top:8px;right:8px;font-size:18px;cursor:pointer;opacity:0.6;transition:opacity .15s;z-index:10;user-select:none;';
+      check.addEventListener('mouseenter', function() { this.style.opacity = '1'; });
+      check.addEventListener('mouseleave', function() { this.style.opacity = progress[key] ? '0.8' : '0.6'; });
+      check.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const p = getProgress();
+        p[key] = !p[key];
+        saveProgress(p);
+        this.textContent = p[key] ? '☑' : '☐';
+        this.style.opacity = p[key] ? '0.8' : '0.6';
+        updateCounter();
+      });
+      
+      // Make card-body relative for positioning
+      const body = card.querySelector('.card-body');
+      if (body) {
+        body.style.position = 'relative';
+        body.appendChild(check);
+      }
+    });
+    
+    updateCounter();
+  });
+})();
+</script>
+</body>
+</html>

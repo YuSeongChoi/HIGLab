@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎬 SharePlay — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../shareplay/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🎬 SharePlay</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 3-4h</span>
+  <span>📂 App Services</span>
+</div>
+<p class="subtitle">FaceTime으로 함께 즐기는 공유 경험</p>
+
+<div><span class="badge ios">iOS 15+</span><span class="badge new">tvOS/macOS Supported</span></div>
+
+<h2>✨ SharePlay?</h2>
+<p>SharePlay is a framework that lets you enjoy movies, music, app screens and more in sync during FaceTime calls. Using GroupActivities and AVFoundation, it provides perfect synchronization across multiple devices.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Media Sync · Screen Sharing · Group Sessions · Real-Time Sync · Smart Volume · Shared Playback Controls · Cross-Platform (iOS/tvOS/macOS)
+</div>
+
+<h2>🎯 1. Group Activity 정의</h2>
+<p>Define activities to share in a SharePlay session.</p>
+
+<div class="code-block">
+<div class="code-header">MovieActivity.swift — Group Activity Definition</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">GroupActivities</span>
+
+<span class="kw">struct</span> <span class="type">Movie</span>: <span class="type">Hashable</span>, <span class="type">Codable</span> {
+    <span class="kw">let</span> id: <span class="type">String</span>
+    <span class="kw">let</span> title: <span class="type">String</span>
+    <span class="kw">let</span> url: <span class="type">URL</span>
+}
+
+<span class="comment">// GroupActivity 프로토콜 채택</span>
+<span class="kw">struct</span> <span class="type">WatchingMovie</span>: <span class="type">GroupActivity</span> {
+    <span class="comment">// 공유할 영화 정보</span>
+    <span class="kw">let</span> movie: <span class="type">Movie</span>
+
+    <span class="comment">// 메타데이터 (FaceTime UI에 표시)</span>
+    <span class="kw">var</span> metadata: <span class="type">GroupActivityMetadata</span> {
+        <span class="kw">var</span> metadata = <span class="type">GroupActivityMetadata</span>()
+        metadata.title = movie.title
+        metadata.type = .watchTogether
+        metadata.fallbackURL = movie.url
+
+        <span class="comment">// 선택 사항: 이미지, 부제목</span>
+        <span class="comment">// metadata.previewImage = ...</span>
+        <span class="comment">// metadata.subtitle = "영화"</span>
+
+        <span class="kw">return</span> metadata
+    }
+}</pre>
+</div>
+
+<h2>🚀 2. SharePlay 세션 시작</h2>
+<p>Activate a GroupActivity and manage sessions.</p>
+
+<div class="code-block">
+<div class="code-header">SharePlayManager.swift — Session Management</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">GroupActivities</span>
+<span class="kw">import</span> <span class="type">Combine</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">SharePlayManager</span> {
+    <span class="kw">var</span> groupSession: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>?
+    <span class="kw">var</span> isSharePlayActive = <span class="kw">false</span>
+    <span class="kw">var</span> activeParticipants: [<span class="type">Participant</span>] = []
+
+    <span class="kw">private</span> <span class="kw">var</span> cancellables = <span class="type">Set</span><<span class="type">AnyCancellable</span>>()
+    <span class="kw">private</span> <span class="kw">var</span> tasks = <span class="type">Set</span><<span class="type">Task</span><<span class="type">Void</span>, <span class="type">Never</span>>>()
+
+    <span class="kw">init</span>() {
+        observeGroupSessions()
+    }
+
+    <span class="comment">// GroupSession 변화 관찰</span>
+    <span class="kw">func</span> observeGroupSessions() {
+        <span class="kw">let</span> task = <span class="type">Task</span> {
+            <span class="kw">for</span> <span class="kw">await</span> session <span class="kw">in</span> <span class="type">WatchingMovie</span>.sessions() {
+                configureGroupSession(session)
+            }
+        }
+        tasks.insert(task)
+    }
+
+    <span class="comment">// SharePlay 세션 시작</span>
+    <span class="kw">func</span> startSharePlay(movie: <span class="type">Movie</span>) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">let</span> activity = <span class="type">WatchingMovie</span>(movie: movie)
+
+        <span class="comment">// 세션 활성화 시도</span>
+        <span class="kw">switch</span> <span class="kw">await</span> activity.prepareForActivation() {
+        <span class="kw">case</span> .activationPreferred:
+            <span class="comment">// 사용자가 SharePlay 선택 → 세션 활성화</span>
+            <span class="kw">try</span> <span class="kw">await</span> activity.activate()
+
+        <span class="kw">case</span> .activationDisabled:
+            <span class="comment">// SharePlay 비활성화 → 로컬에서만 재생</span>
+            print(<span class="str">"SharePlay 비활성화됨"</span>)
+
+        <span class="kw">case</span> .cancelled:
+            <span class="comment">// 사용자가 취소</span>
+            print(<span class="str">"SharePlay 취소됨"</span>)
+
+        <span class="kw">@unknown</span> <span class="kw">default</span>:
+            <span class="kw">break</span>
+        }
+    }
+
+    <span class="comment">// GroupSession 설정</span>
+    <span class="kw">func</span> configureGroupSession(<span class="kw">_</span> session: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>) {
+        groupSession = session
+        isSharePlayActive = <span class="kw">true</span>
+
+        <span class="comment">// 참가자 목록 업데이트</span>
+        session.$activeParticipants
+            .sink { [<span class="kw">weak self</span>] participants <span class="kw">in</span>
+                <span class="kw">self</span>?.activeParticipants = <span class="type">Array</span>(participants)
+            }
+            .store(in: &cancellables)
+
+        <span class="comment">// 세션 상태 변화 관찰</span>
+        session.$state
+            .sink { [<span class="kw">weak self</span>] state <span class="kw">in</span>
+                <span class="kw">if</span> state == .invalidated {
+                    <span class="kw">self</span>?.isSharePlayActive = <span class="kw">false</span>
+                    <span class="kw">self</span>?.groupSession = <span class="kw">nil</span>
+                }
+            }
+            .store(in: &cancellables)
+
+        <span class="comment">// 세션 조인</span>
+        session.join()
+    }
+
+    <span class="comment">// SharePlay 세션 종료</span>
+    <span class="kw">func</span> endSharePlay() {
+        groupSession?.end()
+        groupSession = <span class="kw">nil</span>
+        isSharePlayActive = <span class="kw">false</span>
+    }
+
+    deinit {
+        tasks.forEach { $0.cancel() }
+    }
+}</pre>
+</div>
+
+<h2>🎥 3. 비디오 동기화</h2>
+<p>Integrate AVPlayer with SharePlay to synchronize playback.</p>
+
+<div class="code-block">
+<div class="code-header">VideoPlayerManager.swift — Video Sync</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AVFoundation</span>
+<span class="kw">import</span> <span class="type">GroupActivities</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">VideoPlayerManager</span> {
+    <span class="kw">var</span> player: <span class="type">AVPlayer</span>?
+    <span class="kw">var</span> groupSession: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>?
+
+    <span class="kw">private</span> <span class="kw">var</span> playbackCoordinator: <span class="type">AVPlayerPlaybackCoordinator</span>?
+
+    <span class="comment">// SharePlay로 비디오 재생</span>
+    <span class="kw">func</span> playVideo(url: <span class="type">URL</span>, session: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>?) {
+        <span class="comment">// AVPlayer 생성</span>
+        <span class="kw">let</span> playerItem = <span class="type">AVPlayerItem</span>(url: url)
+        <span class="kw">let</span> player = <span class="type">AVPlayer</span>(playerItem: playerItem)
+        <span class="kw">self</span>.player = player
+
+        <span class="comment">// SharePlay 세션과 연결</span>
+        <span class="kw">if</span> <span class="kw">let</span> session {
+            playbackCoordinator = player.playbackCoordinator
+            playbackCoordinator?.coordinateWithSession(session)
+        }
+
+        <span class="comment">// 재생 시작</span>
+        player.play()
+    }
+
+    <span class="comment">// 재생/일시정지 토글</span>
+    <span class="kw">func</span> togglePlayback() {
+        <span class="kw">guard</span> <span class="kw">let</span> player <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">if</span> player.timeControlStatus == .playing {
+            player.pause()
+        } <span class="kw">else</span> {
+            player.play()
+        }
+    }
+
+    <span class="comment">// 특정 시간으로 이동</span>
+    <span class="kw">func</span> seek(to time: <span class="type">CMTime</span>) {
+        player?.seek(to: time)
+    }
+}</pre>
+</div>
+
+<h2>🎵 4. 음악 동기화</h2>
+<p>Music playback can also be synced via SharePlay.</p>
+
+<div class="code-block">
+<div class="code-header">MusicActivity.swift — 음악 공유</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">GroupActivities</span>
+<span class="kw">import</span> <span class="type">MusicKit</span>
+
+<span class="kw">struct</span> <span class="type">Song</span>: <span class="type">Hashable</span>, <span class="type">Codable</span> {
+    <span class="kw">let</span> id: <span class="type">String</span>
+    <span class="kw">let</span> title: <span class="type">String</span>
+    <span class="kw">let</span> artist: <span class="type">String</span>
+}
+
+<span class="kw">struct</span> <span class="type">ListeningTogether</span>: <span class="type">GroupActivity</span> {
+    <span class="kw">let</span> song: <span class="type">Song</span>
+
+    <span class="kw">var</span> metadata: <span class="type">GroupActivityMetadata</span> {
+        <span class="kw">var</span> metadata = <span class="type">GroupActivityMetadata</span>()
+        metadata.title = song.title
+        metadata.subtitle = song.artist
+        metadata.type = .listenTogether
+        <span class="kw">return</span> metadata
+    }
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MusicSharePlayManager</span> {
+    <span class="kw">var</span> groupSession: <span class="type">GroupSession</span><<span class="type">ListeningTogether</span>>?
+
+    <span class="kw">func</span> startListeningTogether(song: <span class="type">Song</span>) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">let</span> activity = <span class="type">ListeningTogether</span>(song: song)
+
+        <span class="kw">switch</span> <span class="kw">await</span> activity.prepareForActivation() {
+        <span class="kw">case</span> .activationPreferred:
+            <span class="kw">try</span> <span class="kw">await</span> activity.activate()
+        <span class="kw">default</span>:
+            <span class="kw">break</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>💬 5. 커스텀 메시지 전송</h2>
+<p>Exchange custom data through GroupSession.</p>
+
+<div class="code-block">
+<div class="code-header">GroupSessionMessenger.swift — Message Sending</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">GroupActivities</span>
+
+<span class="comment">// 전송할 메시지 정의</span>
+<span class="kw">struct</span> <span class="type">ChatMessage</span>: <span class="type">Codable</span> {
+    <span class="kw">let</span> senderID: <span class="type">UUID</span>
+    <span class="kw">let</span> text: <span class="type">String</span>
+    <span class="kw">let</span> timestamp: <span class="type">Date</span>
+}
+
+<span class="kw">struct</span> <span class="type">ReactionMessage</span>: <span class="type">Codable</span> {
+    <span class="kw">let</span> senderID: <span class="type">UUID</span>
+    <span class="kw">let</span> emoji: <span class="type">String</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">GroupSessionMessenger</span> {
+    <span class="kw">var</span> groupSession: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>?
+    <span class="kw">var</span> messages: [<span class="type">ChatMessage</span>] = []
+    <span class="kw">var</span> reactions: [<span class="type">ReactionMessage</span>] = []
+
+    <span class="kw">private</span> <span class="kw">var</span> messenger: <span class="type">GroupSessionMessenger</span>?
+    <span class="kw">private</span> <span class="kw">var</span> tasks = <span class="type">Set</span><<span class="type">Task</span><<span class="type">Void</span>, <span class="type">Never</span>>>()
+
+    <span class="kw">func</span> configureMessenger(session: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>) {
+        groupSession = session
+        messenger = <span class="type">GroupSessionMessenger</span>(session: session)
+
+        <span class="comment">// 채팅 메시지 수신</span>
+        <span class="kw">let</span> chatTask = <span class="type">Task</span> {
+            <span class="kw">for</span> <span class="kw">await</span> (message, context) <span class="kw">in</span> messenger!.messages(of: <span class="type">ChatMessage</span>.<span class="kw">self</span>) {
+                handleChatMessage(message, from: context.source)
+            }
+        }
+        tasks.insert(chatTask)
+
+        <span class="comment">// 반응 메시지 수신</span>
+        <span class="kw">let</span> reactionTask = <span class="type">Task</span> {
+            <span class="kw">for</span> <span class="kw">await</span> (reaction, _) <span class="kw">in</span> messenger!.messages(of: <span class="type">ReactionMessage</span>.<span class="kw">self</span>) {
+                handleReaction(reaction)
+            }
+        }
+        tasks.insert(reactionTask)
+    }
+
+    <span class="comment">// 채팅 메시지 전송</span>
+    <span class="kw">func</span> sendChatMessage(<span class="kw">_</span> text: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> messenger, <span class="kw">let</span> localParticipant = groupSession?.localParticipant <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> message = <span class="type">ChatMessage</span>(
+            senderID: localParticipant.id,
+            text: text,
+            timestamp: <span class="type">Date</span>()
+        )
+
+        <span class="kw">do</span> {
+            <span class="kw">try</span> <span class="kw">await</span> messenger.send(message)
+        } <span class="kw">catch</span> {
+            print(<span class="str">"메시지 전송 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="comment">// 반응 전송</span>
+    <span class="kw">func</span> sendReaction(<span class="kw">_</span> emoji: <span class="type">String</span>) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> messenger, <span class="kw">let</span> localParticipant = groupSession?.localParticipant <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> reaction = <span class="type">ReactionMessage</span>(
+            senderID: localParticipant.id,
+            emoji: emoji
+        )
+
+        <span class="kw">try</span>? <span class="kw">await</span> messenger.send(reaction, to: .all)
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> handleChatMessage(<span class="kw">_</span> message: <span class="type">ChatMessage</span>, from sender: <span class="type">Participant</span>.<span class="type">ID</span>) {
+        messages.append(message)
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> handleReaction(<span class="kw">_</span> reaction: <span class="type">ReactionMessage</span>) {
+        reactions.append(reaction)
+
+        <span class="comment">// 3초 후 자동 제거</span>
+        <span class="type">Task</span> {
+            <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="str">3</span>))
+            reactions.removeAll { $0.senderID == reaction.senderID }
+        }
+    }
+
+    deinit {
+        tasks.forEach { $0.cancel() }
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI Integration</h2>
+
+<div class="code-block">
+<div class="code-header">SharePlayDemoView.swift — Complete Demo</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">SharePlayDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> sharePlayManager = <span class="type">SharePlayManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> videoManager = <span class="type">VideoPlayerManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> messenger = <span class="type">GroupSessionMessenger</span>()
+
+    <span class="kw">let</span> sampleMovie = <span class="type">Movie</span>(
+        id: <span class="str">"1"</span>,
+        title: <span class="str">"샘플 영화"</span>,
+        url: <span class="type">URL</span>(string: <span class="str">"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"</span>)!
+    )
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span> {
+                <span class="comment">// 비디오 플레이어</span>
+                <span class="kw">if</span> <span class="kw">let</span> player = videoManager.player {
+                    <span class="type">VideoPlayer</span>(player: player)
+                        .frame(height: <span class="str">250</span>)
+                }
+
+                <span class="comment">// SharePlay 상태</span>
+                <span class="type">Section</span> {
+                    <span class="kw">if</span> sharePlayManager.isSharePlayActive {
+                        <span class="type">Label</span>(<span class="str">"SharePlay 활성"</span>, systemImage: <span class="str">"shareplay"</span>)
+                            .foregroundStyle(.green)
+
+                        <span class="type">Text</span>(<span class="str">"참가자: \(sharePlayManager.activeParticipants.count)명"</span>)
+                            .font(.caption)
+
+                        <span class="type">Button</span>(<span class="str">"SharePlay 종료"</span>, role: .destructive) {
+                            sharePlayManager.endSharePlay()
+                        }
+                    } <span class="kw">else</span> {
+                        <span class="type">Button</span>(<span class="str">"SharePlay 시작"</span>) {
+                            <span class="type">Task</span> {
+                                <span class="kw">try</span>? <span class="kw">await</span> sharePlayManager.startSharePlay(movie: sampleMovie)
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+                .padding()
+
+                <span class="comment">// 재생 컨트롤</span>
+                <span class="type">HStack</span>(spacing: <span class="str">20</span>) {
+                    <span class="type">Button</span> {
+                        videoManager.togglePlayback()
+                    } label: {
+                        <span class="type">Image</span>(systemName: videoManager.player?.timeControlStatus == .playing ? <span class="str">"pause.circle.fill"</span> : <span class="str">"play.circle.fill"</span>)
+                            .font(.system(size: <span class="str">50</span>))
+                    }
+                }
+                .padding()
+
+                <span class="comment">// 반응 버튼</span>
+                <span class="kw">if</span> sharePlayManager.isSharePlayActive {
+                    <span class="type">HStack</span>(spacing: <span class="str">15</span>) {
+                        <span class="type">ForEach</span>([<span class="str">"❤️"</span>, <span class="str">"😂"</span>, <span class="str">"😮"</span>, <span class="str">"👏"</span>], id: \.<span class="kw">self</span>) { emoji <span class="kw">in</span>
+                            <span class="type">Button</span>(emoji) {
+                                <span class="type">Task</span> {
+                                    <span class="kw">await</span> messenger.sendReaction(emoji)
+                                }
+                            }
+                            .font(.title)
+                        }
+                    }
+                    .padding()
+
+                    <span class="comment">// 반응 표시</span>
+                    <span class="type">HStack</span> {
+                        <span class="type">ForEach</span>(messenger.reactions, id: \.senderID) { reaction <span class="kw">in</span>
+                            <span class="type">Text</span>(reaction.emoji)
+                                .font(.largeTitle)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
+                }
+
+                <span class="type">Spacer</span>()
+            }
+            .navigationTitle(<span class="str">"SharePlay 데모"</span>)
+            .onChange(of: sharePlayManager.groupSession) { _, session <span class="kw">in</span>
+                <span class="kw">if</span> <span class="kw">let</span> session {
+                    videoManager.playVideo(
+                        url: sampleMovie.url,
+                        session: session
+                    )
+                    messenger.configureMessenger(session: session)
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>자동 감지:</strong> Automatically offer SharePlay options during FaceTime calls.</li>
+<li><strong>시작 방법:</strong> 명확한 SharePlay 시작 버튼 제공</li>
+<li><strong>상태 표시:</strong> SharePlay 활성 여부를 명확히 표시</li>
+<li><strong>컨트롤 공유:</strong> 모든 참가자가 재생을 제어할 수 있어야 함</li>
+<li><strong>스마트 볼륨:</strong> The system automatically balances FaceTime and media audio.</li>
+<li><strong>개별 선택:</strong> Participants can freely join/leave SharePlay</li>
+<li><strong>권한:</strong> In Info.plist, <code>NSLocalNetworkUsageDescription</code> 추가</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>Streaming Apps:</strong> 영화/드라마를 친구와 함께 시청</li>
+<li><strong>Music Apps:</strong> 플레이리스트를 실시간으로 공유</li>
+<li><strong>운동 앱:</strong> 같은 운동 영상을 함께 따라하기</li>
+<li><strong>게임 앱:</strong> 화면 공유로 함께 게임 플레이</li>
+<li><strong>Education Apps:</strong> 강의나 Tutorial을 함께 시청</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/groupactivities">GroupActivities 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2021/10087/">WWDC 2021: Coordinate media experiences with Group Activities</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2022/10140/">WWDC 2022: What's new in SharePlay</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/shareplay">HIG: SharePlay</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ 팁:</strong> SharePlay has been fully available since iOS 15.1. Testing is limited in the simulator, so testing on 2 physical devices is recommended.
+</div>
+
+<h2>🔧 Entitlements 설정</h2>
+
+<p>To use SharePlay, add the Group Activities entitlement to your app.</p>
+
+<div class="code-block">
+<div class="code-header">YourApp.entitlements</div>
+<pre class="code-body"><span class="str">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="str">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"</span>
+<span class="str"> "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span>
+<span class="str">&lt;plist version="1.0"&gt;</span>
+<span class="str">&lt;dict&gt;</span>
+    <span class="str">&lt;key&gt;com.apple.developer.group-activities&lt;/key&gt;</span>
+    <span class="str">&lt;true/&gt;</span>
+<span class="str">&lt;/dict&gt;</span>
+<span class="str">&lt;/plist&gt;</span></pre>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/groupactivities" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/groupactivities/building-a-shareplay-experience" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=SharePlay" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

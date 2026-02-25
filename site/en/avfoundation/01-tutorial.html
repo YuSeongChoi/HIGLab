@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎬 AVFoundation — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../avfoundation/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🎬 AVFoundation</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 3-4h</span>
+  <span>📂 Graphics & Media</span>
+</div>
+<p class="subtitle">Comprehensive framework for audio/video capture, playback, and editing</p>
+
+<div><span class="badge ios">iOS 4+</span><span class="badge new">프로급 미디어</span></div>
+
+<h2>✨ AVFoundation is?</h2>
+<p>AVFoundation is Apple's powerful framework for processing time-based media. It supports every stage of the media workflow — capture, playback, editing, and export. It's essential for building camera apps, video editors, audio recorders, and streaming services.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Video/Audio Capture · Media Playback · Real-Time Processing · Video Editing · Export · Metadata · Streaming · Session Management
+</div>
+
+<h2>📹 1. 비디오 캡처</h2>
+<p>Use AVCaptureSession to capture video from the camera.</p>
+
+<div class="code-block">
+<div class="code-header">CameraView.swift — 비디오 캡처</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">CameraManager</span>: <span class="type">NSObject</span> {
+    <span class="kw">let</span> captureSession = <span class="type">AVCaptureSession</span>()
+    <span class="kw">var</span> videoOutput = <span class="type">AVCaptureMovieFileOutput</span>()
+    <span class="kw">var</span> previewLayer: <span class="type">AVCaptureVideoPreviewLayer</span>?
+    <span class="kw">var</span> isRecording = <span class="kw">false</span>
+
+    <span class="kw">func</span> setupCamera() {
+        <span class="comment">// 세션 설정</span>
+        captureSession.beginConfiguration()
+
+        <span class="comment">// 비디오 입력 추가</span>
+        <span class="kw">guard</span> <span class="kw">let</span> videoDevice = <span class="type">AVCaptureDevice</span>.default(.builtInWideAngleCamera, for: .video, position: .back),
+              <span class="kw">let</span> videoInput = <span class="kw">try</span>? <span class="type">AVCaptureDeviceInput</span>(device: videoDevice),
+              captureSession.canAddInput(videoInput)
+        <span class="kw">else</span> { <span class="kw">return</span> }
+
+        captureSession.addInput(videoInput)
+
+        <span class="comment">// 오디오 입력 추가</span>
+        <span class="kw">if</span> <span class="kw">let</span> audioDevice = <span class="type">AVCaptureDevice</span>.default(for: .audio),
+           <span class="kw">let</span> audioInput = <span class="kw">try</span>? <span class="type">AVCaptureDeviceInput</span>(device: audioDevice),
+           captureSession.canAddInput(audioInput) {
+            captureSession.addInput(audioInput)
+        }
+
+        <span class="comment">// 비디오 출력 추가</span>
+        <span class="kw">if</span> captureSession.canAddOutput(videoOutput) {
+            captureSession.addOutput(videoOutput)
+        }
+
+        <span class="comment">// 세션 품질 설정</span>
+        captureSession.sessionPreset = .high
+
+        captureSession.commitConfiguration()
+    }
+
+    <span class="kw">func</span> startSession() {
+        <span class="type">Task</span>(priority: .background) {
+            captureSession.startRunning()
+        }
+    }
+
+    <span class="kw">func</span> stopSession() {
+        <span class="type">Task</span>(priority: .background) {
+            captureSession.stopRunning()
+        }
+    }
+
+    <span class="kw">func</span> startRecording(to url: <span class="type">URL</span>) {
+        videoOutput.startRecording(to: url, recordingDelegate: <span class="kw">self</span>)
+        isRecording = <span class="kw">true</span>
+    }
+
+    <span class="kw">func</span> stopRecording() {
+        videoOutput.stopRecording()
+        isRecording = <span class="kw">false</span>
+    }
+}
+
+<span class="comment">// 녹화 델리게이트</span>
+<span class="kw">extension</span> <span class="type">CameraManager</span>: <span class="type">AVCaptureFileOutputRecordingDelegate</span> {
+    <span class="kw">func</span> fileOutput(
+        <span class="kw">_</span> output: <span class="type">AVCaptureFileOutput</span>,
+        didFinishRecordingTo outputFileURL: <span class="type">URL</span>,
+        from connections: [<span class="type">AVCaptureConnection</span>],
+        error: <span class="type">Error</span>?
+    ) {
+        <span class="kw">if</span> <span class="kw">let</span> error = error {
+            print(<span class="str">"녹화 오류: \(error.localizedDescription)"</span>)
+        } <span class="kw">else</span> {
+            print(<span class="str">"녹화 완료: \(outputFileURL)"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CameraView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> cameraManager = <span class="type">CameraManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ZStack</span> {
+            <span class="type">CameraPreview</span>(session: cameraManager.captureSession)
+                .ignoresSafeArea()
+
+            <span class="type">VStack</span> {
+                <span class="type">Spacer</span>()
+
+                <span class="type">Button</span> {
+                    <span class="kw">if</span> cameraManager.isRecording {
+                        cameraManager.stopRecording()
+                    } <span class="kw">else</span> {
+                        <span class="kw">let</span> url = <span class="type">FileManager</span>.default.temporaryDirectory.appendingPathComponent(<span class="str">"video.mov"</span>)
+                        cameraManager.startRecording(to: url)
+                    }
+                } label: {
+                    <span class="type">Circle</span>()
+                        .fill(cameraManager.isRecording ? <span class="type">Color</span>.red : <span class="type">Color</span>.white)
+                        .frame(width: <span class="str">70</span>, height: <span class="str">70</span>)
+                        .overlay(
+                            <span class="type">Circle</span>()
+                                .stroke(<span class="type">Color</span>.white, lineWidth: <span class="str">4</span>)
+                        )
+                }
+                .padding(.bottom, <span class="str">50</span>)
+            }
+        }
+        .onAppear {
+            cameraManager.setupCamera()
+            cameraManager.startSession()
+        }
+        .onDisappear {
+            cameraManager.stopSession()
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CameraPreview</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> session: <span class="type">AVCaptureSession</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">UIView</span> {
+        <span class="kw">let</span> view = <span class="type">UIView</span>(frame: .zero)
+        <span class="kw">let</span> previewLayer = <span class="type">AVCaptureVideoPreviewLayer</span>(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        view.layer.addSublayer(previewLayer)
+
+        <span class="type">DispatchQueue</span>.main.async {
+            previewLayer.frame = view.bounds
+        }
+
+        <span class="kw">return</span> view
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">UIView</span>, context: <span class="type">Context</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> layer = uiView.layer.sublayers?.first <span class="kw">as</span>? <span class="type">AVCaptureVideoPreviewLayer</span> {
+            layer.frame = uiView.bounds
+        }
+    }
+}</pre>
+</div>
+
+<h2>🎵 2. 오디오 녹음</h2>
+<p>Record audio using AVAudioRecorder.</p>
+
+<div class="code-block">
+<div class="code-header">AudioRecorderView.swift — Audio Recording</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">AudioRecorderManager</span>: <span class="type">NSObject</span> {
+    <span class="kw">var</span> audioRecorder: <span class="type">AVAudioRecorder</span>?
+    <span class="kw">var</span> isRecording = <span class="kw">false</span>
+    <span class="kw">var</span> recordingTime: <span class="type">TimeInterval</span> = <span class="str">0</span>
+
+    <span class="kw">func</span> setupRecorder() {
+        <span class="comment">// 오디오 세션 설정</span>
+        <span class="kw">let</span> audioSession = <span class="type">AVAudioSession</span>.sharedInstance()
+        <span class="kw">try</span>? audioSession.setCategory(.playAndRecord, mode: .default)
+        <span class="kw">try</span>? audioSession.setActive(<span class="kw">true</span>)
+
+        <span class="comment">// 녹음 설정</span>
+        <span class="kw">let</span> settings: [<span class="type">String</span>: <span class="type">Any</span>] = [
+            <span class="type">AVFormatIDKey</span>: <span class="type">Int</span>(<span class="type">kAudioFormatMPEG4AAC</span>),
+            <span class="type">AVSampleRateKey</span>: <span class="str">44100.0</span>,
+            <span class="type">AVNumberOfChannelsKey</span>: <span class="str">2</span>,
+            <span class="type">AVEncoderAudioQualityKey</span>: <span class="type">AVAudioQuality</span>.high.rawValue
+        ]
+
+        <span class="kw">let</span> url = <span class="type">FileManager</span>.default.temporaryDirectory.appendingPathComponent(<span class="str">"recording.m4a"</span>)
+
+        <span class="kw">do</span> {
+            audioRecorder = <span class="kw">try</span> <span class="type">AVAudioRecorder</span>(url: url, settings: settings)
+            audioRecorder?.delegate = <span class="kw">self</span>
+            audioRecorder?.prepareToRecord()
+        } <span class="kw">catch</span> {
+            print(<span class="str">"녹음 설정 오류: \(error)"</span>)
+        }
+    }
+
+    <span class="kw">func</span> startRecording() {
+        audioRecorder?.record()
+        isRecording = <span class="kw">true</span>
+    }
+
+    <span class="kw">func</span> stopRecording() {
+        audioRecorder?.stop()
+        isRecording = <span class="kw">false</span>
+    }
+
+    <span class="kw">func</span> pauseRecording() {
+        audioRecorder?.pause()
+        isRecording = <span class="kw">false</span>
+    }
+}
+
+<span class="kw">extension</span> <span class="type">AudioRecorderManager</span>: <span class="type">AVAudioRecorderDelegate</span> {
+    <span class="kw">func</span> audioRecorderDidFinishRecording(<span class="kw">_</span> recorder: <span class="type">AVAudioRecorder</span>, successfully flag: <span class="type">Bool</span>) {
+        <span class="kw">if</span> flag {
+            print(<span class="str">"녹음 완료: \(recorder.url)"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">AudioRecorderView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> recorderManager = <span class="type">AudioRecorderManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">30</span>) {
+            <span class="type">Text</span>(recorderManager.isRecording ? <span class="str">"녹음 중..."</span> : <span class="str">"준비됨"</span>)
+                .font(.title)
+                .foregroundStyle(recorderManager.isRecording ? .red : .primary)
+
+            <span class="type">HStack</span>(spacing: <span class="str">40</span>) {
+                <span class="type">Button</span> {
+                    <span class="kw">if</span> recorderManager.isRecording {
+                        recorderManager.stopRecording()
+                    } <span class="kw">else</span> {
+                        recorderManager.startRecording()
+                    }
+                } label: {
+                    <span class="type">Image</span>(systemName: recorderManager.isRecording ? <span class="str">"stop.circle.fill"</span> : <span class="str">"record.circle"</span>)
+                        .font(.system(size: <span class="str">64</span>))
+                        .foregroundStyle(recorderManager.isRecording ? .red : .blue)
+                }
+
+                <span class="kw">if</span> recorderManager.isRecording {
+                    <span class="type">Button</span> {
+                        recorderManager.pauseRecording()
+                    } label: {
+                        <span class="type">Image</span>(systemName: <span class="str">"pause.circle.fill"</span>)
+                            .font(.system(size: <span class="str">64</span>))
+                    }
+                }
+            }
+        }
+        .onAppear {
+            recorderManager.setupRecorder()
+        }
+    }
+}</pre>
+</div>
+
+<h2>▶️ 3. 미디어 재생</h2>
+<p>Play video/audio using AVPlayer.</p>
+
+<div class="code-block">
+<div class="code-header">VideoPlayerView.swift — Media Playback</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">VideoPlayerManager</span> {
+    <span class="kw">var</span> player: <span class="type">AVPlayer</span>?
+    <span class="kw">var</span> isPlaying = <span class="kw">false</span>
+    <span class="kw">var</span> currentTime: <span class="type">TimeInterval</span> = <span class="str">0</span>
+    <span class="kw">var</span> duration: <span class="type">TimeInterval</span> = <span class="str">0</span>
+
+    <span class="kw">func</span> loadVideo(from url: <span class="type">URL</span>) {
+        <span class="kw">let</span> asset = <span class="type">AVAsset</span>(url: url)
+        <span class="kw">let</span> playerItem = <span class="type">AVPlayerItem</span>(asset: asset)
+        player = <span class="type">AVPlayer</span>(playerItem: playerItem)
+
+        <span class="comment">// 재생 시간 관찰</span>
+        player?.addPeriodicTimeObserver(
+            forInterval: <span class="type">CMTime</span>(seconds: <span class="str">0.5</span>, preferredTimescale: <span class="str">600</span>),
+            queue: .main
+        ) { [<span class="kw">weak self</span>] time <span class="kw">in</span>
+            <span class="kw">self</span>?.currentTime = time.seconds
+        }
+
+        <span class="comment">// 영상 길이 가져오기</span>
+        <span class="type">Task</span> {
+            <span class="kw">if</span> <span class="kw">let</span> duration = <span class="kw">try</span>? <span class="kw">await</span> asset.load(.duration) {
+                <span class="kw">self</span>.duration = duration.seconds
+            }
+        }
+    }
+
+    <span class="kw">func</span> play() {
+        player?.play()
+        isPlaying = <span class="kw">true</span>
+    }
+
+    <span class="kw">func</span> pause() {
+        player?.pause()
+        isPlaying = <span class="kw">false</span>
+    }
+
+    <span class="kw">func</span> seek(to time: <span class="type">TimeInterval</span>) {
+        <span class="kw">let</span> cmTime = <span class="type">CMTime</span>(seconds: time, preferredTimescale: <span class="str">600</span>)
+        player?.seek(to: cmTime)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">VideoPlayerView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> playerManager = <span class="type">VideoPlayerManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// 비디오 뷰</span>
+            <span class="type">VideoPlayerLayer</span>(player: playerManager.player)
+                .frame(height: <span class="str">300</span>)
+                .background(<span class="type">Color</span>.black)
+
+            <span class="comment">// 재생 컨트롤</span>
+            <span class="type">VStack</span>(spacing: <span class="str">16</span>) {
+                <span class="comment">// 진행 바</span>
+                <span class="type">Slider</span>(
+                    value: <span class="type">Binding</span>(
+                        get: { playerManager.currentTime },
+                        set: { playerManager.seek(to: $0) }
+                    ),
+                    in: <span class="str">0</span>...max(playerManager.duration, <span class="str">1</span>)
+                )
+
+                <span class="comment">// 시간 표시</span>
+                <span class="type">HStack</span> {
+                    <span class="type">Text</span>(formatTime(playerManager.currentTime))
+                    <span class="type">Spacer</span>()
+                    <span class="type">Text</span>(formatTime(playerManager.duration))
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+                <span class="comment">// 재생 버튼</span>
+                <span class="type">Button</span> {
+                    <span class="kw">if</span> playerManager.isPlaying {
+                        playerManager.pause()
+                    } <span class="kw">else</span> {
+                        playerManager.play()
+                    }
+                } label: {
+                    <span class="type">Image</span>(systemName: playerManager.isPlaying ? <span class="str">"pause.circle.fill"</span> : <span class="str">"play.circle.fill"</span>)
+                        .font(.system(size: <span class="str">64</span>))
+                }
+            }
+            .padding()
+        }
+        .onAppear {
+            playerManager.loadVideo(from: url)
+        }
+    }
+
+    <span class="kw">func</span> formatTime(<span class="kw">_</span> time: <span class="type">TimeInterval</span>) -> <span class="type">String</span> {
+        <span class="kw">let</span> minutes = <span class="type">Int</span>(time) / <span class="str">60</span>
+        <span class="kw">let</span> seconds = <span class="type">Int</span>(time) % <span class="str">60</span>
+        <span class="kw">return</span> <span class="type">String</span>(format: <span class="str">"%d:%02d"</span>, minutes, seconds)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">VideoPlayerLayer</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">let</span> player: <span class="type">AVPlayer</span>?
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">UIView</span> {
+        <span class="kw">let</span> view = <span class="type">UIView</span>(frame: .zero)
+        <span class="kw">let</span> playerLayer = <span class="type">AVPlayerLayer</span>(player: player)
+        playerLayer.videoGravity = .resizeAspect
+        view.layer.addSublayer(playerLayer)
+
+        <span class="type">DispatchQueue</span>.main.async {
+            playerLayer.frame = view.bounds
+        }
+
+        <span class="kw">return</span> view
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">UIView</span>, context: <span class="type">Context</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> layer = uiView.layer.sublayers?.first <span class="kw">as</span>? <span class="type">AVPlayerLayer</span> {
+            layer.frame = uiView.bounds
+        }
+    }
+}</pre>
+</div>
+
+<h2>✂️ 4. 비디오 편집</h2>
+<p>Edit video using AVMutableComposition.</p>
+
+<div class="code-block">
+<div class="code-header">VideoEditor.swift — 비디오 편집</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AVFoundation</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">class</span> <span class="type">VideoEditor</span> {
+    <span class="comment">// 비디오 자르기</span>
+    <span class="kw">func</span> trimVideo(
+        asset: <span class="type">AVAsset</span>,
+        startTime: <span class="type">CMTime</span>,
+        endTime: <span class="type">CMTime</span>,
+        outputURL: <span class="type">URL</span>
+    ) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="comment">// Composition 생성</span>
+        <span class="kw">let</span> composition = <span class="type">AVMutableComposition</span>()
+
+        <span class="comment">// 비디오 트랙 추가</span>
+        <span class="kw">guard</span> <span class="kw">let</span> videoTrack = composition.addMutableTrack(
+            withMediaType: .video,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 오디오 트랙 추가</span>
+        <span class="kw">guard</span> <span class="kw">let</span> audioTrack = composition.addMutableTrack(
+            withMediaType: .audio,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// 원본 트랙 가져오기</span>
+        <span class="kw">let</span> assetVideoTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .video).first
+        <span class="kw">let</span> assetAudioTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .audio).first
+
+        <span class="comment">// 시간 범위</span>
+        <span class="kw">let</span> timeRange = <span class="type">CMTimeRange</span>(start: startTime, end: endTime)
+
+        <span class="comment">// 트랙 삽입</span>
+        <span class="kw">if</span> <span class="kw">let</span> assetVideoTrack {
+            <span class="kw">try</span> videoTrack.insertTimeRange(timeRange, of: assetVideoTrack, at: .zero)
+        }
+
+        <span class="kw">if</span> <span class="kw">let</span> assetAudioTrack {
+            <span class="kw">try</span> audioTrack.insertTimeRange(timeRange, of: assetAudioTrack, at: .zero)
+        }
+
+        <span class="comment">// 내보내기</span>
+        <span class="kw">try</span> <span class="kw">await</span> exportVideo(composition: composition, to: outputURL)
+    }
+
+    <span class="comment">// 여러 비디오 합치기</span>
+    <span class="kw">func</span> mergeVideos(
+        assets: [<span class="type">AVAsset</span>],
+        outputURL: <span class="type">URL</span>
+    ) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">let</span> composition = <span class="type">AVMutableComposition</span>()
+
+        <span class="kw">guard</span> <span class="kw">let</span> videoTrack = composition.addMutableTrack(
+            withMediaType: .video,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">guard</span> <span class="kw">let</span> audioTrack = composition.addMutableTrack(
+            withMediaType: .audio,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">var</span> currentTime = <span class="type">CMTime</span>.zero
+
+        <span class="kw">for</span> asset <span class="kw">in</span> assets {
+            <span class="kw">let</span> duration = <span class="kw">try</span> <span class="kw">await</span> asset.load(.duration)
+            <span class="kw">let</span> timeRange = <span class="type">CMTimeRange</span>(start: .zero, duration: duration)
+
+            <span class="kw">if</span> <span class="kw">let</span> assetVideoTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .video).first {
+                <span class="kw">try</span> videoTrack.insertTimeRange(timeRange, of: assetVideoTrack, at: currentTime)
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> assetAudioTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .audio).first {
+                <span class="kw">try</span> audioTrack.insertTimeRange(timeRange, of: assetAudioTrack, at: currentTime)
+            }
+
+            currentTime = <span class="type">CMTimeAdd</span>(currentTime, duration)
+        }
+
+        <span class="kw">try</span> <span class="kw">await</span> exportVideo(composition: composition, to: outputURL)
+    }
+
+    <span class="comment">// 비디오 내보내기</span>
+    <span class="kw">private</span> <span class="kw">func</span> exportVideo(
+        composition: <span class="type">AVMutableComposition</span>,
+        to url: <span class="type">URL</span>
+    ) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> exportSession = <span class="type">AVAssetExportSession</span>(
+            asset: composition,
+            presetName: <span class="type">AVAssetExportPresetHighestQuality</span>
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        exportSession.outputURL = url
+        exportSession.outputFileType = .mov
+
+        <span class="kw">await</span> exportSession.export()
+
+        <span class="kw">if</span> exportSession.status == .failed {
+            <span class="kw">throw</span> exportSession.error ?? <span class="type">NSError</span>(domain: <span class="str">""</span>, code: <span class="str">-1</span>)
+        }
+    }
+
+    <span class="comment">// 비디오에 워터마크 추가</span>
+    <span class="kw">func</span> addWatermark(
+        to asset: <span class="type">AVAsset</span>,
+        watermarkImage: <span class="type">UIImage</span>,
+        outputURL: <span class="type">URL</span>
+    ) <span class="kw">async</span> <span class="kw">throws</span> {
+        <span class="kw">let</span> composition = <span class="type">AVMutableComposition</span>()
+        <span class="kw">let</span> videoComposition = <span class="type">AVMutableVideoComposition</span>()
+
+        <span class="comment">// 비디오 트랙 추가</span>
+        <span class="kw">guard</span> <span class="kw">let</span> videoTrack = composition.addMutableTrack(
+            withMediaType: .video,
+            preferredTrackID: kCMPersistentTrackID_Invalid
+        ) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> assetVideoTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .video).first
+        <span class="kw">let</span> duration = <span class="kw">try</span> <span class="kw">await</span> asset.load(.duration)
+
+        <span class="kw">if</span> <span class="kw">let</span> assetVideoTrack {
+            <span class="kw">try</span> videoTrack.insertTimeRange(
+                <span class="type">CMTimeRange</span>(start: .zero, duration: duration),
+                of: assetVideoTrack,
+                at: .zero
+            )
+        }
+
+        <span class="comment">// 워터마크 레이어 추가</span>
+        <span class="kw">let</span> watermarkLayer = <span class="type">CALayer</span>()
+        watermarkLayer.contents = watermarkImage.cgImage
+        watermarkLayer.frame = <span class="type">CGRect</span>(x: <span class="str">20</span>, y: <span class="str">20</span>, width: <span class="str">100</span>, height: <span class="str">100</span>)
+        watermarkLayer.opacity = <span class="str">0.7</span>
+
+        <span class="kw">let</span> videoLayer = <span class="type">CALayer</span>()
+        videoLayer.frame = <span class="type">CGRect</span>(origin: .zero, size: <span class="type">CGSize</span>(width: <span class="str">1920</span>, height: <span class="str">1080</span>))
+
+        <span class="kw">let</span> outputLayer = <span class="type">CALayer</span>()
+        outputLayer.frame = videoLayer.frame
+        outputLayer.addSublayer(videoLayer)
+        outputLayer.addSublayer(watermarkLayer)
+
+        videoComposition.animationTool = <span class="type">AVVideoCompositionCoreAnimationTool</span>(
+            postProcessingAsVideoLayer: videoLayer,
+            in: outputLayer
+        )
+
+        <span class="kw">try</span> <span class="kw">await</span> exportVideo(composition: composition, to: outputURL)
+    }
+}</pre>
+</div>
+
+<h2>📱 Complete Example</h2>
+
+<div class="code-block">
+<div class="code-header">MediaApp.swift — 종합 미디어 앱</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">struct</span> <span class="type">MediaApp</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedTab = <span class="str">0</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">TabView</span>(selection: $selectedTab) {
+            <span class="type">CameraView</span>()
+                .tabItem {
+                    <span class="type">Label</span>(<span class="str">"카메라"</span>, systemImage: <span class="str">"camera"</span>)
+                }
+                .tag(<span class="str">0</span>)
+
+            <span class="type">AudioRecorderView</span>()
+                .tabItem {
+                    <span class="type">Label</span>(<span class="str">"녹음"</span>, systemImage: <span class="str">"mic"</span>)
+                }
+                .tag(<span class="str">1</span>)
+
+            <span class="type">MediaLibraryView</span>()
+                .tabItem {
+                    <span class="type">Label</span>(<span class="str">"라이브러리"</span>, systemImage: <span class="str">"photo.stack"</span>)
+                }
+                .tag(<span class="str">2</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">MediaLibraryView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span> {
+                <span class="type">Section</span>(<span class="str">"비디오"</span>) {
+                    <span class="type">Text</span>(<span class="str">"최근 촬영"</span>)
+                }
+
+                <span class="type">Section</span>(<span class="str">"오디오"</span>) {
+                    <span class="type">Text</span>(<span class="str">"최근 녹음"</span>)
+                }
+            }
+            .navigationTitle(<span class="str">"미디어"</span>)
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>권한:</strong> Add camera/microphone permission descriptions to Info.plist (<code>NSCameraUsageDescription</code>, <code>NSMicrophoneUsageDescription</code>)</li>
+<li><strong>오디오 세션:</strong> 적절한 오디오 세션 카테고리 설정</li>
+<li><strong>Background:</strong> Configure Capabilities for background audio playback</li>
+<li><strong>성능:</strong> 세션 프리셋으로 품질/성능 균형 조절</li>
+<li><strong>중단 처리:</strong> 전화 등으로 인한 세션 중단 처리</li>
+<li><strong>User Experience:</strong> 녹화/녹음 중 명확한 시각적 피드백 제공</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>Camera Apps:</strong> 사진/비디오 촬영 앱</li>
+<li><strong>영상 편집기:</strong> 비디오 자르기, 합치기, 효과</li>
+<li><strong>음성 녹음기:</strong> 강의 녹음, 보이스 메모</li>
+<li><strong>Social Media:</strong> 숏폼 비디오 촬영/편집</li>
+<li><strong>스트리밍:</strong> 라이브 방송 앱</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/avfoundation">AVFoundation 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/avfoundation/avcapturesession">AVCaptureSession 레퍼런스</a></li>
+<li><a href="https://developer.apple.com/documentation/avfoundation/avplayer">AVPlayer 레퍼런스</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> Start/stop camera sessions on a background thread. <code>sessionPreset</code> to balance performance and quality, and skip unnecessary processing. <code>videoOutput</code> 델리게이트에서 샘플 버퍼를 건너뛰.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/avfoundation" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/avfoundation/capture-setup" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=AVFoundation" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

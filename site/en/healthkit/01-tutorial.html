@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="❤️ HealthKit 완전정복 — HIG Lab">
+    <meta property="og:description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/healthkit/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="❤️ HealthKit 완전정복 — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/en/healthkit/01-tutorial.html">
+<title>❤️ HealthKit 완전정복 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../healthkit/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>❤️ HealthKit 완전정복</h1>
+<p>Read and write Health app data — steps, heart rate, sleep, workouts and all health data!</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 2-3h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ HealthKit is?</h2>
+<p>HealthKit is the central repository for the Apple Health app. Read and write all health data from iPhone and Apple Watch.</p>
+
+<h2>🔐 Permission Request</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Authorization.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">HealthKit</span>
+
+<span class="kw">class</span> <span class="type">HealthKitManager</span> {
+    <span class="kw">let</span> <span class="prop">healthStore</span> = <span class="type">HKHealthStore</span>()
+
+    <span class="comment">// HealthKit 사용 가능 여부</span>
+    <span class="kw">func</span> <span class="func">isHealthKitAvailable</span>() -> <span class="type">Bool</span> {
+        <span class="kw">return</span> <span class="type">HKHealthStore</span>.<span class="func">isHealthDataAvailable</span>()
+    }
+
+    <span class="comment">// 권한 요청</span>
+    <span class="kw">func</span> <span class="func">requestAuthorization</span>() <span class="kw">async throws</span> {
+        <span class="comment">// 읽을 데이터 타입</span>
+        <span class="kw">let</span> typesToRead: <span class="type">Set</span>&lt;<span class="type">HKObjectType</span>&gt; = [
+            <span class="type">HKObjectType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!,
+            <span class="type">HKObjectType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">heartRate</span>)!,
+            <span class="type">HKObjectType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">activeEnergyBurned</span>)!,
+            <span class="type">HKObjectType</span>.<span class="func">workoutType</span>()
+        ]
+
+        <span class="comment">// 쓸 데이터 타입</span>
+        <span class="kw">let</span> typesToWrite: <span class="type">Set</span>&lt;<span class="type">HKSampleType</span>&gt; = [
+            <span class="type">HKObjectType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!,
+            <span class="type">HKObjectType</span>.<span class="func">workoutType</span>()
+        ]
+
+        <span class="kw">try await</span> healthStore.<span class="func">requestAuthorization</span>(
+            toShare: typesToWrite,
+            read: typesToRead
+        )
+    }
+}</pre></div>
+
+<h2>📊 걸음수 읽기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">StepCount.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">HealthKit</span>
+
+<span class="kw">func</span> <span class="func">fetchTodaySteps</span>() <span class="kw">async throws</span> -> <span class="type">Double</span> {
+    <span class="kw">let</span> stepType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!
+
+    <span class="comment">// 오늘 00:00부터 현재까지</span>
+    <span class="kw">let</span> now = <span class="type">Date</span>()
+    <span class="kw">let</span> startOfDay = <span class="type">Calendar</span>.current.<span class="func">startOfDay</span>(for: now)
+    <span class="kw">let</span> predicate = <span class="type">HKQuery</span>.<span class="func">predicateForSamples</span>(
+        withStart: startOfDay,
+        end: now,
+        options: .strictStartDate
+    )
+
+    <span class="comment">// 통계 쿼리</span>
+    <span class="kw">let</span> query = <span class="type">HKStatisticsQuery</span>(
+        quantityType: stepType,
+        quantitySamplePredicate: predicate,
+        options: .cumulativeSum
+    ) { _, result, error <span class="kw">in</span>
+        <span class="kw">guard let</span> result = result,
+              <span class="kw">let</span> sum = result.sumQuantity() <span class="kw">else</span> {
+            <span class="kw">return</span>
+        }
+
+        <span class="kw">let</span> steps = sum.doubleValue(for: <span class="type">HKUnit</span>.<span class="func">count</span>())
+        <span class="func">print</span>(<span class="str">"오늘 걸음수: \(steps)"</span>)
+    }
+
+    healthStore.<span class="func">execute</span>(query)
+
+    <span class="comment">// async/await 변환</span>
+    <span class="kw">return try await</span> <span class="func">withCheckedThrowingContinuation</span> { continuation <span class="kw">in</span>
+        <span class="kw">let</span> query = <span class="type">HKStatisticsQuery</span>(
+            quantityType: stepType,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum
+        ) { _, result, error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                continuation.resume(throwing: error)
+            } <span class="kw">else if let</span> sum = result?.sumQuantity() {
+                <span class="kw">let</span> steps = sum.doubleValue(for: <span class="type">HKUnit</span>.<span class="func">count</span>())
+                continuation.resume(returning: steps)
+            } <span class="kw">else</span> {
+                continuation.resume(returning: <span class="num">0</span>)
+            }
+        }
+        healthStore.<span class="func">execute</span>(query)
+    }
+}</pre></div>
+
+<h2>💓 심박수 읽기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">HeartRate.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">fetchLatestHeartRate</span>() <span class="kw">async throws</span> -> <span class="type">Double</span>? {
+    <span class="kw">let</span> heartRateType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">heartRate</span>)!
+
+    <span class="comment">// 최신 1개만</span>
+    <span class="kw">let</span> sortDescriptor = <span class="type">NSSortDescriptor</span>(key: <span class="type">HKSampleSortIdentifierStartDate</span>, ascending: <span class="kw">false</span>)
+
+    <span class="kw">return try await</span> <span class="func">withCheckedThrowingContinuation</span> { continuation <span class="kw">in</span>
+        <span class="kw">let</span> query = <span class="type">HKSampleQuery</span>(
+            sampleType: heartRateType,
+            predicate: <span class="kw">nil</span>,
+            limit: <span class="num">1</span>,
+            sortDescriptors: [sortDescriptor]
+        ) { _, samples, error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                continuation.resume(throwing: error)
+            } <span class="kw">else if let</span> sample = samples?.first <span class="kw">as</span>? <span class="type">HKQuantitySample</span> {
+                <span class="kw">let</span> bpm = sample.quantity.doubleValue(for: <span class="type">HKUnit</span>(from: <span class="str">"count/min"</span>))
+                continuation.resume(returning: bpm)
+            } <span class="kw">else</span> {
+                continuation.resume(returning: <span class="kw">nil</span>)
+            }
+        }
+        healthStore.<span class="func">execute</span>(query)
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="type">Task</span> {
+    <span class="kw">if let</span> heartRate = <span class="kw">try await</span> <span class="func">fetchLatestHeartRate</span>() {
+        <span class="func">print</span>(<span class="str">"현재 심박수: \(heartRate) BPM"</span>)
+    }
+}</pre></div>
+
+<h2>✍️ 데이터 쓰기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">WriteData.swift</span></div>
+<pre class="code-body"><span class="comment">// 걸음수 추가</span>
+<span class="kw">func</span> <span class="func">saveSteps</span>(_ steps: <span class="type">Double</span>, date: <span class="type">Date</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> stepType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!
+    <span class="kw">let</span> quantity = <span class="type">HKQuantity</span>(unit: <span class="type">HKUnit</span>.<span class="func">count</span>(), doubleValue: steps)
+
+    <span class="kw">let</span> sample = <span class="type">HKQuantitySample</span>(
+        type: stepType,
+        quantity: quantity,
+        start: date,
+        end: date
+    )
+
+    <span class="kw">try await</span> healthStore.<span class="func">save</span>(sample)
+}
+
+<span class="comment">// 체중 기록</span>
+<span class="kw">func</span> <span class="func">saveWeight</span>(_ weight: <span class="type">Double</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> weightType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">bodyMass</span>)!
+    <span class="kw">let</span> quantity = <span class="type">HKQuantity</span>(unit: <span class="type">HKUnit</span>.<span class="func">gramUnit</span>(with: .<span class="prop">kilo</span>), doubleValue: weight)
+
+    <span class="kw">let</span> now = <span class="type">Date</span>()
+    <span class="kw">let</span> sample = <span class="type">HKQuantitySample</span>(
+        type: weightType,
+        quantity: quantity,
+        start: now,
+        end: now
+    )
+
+    <span class="kw">try await</span> healthStore.<span class="func">save</span>(sample)
+}</pre></div>
+
+<h2>🏃 운동 기록 (Workout)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Workout.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">HealthKit</span>
+
+<span class="kw">func</span> <span class="func">saveRunningWorkout</span>(
+    distance: <span class="type">Double</span>,
+    duration: <span class="type">TimeInterval</span>,
+    calories: <span class="type">Double</span>
+) <span class="kw">async throws</span> {
+    <span class="kw">let</span> startDate = <span class="type">Date</span>().<span class="func">addingTimeInterval</span>(-duration)
+    <span class="kw">let</span> endDate = <span class="type">Date</span>()
+
+    <span class="comment">// 운동 생성</span>
+    <span class="kw">let</span> workout = <span class="type">HKWorkout</span>(
+        activityType: .running,
+        start: startDate,
+        end: endDate,
+        duration: duration,
+        totalEnergyBurned: <span class="type">HKQuantity</span>(
+            unit: <span class="type">HKUnit</span>.<span class="func">kilocalorie</span>(),
+            doubleValue: calories
+        ),
+        totalDistance: <span class="type">HKQuantity</span>(
+            unit: <span class="type">HKUnit</span>.<span class="func">meter</span>(),
+            doubleValue: distance
+        ),
+        metadata: [
+            <span class="type">HKMetadataKeyIndoorWorkout</span>: <span class="kw">false</span>
+        ]
+    )
+
+    <span class="kw">try await</span> healthStore.<span class="func">save</span>(workout)
+}
+
+<span class="comment">// 운동 조회</span>
+<span class="kw">func</span> <span class="func">fetchWorkouts</span>() <span class="kw">async throws</span> -> [<span class="type">HKWorkout</span>] {
+    <span class="kw">let</span> workoutType = <span class="type">HKObjectType</span>.<span class="func">workoutType</span>()
+    <span class="kw">let</span> sortDescriptor = <span class="type">NSSortDescriptor</span>(
+        key: <span class="type">HKSampleSortIdentifierStartDate</span>,
+        ascending: <span class="kw">false</span>
+    )
+
+    <span class="kw">return try await</span> <span class="func">withCheckedThrowingContinuation</span> { continuation <span class="kw">in</span>
+        <span class="kw">let</span> query = <span class="type">HKSampleQuery</span>(
+            sampleType: workoutType,
+            predicate: <span class="kw">nil</span>,
+            limit: <span class="num">20</span>,
+            sortDescriptors: [sortDescriptor]
+        ) { _, samples, error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                continuation.resume(throwing: error)
+            } <span class="kw">else</span> {
+                <span class="kw">let</span> workouts = samples <span class="kw">as</span>? [<span class="type">HKWorkout</span>] ?? []
+                continuation.resume(returning: workouts)
+            }
+        }
+        healthStore.<span class="func">execute</span>(query)
+    }
+}</pre></div>
+
+<h2>📈 Daily Statistics Collection</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">DailyStats.swift</span></div>
+<pre class="code-body"><span class="comment">// 최근 7일 걸음수</span>
+<span class="kw">func</span> <span class="func">fetchWeeklySteps</span>() <span class="kw">async throws</span> -> [(<span class="type">Date</span>, <span class="type">Double</span>)] {
+    <span class="kw">let</span> stepType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!
+
+    <span class="kw">let</span> now = <span class="type">Date</span>()
+    <span class="kw">let</span> startDate = <span class="type">Calendar</span>.current.<span class="func">date</span>(byAdding: .<span class="prop">day</span>, value: <span class="num">-7</span>, to: now)!
+
+    <span class="comment">// 일별 집계</span>
+    <span class="kw">var</span> interval = <span class="type">DateComponents</span>()
+    interval.day = <span class="num">1</span>
+
+    <span class="kw">let</span> predicate = <span class="type">HKQuery</span>.<span class="func">predicateForSamples</span>(
+        withStart: startDate,
+        end: now,
+        options: .strictStartDate
+    )
+
+    <span class="kw">return try await</span> <span class="func">withCheckedThrowingContinuation</span> { continuation <span class="kw">in</span>
+        <span class="kw">let</span> query = <span class="type">HKStatisticsCollectionQuery</span>(
+            quantityType: stepType,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum,
+            anchorDate: startDate,
+            intervalComponents: interval
+        )
+
+        query.initialResultsHandler = { _, results, error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                continuation.resume(throwing: error)
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">var</span> data: [(<span class="type">Date</span>, <span class="type">Double</span>)] = []
+
+            results?.enumerateStatistics(from: startDate, to: now) { statistics, _ <span class="kw">in</span>
+                <span class="kw">let</span> steps = statistics.sumQuantity()?.doubleValue(for: <span class="type">HKUnit</span>.<span class="func">count</span>()) ?? <span class="num">0</span>
+                data.append((statistics.startDate, steps))
+            }
+
+            continuation.resume(returning: data)
+        }
+
+        healthStore.<span class="func">execute</span>(query)
+    }
+}</pre></div>
+
+<h2>🔔 실시간 업데이트 (Observer Query)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ObserverQuery.swift</span></div>
+<pre class="code-body"><span class="kw">class</span> <span class="type">HealthObserver</span> {
+    <span class="kw">let</span> <span class="prop">healthStore</span> = <span class="type">HKHealthStore</span>()
+    <span class="kw">var</span> <span class="prop">query</span>: <span class="type">HKObserverQuery</span>?
+
+    <span class="kw">func</span> <span class="func">startObserving</span>() {
+        <span class="kw">let</span> stepType = <span class="type">HKObjectType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">stepCount</span>)!
+
+        query = <span class="type">HKObserverQuery</span>(sampleType: stepType, predicate: <span class="kw">nil</span>) { _, completionHandler, error <span class="kw">in</span>
+            <span class="kw">if let</span> error = error {
+                <span class="func">print</span>(<span class="str">"에러: \(error)"</span>)
+                <span class="kw">return</span>
+            }
+
+            <span class="comment">// 걸음수 변경 감지</span>
+            <span class="func">print</span>(<span class="str">"걸음수가 업데이트되었습니다!"</span>)
+            <span class="type">Task</span> {
+                <span class="kw">let</span> steps = <span class="kw">try await</span> <span class="func">fetchTodaySteps</span>()
+                <span class="func">print</span>(<span class="str">"현재 걸음수: \(steps)"</span>)
+            }
+
+            <span class="comment">// 백그라운드 작업 완료 알림</span>
+            completionHandler()
+        }
+
+        healthStore.<span class="func">execute</span>(query!)
+
+        <span class="comment">// 백그라운드 전달 활성화</span>
+        healthStore.<span class="func">enableBackgroundDelivery</span>(for: stepType, frequency: .immediate) { success, error <span class="kw">in</span>
+            <span class="func">print</span>(<span class="str">"백그라운드 전달: \(success)"</span>)
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">stopObserving</span>() {
+        <span class="kw">if let</span> query = query {
+            healthStore.<span class="func">stop</span>(query)
+        }
+    }
+}</pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">HealthView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">HealthViewModel</span> {
+    <span class="kw">var</span> <span class="prop">steps</span>: <span class="type">Double</span> = <span class="num">0</span>
+    <span class="kw">var</span> <span class="prop">heartRate</span>: <span class="type">Double</span>?
+    <span class="kw">var</span> <span class="prop">isAuthorized</span> = <span class="kw">false</span>
+
+    <span class="kw">let</span> <span class="prop">manager</span> = <span class="type">HealthKitManager</span>()
+
+    <span class="kw">func</span> <span class="func">requestPermission</span>() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            <span class="kw">try await</span> manager.<span class="func">requestAuthorization</span>()
+            isAuthorized = <span class="kw">true</span>
+            <span class="kw">await</span> <span class="func">loadData</span>()
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"권한 요청 실패: \(error)"</span>)
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">loadData</span>() <span class="kw">async</span> {
+        <span class="kw">do</span> {
+            steps = <span class="kw">try await</span> <span class="func">fetchTodaySteps</span>()
+            heartRate = <span class="kw">try await</span> <span class="func">fetchLatestHeartRate</span>()
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"데이터 로드 실패: \(error)"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">HealthDashboard</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">HealthViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="kw">if</span> viewModel.isAuthorized {
+                <span class="type">VStack</span> {
+                    <span class="type">Text</span>(<span class="str">"🚶 걸음수"</span>)
+                        .font(.headline)
+                    <span class="type">Text</span>(<span class="str">"\(Int(viewModel.steps))"</span>)
+                        .font(.system(size: <span class="num">48</span>, weight: .bold))
+                }
+
+                <span class="kw">if let</span> heartRate = viewModel.heartRate {
+                    <span class="type">VStack</span> {
+                        <span class="type">Text</span>(<span class="str">"❤️ 심박수"</span>)
+                            .font(.headline)
+                        <span class="type">Text</span>(<span class="str">"\(Int(heartRate)) BPM"</span>)
+                            .font(.system(size: <span class="num">36</span>, weight: .bold))
+                    }
+                }
+            } <span class="kw">else</span> {
+                <span class="type">Button</span>(<span class="str">"건강 데이터 접근 권한 요청"</span>) {
+                    <span class="type">Task</span> {
+                        <span class="kw">await</span> viewModel.<span class="func">requestPermission</span>()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        .task {
+            <span class="kw">if</span> viewModel.isAuthorized {
+                <span class="kw">await</span> viewModel.<span class="func">loadData</span>()
+            }
+        }
+    }
+}</pre></div>
+
+<h2>⚙️ Info.plist Configuration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Info.plist</span></div>
+<pre class="code-body"><span class="comment">&lt;!-- 필수: 사용 목적 설명 --&gt;</span>
+<span class="kw">&lt;key&gt;</span>NSHealthShareUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>건강 데이터를 읽어 운동 기록을 보여줍니다<span class="kw">&lt;/string&gt;</span>
+
+<span class="kw">&lt;key&gt;</span>NSHealthUpdateUsageDescription<span class="kw">&lt;/key&gt;</span>
+<span class="kw">&lt;string&gt;</span>운동 기록을 건강 앱에 저장합니다<span class="kw">&lt;/string&gt;</span>
+
+<span class="comment">&lt;!-- Xcode Capabilities에서 "HealthKit" 추가 필수 --&gt;</span></pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ 필요한 데이터 타입만 요청<br>
+✅ 사용 목적 명확히 설명 (Info.plist)<br>
+✅ 권한 거부 시 앱이 정상 동작<br>
+✅ 건강 데이터는 절대 외부로 전송 금지<br>
+✅ 백그라운드 업데이트 신중히 사용</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/health" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+<a href="https://developer.apple.com/documentation/healthkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/healthkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/healthkit/creating-a-mobility-health-app" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=HealthKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>✏️ PencilKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../pencilkit/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>✏️ PencilKit</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 Graphics & Media</span>
+</div>
+<p class="subtitle">손글씨와 드로잉을 위한 강력한 캔버스</p>
+
+<div><span class="badge ios">iOS 13+</span><span class="badge new">Apple Pencil 최적화</span></div>
+
+<h2>✨ PencilKit is?</h2>
+<p>PencilKit is Apple's drawing framework, perfectly integrated with Apple Pencil to deliver a low-latency handwriting and sketching experience. It provides pen, marker, pencil tools, eraser, and ruler out of the box, with support for handwriting recognition and data persistence.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Low-Latency Drawing · Apple Pencil Support · Various Tools · Handwriting Recognition · Undo/Redo · Data Save/Share · Finger/Touch Support · Dark Mode
+</div>
+
+<h2>🎯 1. 기본 캔버스 설정</h2>
+<p>Create a drawing canvas using PKCanvasView.</p>
+
+<div class="code-block">
+<div class="code-header">DrawingView.swift — 기본 캔버스</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PencilKit</span>
+
+<span class="kw">struct</span> <span class="type">DrawingView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> canvasView = <span class="type">PKCanvasView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> toolPicker = <span class="type">PKToolPicker</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">CanvasView</span>(canvasView: $canvasView, toolPicker: toolPicker)
+            .onAppear {
+                <span class="comment">// 툴 피커 표시</span>
+                toolPicker.setVisible(<span class="kw">true</span>, forFirstResponder: canvasView)
+                toolPicker.addObserver(canvasView)
+                canvasView.becomeFirstResponder()
+            }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CanvasView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> canvasView: <span class="type">PKCanvasView</span>
+    <span class="kw">let</span> toolPicker: <span class="type">PKToolPicker</span>
+
+    <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">PKCanvasView</span> {
+        canvasView.drawingPolicy = .anyInput <span class="comment">// Apple Pencil + 손가락</span>
+        canvasView.delegate = context.coordinator
+        <span class="kw">return</span> canvasView
+    }
+
+    <span class="kw">func</span> updateUIView(<span class="kw">_</span> uiView: <span class="type">PKCanvasView</span>, context: <span class="type">Context</span>) {}
+
+    <span class="kw">func</span> makeCoordinator() -> <span class="type">Coordinator</span> {
+        <span class="type">Coordinator</span>(canvasView: $canvasView)
+    }
+
+    <span class="kw">class</span> <span class="type">Coordinator</span>: <span class="type">NSObject</span>, <span class="type">PKCanvasViewDelegate</span> {
+        <span class="kw">@Binding</span> <span class="kw">var</span> canvasView: <span class="type">PKCanvasView</span>
+
+        <span class="kw">init</span>(canvasView: <span class="type">Binding</span><<span class="type">PKCanvasView</span>>) {
+            _canvasView = canvasView
+        }
+
+        <span class="comment">// 드로잉 변경 시 호출</span>
+        <span class="kw">func</span> canvasViewDrawingDidChange(<span class="kw">_</span> canvasView: <span class="type">PKCanvasView</span>) {
+            print(<span class="str">"드로잉 변경됨"</span>)
+        }
+    }
+}</pre>
+</div>
+
+<h2>🖊️ 2. 도구 설정</h2>
+<p>Configure various drawing tools like pen, marker, pencil.</p>
+
+<div class="code-block">
+<div class="code-header">DrawingTools.swift — 도구 설정</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PencilKit</span>
+
+<span class="kw">class</span> <span class="type">DrawingToolManager</span> {
+    <span class="comment">// 1. 펜 도구</span>
+    <span class="kw">func</span> createPenTool(color: <span class="type">UIColor</span> = .black, width: <span class="type">CGFloat</span> = <span class="str">5</span>) -> <span class="type">PKInkingTool</span> {
+        <span class="kw">let</span> ink = <span class="type">PKInkingTool</span>(.pen, color: color, width: width)
+        <span class="kw">return</span> ink
+    }
+
+    <span class="comment">// 2. 마커 도구</span>
+    <span class="kw">func</span> createMarkerTool(color: <span class="type">UIColor</span> = .yellow, width: <span class="type">CGFloat</span> = <span class="str">20</span>) -> <span class="type">PKInkingTool</span> {
+        <span class="kw">let</span> ink = <span class="type">PKInkingTool</span>(.marker, color: color, width: width)
+        <span class="kw">return</span> ink
+    }
+
+    <span class="comment">// 3. 연필 도구</span>
+    <span class="kw">func</span> createPencilTool(color: <span class="type">UIColor</span> = .darkGray, width: <span class="type">CGFloat</span> = <span class="str">3</span>) -> <span class="type">PKInkingTool</span> {
+        <span class="kw">let</span> ink = <span class="type">PKInkingTool</span>(.pencil, color: color, width: width)
+        <span class="kw">return</span> ink
+    }
+
+    <span class="comment">// 4. 지우개 도구</span>
+    <span class="kw">func</span> createEraserTool(eraserType: <span class="type">PKEraserTool</span>.<span class="type">EraserType</span> = .vector) -> <span class="type">PKEraserTool</span> {
+        <span class="comment">// .vector = 획 단위 지우기</span>
+        <span class="comment">// .bitmap = 픽셀 단위 지우기</span>
+        <span class="kw">return</span> <span class="type">PKEraserTool</span>(eraserType)
+    }
+
+    <span class="comment">// 5. 눈금자 도구</span>
+    <span class="kw">func</span> setupRuler(for canvasView: <span class="type">PKCanvasView</span>) {
+        canvasView.isRulerActive = <span class="kw">true</span>
+    }
+
+    <span class="comment">// 도구 적용</span>
+    <span class="kw">func</span> applyTool(<span class="kw">_</span> tool: <span class="type">PKTool</span>, to canvasView: <span class="type">PKCanvasView</span>) {
+        canvasView.tool = tool
+    }
+}</pre>
+</div>
+
+<h2>💾 3. 드로잉 저장 및 불러오기</h2>
+<p>드로잉 데이터를 저장하고 불러옵.</p>
+
+<div class="code-block">
+<div class="code-header">DrawingStorage.swift — Save/Load</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PencilKit</span>
+
+<span class="kw">class</span> <span class="type">DrawingStorageManager</span> {
+    <span class="comment">// 드로잉 저장</span>
+    <span class="kw">func</span> saveDrawing(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, to url: <span class="type">URL</span>) <span class="kw">throws</span> {
+        <span class="comment">// PKDrawing을 Data로 변환</span>
+        <span class="kw">let</span> data = drawing.dataRepresentation()
+
+        <span class="comment">// 파일로 저장</span>
+        <span class="kw">try</span> data.write(to: url)
+    }
+
+    <span class="comment">// 드로잉 불러오기</span>
+    <span class="kw">func</span> loadDrawing(from url: <span class="type">URL</span>) <span class="kw">throws</span> -> <span class="type">PKDrawing</span> {
+        <span class="comment">// 파일에서 Data 읽기</span>
+        <span class="kw">let</span> data = <span class="kw">try</span> <span class="type">Data</span>(contentsOf: url)
+
+        <span class="comment">// Data를 PKDrawing으로 변환</span>
+        <span class="kw">let</span> drawing = <span class="kw">try</span> <span class="type">PKDrawing</span>(data: data)
+        <span class="kw">return</span> drawing
+    }
+
+    <span class="comment">// 이미지로 변환</span>
+    <span class="kw">func</span> convertToImage(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, size: <span class="type">CGSize</span>) -> <span class="type">UIImage</span> {
+        <span class="kw">let</span> image = drawing.image(from: drawing.bounds, scale: <span class="type">UIScreen</span>.main.scale)
+        <span class="kw">return</span> image
+    }
+
+    <span class="comment">// UserDefaults에 저장</span>
+    <span class="kw">func</span> saveToUserDefaults(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, key: <span class="type">String</span>) {
+        <span class="kw">let</span> data = drawing.dataRepresentation()
+        <span class="type">UserDefaults</span>.standard.set(data, forKey: key)
+    }
+
+    <span class="comment">// UserDefaults에서 불러오기</span>
+    <span class="kw">func</span> loadFromUserDefaults(key: <span class="type">String</span>) -> <span class="type">PKDrawing</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> data = <span class="type">UserDefaults</span>.standard.data(forKey: key) <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+        <span class="kw">return</span> <span class="kw">try</span>? <span class="type">PKDrawing</span>(data: data)
+    }
+}</pre>
+</div>
+
+<h2>✍️ 4. 손글씨 인식</h2>
+<p>손으로 쓴 텍스트를 인식.</p>
+
+<div class="code-block">
+<div class="code-header">HandwritingRecognition.swift — Handwriting Recognition</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PencilKit</span>
+<span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">HandwritingRecognizer</span> {
+    <span class="kw">var</span> recognizedText: <span class="type">String</span> = <span class="str">""</span>
+
+    <span class="comment">// 드로잉에서 텍스트 인식</span>
+    <span class="kw">func</span> recognizeText(from drawing: <span class="type">PKDrawing</span>) <span class="kw">async</span> {
+        <span class="comment">// 드로잉을 이미지로 변환</span>
+        <span class="kw">let</span> image = drawing.image(from: drawing.bounds, scale: <span class="str">2.0</span>)
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// Vision 텍스트 인식</span>
+        <span class="kw">let</span> request = <span class="type">VNRecognizeTextRequest</span> { [<span class="kw">weak self</span>] request, error <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> observations = request.results <span class="kw">as</span>? [<span class="type">VNRecognizedTextObservation</span>] <span class="kw">else</span> {
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">let</span> recognizedStrings = observations.compactMap { observation <span class="kw">in</span>
+                observation.topCandidates(<span class="str">1</span>).first?.string
+            }
+
+            <span class="type">Task</span> { <span class="kw">@MainActor</span> <span class="kw">in</span>
+                <span class="kw">self</span>?.recognizedText = recognizedStrings.joined(separator: <span class="str">"\n"</span>)
+            }
+        }
+
+        <span class="comment">// 손글씨 인식 활성화</span>
+        request.recognitionLevel = .accurate
+        request.recognitionLanguages = [<span class="str">"en-US"</span>, <span class="str">"ko-KR"</span>]
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage, options: [:])
+        <span class="kw">try</span>? handler.perform([request])
+    }
+}</pre>
+</div>
+
+<h2>📝 5. 서명 캡처</h2>
+<p>전자 서명을 캡처하는 기능 implementation.</p>
+
+<div class="code-block">
+<div class="code-header">SignatureView.swift — 서명 캡처</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PencilKit</span>
+
+<span class="kw">struct</span> <span class="type">SignatureView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> canvasView = <span class="type">PKCanvasView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> signatureImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showSignaturePad = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> <span class="kw">let</span> image = signatureImage {
+                <span class="type">Image</span>(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: <span class="str">150</span>)
+                    .border(<span class="type">Color</span>.gray)
+                    .padding()
+            } <span class="kw">else</span> {
+                <span class="type">Text</span>(<span class="str">"서명 없음"</span>)
+                    .foregroundStyle(.secondary)
+            }
+
+            <span class="type">Button</span>(<span class="str">"서명하기"</span>) {
+                showSignaturePad = <span class="kw">true</span>
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .sheet(isPresented: $showSignaturePad) {
+            <span class="type">SignaturePadView</span>(
+                canvasView: $canvasView,
+                onSave: { drawing <span class="kw">in</span>
+                    signatureImage = drawing.image(
+                        from: drawing.bounds,
+                        scale: <span class="type">UIScreen</span>.main.scale
+                    )
+                    showSignaturePad = <span class="kw">false</span>
+                }
+            )
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">SignaturePadView</span>: <span class="type">View</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> canvasView: <span class="type">PKCanvasView</span>
+    <span class="kw">let</span> onSave: (<span class="type">PKDrawing</span>) -> <span class="type">Void</span>
+    <span class="kw">@Environment</span>(\.<span class="kw">dismiss</span>) <span class="kw">var</span> dismiss
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span> {
+                <span class="type">Text</span>(<span class="str">"아래에 서명해주세요"</span>)
+                    .font(.headline)
+                    .padding()
+
+                <span class="type">CanvasView</span>(canvasView: $canvasView, toolPicker: <span class="type">PKToolPicker</span>())
+                    .frame(height: <span class="str">300</span>)
+                    .border(<span class="type">Color</span>.gray)
+                    .padding()
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
+                    <span class="type">Button</span>(<span class="str">"취소"</span>) {
+                        dismiss()
+                    }
+                }
+
+                <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
+                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                        onSave(canvasView.drawing)
+                    }
+                }
+
+                <span class="type">ToolbarItem</span>(placement: .bottomBar) {
+                    <span class="type">Button</span>(<span class="str">"지우기"</span>) {
+                        canvasView.drawing = <span class="type">PKDrawing</span>()
+                    }
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>📱 Complete Example</h2>
+
+<div class="code-block">
+<div class="code-header">DrawingAppView.swift — App</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PencilKit</span>
+
+<span class="kw">struct</span> <span class="type">DrawingAppView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> canvasView = <span class="type">PKCanvasView</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> toolPicker = <span class="type">PKToolPicker</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showSaveAlert = <span class="kw">false</span>
+
+    <span class="kw">let</span> storageManager = <span class="type">DrawingStorageManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">CanvasView</span>(canvasView: $canvasView, toolPicker: toolPicker)
+                .navigationTitle(<span class="str">"드로잉"</span>)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    <span class="type">ToolbarItemGroup</span>(placement: .topBarTrailing) {
+                        <span class="type">Button</span> {
+                            <span class="comment">// 이미지로 저장</span>
+                            <span class="kw">let</span> image = canvasView.drawing.image(
+                                from: canvasView.drawing.bounds,
+                                scale: <span class="type">UIScreen</span>.main.scale
+                            )
+                            <span class="type">UIImageWriteToSavedPhotosAlbum</span>(image, <span class="kw">nil</span>, <span class="kw">nil</span>, <span class="kw">nil</span>)
+                            showSaveAlert = <span class="kw">true</span>
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"square.and.arrow.down"</span>)
+                        }
+
+                        <span class="type">Button</span> {
+                            canvasView.drawing = <span class="type">PKDrawing</span>()
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"trash"</span>)
+                        }
+                    }
+
+                    <span class="type">ToolbarItemGroup</span>(placement: .bottomBar) {
+                        <span class="type">Button</span> {
+                            canvasView.undoManager?.undo()
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"arrow.uturn.backward"</span>)
+                        }
+                        .disabled(canvasView.undoManager?.canUndo == <span class="kw">false</span>)
+
+                        <span class="type">Spacer</span>()
+
+                        <span class="type">Button</span> {
+                            canvasView.undoManager?.redo()
+                        } label: {
+                            <span class="type">Image</span>(systemName: <span class="str">"arrow.uturn.forward"</span>)
+                        }
+                        .disabled(canvasView.undoManager?.canRedo == <span class="kw">false</span>)
+                    }
+                }
+                .alert(<span class="str">"저장 완료"</span>, isPresented: $showSaveAlert) {
+                    <span class="type">Button</span>(<span class="str">"확인"</span>, role: .cancel) {}
+                } message: {
+                    <span class="type">Text</span>(<span class="str">"드로잉이 사진첩에 저장되었습니다"</span>)
+                }
+                .onAppear {
+                    toolPicker.setVisible(<span class="kw">true</span>, forFirstResponder: canvasView)
+                    toolPicker.addObserver(canvasView)
+                    canvasView.becomeFirstResponder()
+                }
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Apple Pencil:</strong> Apple Pencil 사용 시 최적화된 경험 제공</li>
+<li><strong>도구 선택:</strong> 명확한 도구 선택 UI 제공</li>
+<li><strong>실행 취소:</strong> 쉬운 실행 취소/재실행 버튼</li>
+<li><strong>저장:</strong> 자동 저장 또는 명확한 저장 버튼</li>
+<li><strong>권한:</strong> In Info.plist, <code>NSPhotoLibraryAddUsageDescription</code> 추가 (사진 저장 시)</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>노트 앱:</strong> 손글씨 필기 및 스케치</li>
+<li><strong>화이트보드:</strong> 협업 드로잉</li>
+<li><strong>그림 앱:</strong> 디지털 드로잉</li>
+<li><strong>서명:</strong> 전자 서명 캡처</li>
+<li><strong>주석:</strong> 문서/이미지 주석</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/pencilkit">PencilKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/">WWDC: PencilKit 세션</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble">HIG: Apple Pencil</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> <code>drawingPolicy</code>를 <code>.pencilOnly</code> to ignore finger touch and recognize only Apple Pencil. Useful for precise drawing.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/pencilkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/pencilkit/drawing-with-pencilkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=PencilKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🖼️ ExtensibleImage — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../extensibleimage/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🖼️ ExtensibleImage</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 iOS 26</span>
+</div>
+<p class="subtitle">레이어 기반 확장 가능한 이미지 포맷</p>
+
+<div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
+
+<h2>✨ ExtensibleImage?</h2>
+<p>ExtensibleImage is a new image format introduced in iOS 18 that supports layer-based editing, metadata preservation, and non-destructive editing. Like Photoshop's PSD, it can contain multiple layers and integrates seamlessly with Core Image filters.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Layer-Based Structure · Non-Destructive Editing · Metadata Preservation · Core Image Integration · High-Quality Output · Efficient Storage
+</div>
+
+<h2>🎯 1. Basic Setup</h2>
+<p>Create an ExtensibleImage and perform basic operations.</p>
+
+<div class="code-block">
+<div class="code-header">ImageManager.swift — Basic Setup</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">UIKit</span>
+<span class="kw">import</span> <span class="type">ExtensibleImage</span>
+<span class="kw">import</span> <span class="type">CoreImage</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">ExtensibleImageManager</span> {
+    <span class="kw">var</span> currentImage: <span class="type">EIImage</span>?
+
+    <span class="comment">// 새 이미지 생성</span>
+    <span class="kw">func</span> createNewImage(size: <span class="type">CGSize</span>) {
+        <span class="comment">// 빈 캔버스 생성</span>
+        currentImage = <span class="type">EIImage</span>(
+            size: size,
+            colorSpace: <span class="type">CGColorSpace</span>(name: <span class="type">CGColorSpace</span>.sRGB)!
+        )
+    }
+
+    <span class="comment">// UIImage에서 생성</span>
+    <span class="kw">func</span> createFromUIImage(<span class="kw">_</span> uiImage: <span class="type">UIImage</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = uiImage.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+        currentImage = <span class="type">EIImage</span>(cgImage: cgImage)
+    }
+
+    <span class="comment">// 파일에서 로드</span>
+    <span class="kw">func</span> loadImage(from url: <span class="type">URL</span>) <span class="kw">throws</span> {
+        currentImage = <span class="kw">try</span> <span class="type">EIImage</span>(contentsOf: url)
+    }
+
+    <span class="comment">// 파일로 저장</span>
+    <span class="kw">func</span> saveImage(to url: <span class="type">URL</span>) <span class="kw">throws</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> image = currentImage <span class="kw">else</span> { <span class="kw">return</span> }
+        <span class="kw">try</span> image.write(to: url, options: [
+            .compressionQuality: <span class="str">0.9</span>,
+            .preserveMetadata: <span class="kw">true</span>
+        ])
+    }
+
+    <span class="comment">// UIImage로 변환 (화면 표시용)</span>
+    <span class="kw">func</span> toUIImage() -> <span class="type">UIImage</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> image = currentImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+        <span class="kw">return</span> <span class="type">UIImage</span>(eiImage: image)
+    }
+}</pre>
+</div>
+
+<h2>📐 2. 레이어 관리</h2>
+<p>여러 레이어를 생성하고 관리.</p>
+
+<div class="code-block">
+<div class="code-header">LayerManager.swift — 레이어 관리</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">ExtensibleImage</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">LayerManager</span> {
+    <span class="kw">var</span> image: <span class="type">EIImage</span>
+
+    <span class="kw">init</span>(size: <span class="type">CGSize</span>) {
+        <span class="kw">self</span>.image = <span class="type">EIImage</span>(
+            size: size,
+            colorSpace: <span class="type">CGColorSpace</span>(name: <span class="type">CGColorSpace</span>.sRGB)!
+        )
+    }
+
+    <span class="comment">// 새 레이어 추가</span>
+    <span class="kw">func</span> addLayer(name: <span class="type">String</span>, content: <span class="type">UIImage</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = content.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> layer = <span class="type">EILayer</span>(
+            name: name,
+            content: cgImage,
+            blendMode: .normal,
+            opacity: <span class="str">1.0</span>
+        )
+
+        image.addLayer(layer)
+    }
+
+    <span class="comment">// 텍스트 레이어 추가</span>
+    <span class="kw">func</span> addTextLayer(text: <span class="type">String</span>, font: <span class="type">UIFont</span>, color: <span class="type">UIColor</span>) {
+        <span class="comment">// 텍스트를 이미지로 렌더링</span>
+        <span class="kw">let</span> attributes: [<span class="type">NSAttributedString</span>.<span class="type">Key</span>: <span class="type">Any</span>] = [
+            .font: font,
+            .foregroundColor: color
+        ]
+
+        <span class="kw">let</span> textSize = (text <span class="kw">as</span> <span class="type">NSString</span>).size(withAttributes: attributes)
+        <span class="kw">let</span> renderer = <span class="type">UIGraphicsImageRenderer</span>(size: textSize)
+
+        <span class="kw">let</span> textImage = renderer.image { context <span class="kw">in</span>
+            (text <span class="kw">as</span> <span class="type">NSString</span>).draw(at: .zero, withAttributes: attributes)
+        }
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = textImage.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> layer = <span class="type">EILayer</span>(
+            name: <span class="str">"Text: \(text)"</span>,
+            content: cgImage,
+            blendMode: .normal,
+            opacity: <span class="str">1.0</span>
+        )
+
+        image.addLayer(layer)
+    }
+
+    <span class="comment">// 레이어 불투명도 조정</span>
+    <span class="kw">func</span> setLayerOpacity(at index: <span class="type">Int</span>, opacity: <span class="type">Float</span>) {
+        <span class="kw">guard</span> index < image.layers.count <span class="kw">else</span> { <span class="kw">return</span> }
+        image.layers[index].opacity = opacity
+    }
+
+    <span class="comment">// 레이어 블렌드 모드 변경</span>
+    <span class="kw">func</span> setLayerBlendMode(at index: <span class="type">Int</span>, mode: <span class="type">CGBlendMode</span>) {
+        <span class="kw">guard</span> index < image.layers.count <span class="kw">else</span> { <span class="kw">return</span> }
+        image.layers[index].blendMode = mode
+    }
+
+    <span class="comment">// 레이어 삭제</span>
+    <span class="kw">func</span> removeLayer(at index: <span class="type">Int</span>) {
+        <span class="kw">guard</span> index < image.layers.count <span class="kw">else</span> { <span class="kw">return</span> }
+        image.removeLayer(at: index)
+    }
+
+    <span class="comment">// 레이어 순서 변경</span>
+    <span class="kw">func</span> moveLayer(from: <span class="type">Int</span>, to: <span class="type">Int</span>) {
+        <span class="kw">guard</span> from < image.layers.count, to < image.layers.count <span class="kw">else</span> { <span class="kw">return</span> }
+        <span class="kw">let</span> layer = image.layers.remove(at: from)
+        image.layers.insert(layer, at: to)
+    }
+}</pre>
+</div>
+
+<h2>🎨 3. Core Image 필터 통합</h2>
+<p>Core Image 필터를 레이어에 적용.</p>
+
+<div class="code-block">
+<div class="code-header">FilterManager.swift — 필터 적용</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
+<span class="kw">import</span> <span class="type">ExtensibleImage</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">FilterManager</span> {
+    <span class="kw">private</span> <span class="kw">let</span> context = <span class="type">CIContext</span>()
+
+    <span class="comment">// 블러 필터 적용</span>
+    <span class="kw">func</span> applyBlur(to layer: <span class="type">EILayer</span>, radius: <span class="type">Double</span>) -> <span class="type">EILayer</span> {
+        <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(cgImage: layer.content)
+
+        <span class="kw">let</span> filter = <span class="type">CIFilter</span>.gaussianBlur()
+        filter.inputImage = ciImage
+        filter.radius = <span class="type">Float</span>(radius)
+
+        <span class="kw">guard</span> <span class="kw">let</span> output = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(output, from: output.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> layer
+        }
+
+        <span class="kw">return</span> <span class="type">EILayer</span>(
+            name: layer.name,
+            content: cgImage,
+            blendMode: layer.blendMode,
+            opacity: layer.opacity
+        )
+    }
+
+    <span class="comment">// 색상 조정 필터</span>
+    <span class="kw">func</span> applyColorAdjustment(
+        to layer: <span class="type">EILayer</span>,
+        brightness: <span class="type">Double</span> = <span class="str">0</span>,
+        contrast: <span class="type">Double</span> = <span class="str">1</span>,
+        saturation: <span class="type">Double</span> = <span class="str">1</span>
+    ) -> <span class="type">EILayer</span> {
+        <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(cgImage: layer.content)
+
+        <span class="kw">let</span> filter = <span class="type">CIFilter</span>.colorControls()
+        filter.inputImage = ciImage
+        filter.brightness = <span class="type">Float</span>(brightness)
+        filter.contrast = <span class="type">Float</span>(contrast)
+        filter.saturation = <span class="type">Float</span>(saturation)
+
+        <span class="kw">guard</span> <span class="kw">let</span> output = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(output, from: output.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> layer
+        }
+
+        <span class="kw">return</span> <span class="type">EILayer</span>(
+            name: layer.name,
+            content: cgImage,
+            blendMode: layer.blendMode,
+            opacity: layer.opacity
+        )
+    }
+
+    <span class="comment">// 비네트 효과</span>
+    <span class="kw">func</span> applyVignette(to layer: <span class="type">EILayer</span>, intensity: <span class="type">Double</span> = <span class="str">1</span>) -> <span class="type">EILayer</span> {
+        <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(cgImage: layer.content)
+
+        <span class="kw">let</span> filter = <span class="type">CIFilter</span>.vignette()
+        filter.inputImage = ciImage
+        filter.intensity = <span class="type">Float</span>(intensity)
+
+        <span class="kw">guard</span> <span class="kw">let</span> output = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(output, from: output.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> layer
+        }
+
+        <span class="kw">return</span> <span class="type">EILayer</span>(
+            name: layer.name,
+            content: cgImage,
+            blendMode: layer.blendMode,
+            opacity: layer.opacity
+        )
+    }
+
+    <span class="comment">// 흑백 변환</span>
+    <span class="kw">func</span> applyMonochrome(to layer: <span class="type">EILayer</span>) -> <span class="type">EILayer</span> {
+        <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(cgImage: layer.content)
+
+        <span class="kw">let</span> filter = <span class="type">CIFilter</span>.photoEffectMono()
+        filter.inputImage = ciImage
+
+        <span class="kw">guard</span> <span class="kw">let</span> output = filter.outputImage,
+              <span class="kw">let</span> cgImage = context.createCGImage(output, from: output.extent) <span class="kw">else</span> {
+            <span class="kw">return</span> layer
+        }
+
+        <span class="kw">return</span> <span class="type">EILayer</span>(
+            name: layer.name,
+            content: cgImage,
+            blendMode: layer.blendMode,
+            opacity: layer.opacity
+        )
+    }
+}</pre>
+</div>
+
+<h2>💾 4. 메타데이터 관리</h2>
+<p>이미지 메타데이터를 보존하고 편집.</p>
+
+<div class="code-block">
+<div class="code-header">MetadataManager.swift — Metadata Management</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">ExtensibleImage</span>
+<span class="kw">import</span> <span class="type">ImageIO</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">MetadataManager</span> {
+    <span class="comment">// 메타데이터 읽기</span>
+    <span class="kw">func</span> readMetadata(from image: <span class="type">EIImage</span>) -> [<span class="type">String</span>: <span class="type">Any</span>] {
+        <span class="kw">return</span> image.metadata ?? [:]
+    }
+
+    <span class="comment">// 메타데이터 추가/수정</span>
+    <span class="kw">func</span> setMetadata(<span class="kw">_</span> metadata: [<span class="type">String</span>: <span class="type">Any</span>], to image: <span class="type">EIImage</span>) {
+        image.metadata = metadata
+    }
+
+    <span class="comment">// GPS 정보 추가</span>
+    <span class="kw">func</span> addGPSMetadata(
+        to image: <span class="type">EIImage</span>,
+        latitude: <span class="type">Double</span>,
+        longitude: <span class="type">Double</span>
+    ) {
+        <span class="kw">var</span> metadata = image.metadata ?? [:]
+
+        metadata[<span class="str">"GPS"</span>] = [
+            kCGImagePropertyGPSLatitude: latitude,
+            kCGImagePropertyGPSLongitude: longitude
+        ]
+
+        image.metadata = metadata
+    }
+
+    <span class="comment">// EXIF 정보 추가</span>
+    <span class="kw">func</span> addEXIFMetadata(
+        to image: <span class="type">EIImage</span>,
+        aperture: <span class="type">Double</span>,
+        exposureTime: <span class="type">Double</span>,
+        iso: <span class="type">Int</span>
+    ) {
+        <span class="kw">var</span> metadata = image.metadata ?? [:]
+
+        metadata[<span class="str">"EXIF"</span>] = [
+            kCGImagePropertyExifApertureValue: aperture,
+            kCGImagePropertyExifExposureTime: exposureTime,
+            kCGImagePropertyExifISOSpeedRatings: [iso]
+        ]
+
+        image.metadata = metadata
+    }
+
+    <span class="comment">// 커스텀 메타데이터</span>
+    <span class="kw">func</span> addCustomMetadata(
+        to image: <span class="type">EIImage</span>,
+        key: <span class="type">String</span>,
+        value: <span class="type">Any</span>
+    ) {
+        <span class="kw">var</span> metadata = image.metadata ?? [:]
+        metadata[key] = value
+        image.metadata = metadata
+    }
+
+    <span class="comment">// 편집 히스토리 추가</span>
+    <span class="kw">func</span> addEditHistory(to image: <span class="type">EIImage</span>, edit: <span class="type">String</span>) {
+        <span class="kw">var</span> metadata = image.metadata ?? [:]
+        <span class="kw">var</span> history = (metadata[<span class="str">"EditHistory"</span>] <span class="kw">as</span>? [<span class="type">String</span>]) ?? []
+
+        history.append(<span class="str">"\(Date()): \(edit)"</span>)
+        metadata[<span class="str">"EditHistory"</span>] = history
+
+        image.metadata = metadata
+    }
+}</pre>
+</div>
+
+<h2>✂️ 5. 비파괴 편집</h2>
+<p>A non-destructive editing system that preserves the original.</p>
+
+<div class="code-block">
+<div class="code-header">NonDestructiveEditor.swift — Non-Destructive Editing</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">ExtensibleImage</span>
+
+<span class="kw">struct</span> <span class="type">EditOperation</span>: <span class="type">Codable</span> {
+    <span class="kw">enum</span> <span class="type">OperationType</span>: <span class="type">String</span>, <span class="type">Codable</span> {
+        <span class="kw">case</span> brightness, contrast, saturation, blur, crop
+    }
+
+    <span class="kw">let</span> id: <span class="type">UUID</span>
+    <span class="kw">let</span> type: <span class="type">OperationType</span>
+    <span class="kw">let</span> parameters: [<span class="type">String</span>: <span class="type">Double</span>]
+    <span class="kw">let</span> timestamp: <span class="type">Date</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">NonDestructiveEditor</span> {
+    <span class="kw">private</span> <span class="kw">var</span> originalImage: <span class="type">EIImage</span>
+    <span class="kw">private</span> <span class="kw">var</span> editHistory: [<span class="type">EditOperation</span>] = []
+    <span class="kw">var</span> currentImage: <span class="type">EIImage</span>
+
+    <span class="kw">init</span>(image: <span class="type">EIImage</span>) {
+        <span class="kw">self</span>.originalImage = image
+        <span class="kw">self</span>.currentImage = image
+    }
+
+    <span class="comment">// 편집 적용 (히스토리 저장)</span>
+    <span class="kw">func</span> applyEdit(<span class="kw">_</span> operation: <span class="type">EditOperation</span>) {
+        editHistory.append(operation)
+        reapplyAllEdits()
+    }
+
+    <span class="comment">// 실행 취소</span>
+    <span class="kw">func</span> undo() {
+        <span class="kw">guard</span> !editHistory.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
+        editHistory.removeLast()
+        reapplyAllEdits()
+    }
+
+    <span class="comment">// 원본으로 복원</span>
+    <span class="kw">func</span> resetToOriginal() {
+        editHistory.removeAll()
+        currentImage = originalImage
+    }
+
+    <span class="comment">// 모든 편집 재적용</span>
+    <span class="kw">private</span> <span class="kw">func</span> reapplyAllEdits() {
+        currentImage = originalImage
+
+        <span class="kw">for</span> operation <span class="kw">in</span> editHistory {
+            <span class="kw">switch</span> operation.type {
+            <span class="kw">case</span> .brightness:
+                <span class="kw">if</span> <span class="kw">let</span> value = operation.parameters[<span class="str">"value"</span>] {
+                    applyBrightnessFilter(value: value)
+                }
+            <span class="kw">case</span> .contrast:
+                <span class="kw">if</span> <span class="kw">let</span> value = operation.parameters[<span class="str">"value"</span>] {
+                    applyContrastFilter(value: value)
+                }
+            <span class="kw">case</span> .saturation:
+                <span class="kw">if</span> <span class="kw">let</span> value = operation.parameters[<span class="str">"value"</span>] {
+                    applySaturationFilter(value: value)
+                }
+            <span class="kw">case</span> .blur:
+                <span class="kw">if</span> <span class="kw">let</span> radius = operation.parameters[<span class="str">"radius"</span>] {
+                    applyBlurFilter(radius: radius)
+                }
+            <span class="kw">case</span> .crop:
+                <span class="comment">// 크롭 로직</span>
+                <span class="kw">break</span>
+            }
+        }
+    }
+
+    <span class="comment">// 필터 적용 헬퍼 메서드</span>
+    <span class="kw">private</span> <span class="kw">func</span> applyBrightnessFilter(value: <span class="type">Double</span>) {
+        <span class="comment">// Core Image 필터 적용</span>
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> applyContrastFilter(value: <span class="type">Double</span>) {
+        <span class="comment">// Core Image 필터 적용</span>
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> applySaturationFilter(value: <span class="type">Double</span>) {
+        <span class="comment">// Core Image 필터 적용</span>
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> applyBlurFilter(radius: <span class="type">Double</span>) {
+        <span class="comment">// Core Image 필터 적용</span>
+    }
+
+    <span class="comment">// 편집 히스토리 내보내기</span>
+    <span class="kw">func</span> exportEditHistory() -> <span class="type">Data</span>? {
+        <span class="kw">try</span>? <span class="type">JSONEncoder</span>().encode(editHistory)
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI Integration</h2>
+
+<div class="code-block">
+<div class="code-header">ImageEditorView.swift — Complete Example</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">ImageEditorView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> imageManager = <span class="type">ExtensibleImageManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> layerManager: <span class="type">LayerManager</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> filterManager = <span class="type">FilterManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedPhoto: <span class="type">PhotosPickerItem</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> displayImage: <span class="type">UIImage</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span> {
+                <span class="kw">if</span> <span class="kw">let</span> image = displayImage {
+                    <span class="type">Image</span>(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: <span class="str">400</span>)
+                } <span class="kw">else</span> {
+                    <span class="type">ContentUnavailableView</span>(
+                        <span class="str">"이미지 없음"</span>,
+                        systemImage: <span class="str">"photo"</span>,
+                        description: <span class="type">Text</span>(<span class="str">"사진을 선택하세요"</span>)
+                    )
+                }
+
+                <span class="kw">if</span> <span class="kw">let</span> manager = layerManager {
+                    <span class="type">List</span> {
+                        <span class="type">Section</span>(<span class="str">"레이어"</span>) {
+                            <span class="type">ForEach</span>(manager.image.layers.indices, id: \.<span class="kw">self</span>) { index <span class="kw">in</span>
+                                <span class="type">HStack</span> {
+                                    <span class="type">Text</span>(manager.image.layers[index].name)
+                                    <span class="type">Spacer</span>()
+                                    <span class="type">Text</span>(<span class="str">"\(Int(manager.image.layers[index].opacity * 100))%"</span>)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+
+                        <span class="type">Section</span>(<span class="str">"필터"</span>) {
+                            <span class="type">Button</span>(<span class="str">"블러 효과"</span>) {
+                                applyBlur()
+                            }
+
+                            <span class="type">Button</span>(<span class="str">"흑백 변환"</span>) {
+                                applyMonochrome()
+                            }
+                        }
+                    }
+                    .frame(height: <span class="str">300</span>)
+                }
+            }
+            .navigationTitle(<span class="str">"ExtensibleImage"</span>)
+            .toolbar {
+                <span class="type">PhotosPicker</span>(selection: $selectedPhoto, matching: .images) {
+                    <span class="type">Label</span>(<span class="str">"사진 선택"</span>, systemImage: <span class="str">"photo"</span>)
+                }
+            }
+            .onChange(of: selectedPhoto) { oldValue, newValue <span class="kw">in</span>
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> loadPhoto(newValue)
+                }
+            }
+        }
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> loadPhoto(<span class="kw">_</span> item: <span class="type">PhotosPickerItem</span>?) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> item,
+              <span class="kw">let</span> data = <span class="kw">try</span>? <span class="kw">await</span> item.loadTransferable(type: <span class="type">Data</span>.<span class="kw">self</span>),
+              <span class="kw">let</span> uiImage = <span class="type">UIImage</span>(data: data) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        imageManager.createFromUIImage(uiImage)
+        layerManager = <span class="type">LayerManager</span>(size: uiImage.size)
+        displayImage = uiImage
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> applyBlur() {
+        <span class="kw">guard</span> <span class="kw">let</span> manager = layerManager,
+              !manager.image.layers.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> layer = manager.image.layers[<span class="str">0</span>]
+        <span class="kw">let</span> filtered = filterManager.applyBlur(to: layer, radius: <span class="str">10</span>)
+        manager.image.layers[<span class="str">0</span>] = filtered
+
+        displayImage = imageManager.toUIImage()
+    }
+
+    <span class="kw">private</span> <span class="kw">func</span> applyMonochrome() {
+        <span class="kw">guard</span> <span class="kw">let</span> manager = layerManager,
+              !manager.image.layers.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> layer = manager.image.layers[<span class="str">0</span>]
+        <span class="kw">let</span> filtered = filterManager.applyMonochrome(to: layer)
+        manager.image.layers[<span class="str">0</span>] = filtered
+
+        displayImage = imageManager.toUIImage()
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>비파괴 편집:</strong> 원본을 항상 보존하고 언제든 복원 가능하게</li>
+<li><strong>성능:</strong> Rendering performance optimization with many layers</li>
+<li><strong>메타데이터:</strong> EXIF, GPS 등 중요한 메타데이터 보존</li>
+<li><strong>저장:</strong> 고품질 옵션 제공, 압축 수준 선택 가능</li>
+<li><strong>메모리:</strong> 큰 이미지 처리 시 메모리 관리 주의</li>
+</ul>
+
+<h2>🎯 Practical Applications</h2>
+
+<ul>
+<li><strong>Photo Editing Apps:</strong> 레이어 기반 비파괴 편집</li>
+<li><strong>디자인 도구:</strong> 텍스트, 도형, 이미지 레이어 결합</li>
+<li><strong>Social Media:</strong> 필터와 오버레이 적용</li>
+<li><strong>의료 영상:</strong> 메타데이터 보존이 중요한 이미징</li>
+<li><strong>전문 사진:</strong> EXIF 데이터 유지하며 편집</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/extensibleimage">ExtensibleImage 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: ExtensibleImage</a></li>
+<li><a href="https://developer.apple.com/documentation/coreimage">Core Image 문서</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> Flatten layers for better output performance. Keep layers during editing; flatten only when sharing/saving.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/extensibleimage" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=ExtensibleImage" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

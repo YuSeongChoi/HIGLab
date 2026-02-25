@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to AuthServices authentication services framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="🔐 Sign in with Apple — HIG Lab">
+    <meta property="og:description" content="Complete guide to AuthServices authentication services framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/authservices/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🔐 Sign in with Apple — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to AuthServices authentication services framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/authservices/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/en/authservices/01-tutorial.html">
+<title>🔐 Sign in with Apple — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../authservices/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🔐 Sign in with Apple</h1>
+<p>The most privacy-friendly login. Hide email, automatic 2FA, Face ID auth!</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ Sign in with Apple is?</h2>
+<p>Simple sign-in with Apple ID. You can hide your email, and two-factor authentication is handled automatically. Required if your app has other social logins.</p>
+
+<h2>🎯 Basic Implementation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SignInManager.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AuthenticationServices</span>
+
+<span class="kw">class</span> <span class="type">SignInManager</span>: <span class="type">NSObject</span>, <span class="type">ASAuthorizationControllerDelegate</span> {
+    <span class="kw">func</span> <span class="func">signInWithApple</span>() {
+        <span class="kw">let</span> provider = <span class="type">ASAuthorizationAppleIDProvider</span>()
+        <span class="kw">let</span> request = provider.<span class="func">createRequest</span>()
+
+        <span class="comment">// 요청할 정보 (이름, 이메일)</span>
+        request.requestedScopes = [.fullName, .email]
+
+        <span class="kw">let</span> controller = <span class="type">ASAuthorizationController</span>(authorizationRequests: [request])
+        controller.delegate = <span class="kw">self</span>
+        controller.presentationContextProvider = <span class="kw">self</span>
+        controller.<span class="func">performRequests</span>()
+    }
+
+    <span class="comment">// 성공 시</span>
+    <span class="kw">func</span> <span class="func">authorizationController</span>(
+        controller: <span class="type">ASAuthorizationController</span>,
+        didCompleteWithAuthorization authorization: <span class="type">ASAuthorization</span>
+    ) {
+        <span class="kw">if let</span> credential = authorization.credential <span class="kw">as</span>? <span class="type">ASAuthorizationAppleIDCredential</span> {
+            <span class="kw">let</span> userID = credential.user  <span class="comment">// 고유 ID (변하지 않음)</span>
+            <span class="kw">let</span> email = credential.email  <span class="comment">// 첫 로그인 시만 제공</span>
+            <span class="kw">let</span> fullName = credential.fullName  <span class="comment">// 첫 로그인 시만 제공</span>
+            <span class="kw">let</span> identityToken = credential.identityToken  <span class="comment">// JWT 토큰</span>
+
+            <span class="comment">// 백엔드로 identityToken 전송하여 검증</span>
+            <span class="kw">if let</span> tokenData = identityToken,
+               <span class="kw">let</span> tokenString = <span class="type">String</span>(data: tokenData, encoding: .utf8) {
+                <span class="func">verifyTokenWithBackend</span>(tokenString, userID: userID)
+            }
+
+            <span class="comment">// UserDefaults에 userID 저장</span>
+            <span class="type">UserDefaults</span>.standard.set(userID, forKey: <span class="str">"appleUserID"</span>)
+        }
+    }
+
+    <span class="comment">// 실패 시</span>
+    <span class="kw">func</span> <span class="func">authorizationController</span>(
+        controller: <span class="type">ASAuthorizationController</span>,
+        didCompleteWithError error: <span class="type">Error</span>
+    ) {
+        <span class="func">print</span>(<span class="str">"로그인 실패: \(error.localizedDescription)"</span>)
+    }
+
+    <span class="kw">func</span> <span class="func">verifyTokenWithBackend</span>(_ token: <span class="type">String</span>, userID: <span class="type">String</span>) {
+        <span class="comment">// 백엔드 API 호출</span>
+    }
+}
+
+<span class="kw">extension</span> <span class="type">SignInManager</span>: <span class="type">ASAuthorizationControllerPresentationContextProviding</span> {
+    <span class="kw">func</span> <span class="func">presentationAnchor</span>(for controller: <span class="type">ASAuthorizationController</span>) -> <span class="type">ASPresentationAnchor</span> {
+        <span class="kw">return</span> <span class="type">UIApplication</span>.shared.windows.first!
+    }
+}</pre></div>
+
+<h2>🎨 Sign in with Apple Button in SwiftUI</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SignInButton.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AuthenticationServices</span>
+
+<span class="kw">struct</span> <span class="type">SignInWithAppleButton</span>: <span class="type">View</span> {
+    @<span class="type">Environment</span>(\.<span class="prop">colorScheme</span>) <span class="kw">var</span> colorScheme
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">SignInWithAppleButton</span>(
+            .signIn,
+            onRequest: { request <span class="kw">in</span>
+                request.requestedScopes = [.fullName, .email]
+            },
+            onCompletion: { result <span class="kw">in</span>
+                <span class="kw">switch</span> result {
+                <span class="kw">case</span> .success(<span class="kw">let</span> authorization):
+                    <span class="func">handleAuthorization</span>(authorization)
+                <span class="kw">case</span> .failure(<span class="kw">let</span> error):
+                    <span class="func">print</span>(<span class="str">"에러: \(error)"</span>)
+                }
+            }
+        )
+        .signInWithAppleButtonStyle(
+            colorScheme == .dark ? .white : .black
+        )
+        .frame(height: <span class="num">50</span>)
+    }
+
+    <span class="kw">func</span> <span class="func">handleAuthorization</span>(_ authorization: <span class="type">ASAuthorization</span>) {
+        <span class="kw">if let</span> credential = authorization.credential <span class="kw">as</span>? <span class="type">ASAuthorizationAppleIDCredential</span> {
+            <span class="func">print</span>(<span class="str">"사용자 ID: \(credential.user)"</span>)
+            <span class="func">print</span>(<span class="str">"이메일: \(credential.email ?? \"없음\")"</span>)
+        }
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">struct</span> <span class="type">LoginView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="type">Text</span>(<span class="str">"로그인"</span>)
+                .font(.largeTitle.bold())
+
+            <span class="type">SignInWithAppleButton</span>()
+                .padding(.horizontal)
+        }
+    }
+}</pre></div>
+
+<h2>🔄 자동 로그인 상태 체크</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CredentialCheck.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AuthenticationServices</span>
+
+<span class="kw">func</span> <span class="func">checkCredentialState</span>() {
+    <span class="kw">guard let</span> userID = <span class="type">UserDefaults</span>.standard.string(forKey: <span class="str">"appleUserID"</span>) <span class="kw">else</span> {
+        <span class="comment">// 저장된 userID 없음</span>
+        <span class="kw">return</span>
+    }
+
+    <span class="kw">let</span> provider = <span class="type">ASAuthorizationAppleIDProvider</span>()
+    provider.<span class="func">getCredentialState</span>(forUserID: userID) { state, error <span class="kw">in</span>
+        <span class="kw">switch</span> state {
+        <span class="kw">case</span> .authorized:
+            <span class="func">print</span>(<span class="str">"로그인 유지 중"</span>)
+            <span class="comment">// 자동 로그인 처리</span>
+
+        <span class="kw">case</span> .revoked:
+            <span class="func">print</span>(<span class="str">"로그인 취소됨"</span>)
+            <span class="comment">// 로그아웃 처리</span>
+            <span class="type">UserDefaults</span>.standard.removeObject(forKey: <span class="str">"appleUserID"</span>)
+
+        <span class="kw">case</span> .notFound:
+            <span class="func">print</span>(<span class="str">"사용자 없음"</span>)
+
+        <span class="kw">case</span> .transferred:
+            <span class="func">print</span>(<span class="str">"다른 팀으로 이전됨"</span>)
+
+        @unknown <span class="kw">default</span>:
+            <span class="kw">break</span>
+        }
+    }
+}
+
+<span class="comment">// 앱 시작 시 체크</span>
+<span class="kw">func</span> <span class="func">application</span>(
+    _ application: <span class="type">UIApplication</span>,
+    didFinishLaunchingWithOptions launchOptions: [<span class="type">UIApplication</span>.<span class="type">LaunchOptionsKey</span>: <span class="type">Any</span>]?
+) -> <span class="type">Bool</span> {
+    <span class="func">checkCredentialState</span>()
+    <span class="kw">return true</span>
+}</pre></div>
+
+<h2>📧 이메일 릴레이 (Email Relay)</h2>
+<p>When users choose "Hide My Email", Apple provides a proxy email (`privaterelay@icloud.com`).</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">EmailRelay.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">handleCredential</span>(_ credential: <span class="type">ASAuthorizationAppleIDCredential</span>) {
+    <span class="kw">if let</span> email = credential.email {
+        <span class="comment">// 첫 로그인 시만 제공됨</span>
+        <span class="func">print</span>(<span class="str">"이메일: \(email)"</span>)
+
+        <span class="comment">// privaterelay@icloud.com 형태면 프록시 이메일</span>
+        <span class="kw">if</span> email.contains(<span class="str">"privaterelay"</span>) {
+            <span class="func">print</span>(<span class="str">"사용자가 이메일을 숨김"</span>)
+        }
+
+        <span class="comment">// ⚠️ 중요: 첫 로그인 시만 제공되므로 반드시 저장!</span>
+        <span class="type">UserDefaults</span>.standard.set(email, forKey: <span class="str">"userEmail"</span>)
+    }
+}</pre></div>
+
+<h2>🔑 백엔드 토큰 검증</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">BackendVerification.swift</span></div>
+<pre class="code-body"><span class="comment">// identityToken은 JWT 형식입니다</span>
+<span class="comment">// 백엔드에서 Apple 공개키로 검증해야 합니다</span>
+
+<span class="kw">func</span> <span class="func">sendTokenToBackend</span>(_ credential: <span class="type">ASAuthorizationAppleIDCredential</span>) <span class="kw">async</span> {
+    <span class="kw">guard let</span> tokenData = credential.identityToken,
+          <span class="kw">let</span> token = <span class="type">String</span>(data: tokenData, encoding: .utf8) <span class="kw">else</span> {
+        <span class="kw">return</span>
+    }
+
+    <span class="comment">// authorizationCode도 백엔드로 전송 (refresh token 발급용)</span>
+    <span class="kw">guard let</span> codeData = credential.authorizationCode,
+          <span class="kw">let</span> code = <span class="type">String</span>(data: codeData, encoding: .utf8) <span class="kw">else</span> {
+        <span class="kw">return</span>
+    }
+
+    <span class="comment">// API 호출</span>
+    <span class="kw">let</span> body: [<span class="type">String</span>: <span class="type">Any</span>] = [
+        <span class="str">"identityToken"</span>: token,
+        <span class="str">"authorizationCode"</span>: code,
+        <span class="str">"user"</span>: credential.user
+    ]
+
+    <span class="comment">// POST to your backend</span>
+}
+
+<span class="comment">/* 백엔드 검증 (Node.js 예시)
+const jwt = require('jsonwebtoken');
+const jwksClient = require('jwks-rsa');
+
+const client = jwksClient({
+  jwksUri: 'https://appleid.apple.com/auth/keys'
+});
+
+function getKey(header, callback) {
+  client.getSigningKey(header.kid, (err, key) => {
+    callback(null, key.publicKey || key.rsaPublicKey);
+  });
+}
+
+jwt.verify(identityToken, getKey, (err, decoded) => {
+  if (err) {
+    // 토큰 검증 실패
+  } else {
+    // decoded.sub === userID
+    // decoded.email === 사용자 이메일
+  }
+});
+*/</span></pre></div>
+
+<h2>📱 기존 계정 업그레이드</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">AccountUpgrade.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AuthenticationServices</span>
+
+<span class="comment">// 기존 이메일/비밀번호 로그인을 Apple ID로 업그레이드</span>
+<span class="kw">func</span> <span class="func">upgradeToAppleID</span>(existingEmail: <span class="type">String</span>) {
+    <span class="kw">let</span> provider = <span class="type">ASAuthorizationAppleIDProvider</span>()
+    <span class="kw">let</span> request = provider.<span class="func">createRequest</span>()
+    request.requestedScopes = [.fullName]
+
+    <span class="comment">// 기존 계정 연결을 위한 힌트</span>
+    request.user = existingEmail
+
+    <span class="kw">let</span> controller = <span class="type">ASAuthorizationController</span>(authorizationRequests: [request])
+    <span class="comment">// ... delegate 설정</span>
+    controller.<span class="func">performRequests</span>()
+}</pre></div>
+
+<h2>🚨 로그아웃 & 계정 삭제</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Revocation.swift</span></div>
+<pre class="code-body"><span class="comment">// 로그아웃</span>
+<span class="kw">func</span> <span class="func">signOut</span>() {
+    <span class="type">UserDefaults</span>.standard.removeObject(forKey: <span class="str">"appleUserID"</span>)
+    <span class="type">UserDefaults</span>.standard.removeObject(forKey: <span class="str">"userEmail"</span>)
+    <span class="comment">// UI를 로그인 화면으로</span>
+}
+
+<span class="comment">// 계정 삭제 (백엔드에서 Apple API 호출 필요)</span>
+<span class="comment">/*
+사용자가 "설정 > Apple ID > 암호 및 보안 > Apple로 로그인을 사용하는 앱"에서
+앱을 제거하면 로그인이 취소됩니다.
+
+백엔드에서는 Apple의 Token Revocation API를 호출해야 합니다:
+POST https://appleid.apple.com/auth/revoke
+
+이후 사용자 데이터를 삭제하고 계정을 비활성화합니다.
+*/</span></pre></div>
+
+<h2>⚙️ 앱 설정 (Capabilities)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Xcode 설정</span></div>
+<pre class="code-body"><span class="comment">1. Xcode에서 프로젝트 선택
+2. Signing & Capabilities 탭
+3. "+ Capability" 클릭
+4. "Sign in with Apple" 추가
+
+5. Apple Developer 콘솔에서:
+   - Identifier에 "Sign in with Apple" 활성화
+   - Services ID 생성 (웹 로그인용, 선택)
+   - Key 생성 (백엔드 검증용)</span></pre></div>
+
+<h2>✅ 필수 요구사항 (App Review)</h2>
+<p style="background:#ff384210;border:1px solid #ff384240;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#ff3842">⚠️ 필수!</strong><br>
+If your app has other social logins (Google, Facebook, etc.),<br>
+Sign in with Apple을 <strong>반드시</strong> 구현해야 .<br>
+Otherwise, it will be rejected in App Store review.</p>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ Use the official Sign in with Apple button<br>
+✅ 다른 로그인 버튼과 동일한 크기/위치<br>
+✅ Email/name is only provided on first login (must save)<br>
+✅ 토큰은 백엔드에서 검증<br>
+✅ 앱 시작 시 credential 상태 체크</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+<a href="https://developer.apple.com/documentation/authenticationservices" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/authenticationservices" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/authenticationservices/implementing-user-authentication-with-sign-in-with-apple" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=Sign+in+with+Apple" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

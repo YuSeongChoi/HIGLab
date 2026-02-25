@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to MapKit maps framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="🗺️ MapKit 완전정복 — HIG Lab">
+    <meta property="og:description" content="Complete guide to MapKit maps framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/mapkit/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🗺️ MapKit 완전정복 — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to MapKit maps framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/mapkit/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/en/mapkit/01-tutorial.html">
+<title>🗺️ MapKit 완전정복 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../mapkit/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🗺️ MapKit 완전정복</h1>
+<p>Build location-based apps with Apple Maps — markers, routes, 3D buildings and more!</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ MapKit is?</h2>
+<p>MapKit is a framework for integrating Apple Maps into your app. Easily implemented with SwiftUI's Map view.</p>
+
+<h2>🗺️ 기본 지도 표시 (SwiftUI)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">BasicMap.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">region</span>(
+        <span class="type">MKCoordinateRegion</span>(
+            center: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5665</span>, longitude: <span class="num">126.9780</span>),
+            span: <span class="type">MKCoordinateSpan</span>(latitudeDelta: <span class="num">0.05</span>, longitudeDelta: <span class="num">0.05</span>)
+        )
+    )
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Map</span>(position: $position)
+    }
+}
+
+<span class="comment">// 지도 스타일</span>
+<span class="type">Map</span>(position: $position) {
+}
+.mapStyle(.standard)  <span class="comment">// .standard, .hybrid, .imagery</span></pre></div>
+
+<h2>📍 마커 추가</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Markers.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">Location</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span> = <span class="type">UUID</span>()
+    <span class="kw">let</span> <span class="prop">name</span>: <span class="type">String</span>
+    <span class="kw">let</span> <span class="prop">coordinate</span>: <span class="type">CLLocationCoordinate2D</span>
+}
+
+<span class="kw">struct</span> <span class="type">MapWithMarkers</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">automatic</span>
+
+    <span class="kw">let</span> <span class="prop">locations</span> = [
+        <span class="type">Location</span>(name: <span class="str">"경복궁"</span>, coordinate: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5788</span>, longitude: <span class="num">126.9770</span>)),
+        <span class="type">Location</span>(name: <span class="str">"남산타워"</span>, coordinate: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5512</span>, longitude: <span class="num">126.9882</span>)),
+        <span class="type">Location</span>(name: <span class="str">"한강공원"</span>, coordinate: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5326</span>, longitude: <span class="num">126.9610</span>))
+    ]
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Map</span>(position: $position) {
+            <span class="type">ForEach</span>(locations) { location <span class="kw">in</span>
+                <span class="comment">// 기본 마커</span>
+                <span class="type">Marker</span>(location.name, coordinate: location.coordinate)
+            }
+        }
+    }
+}
+
+<span class="comment">// 커스텀 색상 마커</span>
+<span class="type">Marker</span>(<span class="str">"레스토랑"</span>, systemImage: <span class="str">"fork.knife"</span>, coordinate: coord)
+    .tint(.red)
+
+<span class="comment">// 어노테이션 (더 많은 커스터마이징)</span>
+<span class="type">Annotation</span>(<span class="str">"카페"</span>, coordinate: coord) {
+    <span class="type">ZStack</span> {
+        <span class="type">Circle</span>()
+            .fill(<span class="type">Color</span>.blue)
+            .frame(width: <span class="num">30</span>, height: <span class="num">30</span>)
+        <span class="type">Image</span>(systemName: <span class="str">"cup.and.saucer.fill"</span>)
+            .foregroundColor(.white)
+    }
+}</pre></div>
+
+<h2>🎯 사용자 위치 표시</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">UserLocation.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">MapWithUserLocation</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">userLocation</span>(fallback: .<span class="func">automatic</span>)
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Map</span>(position: $position) {
+            <span class="type">UserAnnotation</span>()  <span class="comment">// 사용자 위치 마커</span>
+        }
+        .mapControls {
+            <span class="type">MapUserLocationButton</span>()  <span class="comment">// 내 위치 버튼</span>
+            <span class="type">MapCompass</span>()  <span class="comment">// 나침반</span>
+            <span class="type">MapScaleView</span>()  <span class="comment">// 축척</span>
+        }
+    }
+}</pre></div>
+
+<h2>🛣️ 경로 표시 (Directions)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Route.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">func</span> <span class="func">calculateRoute</span>(from start: <span class="type">CLLocationCoordinate2D</span>, to end: <span class="type">CLLocationCoordinate2D</span>) <span class="kw">async throws</span> -> <span class="type">MKRoute</span>? {
+    <span class="kw">let</span> request = <span class="type">MKDirections</span>.<span class="type">Request</span>()
+    request.source = <span class="type">MKMapItem</span>(placemark: <span class="type">MKPlacemark</span>(coordinate: start))
+    request.destination = <span class="type">MKMapItem</span>(placemark: <span class="type">MKPlacemark</span>(coordinate: end))
+    request.transportType = .automobile  <span class="comment">// .walking, .transit</span>
+
+    <span class="kw">let</span> directions = <span class="type">MKDirections</span>(request: request)
+    <span class="kw">let</span> response = <span class="kw">try await</span> directions.<span class="func">calculate</span>()
+
+    <span class="kw">return</span> response.routes.first
+}
+
+<span class="comment">// SwiftUI에서 경로 표시</span>
+<span class="kw">struct</span> <span class="type">RouteMapView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> route: <span class="type">MKRoute</span>?
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">automatic</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Map</span>(position: $position) {
+            <span class="kw">if let</span> route = route {
+                <span class="type">MapPolyline</span>(route.polyline)
+                    .stroke(<span class="type">Color</span>.blue, lineWidth: <span class="num">5</span>)
+            }
+
+            <span class="comment">// 출발/도착 마커</span>
+            <span class="type">Marker</span>(<span class="str">"출발"</span>, systemImage: <span class="str">"mappin.circle.fill"</span>, coordinate: start)
+                .tint(.green)
+            <span class="type">Marker</span>(<span class="str">"도착"</span>, systemImage: <span class="str">"flag.fill"</span>, coordinate: end)
+                .tint(.red)
+        }
+        .task {
+            route = <span class="kw">try</span>? <span class="kw">await</span> <span class="func">calculateRoute</span>(from: start, to: end)
+        }
+    }
+}</pre></div>
+
+<h2>🔍 장소 검색 (Search)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Search.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">func</span> <span class="func">searchPlaces</span>(query: <span class="type">String</span>, region: <span class="type">MKCoordinateRegion</span>) <span class="kw">async throws</span> -> [<span class="type">MKMapItem</span>] {
+    <span class="kw">let</span> request = <span class="type">MKLocalSearch</span>.<span class="type">Request</span>()
+    request.naturalLanguageQuery = query  <span class="comment">// "카페", "레스토랑" 등</span>
+    request.region = region
+
+    <span class="kw">let</span> search = <span class="type">MKLocalSearch</span>(request: request)
+    <span class="kw">let</span> response = <span class="kw">try await</span> search.<span class="func">start</span>()
+
+    <span class="kw">return</span> response.mapItems
+}
+
+<span class="comment">// SwiftUI 통합</span>
+<span class="kw">struct</span> <span class="type">SearchMapView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> searchResults: [<span class="type">MKMapItem</span>] = []
+    @<span class="type">State</span> <span class="kw">private var</span> searchText = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">automatic</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">TextField</span>(<span class="str">"장소 검색"</span>, text: $searchText)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+                .onSubmit {
+                    <span class="type">Task</span> { <span class="kw">await</span> <span class="func">search</span>() }
+                }
+
+            <span class="type">Map</span>(position: $position) {
+                <span class="type">ForEach</span>(searchResults, id: \.self) { item <span class="kw">in</span>
+                    <span class="type">Marker</span>(item.name ?? <span class="str">"장소"</span>, coordinate: item.placemark.coordinate)
+                }
+            }
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">search</span>() <span class="kw">async</span> {
+        <span class="kw">let</span> region = <span class="type">MKCoordinateRegion</span>(
+            center: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5665</span>, longitude: <span class="num">126.9780</span>),
+            span: <span class="type">MKCoordinateSpan</span>(latitudeDelta: <span class="num">0.1</span>, longitudeDelta: <span class="num">0.1</span>)
+        )
+
+        searchResults = (<span class="kw">try</span>? <span class="kw">await</span> <span class="func">searchPlaces</span>(query: searchText, region: region)) ?? []
+    }
+}</pre></div>
+
+<h2>📍 역지오코딩 (좌표 → 주소)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Geocoding.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreLocation</span>
+
+<span class="kw">func</span> <span class="func">reverseGeocode</span>(_ coordinate: <span class="type">CLLocationCoordinate2D</span>) <span class="kw">async throws</span> -> <span class="type">String</span> {
+    <span class="kw">let</span> geocoder = <span class="type">CLGeocoder</span>()
+    <span class="kw">let</span> location = <span class="type">CLLocation</span>(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+    <span class="kw">let</span> placemarks = <span class="kw">try await</span> geocoder.<span class="func">reverseGeocodeLocation</span>(location)
+
+    <span class="kw">guard let</span> placemark = placemarks.first <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="str">"주소 없음"</span>
+    }
+
+    <span class="kw">let</span> address = [
+        placemark.thoroughfare,  <span class="comment">// 도로명</span>
+        placemark.locality,  <span class="comment">// 시/구</span>
+        placemark.country  <span class="comment">// 국가</span>
+    ].<span class="func">compactMap</span> { $0 }.<span class="func">joined</span>(separator: <span class="str">", "</span>)
+
+    <span class="kw">return</span> address
+}
+
+<span class="comment">// 정지오코딩 (주소 → 좌표)</span>
+<span class="kw">func</span> <span class="func">geocode</span>(address: <span class="type">String</span>) <span class="kw">async throws</span> -> <span class="type">CLLocationCoordinate2D</span>? {
+    <span class="kw">let</span> geocoder = <span class="type">CLGeocoder</span>()
+    <span class="kw">let</span> placemarks = <span class="kw">try await</span> geocoder.<span class="func">geocodeAddressString</span>(address)
+    <span class="kw">return</span> placemarks.first?.location?.coordinate
+}</pre></div>
+
+<h2>🎨 카메라 제어</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CameraControl.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">CameraControlView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">automatic</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Map</span>(position: $position)
+
+            <span class="type">HStack</span> {
+                <span class="comment">// 특정 좌표로 이동</span>
+                <span class="type">Button</span>(<span class="str">"서울"</span>) {
+                    position = .<span class="func">region</span>(
+                        <span class="type">MKCoordinateRegion</span>(
+                            center: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5665</span>, longitude: <span class="num">126.9780</span>),
+                            span: <span class="type">MKCoordinateSpan</span>(latitudeDelta: <span class="num">0.05</span>, longitudeDelta: <span class="num">0.05</span>)
+                        )
+                    )
+                }
+
+                <span class="comment">// 카메라 각도 조절 (3D)</span>
+                <span class="type">Button</span>(<span class="str">"3D 뷰"</span>) {
+                    position = .<span class="func">camera</span>(
+                        <span class="type">MapCamera</span>(
+                            centerCoordinate: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="num">37.5665</span>, longitude: <span class="num">126.9780</span>),
+                            distance: <span class="num">1000</span>,  <span class="comment">// 고도</span>
+                            heading: <span class="num">45</span>,  <span class="comment">// 방향</span>
+                            pitch: <span class="num">60</span>  <span class="comment">// 기울기</span>
+                        )
+                    )
+                }
+            }
+            .padding()
+        }
+    }
+}</pre></div>
+
+<h2>🏢 맵 스타일 & 3D 건물</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">MapStyles.swift</span></div>
+<pre class="code-body"><span class="type">Map</span>(position: $position) {
+}
+.<span class="func">mapStyle</span>(.standard)  <span class="comment">// 기본</span>
+.<span class="func">mapStyle</span>(.hybrid)  <span class="comment">// 위성 + 도로</span>
+.<span class="func">mapStyle</span>(.imagery)  <span class="comment">// 위성만</span>
+
+<span class="comment">// 3D 건물 표시</span>
+.<span class="func">mapStyle</span>(.standard(elevation: .realistic))
+
+<span class="comment">// POI (관심 장소) 필터</span>
+.<span class="func">mapStyle</span>(.standard(pointsOfInterest: .including([.cafe, .restaurant])))</pre></div>
+
+<h2>📱 UIKit 통합 (MKMapView)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">MKMapView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">MapViewRepresentable</span>: <span class="type">UIViewRepresentable</span> {
+    @<span class="type">Binding</span> <span class="kw">var</span> region: <span class="type">MKCoordinateRegion</span>
+
+    <span class="kw">func</span> <span class="func">makeUIView</span>(context: <span class="type">Context</span>) -> <span class="type">MKMapView</span> {
+        <span class="kw">let</span> mapView = <span class="type">MKMapView</span>()
+        mapView.delegate = context.coordinator
+        <span class="kw">return</span> mapView
+    }
+
+    <span class="kw">func</span> <span class="func">updateUIView</span>(_ mapView: <span class="type">MKMapView</span>, context: <span class="type">Context</span>) {
+        mapView.<span class="func">setRegion</span>(region, animated: <span class="kw">true</span>)
+    }
+
+    <span class="kw">func</span> <span class="func">makeCoordinator</span>() -> <span class="type">Coordinator</span> {
+        <span class="type">Coordinator</span>(<span class="kw">self</span>)
+    }
+
+    <span class="kw">class</span> <span class="type">Coordinator</span>: <span class="type">NSObject</span>, <span class="type">MKMapViewDelegate</span> {
+        <span class="kw">var</span> <span class="prop">parent</span>: <span class="type">MapViewRepresentable</span>
+
+        <span class="kw">init</span>(_ parent: <span class="type">MapViewRepresentable</span>) {
+            <span class="kw">self</span>.parent = parent
+        }
+
+        <span class="kw">func</span> <span class="func">mapView</span>(_ mapView: <span class="type">MKMapView</span>, regionDidChangeAnimated animated: <span class="type">Bool</span>) {
+            parent.region = mapView.region
+        }
+    }
+}</pre></div>
+
+<h2>🎯 선택 가능한 마커</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SelectableMarkers.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">SelectableMapView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> selectedLocation: <span class="type">Location</span>?
+    @<span class="type">State</span> <span class="kw">private var</span> position: <span class="type">MapCameraPosition</span> = .<span class="func">automatic</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Map</span>(position: $position, selection: $selectedLocation) {
+            <span class="type">ForEach</span>(locations) { location <span class="kw">in</span>
+                <span class="type">Marker</span>(location.name, coordinate: location.coordinate)
+                    .tag(location)
+            }
+        }
+        .sheet(item: $selectedLocation) { location <span class="kw">in</span>
+            <span class="type">VStack</span> {
+                <span class="type">Text</span>(location.name)
+                    .font(.title)
+                <span class="type">Text</span>(<span class="str">"위도: \(location.coordinate.latitude)"</span>)
+                <span class="type">Text</span>(<span class="str">"경도: \(location.coordinate.longitude)"</span>)
+            }
+            .padding()
+        }
+    }
+}</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ 사용자 위치 표시 시 권한 요청<br>
+✅ Loading State Display<br>
+✅ Network Error Handling<br>
+✅ 적절한 줌 레벨 설정<br>
+✅ 마커는 명확하고 구분 가능하게</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/maps" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+<a href="https://developer.apple.com/documentation/mapkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/mapkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/mapkit/mapkit-for-swiftui" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=MapKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🔋 EnergyKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../energykit/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>🔋 EnergyKit</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 iOS 26</span>
+</div>
+<p class="subtitle">가정의 에너지 사용을 추적하고 최적화하는 프레임워크</p>
+
+<div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
+
+<h2>✨ EnergyKit is?</h2>
+<p>EnergyKit is a framework introduced in iOS 18 that tracks and analyzes home energy usage in real-time. Integrated with HomeKit, it collects data from smart plugs, power meters, solar panels and other energy devices, providing users with power consumption patterns, renewable energy production, and saving tips. An energy management solution that supports both environmental protection and electricity cost reduction.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Real-Time Power Tracking · Renewable Energy Monitoring · Per-Device Usage · Pattern Prediction · HomeKit Integration · Energy Saving Tips · Carbon Footprint
+</div>
+
+<h2>🎯 1. Basic Setup</h2>
+<p>EnergyKit을 초기화하고 권한을 요청.</p>
+
+<div class="code-block">
+<div class="code-header">EnergyManager.swift — Basic Setup</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">HomeKit</span>
+
+<span class="comment">// 에너지 관리자</span>
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">EnergyManager</span>: <span class="type">NSObject</span> {
+    <span class="kw">var</span> homeManager = <span class="type">HMHomeManager</span>()
+    <span class="kw">var</span> currentHome: <span class="type">HMHome</span>?
+    <span class="kw">var</span> energyDevices: [<span class="type">EnergyDevice</span>] = []
+    <span class="kw">var</span> isAuthorized = <span class="kw">false</span>
+
+    <span class="kw">override</span> <span class="kw">init</span>() {
+        <span class="kw">super</span>.<span class="kw">init</span>()
+        homeManager.delegate = <span class="kw">self</span>
+    }
+
+    <span class="comment">// HomeKit 권한 확인</span>
+    <span class="kw">func</span> checkAuthorization() <span class="kw">async</span> -> <span class="type">Bool</span> {
+        <span class="comment">// HomeKit은 자동으로 권한 요청</span>
+        <span class="kw">await</span> <span class="type">MainActor</span>.run {
+            isAuthorized = homeManager.authorizationStatus == .authorized
+        }
+        <span class="kw">return</span> isAuthorized
+    }
+
+    <span class="comment">// 에너지 기기 검색</span>
+    <span class="kw">func</span> discoverEnergyDevices() {
+        <span class="kw">guard</span> <span class="kw">let</span> home = homeManager.primaryHome <span class="kw">else</span> { <span class="kw">return</span> }
+
+        currentHome = home
+        energyDevices = []
+
+        <span class="comment">// 전력 측정 기능이 있는 기기 필터링</span>
+        <span class="kw">for</span> accessory <span class="kw">in</span> home.accessories {
+            <span class="kw">for</span> service <span class="kw">in</span> accessory.services {
+                <span class="comment">// 전력 측정 특성 확인</span>
+                <span class="kw">if</span> service.characteristics.contains(where: {
+                    $0.characteristicType == <span class="type">HMCharacteristicTypePowerState</span>
+                }) {
+                    <span class="kw">let</span> device = <span class="type">EnergyDevice</span>(
+                        id: accessory.uniqueIdentifier,
+                        name: accessory.name,
+                        room: accessory.room?.name ?? <span class="str">"알 수 없음"</span>,
+                        accessory: accessory
+                    )
+                    energyDevices.append(device)
+                }
+            }
+        }
+    }
+}
+
+<span class="comment">// HomeKit 델리게이트</span>
+<span class="kw">extension</span> <span class="type">EnergyManager</span>: <span class="type">HMHomeManagerDelegate</span> {
+    <span class="kw">func</span> homeManagerDidUpdateHomes(<span class="kw">_</span> manager: <span class="type">HMHomeManager</span>) {
+        discoverEnergyDevices()
+    }
+}
+
+<span class="comment">// 에너지 기기 모델</span>
+<span class="kw">struct</span> <span class="type">EnergyDevice</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id: <span class="type">UUID</span>
+    <span class="kw">let</span> name: <span class="type">String</span>
+    <span class="kw">let</span> room: <span class="type">String</span>
+    <span class="kw">let</span> accessory: <span class="type">HMAccessory</span>
+    <span class="kw">var</span> currentPower: <span class="type">Double</span> = <span class="str">0</span> <span class="comment">// Watts</span>
+    <span class="kw">var</span> todayEnergy: <span class="type">Double</span> = <span class="str">0</span> <span class="comment">// kWh</span>
+}</pre>
+</div>
+
+<h2>⚡ 2. 실시간 전력 모니터링</h2>
+<p>현재 전력 소비량을 실시간으로 확인.</p>
+
+<div class="code-block">
+<div class="code-header">RealTimePowerView.swift — Real-Time Monitoring</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Charts</span>
+
+<span class="kw">struct</span> <span class="type">PowerReading</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> timestamp: <span class="type">Date</span>
+    <span class="kw">let</span> power: <span class="type">Double</span> <span class="comment">// Watts</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PowerMonitor</span> {
+    <span class="kw">var</span> currentPower: <span class="type">Double</span> = <span class="str">0</span>
+    <span class="kw">var</span> readings: [<span class="type">PowerReading</span>] = []
+    <span class="kw">private</span> <span class="kw">var</span> timer: <span class="type">Timer</span>?
+
+    <span class="comment">// 실시간 모니터링 시작</span>
+    <span class="kw">func</span> startMonitoring() {
+        timer = <span class="type">Timer</span>.scheduledTimer(withTimeInterval: <span class="str">5.0</span>, repeats: <span class="kw">true</span>) { <span class="kw">_</span> <span class="kw">in</span>
+            <span class="type">Task</span> { <span class="kw">@MainActor</span> <span class="kw">in</span>
+                <span class="kw">await</span> <span class="kw">self</span>.updatePowerReading()
+            }
+        }
+    }
+
+    <span class="comment">// 모니터링 중지</span>
+    <span class="kw">func</span> stopMonitoring() {
+        timer?.invalidate()
+        timer = <span class="kw">nil</span>
+    }
+
+    <span class="comment">// 전력 측정</span>
+    <span class="kw">func</span> updatePowerReading() <span class="kw">async</span> {
+        <span class="comment">// 실제로는 HomeKit에서 데이터 읽기</span>
+        <span class="kw">let</span> power = <span class="type">Double</span>.random(in: <span class="str">500</span>...<span class="str">2000</span>)
+
+        currentPower = power
+        readings.append(<span class="type">PowerReading</span>(timestamp: <span class="type">Date</span>(), power: power))
+
+        <span class="comment">// 최근 1시간 데이터만 유지</span>
+        <span class="kw">let</span> oneHourAgo = <span class="type">Date</span>().addingTimeInterval(-<span class="str">3600</span>)
+        readings.removeAll { $0.timestamp < oneHourAgo }
+    }
+
+    <span class="kw">var</span> averagePower: <span class="type">Double</span> {
+        <span class="kw">guard</span> !readings.isEmpty <span class="kw">else</span> { <span class="kw">return</span> <span class="str">0</span> }
+        <span class="kw">return</span> readings.map { $0.power }.reduce(<span class="str">0</span>, +) / <span class="type">Double</span>(readings.count)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">RealTimePowerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> monitor = <span class="type">PowerMonitor</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+                <span class="comment">// 현재 전력</span>
+                <span class="type">VStack</span> {
+                    <span class="type">Text</span>(<span class="str">"현재 사용량"</span>)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    <span class="type">HStack</span>(alignment: .firstTextBaseline, spacing: <span class="str">4</span>) {
+                        <span class="type">Text</span>(<span class="str">"\(Int(monitor.currentPower))"</span>)
+                            .font(.system(size: <span class="str">60</span>, weight: .bold))
+                            .contentTransition(.numericText())
+
+                        <span class="type">Text</span>(<span class="str">"W"</span>)
+                            .font(.title)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    <span class="type">Text</span>(<span class="str">"평균 \(Int(monitor.averagePower))W"</span>)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .background(<span class="type">Color</span>.blue.opacity(<span class="str">0.1</span>))
+                .cornerRadius(<span class="str">16</span>)
+
+                <span class="comment">// 실시간 차트</span>
+                <span class="type">VStack</span>(alignment: .leading) {
+                    <span class="type">Text</span>(<span class="str">"최근 1시간"</span>)
+                        .font(.headline)
+
+                    <span class="type">Chart</span>(monitor.readings) { reading <span class="kw">in</span>
+                        <span class="type">LineMark</span>(
+                            x: .value(<span class="str">"시간"</span>, reading.timestamp),
+                            y: .value(<span class="str">"전력"</span>, reading.power)
+                        )
+                        .foregroundStyle(.blue)
+                        .interpolationMethod(.catmullRom)
+
+                        <span class="type">AreaMark</span>(
+                            x: .value(<span class="str">"시간"</span>, reading.timestamp),
+                            y: .value(<span class="str">"전력"</span>, reading.power)
+                        )
+                        .foregroundStyle(.blue.opacity(<span class="str">0.2</span>))
+                        .interpolationMethod(.catmullRom)
+                    }
+                    .frame(height: <span class="str">200</span>)
+                    .chartYAxis {
+                        <span class="type">AxisMarks</span> { value <span class="kw">in</span>
+                            <span class="type">AxisValueLabel</span> {
+                                <span class="kw">if</span> <span class="kw">let</span> power = value.<span class="kw">as</span>(<span class="type">Double</span>.<span class="kw">self</span>) {
+                                    <span class="type">Text</span>(<span class="str">"\(Int(power))W"</span>)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                <span class="comment">// 비용 추정</span>
+                <span class="type">HStack</span> {
+                    <span class="type">VStack</span>(alignment: .leading) {
+                        <span class="type">Text</span>(<span class="str">"시간당 비용"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        <span class="type">Text</span>(<span class="str">"\(estimatedHourlyCost)원"</span>)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
+
+                    <span class="type">Spacer</span>()
+
+                    <span class="type">VStack</span>(alignment: .trailing) {
+                        <span class="type">Text</span>(<span class="str">"월 예상 비용"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        <span class="type">Text</span>(<span class="str">"\(estimatedMonthlyCost)원"</span>)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
+                }
+                .padding()
+                .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+                .cornerRadius(<span class="str">12</span>)
+            }
+            .padding()
+        }
+        .navigationTitle(<span class="str">"전력 모니터"</span>)
+        .onAppear {
+            monitor.startMonitoring()
+        }
+        .onDisappear {
+            monitor.stopMonitoring()
+        }
+    }
+
+    <span class="comment">// 전기 요금 계산 (kWh당 300원 가정)</span>
+    <span class="kw">var</span> estimatedHourlyCost: <span class="type">Int</span> {
+        <span class="type">Int</span>(monitor.currentPower / <span class="str">1000</span> * <span class="str">300</span>)
+    }
+
+    <span class="kw">var</span> estimatedMonthlyCost: <span class="type">Int</span> {
+        estimatedHourlyCost * <span class="str">24</span> * <span class="str">30</span>
+    }
+}</pre>
+</div>
+
+<h2>📊 3. 기기별 사용량 분석</h2>
+<p>각 기기의 에너지 소비를 분석하고 비교.</p>
+
+<div class="code-block">
+<div class="code-header">DeviceAnalysisView.swift — Per-Device Analysis</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Charts</span>
+
+<span class="kw">struct</span> <span class="type">DeviceEnergyData</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> deviceName: <span class="type">String</span>
+    <span class="kw">let</span> energy: <span class="type">Double</span> <span class="comment">// kWh</span>
+    <span class="kw">let</span> percentage: <span class="type">Double</span>
+    <span class="kw">let</span> category: <span class="type">DeviceCategory</span>
+}
+
+<span class="kw">enum</span> <span class="type">DeviceCategory</span>: <span class="type">String</span>, <span class="type">CaseIterable</span> {
+    <span class="kw">case</span> lighting = <span class="str">"조명"</span>
+    <span class="kw">case</span> hvac = <span class="str">"냉난방"</span>
+    <span class="kw">case</span> appliance = <span class="str">"가전제품"</span>
+    <span class="kw">case</span> entertainment = <span class="str">"엔터테인먼트"</span>
+    <span class="kw">case</span> other = <span class="str">"기타"</span>
+
+    <span class="kw">var</span> color: <span class="type">Color</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .lighting: <span class="kw">return</span> .yellow
+        <span class="kw">case</span> .hvac: <span class="kw">return</span> .blue
+        <span class="kw">case</span> .appliance: <span class="kw">return</span> .green
+        <span class="kw">case</span> .entertainment: <span class="kw">return</span> .purple
+        <span class="kw">case</span> .other: <span class="kw">return</span> .gray
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">DeviceAnalysisView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> devices: [<span class="type">DeviceEnergyData</span>] = [
+        .<span class="kw">init</span>(deviceName: <span class="str">"거실 에어컨"</span>, energy: <span class="str">45.2</span>, percentage: <span class="str">35</span>, category: .hvac),
+        .<span class="kw">init</span>(deviceName: <span class="str">"냉장고"</span>, energy: <span class="str">28.5</span>, percentage: <span class="str">22</span>, category: .appliance),
+        .<span class="kw">init</span>(deviceName: <span class="str">"조명"</span>, energy: <span class="str">18.7</span>, percentage: <span class="str">15</span>, category: .lighting),
+        .<span class="kw">init</span>(deviceName: <span class="str">"TV"</span>, energy: <span class="str">15.3</span>, percentage: <span class="str">12</span>, category: .entertainment),
+        .<span class="kw">init</span>(deviceName: <span class="str">"세탁기"</span>, energy: <span class="str">12.8</span>, percentage: <span class="str">10</span>, category: .appliance),
+        .<span class="kw">init</span>(deviceName: <span class="str">"기타"</span>, energy: <span class="str">8.5</span>, percentage: <span class="str">6</span>, category: .other)
+    ]
+
+    <span class="kw">var</span> totalEnergy: <span class="type">Double</span> {
+        devices.map { $0.energy }.reduce(<span class="str">0</span>, +)
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+                <span class="comment">// 총 사용량</span>
+                <span class="type">VStack</span> {
+                    <span class="type">Text</span>(<span class="str">"이번 달 총 사용량"</span>)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    <span class="type">HStack</span>(alignment: .firstTextBaseline) {
+                        <span class="type">Text</span>(<span class="str">"\(totalEnergy, specifier: "%.1f")"</span>)
+                            .font(.system(size: <span class="str">48</span>, weight: .bold))
+                        <span class="type">Text</span>(<span class="str">"kWh"</span>)
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                <span class="comment">// 원형 차트</span>
+                <span class="type">Chart</span>(devices) { device <span class="kw">in</span>
+                    <span class="type">SectorMark</span>(
+                        angle: .value(<span class="str">"에너지"</span>, device.energy),
+                        innerRadius: .ratio(<span class="str">0.6</span>),
+                        angularInset: <span class="str">2</span>
+                    )
+                    .foregroundStyle(device.category.color)
+                    .annotation(position: .overlay) {
+                        <span class="type">Text</span>(<span class="str">"\(Int(device.percentage))%"</span>)
+                            .font(.caption)
+                            .fontWeight(.bold)
+                    }
+                }
+                .frame(height: <span class="str">250</span>)
+
+                <span class="comment">// 기기 목록</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                    <span class="type">Text</span>(<span class="str">"기기별 상세"</span>)
+                        .font(.headline)
+
+                    <span class="type">ForEach</span>(devices) { device <span class="kw">in</span>
+                        <span class="type">HStack</span> {
+                            <span class="type">Circle</span>()
+                                .fill(device.category.color)
+                                .frame(width: <span class="str">12</span>, height: <span class="str">12</span>)
+
+                            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">2</span>) {
+                                <span class="type">Text</span>(device.deviceName)
+                                    .font(.subheadline)
+                                <span class="type">Text</span>(device.category.rawValue)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            <span class="type">Spacer</span>()
+
+                            <span class="type">VStack</span>(alignment: .trailing, spacing: <span class="str">2</span>) {
+                                <span class="type">Text</span>(<span class="str">"\(device.energy, specifier: "%.1f") kWh"</span>)
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+
+                                <span class="type">Text</span>(<span class="str">"\(Int(device.percentage))%"</span>)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding()
+                        .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.05</span>))
+                        .cornerRadius(<span class="str">8</span>)
+                    }
+                }
+
+                <span class="comment">// 절약 팁</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                    <span class="type">Label</span>(<span class="str">"절약 팁"</span>, systemImage: <span class="str">"lightbulb.fill"</span>)
+                        .font(.headline)
+                        .foregroundStyle(.orange)
+
+                    <span class="type">Text</span>(<span class="str">"에어컨 설정 온도를 1도 올리면 월 약 6% 절약할 수 있습니다."</span>)
+                        .font(.subheadline)
+                }
+                .padding()
+                .background(<span class="type">Color</span>.orange.opacity(<span class="str">0.1</span>))
+                .cornerRadius(<span class="str">12</span>)
+            }
+            .padding()
+        }
+        .navigationTitle(<span class="str">"기기별 사용량"</span>)
+    }
+}</pre>
+</div>
+
+<h2>☀️ 4. 재생 에너지 모니터링</h2>
+<p>태양광 패널 등 재생 에너지 생산량을 추적.</p>
+
+<div class="code-block">
+<div class="code-header">SolarEnergyView.swift — Renewable Energy</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Charts</span>
+
+<span class="kw">struct</span> <span class="type">SolarData</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> hour: <span class="type">Int</span>
+    <span class="kw">let</span> production: <span class="type">Double</span> <span class="comment">// kWh</span>
+    <span class="kw">let</span> consumption: <span class="type">Double</span> <span class="comment">// kWh</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">SolarEnergyManager</span> {
+    <span class="kw">var</span> todayProduction: <span class="type">Double</span> = <span class="str">18.5</span>
+    <span class="kw">var</span> todayConsumption: <span class="type">Double</span> = <span class="str">22.3</span>
+    <span class="kw">var</span> gridExport: <span class="type">Double</span> = <span class="str">3.2</span> <span class="comment">// 판매량</span>
+    <span class="kw">var</span> gridImport: <span class="type">Double</span> = <span class="str">7.0</span> <span class="comment">// 구매량</span>
+
+    <span class="kw">var</span> hourlyData: [<span class="type">SolarData</span>] = [
+        .<span class="kw">init</span>(hour: <span class="str">6</span>, production: <span class="str">0.2</span>, consumption: <span class="str">0.8</span>),
+        .<span class="kw">init</span>(hour: <span class="str">7</span>, production: <span class="str">0.8</span>, consumption: <span class="str">1.2</span>),
+        .<span class="kw">init</span>(hour: <span class="str">8</span>, production: <span class="str">1.5</span>, consumption: <span class="str">1.0</span>),
+        .<span class="kw">init</span>(hour: <span class="str">9</span>, production: <span class="str">2.3</span>, consumption: <span class="str">0.9</span>),
+        .<span class="kw">init</span>(hour: <span class="str">10</span>, production: <span class="str">3.0</span>, consumption: <span class="str">0.8</span>),
+        .<span class="kw">init</span>(hour: <span class="str">11</span>, production: <span class="str">3.5</span>, consumption: <span class="str">1.0</span>),
+        .<span class="kw">init</span>(hour: <span class="str">12</span>, production: <span class="str">3.8</span>, consumption: <span class="str">1.2</span>),
+        .<span class="kw">init</span>(hour: <span class="str">13</span>, production: <span class="str">3.4</span>, consumption: <span class="str">1.5</span>),
+        .<span class="kw">init</span>(hour: <span class="str">14</span>, production: <span class="str">2.8</span>, consumption: <span class="str">1.3</span>),
+        .<span class="kw">init</span>(hour: <span class="str">15</span>, production: <span class="str">2.0</span>, consumption: <span class="str">1.8</span>),
+        .<span class="kw">init</span>(hour: <span class="str">16</span>, production: <span class="str">1.2</span>, consumption: <span class="str">2.5</span>),
+        .<span class="kw">init</span>(hour: <span class="str">17</span>, production: <span class="str">0.5</span>, consumption: <span class="str">3.2</span>)
+    ]
+
+    <span class="kw">var</span> selfSufficiencyRate: <span class="type">Double</span> {
+        (todayProduction / todayConsumption) * <span class="str">100</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">SolarEnergyView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">SolarEnergyManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+                <span class="comment">// 오늘 요약</span>
+                <span class="type">HStack</span>(spacing: <span class="str">12</span>) {
+                    <span class="type">VStack</span> {
+                        <span class="type">Image</span>(systemName: <span class="str">"sun.max.fill"</span>)
+                            .font(.title)
+                            .foregroundStyle(.orange)
+
+                        <span class="type">Text</span>(<span class="str">"생산"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        <span class="type">Text</span>(<span class="str">"\(manager.todayProduction, specifier: "%.1f") kWh"</span>)
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(<span class="type">Color</span>.orange.opacity(<span class="str">0.1</span>))
+                    .cornerRadius(<span class="str">12</span>)
+
+                    <span class="type">VStack</span> {
+                        <span class="type">Image</span>(systemName: <span class="str">"bolt.fill"</span>)
+                            .font(.title)
+                            .foregroundStyle(.blue)
+
+                        <span class="type">Text</span>(<span class="str">"사용"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        <span class="type">Text</span>(<span class="str">"\(manager.todayConsumption, specifier: "%.1f") kWh"</span>)
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(<span class="type">Color</span>.blue.opacity(<span class="str">0.1</span>))
+                    .cornerRadius(<span class="str">12</span>)
+                }
+
+                <span class="comment">// 자급률</span>
+                <span class="type">VStack</span> {
+                    <span class="type">Text</span>(<span class="str">"에너지 자급률"</span>)
+                        .font(.headline)
+
+                    <span class="type">ZStack</span> {
+                        <span class="type">Circle</span>()
+                            .stroke(<span class="type">Color</span>.gray.opacity(<span class="str">0.2</span>), lineWidth: <span class="str">20</span>)
+
+                        <span class="type">Circle</span>()
+                            .trim(from: <span class="str">0</span>, to: manager.selfSufficiencyRate / <span class="str">100</span>)
+                            .stroke(
+                                <span class="type">LinearGradient</span>(
+                                    colors: [.green, .yellow],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                style: <span class="type">StrokeStyle</span>(lineWidth: <span class="str">20</span>, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-<span class="str">90</span>))
+                            .animation(.easeInOut, value: manager.selfSufficiencyRate)
+
+                        <span class="type">VStack</span> {
+                            <span class="type">Text</span>(<span class="str">"\(Int(manager.selfSufficiencyRate))%"</span>)
+                                .font(.system(size: <span class="str">42</span>, weight: .bold))
+                            <span class="type">Text</span>(<span class="str">"자급률"</span>)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(width: <span class="str">200</span>, height: <span class="str">200</span>)
+                }
+
+                <span class="comment">// 시간별 차트</span>
+                <span class="type">VStack</span>(alignment: .leading) {
+                    <span class="type">Text</span>(<span class="str">"시간별 생산/소비"</span>)
+                        .font(.headline)
+
+                    <span class="type">Chart</span> {
+                        <span class="type">ForEach</span>(manager.hourlyData) { data <span class="kw">in</span>
+                            <span class="comment">// 생산량</span>
+                            <span class="type">BarMark</span>(
+                                x: .value(<span class="str">"시간"</span>, data.hour),
+                                y: .value(<span class="str">"생산"</span>, data.production)
+                            )
+                            .foregroundStyle(.orange)
+                            .position(by: .value(<span class="str">"타입"</span>, <span class="str">"생산"</span>))
+
+                            <span class="comment">// 소비량</span>
+                            <span class="type">BarMark</span>(
+                                x: .value(<span class="str">"시간"</span>, data.hour),
+                                y: .value(<span class="str">"소비"</span>, data.consumption)
+                            )
+                            .foregroundStyle(.blue)
+                            .position(by: .value(<span class="str">"타입"</span>, <span class="str">"소비"</span>))
+                        }
+                    }
+                    .frame(height: <span class="str">200</span>)
+                    .chartXAxis {
+                        <span class="type">AxisMarks</span> { value <span class="kw">in</span>
+                            <span class="type">AxisValueLabel</span> {
+                                <span class="kw">if</span> <span class="kw">let</span> hour = value.<span class="kw">as</span>(<span class="type">Int</span>.<span class="kw">self</span>) {
+                                    <span class="type">Text</span>(<span class="str">"\(hour)시"</span>)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                <span class="comment">// 전력망 거래</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                    <span class="type">Text</span>(<span class="str">"전력망 거래"</span>)
+                        .font(.headline)
+
+                    <span class="type">HStack</span> {
+                        <span class="type">Label</span>(<span class="str">"판매"</span>, systemImage: <span class="str">"arrow.up.circle.fill"</span>)
+                            .foregroundStyle(.green)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(<span class="str">"\(manager.gridExport, specifier: "%.1f") kWh"</span>)
+                            .fontWeight(.semibold)
+                    }
+
+                    <span class="type">HStack</span> {
+                        <span class="type">Label</span>(<span class="str">"구매"</span>, systemImage: <span class="str">"arrow.down.circle.fill"</span>)
+                            .foregroundStyle(.red)
+                        <span class="type">Spacer</span>()
+                        <span class="type">Text</span>(<span class="str">"\(manager.gridImport, specifier: "%.1f") kWh"</span>)
+                            .fontWeight(.semibold)
+                    }
+                }
+                .padding()
+                .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.05</span>))
+                .cornerRadius(<span class="str">12</span>)
+
+                <span class="comment">// 환경 영향</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">8</span>) {
+                    <span class="type">Label</span>(<span class="str">"환경 기여도"</span>, systemImage: <span class="str">"leaf.fill"</span>)
+                        .font(.headline)
+                        .foregroundStyle(.green)
+
+                    <span class="type">Text</span>(<span class="str">"오늘 \(carbonReduction)kg의 CO₂ 배출을 줄였습니다"</span>)
+                        .font(.subheadline)
+
+                    <span class="type">Text</span>(<span class="str">"나무 \(treesEquivalent)그루 심은 효과"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .background(<span class="type">Color</span>.green.opacity(<span class="str">0.1</span>))
+                .cornerRadius(<span class="str">12</span>)
+            }
+            .padding()
+        }
+        .navigationTitle(<span class="str">"태양광 에너지"</span>)
+    }
+
+    <span class="comment">// CO2 절감량 (kWh당 약 0.46kg)</span>
+    <span class="kw">var</span> carbonReduction: <span class="type">Double</span> {
+        manager.todayProduction * <span class="str">0.46</span>
+    }
+
+    <span class="comment">// 나무 환산 (나무 1그루는 연간 약 6kg CO2 흡수)</span>
+    <span class="kw">var</span> treesEquivalent: <span class="type">Int</span> {
+        <span class="type">Int</span>(carbonReduction / <span class="str">6</span> * <span class="str">365</span>)
+    }
+}</pre>
+</div>
+
+<h2>📈 5. 사용 패턴 분석</h2>
+<p>Analyze energy usage patterns and provide optimization suggestions.</p>
+
+<div class="code-block">
+<div class="code-header">UsagePatternView.swift — Pattern Analysis</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Charts</span>
+
+<span class="kw">struct</span> <span class="type">DailyUsage</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> date: <span class="type">Date</span>
+    <span class="kw">let</span> energy: <span class="type">Double</span>
+    <span class="kw">let</span> cost: <span class="type">Double</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">UsagePatternAnalyzer</span> {
+    <span class="kw">var</span> weeklyData: [<span class="type">DailyUsage</span>] = []
+    <span class="kw">var</span> peakHour: <span class="type">Int</span> = <span class="str">19</span> <span class="comment">// 오후 7시</span>
+    <span class="kw">var</span> recommendations: [<span class="type">String</span>] = []
+
+    <span class="kw">init</span>() {
+        generateWeeklyData()
+        analyzePattern()
+    }
+
+    <span class="kw">func</span> generateWeeklyData() {
+        <span class="kw">let</span> calendar = <span class="type">Calendar</span>.current
+        <span class="kw">for</span> day <span class="kw">in</span> <span class="str">0</span>.<<span class="str">7</span> {
+            <span class="kw">let</span> date = calendar.date(byAdding: .day, value: -day, to: <span class="type">Date</span>())!
+            <span class="kw">let</span> energy = <span class="type">Double</span>.random(in: <span class="str">15</span>...<span class="str">30</span>)
+            <span class="kw">let</span> cost = energy * <span class="str">300</span> <span class="comment">// kWh당 300원</span>
+
+            weeklyData.insert(
+                <span class="type">DailyUsage</span>(date: date, energy: energy, cost: cost),
+                at: <span class="str">0</span>
+            )
+        }
+    }
+
+    <span class="kw">func</span> analyzePattern() {
+        <span class="comment">// 패턴 분석 및 추천</span>
+        recommendations = [
+            <span class="str">"오후 7-9시에 사용량이 가장 높습니다. 세탁기는 심야 시간에 사용하세요."</span>,
+            <span class="str">"평균보다 20% 많이 사용하고 있습니다. 대기전력을 차단하세요."</span>,
+            <span class="str">"냉난방 설정 온도를 조절하면 월 15,000원 절약할 수 있습니다."</span>
+        ]
+    }
+
+    <span class="kw">var</span> averageDaily: <span class="type">Double</span> {
+        weeklyData.map { $0.energy }.reduce(<span class="str">0</span>, +) / <span class="type">Double</span>(weeklyData.count)
+    }
+
+    <span class="kw">var</span> estimatedMonthlyCost: <span class="type">Double</span> {
+        averageDaily * <span class="str">30</span> * <span class="str">300</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">UsagePatternView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> analyzer = <span class="type">UsagePatternAnalyzer</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">24</span>) {
+                <span class="comment">// 주간 추이</span>
+                <span class="type">VStack</span>(alignment: .leading) {
+                    <span class="type">Text</span>(<span class="str">"주간 사용 추이"</span>)
+                        .font(.headline)
+
+                    <span class="type">Chart</span>(analyzer.weeklyData) { usage <span class="kw">in</span>
+                        <span class="type">BarMark</span>(
+                            x: .value(<span class="str">"날짜"</span>, usage.date, unit: .day),
+                            y: .value(<span class="str">"에너지"</span>, usage.energy)
+                        )
+                        .foregroundStyle(
+                            <span class="type">LinearGradient</span>(
+                                colors: [.blue, .cyan],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+
+                        <span class="type">RuleMark</span>(y: .value(<span class="str">"평균"</span>, analyzer.averageDaily))
+                            .foregroundStyle(.red)
+                            .lineStyle(<span class="type">StrokeStyle</span>(lineWidth: <span class="str">2</span>, dash: [<span class="str">5</span>]))
+                            .annotation(position: .top, alignment: .trailing) {
+                                <span class="type">Text</span>(<span class="str">"평균"</span>)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+                    }
+                    .frame(height: <span class="str">200</span>)
+                    .chartXAxis {
+                        <span class="type">AxisMarks</span> { value <span class="kw">in</span>
+                            <span class="type">AxisValueLabel</span>(format: .dateTime.weekday(.narrow))
+                        }
+                    }
+                }
+
+                <span class="comment">// 통계</span>
+                <span class="type">HStack</span>(spacing: <span class="str">12</span>) {
+                    <span class="type">VStack</span> {
+                        <span class="type">Text</span>(<span class="str">"일평균"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        <span class="type">Text</span>(<span class="str">"\(analyzer.averageDaily, specifier: "%.1f")"</span>)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        <span class="type">Text</span>(<span class="str">"kWh"</span>)
+                            .font(.caption)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(<span class="type">Color</span>.blue.opacity(<span class="str">0.1</span>))
+                    .cornerRadius(<span class="str">12</span>)
+
+                    <span class="type">VStack</span> {
+                        <span class="type">Text</span>(<span class="str">"월예상"</span>)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        <span class="type">Text</span>(<span class="str">"\(Int(analyzer.estimatedMonthlyCost))"</span>)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        <span class="type">Text</span>(<span class="str">"원"</span>)
+                            .font(.caption)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(<span class="type">Color</span>.green.opacity(<span class="str">0.1</span>))
+                    .cornerRadius(<span class="str">12</span>)
+                }
+
+                <span class="comment">// 피크 타임</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">8</span>) {
+                    <span class="type">Label</span>(<span class="str">"최대 사용 시간"</span>, systemImage: <span class="str">"clock.fill"</span>)
+                        .font(.headline)
+
+                    <span class="type">Text</span>(<span class="str">"오후 \(analyzer.peakHour - 12)시"</span>)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.blue)
+
+                    <span class="type">Text</span>(<span class="str">"전기 요금이 저렴한 심야 시간(오후 11시~오전 9시)에 고전력 기기를 사용하세요."</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.05</span>))
+                .cornerRadius(<span class="str">12</span>)
+
+                <span class="comment">// 추천 사항</span>
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">16</span>) {
+                    <span class="type">Label</span>(<span class="str">"맞춤 추천"</span>, systemImage: <span class="str">"sparkles"</span>)
+                        .font(.headline)
+
+                    <span class="type">ForEach</span>(<span class="type">Array</span>(analyzer.recommendations.enumerated()), id: \.<span class="str">0</span>) { index, tip <span class="kw">in</span>
+                        <span class="type">HStack</span>(alignment: .top, spacing: <span class="str">12</span>) {
+                            <span class="type">Text</span>(<span class="str">"\(index + 1)"</span>)
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .frame(width: <span class="str">24</span>, height: <span class="str">24</span>)
+                                .background(<span class="type">Color</span>.blue)
+                                .clipShape(<span class="type">Circle</span>())
+
+                            <span class="type">Text</span>(tip)
+                                .font(.subheadline)
+                        }
+                    }
+                }
+                .padding()
+                .background(<span class="type">Color</span>.blue.opacity(<span class="str">0.05</span>))
+                .cornerRadius(<span class="str">12</span>)
+            }
+            .padding()
+        }
+        .navigationTitle(<span class="str">"사용 패턴 분석"</span>)
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Privacy:</strong> 에너지 데이터는 민감 정보이므로 온디바이스에서 처리</li>
+<li><strong>실시간 업데이트:</strong> 현재 전력 소비를 5-10초 간격으로 업데이트</li>
+<li><strong>명확한 시각화:</strong> 차트와 그래프로 이해하기 쉽게 표시</li>
+<li><strong>실용적인 팁:</strong> 실제로 실천 가능한 절약 방법 제안</li>
+<li><strong>HomeKit 통합:</strong> 기존 HomeKit 기기와 원활하게 연동</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>스마트홈 앱:</strong> 전체 가정의 에너지 대시보드</li>
+<li><strong>태양광 모니터링:</strong> 재생 에너지 생산량 추적</li>
+<li><strong>에너지 절약 챌린지:</strong> 게이미피케이션으로 절약 유도</li>
+<li><strong>부동산 관리:</strong> 건물 에너지 효율 모니터링</li>
+<li><strong>환경 앱:</strong> 탄소 발자국 계산 및 감소</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/homekit">HomeKit Framework</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: Energy Management</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/home">HIG: Home</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> EnergyKit leverages HomeKit infrastructure, so it works without a separate hub. Power measurement data updates every 5 seconds, but use smooth animations for better UX. Store large history data locally with CoreData or SwiftData, and sync to iCloud as needed. Energy saving tips can be personalized using machine learning to learn usage patterns.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/energykit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=EnergyKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

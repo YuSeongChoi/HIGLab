@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📷 PhotosUI — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../photosui/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>📷 PhotosUI</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 Graphics & Media</span>
+</div>
+<p class="subtitle">사진 선택을 위한 최신 시스템 인터페이스</p>
+
+<div><span class="badge ios">iOS 14+</span><span class="badge new">프라이버시 우선</span></div>
+
+<h2>✨ PhotosUI?</h2>
+<p>PhotosUI is a framework that provides a modern interface for selecting photos and videos from the user's library. It protects privacy by only accessing user-selected items without requiring full library access, and can be easily implemented via SwiftUI's PhotosPicker and UIKit's PHPickerViewController.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Photo/Video Selection · Multi-Selection · Filtering · Live Photos Support · Privacy Protection · No Permission Required · SwiftUI/UIKit Integration
+</div>
+
+<h2>🖼️ 1. PhotosPicker (SwiftUI)</h2>
+<p>Select photos using PhotosPicker in SwiftUI.</p>
+
+<div class="code-block">
+<div class="code-header">PhotosPickerView.swift — SwiftUI Photo Picker</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">PhotosPickerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItem: <span class="type">PhotosPickerItem</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">Image</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="kw">if</span> <span class="kw">let</span> selectedImage {
+                selectedImage
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: <span class="str">300</span>, height: <span class="str">300</span>)
+                    .cornerRadius(<span class="str">12</span>)
+            } <span class="kw">else</span> {
+                <span class="type">Image</span>(systemName: <span class="str">"photo.on.rectangle.angled"</span>)
+                    .font(.system(size: <span class="str">60</span>))
+                    .foregroundStyle(.secondary)
+            }
+
+            <span class="comment">// 단일 사진 선택</span>
+            <span class="type">PhotosPicker</span>(<span class="str">"사진 선택"</span>, selection: $selectedItem, matching: .images)
+                .buttonStyle(.borderedProminent)
+                .onChange(of: selectedItem) {
+                    <span class="type">Task</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> data = <span class="kw">try</span>? <span class="kw">await</span> selectedItem?.loadTransferable(type: <span class="type">Data</span>.<span class="kw">self</span>) {
+                            <span class="kw">if</span> <span class="kw">let</span> uiImage = <span class="type">UIImage</span>(data: data) {
+                                selectedImage = <span class="type">Image</span>(uiImage: uiImage)
+                            }
+                        }
+                    }
+                }
+        }
+        .padding()
+    }
+}
+
+<span class="comment">// 다중 선택 예제</span>
+<span class="kw">struct</span> <span class="type">MultiplePhotosPickerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItems: [<span class="type">PhotosPickerItem</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImages: [<span class="type">UIImage</span>] = []
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">ScrollView</span> {
+                <span class="type">LazyVGrid</span>(columns: [<span class="type">GridItem</span>(.adaptive(minimum: <span class="str">100</span>))]) {
+                    <span class="type">ForEach</span>(selectedImages, id: \.self) { image <span class="kw">in</span>
+                        <span class="type">Image</span>(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: <span class="str">100</span>, height: <span class="str">100</span>)
+                            .clipped()
+                            .cornerRadius(<span class="str">8</span>)
+                    }
+                }
+                .padding()
+            }
+
+            <span class="type">PhotosPicker</span>(
+                selection: $selectedItems,
+                maxSelectionCount: <span class="str">10</span>,
+                matching: .images
+            ) {
+                <span class="type">Label</span>(<span class="str">"사진 선택 (최대 10개)"</span>, systemImage: <span class="str">"photo.on.rectangle"</span>)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+            .onChange(of: selectedItems) {
+                <span class="type">Task</span> {
+                    selectedImages = []
+                    <span class="kw">for</span> item <span class="kw">in</span> selectedItems {
+                        <span class="kw">if</span> <span class="kw">let</span> data = <span class="kw">try</span>? <span class="kw">await</span> item.loadTransferable(type: <span class="type">Data</span>.<span class="kw">self</span>),
+                           <span class="kw">let</span> image = <span class="type">UIImage</span>(data: data) {
+                            selectedImages.append(image)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>🎬 2. 비디오 및 Live Photos</h2>
+<p>비디오와 Live Photos를 선택하고 처리.</p>
+
+<div class="code-block">
+<div class="code-header">VideoPickerView.swift — Video/Live Photos</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+<span class="kw">import</span> <span class="type">AVKit</span>
+
+<span class="kw">struct</span> <span class="type">VideoPickerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItem: <span class="type">PhotosPickerItem</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> videoURL: <span class="type">URL</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> player: <span class="type">AVPlayer</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if</span> <span class="kw">let</span> player {
+                <span class="type">VideoPlayer</span>(player: player)
+                    .frame(height: <span class="str">300</span>)
+                    .cornerRadius(<span class="str">12</span>)
+            } <span class="kw">else</span> {
+                <span class="type">Image</span>(systemName: <span class="str">"video.circle"</span>)
+                    .font(.system(size: <span class="str">60</span>))
+                    .foregroundStyle(.secondary)
+            }
+
+            <span class="comment">// 비디오만 선택</span>
+            <span class="type">PhotosPicker</span>(<span class="str">"비디오 선택"</span>, selection: $selectedItem, matching: .videos)
+                .buttonStyle(.borderedProminent)
+                .onChange(of: selectedItem) {
+                    <span class="type">Task</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> movie = <span class="kw">try</span>? <span class="kw">await</span> selectedItem?.loadTransferable(type: <span class="type">Movie</span>.<span class="kw">self</span>) {
+                            player = <span class="type">AVPlayer</span>(url: movie.url)
+                        }
+                    }
+                }
+        }
+        .padding()
+    }
+}
+
+<span class="comment">// Movie 타입 정의</span>
+<span class="kw">struct</span> <span class="type">Movie</span>: <span class="type">Transferable</span> {
+    <span class="kw">let</span> url: <span class="type">URL</span>
+
+    <span class="kw">static</span> <span class="kw">var</span> transferRepresentation: <span class="kw">some</span> <span class="type">TransferRepresentation</span> {
+        <span class="type">FileRepresentation</span>(contentType: .movie) { movie <span class="kw">in</span>
+            <span class="type">SentTransferredFile</span>(movie.url)
+        } importing: { received <span class="kw">in</span>
+            <span class="kw">let</span> copy = <span class="type">URL</span>.documentsDirectory.appending(path: <span class="str">"movie.mov"</span>)
+            <span class="kw">if</span> <span class="type">FileManager</span>.default.fileExists(atPath: copy.path()) {
+                <span class="kw">try</span> <span class="type">FileManager</span>.default.removeItem(at: copy)
+            }
+            <span class="kw">try</span> <span class="type">FileManager</span>.default.copyItem(at: received.file, to: copy)
+            <span class="kw">return</span> <span class="kw">Self</span>.init(url: copy)
+        }
+    }
+}
+
+<span class="comment">// Live Photo 선택</span>
+<span class="kw">struct</span> <span class="type">LivePhotoPickerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItem: <span class="type">PhotosPickerItem</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="comment">// Live Photos 포함 선택</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"사진 선택 (Live Photos 포함)"</span>,
+                selection: $selectedItem,
+                matching: .any(of: [.images, .livePhotos])
+            )
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}</pre>
+</div>
+
+<h2>🛠️ 3. PHPickerViewController (UIKit)</h2>
+<p>Use PHPickerViewController in UIKit.</p>
+
+<div class="code-block">
+<div class="code-header">PHPickerView.swift — UIKit Photo Picker</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">PHPickerView</span>: <span class="type">UIViewControllerRepresentable</span> {
+    <span class="kw">@Binding</span> <span class="kw">var</span> selectedImages: [<span class="type">UIImage</span>]
+    <span class="kw">let</span> selectionLimit: <span class="type">Int</span>
+    <span class="kw">let</span> filter: <span class="type">PHPickerFilter</span>
+
+    <span class="kw">func</span> makeUIViewController(context: <span class="type">Context</span>) -> <span class="type">PHPickerViewController</span> {
+        <span class="kw">var</span> configuration = <span class="type">PHPickerConfiguration</span>()
+        configuration.selectionLimit = selectionLimit
+        configuration.filter = filter
+
+        <span class="kw">let</span> picker = <span class="type">PHPickerViewController</span>(configuration: configuration)
+        picker.delegate = context.coordinator
+        <span class="kw">return</span> picker
+    }
+
+    <span class="kw">func</span> updateUIViewController(<span class="kw">_</span> uiViewController: <span class="type">PHPickerViewController</span>, context: <span class="type">Context</span>) {}
+
+    <span class="kw">func</span> makeCoordinator() -> <span class="type">Coordinator</span> {
+        <span class="type">Coordinator</span>(<span class="kw">self</span>)
+    }
+
+    <span class="kw">class</span> <span class="type">Coordinator</span>: <span class="type">NSObject</span>, <span class="type">PHPickerViewControllerDelegate</span> {
+        <span class="kw">let</span> parent: <span class="type">PHPickerView</span>
+
+        <span class="kw">init</span>(<span class="kw">_</span> parent: <span class="type">PHPickerView</span>) {
+            <span class="kw">self</span>.parent = parent
+        }
+
+        <span class="kw">func</span> picker(<span class="kw">_</span> picker: <span class="type">PHPickerViewController</span>, didFinishPicking results: [<span class="type">PHPickerResult</span>]) {
+            picker.dismiss(animated: <span class="kw">true</span>)
+
+            <span class="kw">var</span> images: [<span class="type">UIImage</span>] = []
+
+            <span class="kw">let</span> group = <span class="type">DispatchGroup</span>()
+
+            <span class="kw">for</span> result <span class="kw">in</span> results {
+                group.enter()
+
+                result.itemProvider.loadObject(ofClass: <span class="type">UIImage</span>.<span class="kw">self</span>) { object, error <span class="kw">in</span>
+                    <span class="kw">defer</span> { group.leave() }
+
+                    <span class="kw">if</span> <span class="kw">let</span> image = object <span class="kw">as</span>? <span class="type">UIImage</span> {
+                        images.append(image)
+                    }
+                }
+            }
+
+            group.notify(queue: .main) {
+                <span class="kw">self</span>.parent.selectedImages = images
+            }
+        }
+    }
+}
+
+<span class="comment">// 사용 예제</span>
+<span class="kw">struct</span> <span class="type">PHPickerExampleView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImages: [<span class="type">UIImage</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showPicker = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">ScrollView</span> {
+                <span class="type">LazyVGrid</span>(columns: [<span class="type">GridItem</span>(.adaptive(minimum: <span class="str">100</span>))]) {
+                    <span class="type">ForEach</span>(selectedImages, id: \.self) { image <span class="kw">in</span>
+                        <span class="type">Image</span>(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: <span class="str">100</span>, height: <span class="str">100</span>)
+                            .clipped()
+                    }
+                }
+            }
+
+            <span class="type">Button</span>(<span class="str">"사진 선택"</span>) {
+                showPicker = <span class="kw">true</span>
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .sheet(isPresented: $showPicker) {
+            <span class="type">PHPickerView</span>(
+                selectedImages: $selectedImages,
+                selectionLimit: <span class="str">5</span>,
+                filter: .images
+            )
+        }
+    }
+}</pre>
+</div>
+
+<h2>🔍 4. 필터링 및 설정</h2>
+<p>특정 미디어 타입만 선택하도록 필터링.</p>
+
+<div class="code-block">
+<div class="code-header">FilteredPickerView.swift — Filtering</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">FilteredPickerView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItems: [<span class="type">PhotosPickerItem</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> filterType: <span class="type">PHPickerFilter</span> = .images
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="type">Text</span>(<span class="str">"필터 선택"</span>)
+                .font(.headline)
+
+            <span class="comment">// 이미지만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"이미지만 선택"</span>,
+                selection: $selectedItems,
+                matching: .images
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// 비디오만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"비디오만 선택"</span>,
+                selection: $selectedItems,
+                matching: .videos
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// Live Photos만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"Live Photos만 선택"</span>,
+                selection: $selectedItems,
+                matching: .livePhotos
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// 파노라마 사진만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"파노라마 사진만"</span>,
+                selection: $selectedItems,
+                matching: .panoramas
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// 스크린샷만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"스크린샷만"</span>,
+                selection: $selectedItems,
+                matching: .screenshots
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// 슬로모션 비디오만</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"슬로모션 비디오만"</span>,
+                selection: $selectedItems,
+                matching: .slomoVideos
+            )
+            .buttonStyle(.bordered)
+
+            <span class="comment">// 여러 필터 조합</span>
+            <span class="type">PhotosPicker</span>(
+                <span class="str">"이미지 또는 비디오"</span>,
+                selection: $selectedItems,
+                matching: .any(of: [.images, .videos])
+            )
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+<span class="comment">// 고급 필터링</span>
+<span class="kw">struct</span> <span class="type">AdvancedFilterView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImages: [<span class="type">UIImage</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showPicker = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Button</span>(<span class="str">"PNG 이미지만 선택"</span>) {
+                showPicker = <span class="kw">true</span>
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .sheet(isPresented: $showPicker) {
+            <span class="type">PHPickerView</span>(
+                selectedImages: $selectedImages,
+                selectionLimit: <span class="str">10</span>,
+                filter: .any(of: [.images])
+            )
+        }
+    }
+}</pre>
+</div>
+
+<h2>📸 5. Complete Example</h2>
+
+<div class="code-block">
+<div class="code-header">PhotoGalleryView.swift — Photo Gallery App</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">PhotoGalleryView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedItems: [<span class="type">PhotosPickerItem</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> photos: [<span class="type">PhotoItem</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> isLoading = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">ScrollView</span> {
+                <span class="kw">if</span> photos.isEmpty {
+                    <span class="type">ContentUnavailableView</span>(
+                        <span class="str">"사진이 없습니다"</span>,
+                        systemImage: <span class="str">"photo.on.rectangle.angled"</span>,
+                        description: <span class="type">Text</span>(<span class="str">"아래 버튼을 눌러 사진을 추가하세요"</span>)
+                    )
+                    .frame(height: <span class="str">400</span>)
+                } <span class="kw">else</span> {
+                    <span class="type">LazyVGrid</span>(columns: [<span class="type">GridItem</span>(.adaptive(minimum: <span class="str">100</span>))], spacing: <span class="str">8</span>) {
+                        <span class="type">ForEach</span>(photos) { photo <span class="kw">in</span>
+                            <span class="type">ZStack</span>(alignment: .topTrailing) {
+                                <span class="type">Image</span>(uiImage: photo.image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: <span class="str">100</span>, height: <span class="str">100</span>)
+                                    .clipped()
+                                    .cornerRadius(<span class="str">8</span>)
+
+                                <span class="type">Button</span> {
+                                    photos.removeAll { $<span class="str">0</span>.id == photo.id }
+                                } label: {
+                                    <span class="type">Image</span>(systemName: <span class="str">"xmark.circle.fill"</span>)
+                                        .foregroundStyle(.white)
+                                        .background(<span class="type">Circle</span>().fill(<span class="type">Color</span>.black.opacity(<span class="str">0.5</span>)))
+                                }
+                                .padding(<span class="str">4</span>)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+
+                <span class="kw">if</span> isLoading {
+                    <span class="type">ProgressView</span>(<span class="str">"사진 로딩 중..."</span>)
+                        .padding()
+                }
+            }
+            .navigationTitle(<span class="str">"사진 갤러리"</span>)
+            .toolbar {
+                <span class="type">ToolbarItem</span>(placement: .topBarTrailing) {
+                    <span class="type">PhotosPicker</span>(
+                        selection: $selectedItems,
+                        maxSelectionCount: <span class="str">20</span>,
+                        matching: .images
+                    ) {
+                        <span class="type">Label</span>(<span class="str">"추가"</span>, systemImage: <span class="str">"plus"</span>)
+                    }
+                }
+
+                <span class="type">ToolbarItem</span>(placement: .bottomBar) {
+                    <span class="type">Text</span>(<span class="str">"\(photos.count)개 사진"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .onChange(of: selectedItems) {
+                <span class="type">Task</span> {
+                    isLoading = <span class="kw">true</span>
+                    <span class="kw">defer</span> { isLoading = <span class="kw">false</span> }
+
+                    <span class="kw">for</span> item <span class="kw">in</span> selectedItems {
+                        <span class="kw">if</span> <span class="kw">let</span> data = <span class="kw">try</span>? <span class="kw">await</span> item.loadTransferable(type: <span class="type">Data</span>.<span class="kw">self</span>),
+                           <span class="kw">let</span> image = <span class="type">UIImage</span>(data: data) {
+                            photos.append(<span class="type">PhotoItem</span>(image: image))
+                        }
+                    }
+                    selectedItems = []
+                }
+            }
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PhotoItem</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> image: <span class="type">UIImage</span>
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Privacy:</strong> PhotosUI doesn't require full library access permission</li>
+<li><strong>권한 불필요:</strong> 사용자가 선택한 항목만 접근 가능</li>
+<li><strong>System UI:</strong> 일관된 시스템 사진 선택 인터페이스 사용</li>
+<li><strong>필터링:</strong> 앱에 필요한 미디어 타입만 선택하도록 제한</li>
+<li><strong>로딩 상태:</strong> 대용량 미디어 로딩 시 진행 상태 표시</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>프로필 사진:</strong> 사용자 프로필 이미지 업로드</li>
+<li><strong>소셜 앱:</strong> 게시물에 사진/비디오 첨부</li>
+<li><strong>사진 편집:</strong> 사진 편집 앱의 이미지 로드</li>
+<li><strong>문서 스캔:</strong> 문서 이미지 가져오기</li>
+<li><strong>백업 앱:</strong> 선택한 사진 백업</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/photokit/phpickerviewcontroller">PHPickerViewController 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/photokit/bringing_photos_picker_to_your_swiftui_app">SwiftUI PhotosPicker 공식 문서</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/photos">HIG: Photos</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> <code>maxSelectionCount</code> to prevent excessive selection, and load large images on a background thread. <code>PhotosPicker</code> handles permission management automatically, so no separate permission request is needed.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/photosui" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/photokit/bringing-photos-picker-to-your-swiftui-app" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=PhotosPicker" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

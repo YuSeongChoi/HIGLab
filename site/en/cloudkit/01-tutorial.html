@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to CloudKit cloud data framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="☁️ CloudKit 완전정복 — HIG Lab">
+    <meta property="og:description" content="Complete guide to CloudKit cloud data framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="☁️ CloudKit 완전정복 — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to CloudKit cloud data framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/cloudkit/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/en/cloudkit/01-tutorial.html">
+<title>☁️ CloudKit 완전정복 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="../../cloudkit/01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a></div></div>
+<article>
+<h1>☁️ CloudKit 완전정복</h1>
+<p>Use iCloud as a free backend — data sync, authentication, and push notifications without a server!</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 3-4h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ CloudKit is?</h2>
+<p>CloudKit is Apple's free cloud database. With just an iCloud account, you can store and sync data without a separate server.</p>
+
+<h2>📊 Database 종류</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">DatabaseTypes.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="comment">// Public Database: 모든 사용자가 읽기 가능</span>
+<span class="kw">let</span> publicDB = <span class="type">CKContainer</span>.default().publicCloudDatabase
+
+<span class="comment">// Private Database: 사용자 개인 데이터 (iCloud 로그인 필요)</span>
+<span class="kw">let</span> privateDB = <span class="type">CKContainer</span>.default().privateCloudDatabase
+
+<span class="comment">// Shared Database: 여러 사용자 간 공유 (iOS 10+)</span>
+<span class="kw">let</span> sharedDB = <span class="type">CKContainer</span>.default().sharedCloudDatabase</pre></div>
+
+<h2>💾 Record 저장하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SaveRecord.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="kw">func</span> <span class="func">saveNote</span>(title: <span class="type">String</span>, content: <span class="type">String</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> record = <span class="type">CKRecord</span>(recordType: <span class="str">"Note"</span>)
+    record[<span class="str">"title"</span>] = title <span class="kw">as</span> <span class="type">CKRecordValue</span>
+    record[<span class="str">"content"</span>] = content <span class="kw">as</span> <span class="type">CKRecordValue</span>
+    record[<span class="str">"createdAt"</span>] = <span class="type">Date</span>() <span class="kw">as</span> <span class="type">CKRecordValue</span>
+
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.save(record)
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="type">Task</span> {
+    <span class="kw">try await</span> <span class="func">saveNote</span>(title: <span class="str">"첫 번째 메모"</span>, content: <span class="str">"CloudKit 테스트"</span>)
+}</pre></div>
+
+<h2>🔍 Record 검색하기</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">QueryRecords.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="kw">func</span> <span class="func">fetchNotes</span>() <span class="kw">async throws</span> -> [<span class="type">CKRecord</span>] {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+
+    <span class="comment">// 모든 Note 가져오기</span>
+    <span class="kw">let</span> query = <span class="type">CKQuery</span>(
+        recordType: <span class="str">"Note"</span>,
+        predicate: <span class="type">NSPredicate</span>(value: <span class="kw">true</span>)
+    )
+
+    <span class="comment">// 최신순 정렬</span>
+    query.sortDescriptors = [<span class="type">NSSortDescriptor</span>(key: <span class="str">"createdAt"</span>, ascending: <span class="kw">false</span>)]
+
+    <span class="kw">let</span> (results, _) = <span class="kw">try await</span> database.records(matching: query)
+
+    <span class="comment">// 결과 변환</span>
+    <span class="kw">let</span> records = results.compactMap { _, result <span class="kw">in</span>
+        <span class="kw">try</span>? result.get()
+    }
+
+    <span class="kw">return</span> records
+}
+
+<span class="comment">// 특정 조건으로 검색</span>
+<span class="kw">func</span> <span class="func">searchNotes</span>(keyword: <span class="type">String</span>) <span class="kw">async throws</span> -> [<span class="type">CKRecord</span>] {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+
+    <span class="comment">// title에 keyword 포함</span>
+    <span class="kw">let</span> predicate = <span class="type">NSPredicate</span>(format: <span class="str">"title CONTAINS %@"</span>, keyword)
+    <span class="kw">let</span> query = <span class="type">CKQuery</span>(recordType: <span class="str">"Note"</span>, predicate: predicate)
+
+    <span class="kw">let</span> (results, _) = <span class="kw">try await</span> database.records(matching: query)
+    <span class="kw">return</span> results.compactMap { <span class="kw">try</span>? $0.value.get() }
+}</pre></div>
+
+<h2>✏️ Record 수정 & 삭제</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">UpdateDelete.swift</span></div>
+<pre class="code-body"><span class="comment">// 수정</span>
+<span class="kw">func</span> <span class="func">updateNote</span>(_ record: <span class="type">CKRecord</span>, newTitle: <span class="type">String</span>) <span class="kw">async throws</span> {
+    record[<span class="str">"title"</span>] = newTitle <span class="kw">as</span> <span class="type">CKRecordValue</span>
+    record[<span class="str">"updatedAt"</span>] = <span class="type">Date</span>() <span class="kw">as</span> <span class="type">CKRecordValue</span>
+
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.save(record)
+}
+
+<span class="comment">// 삭제</span>
+<span class="kw">func</span> <span class="func">deleteNote</span>(_ record: <span class="type">CKRecord</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.deleteRecord(withID: record.recordID)
+}
+
+<span class="comment">// 여러 Record 한 번에 처리</span>
+<span class="kw">func</span> <span class="func">batchSave</span>(_ records: [<span class="type">CKRecord</span>]) <span class="kw">async throws</span> {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.modifyRecords(saving: records, deleting: [])
+}</pre></div>
+
+<h2>🔗 Reference (관계)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">References.swift</span></div>
+<pre class="code-body"><span class="comment">// 1:N 관계 구현</span>
+<span class="kw">func</span> <span class="func">createComment</span>(noteRecord: <span class="type">CKRecord</span>, text: <span class="type">String</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> comment = <span class="type">CKRecord</span>(recordType: <span class="str">"Comment"</span>)
+    comment[<span class="str">"text"</span>] = text <span class="kw">as</span> <span class="type">CKRecordValue</span>
+
+    <span class="comment">// Note와 연결</span>
+    <span class="kw">let</span> reference = <span class="type">CKRecord</span>.<span class="type">Reference</span>(record: noteRecord, action: .deleteSelf)
+    comment[<span class="str">"note"</span>] = reference
+
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.save(comment)
+}
+
+<span class="comment">// 특정 Note의 모든 Comment 가져오기</span>
+<span class="kw">func</span> <span class="func">fetchComments</span>(for noteRecord: <span class="type">CKRecord</span>) <span class="kw">async throws</span> -> [<span class="type">CKRecord</span>] {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+
+    <span class="kw">let</span> reference = <span class="type">CKRecord</span>.<span class="type">Reference</span>(record: noteRecord, action: .none)
+    <span class="kw">let</span> predicate = <span class="type">NSPredicate</span>(format: <span class="str">"note == %@"</span>, reference)
+    <span class="kw">let</span> query = <span class="type">CKQuery</span>(recordType: <span class="str">"Comment"</span>, predicate: predicate)
+
+    <span class="kw">let</span> (results, _) = <span class="kw">try await</span> database.records(matching: query)
+    <span class="kw">return</span> results.compactMap { <span class="kw">try</span>? $0.value.get() }
+}</pre></div>
+
+<h2>📎 파일 업로드 (CKAsset)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">AssetUpload.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">func</span> <span class="func">saveNoteWithImage</span>(title: <span class="type">String</span>, image: <span class="type">UIImage</span>) <span class="kw">async throws</span> {
+    <span class="comment">// 이미지를 임시 파일로 저장</span>
+    <span class="kw">let</span> tempDir = <span class="type">FileManager</span>.default.temporaryDirectory
+    <span class="kw">let</span> imageURL = tempDir.appendingPathComponent(<span class="str">"temp_image.jpg"</span>)
+
+    <span class="kw">if let</span> imageData = image.jpegData(compressionQuality: <span class="num">0.8</span>) {
+        <span class="kw">try</span> imageData.write(to: imageURL)
+    }
+
+    <span class="comment">// CKAsset 생성</span>
+    <span class="kw">let</span> asset = <span class="type">CKAsset</span>(fileURL: imageURL)
+
+    <span class="comment">// Record에 추가</span>
+    <span class="kw">let</span> record = <span class="type">CKRecord</span>(recordType: <span class="str">"Note"</span>)
+    record[<span class="str">"title"</span>] = title <span class="kw">as</span> <span class="type">CKRecordValue</span>
+    record[<span class="str">"image"</span>] = asset
+
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.save(record)
+
+    <span class="comment">// 임시 파일 삭제</span>
+    <span class="kw">try</span>? <span class="type">FileManager</span>.default.removeItem(at: imageURL)
+}
+
+<span class="comment">// 이미지 다운로드</span>
+<span class="kw">func</span> <span class="func">downloadImage</span>(from record: <span class="type">CKRecord</span>) <span class="kw">async</span> -> <span class="type">UIImage</span>? {
+    <span class="kw">guard let</span> asset = record[<span class="str">"image"</span>] <span class="kw">as</span>? <span class="type">CKAsset</span>,
+          <span class="kw">let</span> fileURL = asset.fileURL,
+          <span class="kw">let</span> data = <span class="kw">try</span>? <span class="type">Data</span>(contentsOf: fileURL) <span class="kw">else</span> {
+        <span class="kw">return nil</span>
+    }
+
+    <span class="kw">return</span> <span class="type">UIImage</span>(data: data)
+}</pre></div>
+
+<h2>🔔 실시간 동기화 (Subscription)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Subscription.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="kw">func</span> <span class="func">subscribeToNotes</span>() <span class="kw">async throws</span> {
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+
+    <span class="comment">// 모든 Note 변경 감지</span>
+    <span class="kw">let</span> predicate = <span class="type">NSPredicate</span>(value: <span class="kw">true</span>)
+    <span class="kw">let</span> subscription = <span class="type">CKQuerySubscription</span>(
+        recordType: <span class="str">"Note"</span>,
+        predicate: predicate,
+        options: [.firesOnRecordCreation, .firesOnRecordUpdate, .firesOnRecordDeletion]
+    )
+
+    <span class="comment">// 알림 설정</span>
+    <span class="kw">let</span> notification = <span class="type">CKSubscription</span>.<span class="type">NotificationInfo</span>()
+    notification.shouldSendContentAvailable = <span class="kw">true</span>  <span class="comment">// Silent push</span>
+    subscription.notificationInfo = notification
+
+    <span class="kw">try await</span> database.save(subscription)
+}
+
+<span class="comment">// AppDelegate에서 푸시 처리</span>
+<span class="kw">func</span> <span class="func">application</span>(
+    _ application: <span class="type">UIApplication</span>,
+    didReceiveRemoteNotification userInfo: [<span class="type">AnyHashable</span>: <span class="type">Any</span>],
+    fetchCompletionHandler completionHandler: @<span class="kw">escaping</span> (<span class="type">UIBackgroundFetchResult</span>) -> <span class="type">Void</span>
+) {
+    <span class="kw">let</span> notification = <span class="type">CKNotification</span>(fromRemoteNotificationDictionary: userInfo)
+
+    <span class="kw">if</span> notification.notificationType == .query {
+        <span class="comment">// 데이터 다시 로드</span>
+        <span class="type">Task</span> {
+            <span class="kw">let</span> notes = <span class="kw">try await</span> <span class="func">fetchNotes</span>()
+            <span class="comment">// UI 업데이트</span>
+        }
+    }
+
+    completionHandler(.newData)
+}</pre></div>
+
+<h2>👥 공유 (CKShare)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Sharing.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">func</span> <span class="func">shareNote</span>(_ record: <span class="type">CKRecord</span>, from viewController: <span class="type">UIViewController</span>) <span class="kw">async throws</span> {
+    <span class="kw">let</span> share = <span class="type">CKShare</span>(rootRecord: record)
+
+    <span class="comment">// 권한 설정</span>
+    share[<span class="type">CKShare</span>.<span class="type">SystemFieldKey</span>.title] = <span class="str">"메모 공유"</span>
+    share.publicPermission = .readOnly
+
+    <span class="kw">let</span> database = <span class="type">CKContainer</span>.default().privateCloudDatabase
+    <span class="kw">try await</span> database.modifyRecords(saving: [record, share], deleting: [])
+
+    <span class="comment">// 공유 시트 표시</span>
+    <span class="kw">let</span> controller = <span class="type">UICloudSharingController</span>(share: share, container: .<span class="func">default</span>())
+    viewController.present(controller, animated: <span class="kw">true</span>)
+}</pre></div>
+
+<h2>🧪 계정 상태 확인</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">AccountStatus.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="kw">func</span> <span class="func">checkiCloudStatus</span>() <span class="kw">async</span> {
+    <span class="kw">let</span> container = <span class="type">CKContainer</span>.default()
+
+    <span class="kw">do</span> {
+        <span class="kw">let</span> status = <span class="kw">try await</span> container.accountStatus()
+
+        <span class="kw">switch</span> status {
+        <span class="kw">case</span> .available:
+            <span class="func">print</span>(<span class="str">"iCloud 사용 가능"</span>)
+
+        <span class="kw">case</span> .noAccount:
+            <span class="func">print</span>(<span class="str">"iCloud 로그인 필요"</span>)
+            <span class="comment">// "설정 > iCloud"로 안내</span>
+
+        <span class="kw">case</span> .restricted:
+            <span class="func">print</span>(<span class="str">"iCloud 제한됨 (자녀 보호 등)"</span>)
+
+        <span class="kw">case</span> .couldNotDetermine:
+            <span class="func">print</span>(<span class="str">"iCloud 상태 확인 불가"</span>)
+
+        @unknown <span class="kw">default</span>:
+            <span class="func">print</span>(<span class="str">"알 수 없는 상태"</span>)
+        }
+    } <span class="kw">catch</span> {
+        <span class="func">print</span>(<span class="str">"에러: \(error)"</span>)
+    }
+}</pre></div>
+
+<h2>📱 SwiftUI Integration Example</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">NotesApp.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">CloudKit</span>
+
+<span class="kw">struct</span> <span class="type">Note</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span>: <span class="type">String</span>
+    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">String</span>
+    <span class="kw">var</span> <span class="prop">content</span>: <span class="type">String</span>
+    <span class="kw">let</span> <span class="prop">record</span>: <span class="type">CKRecord</span>
+}
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">NotesViewModel</span> {
+    <span class="kw">var</span> <span class="prop">notes</span>: [<span class="type">Note</span>] = []
+    <span class="kw">var</span> <span class="prop">isLoading</span> = <span class="kw">false</span>
+
+    <span class="kw">func</span> <span class="func">loadNotes</span>() <span class="kw">async</span> {
+        isLoading = <span class="kw">true</span>
+        <span class="kw">defer</span> { isLoading = <span class="kw">false</span> }
+
+        <span class="kw">do</span> {
+            <span class="kw">let</span> records = <span class="kw">try await</span> <span class="func">fetchNotes</span>()
+            notes = records.map {
+                <span class="type">Note</span>(
+                    id: $0.recordID.recordName,
+                    title: $0[<span class="str">"title"</span>] <span class="kw">as</span>? <span class="type">String</span> ?? <span class="str">""</span>,
+                    content: $0[<span class="str">"content"</span>] <span class="kw">as</span>? <span class="type">String</span> ?? <span class="str">""</span>,
+                    record: $0
+                )
+            }
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"에러: \(error)"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">NotesView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">NotesViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">List</span>(viewModel.notes) { note <span class="kw">in</span>
+            <span class="type">VStack</span>(alignment: .leading) {
+                <span class="type">Text</span>(note.title)
+                    .font(.headline)
+                <span class="type">Text</span>(note.content)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .overlay {
+            <span class="kw">if</span> viewModel.isLoading {
+                <span class="type">ProgressView</span>()
+            }
+        }
+        .task {
+            <span class="kw">await</span> viewModel.<span class="func">loadNotes</span>()
+        }
+    }
+}</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 CloudKit 장점</strong><br>
+✅ 무료 (1PB 저장소, 200GB 전송량)<br>
+✅ 서버 불필요 (백엔드 인프라 무료)<br>
+✅ iCloud 인증 자동 처리<br>
+✅ 실시간 동기화 Supported<br>
+✅ Public/Private/Shared Database</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/documentation/cloudkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+<a href="https://developer.apple.com/videos/play/wwdc2021/10015/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🎥</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">WWDC21 세션</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/cloudkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/cloudkit/sharing-cloudkit-data-with-other-icloud-users" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=CloudKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>
