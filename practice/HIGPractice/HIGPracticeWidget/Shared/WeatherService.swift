@@ -1,10 +1,3 @@
-//
-//  WeatherService.swift
-//  HIGPractice
-//
-//  Created by YuSeongChoi on 2/24/26.
-//
-
 import Foundation
 import CoreLocation
 
