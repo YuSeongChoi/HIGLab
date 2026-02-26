@@ -20,7 +20,7 @@ For each completed scope, append one row:
 | Date | Phase | Framework | Scope | Issue | PR | Velog | Key Learning |
 |---|---|---|---|---|---|---|---|
 | 2026-02-23 | Phase 1 | WidgetKit | Core timeline | #5 | #6 | https://velog.io/@... | Understood placeholder/snapshot/timeline flow |
-| 2026-02-26 | Phase 1 | WidgetKit | Theory review & architecture notes | #5 | #9 | - | Clarified TimelineEntry/date, provider lifecycle, family-based density, and iOS 17 interactive widget patterns. |
+| 2026-02-26 | Phase 1 | WidgetKit | Theory review & architecture notes | #5 | #9 | https://devyuseong.tistory.com/38 | Clarified TimelineEntry/date, provider lifecycle, family-based density, and iOS 17 interactive widget patterns. |
 
 ## Weekly Reflection (Optional)
 
