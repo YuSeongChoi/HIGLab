@@ -1,0 +1,275 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Focus 모드 & 알림 요약") {
+        iOS 15+의 Focus 모드와 알림 요약 기능에 대응합니다.
+        
+        사용자의 집중을 존중하면서도 중요한 알림은 전달하는
+        균형 잡힌 알림 전략을 구현합니다.
+    }
+    
+    @Section(title: "Focus 모드 이해하기") {
+        @ContentAndMedia {
+            Focus 모드는 iOS 15에서 방해금지 모드를 대체했습니다.
+            
+            - **방해금지**: 모든 알림 차단
+            - **업무 집중**: 업무 관련 앱만 허용
+            - **수면**: 수면 시간에 최소 알림
+            - **사용자 정의**: 원하는 대로 설정
+        }
+        
+        @Steps {
+            @Step {
+                **Focus 상태 확인**
+                
+                UNNotificationSettings에서 현재 Focus 상태를 확인할 수 있습니다.
+                단, 구체적인 Focus 종류는 알 수 없습니다.
+                
+                @Code(name: "CheckFocusStatus.swift", file: "10-check-focus-status.swift")
+            }
+            
+            @Step {
+                **Focus 필터 API (iOS 16+)**
+                
+                iOS 16부터 앱이 Focus 필터를 제공할 수 있습니다.
+                사용자가 Focus별로 앱의 동작을 커스터마이징합니다.
+                
+                @Code(name: "FocusFilter.swift", file: "10-focus-filter.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Interruption Level 전략") {
+        @ContentAndMedia {
+            Focus 모드에서 알림이 전달되려면 적절한 interruption level이 필요합니다.
+            
+            - **passive**: Focus에서 항상 필터링됨
+            - **active**: Focus 설정에 따라 필터링
+            - **timeSensitive**: Focus의 "시간에 민감한 알림" 설정 시 돌파
+            - **critical**: 항상 돌파 (특수 권한 필요)
+        }
+        
+        @Steps {
+            @Step {
+                **알림 중요도 분류**
+                
+                앱의 알림을 중요도별로 분류합니다.
+                대부분은 .active, 긴급한 것만 .timeSensitive로 설정합니다.
+                
+                @Code(name: "ClassifyImportance.swift", file: "10-classify-importance.swift")
+            }
+            
+            @Step {
+                **Time Sensitive 알림 요청**
+                
+                앱이 Time Sensitive 알림을 보내려면
+                Info.plist 설정과 권한 요청이 필요합니다.
+                
+                @Code(name: "TimeSensitiveSetup.swift", file: "10-time-sensitive-setup.swift")
+            }
+            
+            @Step {
+                **HIG: Time Sensitive 가이드라인**
+                
+                Apple은 Time Sensitive를 남용하지 않도록 권고합니다.
+                정말 긴급한 알림에만 사용해야 합니다.
+                
+                @Code(name: "TimeSensitiveGuidelines.swift", file: "10-time-sensitive-guidelines.swift")
+            }
+        }
+    }
+    
+    @Section(title: "알림 요약 (Scheduled Summary)") {
+        @ContentAndMedia {
+            iOS 15+에서 사용자는 알림을 예약된 요약으로 받을 수 있습니다.
+            
+            하루에 몇 번만 알림 묶음을 확인하여 집중을 유지합니다.
+            앱 개발자는 요약에 잘 표시되도록 알림을 최적화해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **요약에서 눈에 띄게**
+                
+                relevanceScore를 설정하여 요약에서의 순서에 영향을 줍니다.
+                0.0 ~ 1.0 사이의 값으로 상대적 중요도를 나타냅니다.
+                
+                @Code(name: "RelevanceScore.swift", file: "10-relevance-score.swift")
+            }
+            
+            @Step {
+                **요약 인자 설정**
+                
+                summaryArgument로 그룹 요약 문구를 커스터마이징합니다.
+                "3개의 리마인더" 대신 "3개의 업무 리마인더"처럼 표시됩니다.
+                
+                @Code(name: "SummaryArguments.swift", file: "10-summary-arguments.swift")
+            }
+        }
+    }
+    
+    @Section(title: "알림 관리 설정") {
+        @ContentAndMedia {
+            iOS 12+에서 사용자가 알림에서 바로 설정을 변경할 수 있습니다.
+            
+            앱은 알림 설정 화면을 제공하여 
+            사용자가 세밀하게 알림을 제어할 수 있게 해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Provisional 알림**
+                
+                .provisional 권한으로 먼저 조용히 알림을 보내고
+                사용자가 유지할지 결정하게 합니다.
+                
+                @Code(name: "ProvisionalAuth.swift", file: "10-provisional-auth.swift")
+            }
+            
+            @Step {
+                **providesAppNotificationSettings**
+                
+                앱에 자체 알림 설정 화면이 있음을 시스템에 알립니다.
+                설정 > 알림에서 "앱 내 설정" 버튼이 표시됩니다.
+                
+                @Code(name: "AppNotificationSettings.swift", file: "10-app-notification-settings.swift")
+            }
+            
+            @Step {
+                **설정 화면 열기 처리**
+                
+                사용자가 "앱 내 설정"을 탭하면 
+                openSettingsFor 델리게이트가 호출됩니다.
+                
+                @Code(name: "HandleOpenSettings.swift", file: "10-handle-open-settings.swift")
+            }
+        }
+    }
+    
+    @Section(title: "RemindMe 앱 알림 전략 완성") {
+        @ContentAndMedia {
+            지금까지 배운 내용을 종합하여
+            RemindMe 앱의 알림 전략을 완성합니다.
+            
+            - 일반 리마인더: .active
+            - 우선순위 높음: .timeSensitive  
+            - 완료된 리마인더: .passive
+        }
+        
+        @Steps {
+            @Step {
+                **우선순위 기반 알림 전략**
+                
+                리마인더 우선순위에 따라 interruption level을 결정합니다.
+                
+                @Code(name: "PriorityStrategy.swift", file: "10-priority-strategy.swift")
+            }
+            
+            @Step {
+                **relevanceScore 계산**
+                
+                마감 시간과 우선순위를 기반으로 relevanceScore를 계산합니다.
+                
+                @Code(name: "CalculateRelevance.swift", file: "10-calculate-relevance.swift")
+            }
+            
+            @Step {
+                **최종 NotificationManager**
+                
+                모든 기능이 통합된 NotificationManager의 최종 형태입니다.
+                
+                @Code(name: "FinalNotificationManager.swift", file: "10-final-notification-manager.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iOS 15+ Focus 모드에서 알림이 항상 전달되게 하려면 어떤 interruption level을 사용해야 할까요?
+            
+            @Choice(isCorrect: false) {
+                .timeSensitive
+                
+                @Justification(reaction: "거의 맞습니다만...") {
+                    .timeSensitive도 "시간에 민감한 알림 허용" 설정에 따라 
+                    차단될 수 있습니다. 항상 전달되는 것은 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .critical (특수 권한 필요)
+                
+                @Justification(reaction: "정답! 단, 주의가 필요합니다") {
+                    Critical Alert만 Focus를 완전히 돌파합니다.
+                    하지만 Apple 승인이 필요한 특수 권한이며,
+                    의료/보안 앱에만 허용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .active
+                
+                @Justification(reaction: "아쉽네요") {
+                    .active는 기본 레벨로 Focus 설정에 따라 필터링됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            relevanceScore의 범위는?
+            
+            @Choice(isCorrect: true) {
+                0.0 ~ 1.0
+                
+                @Justification(reaction: "정답!") {
+                    0.0(가장 낮음)부터 1.0(가장 높음)까지의 
+                    상대적 중요도를 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1 ~ 100
+                
+                @Justification(reaction: "아쉽네요") {
+                    0.0에서 1.0 사이의 Double 값입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제한 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    0.0 ~ 1.0으로 정규화된 값을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            .provisional 권한의 특징은?
+            
+            @Choice(isCorrect: true) {
+                사용자에게 묻지 않고 조용히 알림을 보내고 나중에 결정하게 함
+                
+                @Justification(reaction: "정답!") {
+                    Provisional 알림은 먼저 조용히 알림 센터에만 표시되고,
+                    사용자가 계속 받을지 끌지 선택합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                임시로 알림을 보내고 앱을 삭제하면 사라짐
+                
+                @Justification(reaction: "아쉽네요") {
+                    provisional은 "시범" 알림의 의미입니다.
+                    사용자 결정 전까지 조용히 전달됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                개발 중에만 사용 가능한 테스트용 권한
+                
+                @Justification(reaction: "아쉽네요") {
+                    프로덕션에서도 사용 가능한 정식 권한입니다.
+                }
+            }
+        }
+    }
+}

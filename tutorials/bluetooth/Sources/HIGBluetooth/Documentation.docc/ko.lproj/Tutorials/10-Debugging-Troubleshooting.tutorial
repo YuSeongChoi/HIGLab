@@ -1,0 +1,213 @@
+@Tutorial(time: 20) {
+    @Intro(title: "디버깅 & 문제해결") {
+        BLE 개발 시 흔한 문제들과
+        효과적인 디버깅 방법을 알아봅니다.
+    }
+    
+    @Section(title: "일반적인 문제들") {
+        @ContentAndMedia {
+            BLE 개발에서 자주 발생하는 문제들입니다.
+            
+            **흔한 문제:**
+            - 기기가 스캔되지 않음
+            - 연결이 계속 실패함
+            - 서비스/Characteristic 발견 실패
+            - 데이터 읽기/쓰기 오류
+            - 알림이 오지 않음
+        }
+        
+        @Steps {
+            @Step {
+                문제 진단을 위한 체크리스트를 만듭니다.
+                
+                @Code(name: "DebugChecklist.swift", file: "10-01-debug-checklist.swift")
+            }
+            
+            @Step {
+                Bluetooth 상태 관련 문제 해결 가이드입니다.
+                
+                @Code(name: "StateDebugging.swift", file: "10-02-state-debugging.swift")
+            }
+        }
+    }
+    
+    @Section(title: "로깅 구현") {
+        @ContentAndMedia {
+            효과적인 BLE 디버깅을 위해
+            체계적인 로깅 시스템을 구축합니다.
+            
+            os_log를 사용하여 Console.app에서
+            BLE 이벤트를 필터링하여 볼 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                BLE 전용 로거를 만듭니다.
+                
+                @Code(name: "BLELogger.swift", file: "10-03-ble-logger.swift")
+            }
+            
+            @Step {
+                모든 BLE 이벤트를 로깅합니다.
+                
+                @Code(name: "BluetoothManager+Logging.swift", file: "10-04-logging-extension.swift")
+            }
+            
+            @Step {
+                데이터를 hex 문자열로 변환하여 로깅합니다.
+                
+                @Code(name: "DataHexString.swift", file: "10-05-hex-string.swift")
+            }
+        }
+    }
+    
+    @Section(title: "디버깅 도구") {
+        @ContentAndMedia {
+            BLE 개발에 유용한 도구들입니다.
+            
+            **추천 도구:**
+            - **LightBlue**: iOS/Mac BLE 탐색기
+            - **nRF Connect**: Nordic의 BLE 도구
+            - **Bluetooth Explorer**: Apple 개발자 도구
+            - **Wireshark + PacketLogger**: 패킷 분석
+        }
+        
+        @Steps {
+            @Step {
+                LightBlue로 기기의 서비스 구조를 확인합니다.
+                
+                @Code(name: "LightBlueUsage.swift", file: "10-06-lightblue.swift")
+            }
+            
+            @Step {
+                시뮬레이터에서 BLE 테스트하기.
+                시뮬레이터는 BLE를 지원하지 않으므로 대안을 사용합니다.
+                
+                @Code(name: "SimulatorTesting.swift", file: "10-07-simulator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "성능 최적화") {
+        @ContentAndMedia {
+            BLE 앱의 성능과 배터리 효율을 개선합니다.
+            
+            **최적화 포인트:**
+            - 불필요한 스캔 최소화
+            - 서비스 UUID 필터링
+            - 연결 유지 시간 관리
+            - MTU 크기 최적화
+        }
+        
+        @Steps {
+            @Step {
+                배터리 효율적인 스캔 패턴을 구현합니다.
+                
+                @Code(name: "EfficientScanning.swift", file: "10-08-efficient-scan.swift")
+            }
+            
+            @Step {
+                MTU(Maximum Transmission Unit) 협상을 이해합니다.
+                
+                @Code(name: "MTUNegotiation.swift", file: "10-09-mtu.swift")
+            }
+            
+            @Step {
+                연결 파라미터 최적화 (iOS에서 제한적).
+                
+                @Code(name: "ConnectionParameters.swift", file: "10-10-connection-params.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iOS 시뮬레이터에서 BLE를 테스트하려면?
+            
+            @Choice(isCorrect: false) {
+                시뮬레이터 설정에서 Bluetooth 활성화
+                
+                @Justification(reaction: "시뮬레이터는 BLE를 지원하지 않습니다.") {
+                    실제 iOS 기기에서 테스트하거나
+                    Mock 객체를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                실제 기기에서 테스트하거나 Mock 사용
+                
+                @Justification(reaction: "정확합니다! 📱") {
+                    시뮬레이터는 Bluetooth 하드웨어가 없습니다.
+                    테스트를 위해 Mock BluetoothManager를 만들거나
+                    실제 기기를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Mac의 Bluetooth를 연결하면 된다
+                
+                @Justification(reaction: "시뮬레이터로 전달되지 않습니다.") {
+                    시뮬레이터는 Mac의 Bluetooth에 접근할 수 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            기기가 스캔에서 발견되지 않을 때 가장 먼저 확인할 것은?
+            
+            @Choice(isCorrect: true) {
+                기기가 광고(advertising) 중인지 확인
+                
+                @Justification(reaction: "맞습니다! 📡") {
+                    BLE 기기는 광고 모드여야 발견됩니다.
+                    LightBlue 같은 앱으로 먼저 기기가 보이는지 확인하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 코드의 버그 검사
+                
+                @Justification(reaction: "기기 상태를 먼저 확인하세요.") {
+                    다른 앱에서도 안 보이면 기기 문제입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iPhone 재시작
+                
+                @Justification(reaction: "그 전에 확인할 게 있습니다.") {
+                    기기 광고 상태와 Bluetooth 상태를 먼저 확인하세요.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CBATTError.insufficientAuthentication 에러가 발생하면?
+            
+            @Choice(isCorrect: false) {
+                앱에 Bluetooth 권한이 없다
+                
+                @Justification(reaction: "앱 권한 문제가 아닙니다.") {
+                    앱 권한은 CBManagerState에서 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                BLE 기기와 페어링이 필요하다
+                
+                @Justification(reaction: "정확합니다! 🔐") {
+                    일부 Characteristic은 보안 연결(페어링)이 필요합니다.
+                    iOS 설정에서 기기 페어링 후 재시도하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID가 잘못되었다
+                
+                @Justification(reaction: "다른 에러가 발생합니다.") {
+                    UUID 문제는 서비스/Characteristic을 찾지 못합니다.
+                }
+            }
+        }
+    }
+}

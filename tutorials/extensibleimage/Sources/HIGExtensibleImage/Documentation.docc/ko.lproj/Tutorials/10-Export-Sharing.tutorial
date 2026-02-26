@@ -1,0 +1,163 @@
+@Tutorial(time: 20) {
+    @Intro(title: "내보내기와 공유") {
+        처리된 이미지를 다양한 형식으로 내보내고 공유하는 방법을 학습합니다.
+        
+        파일 형식 변환, 메타데이터 관리, 시스템 공유 시트 연동까지 완전한 내보내기 워크플로우를 구현합니다.
+        
+        @Image(source: "export-sharing-hero.png", alt: "내보내기와 공유")
+    }
+    
+    @Section(title: "파일 형식과 품질") {
+        @ContentAndMedia {
+            용도에 맞는 파일 형식과 압축 설정을 선택하는 것이 중요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                다양한 출력 형식을 지원하는 내보내기 옵션을 설정합니다.
+                
+                @Code(name: "ExportFormat.swift", file: "10-export-01.swift")
+            }
+            
+            @Step {
+                HEIF로 고품질 저용량 이미지를 생성합니다.
+                
+                @Code(name: "ExportFormat.swift", file: "10-export-02.swift")
+            }
+            
+            @Step {
+                투명 배경을 유지하며 PNG로 내보냅니다.
+                
+                @Code(name: "ExportFormat.swift", file: "10-export-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "메타데이터 관리") {
+        @ContentAndMedia {
+            EXIF, IPTC 등 이미지 메타데이터를 보존하거나 수정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                원본 메타데이터를 읽고 보존합니다.
+                
+                @Code(name: "Metadata.swift", file: "10-export-04.swift")
+            }
+            
+            @Step {
+                처리 정보를 메타데이터에 추가합니다.
+                
+                @Code(name: "Metadata.swift", file: "10-export-05.swift")
+            }
+            
+            @Step {
+                위치 정보 등 민감한 메타데이터를 선택적으로 제거합니다.
+                
+                @Code(name: "Metadata.swift", file: "10-export-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사진 앨범 저장") {
+        @ContentAndMedia {
+            처리된 이미지를 사용자의 사진 라이브러리에 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PhotoKit을 사용하여 사진 라이브러리에 저장합니다.
+                
+                @Code(name: "PhotoLibrary.swift", file: "10-export-07.swift")
+            }
+            
+            @Step {
+                사용자 지정 앨범에 저장합니다.
+                
+                @Code(name: "PhotoLibrary.swift", file: "10-export-08.swift")
+            }
+            
+            @Step {
+                Live Photo와 함께 저장합니다.
+                
+                @Code(name: "PhotoLibrary.swift", file: "10-export-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 시트 연동") {
+        @ContentAndMedia {
+            시스템 공유 시트를 통해 다른 앱으로 이미지를 전송합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ShareLink를 사용하여 이미지를 공유합니다.
+                
+                @Code(name: "ShareSheet.swift", file: "10-export-10.swift")
+            }
+            
+            @Step {
+                Transferable 프로토콜로 커스텀 공유 데이터를 정의합니다.
+                
+                @Code(name: "ShareSheet.swift", file: "10-export-11.swift")
+            }
+            
+            @Step {
+                여러 이미지를 한 번에 공유합니다.
+                
+                @Code(name: "ShareSheet.swift", file: "10-export-12.swift")
+            }
+        }
+    }
+    
+    @Section(title: "클라우드 업로드") {
+        @ContentAndMedia {
+            iCloud Drive나 외부 서비스로 이미지를 업로드합니다.
+        }
+        
+        @Steps {
+            @Step {
+                파일 앱(Files)에서 접근 가능한 위치에 저장합니다.
+                
+                @Code(name: "CloudUpload.swift", file: "10-export-13.swift")
+            }
+            
+            @Step {
+                백그라운드 업로드를 구현합니다.
+                
+                @Code(name: "CloudUpload.swift", file: "10-export-14.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            투명 배경이 있는 이미지를 공유할 때 가장 적합한 형식은?
+            
+            @Choice(isCorrect: false) {
+                JPEG
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    JPEG는 투명도를 지원하지 않습니다. 배경이 흰색으로 채워집니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                PNG 또는 HEIF with alpha
+                
+                @Justification(reaction: "정답입니다!") {
+                    PNG와 알파 채널이 있는 HEIF는 투명도를 완벽하게 보존합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                WebP (손실 압축)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    손실 압축 WebP도 투명도를 지원하지만, iOS 호환성이 PNG/HEIF보다 낮습니다.
+                }
+            }
+        }
+    }
+}

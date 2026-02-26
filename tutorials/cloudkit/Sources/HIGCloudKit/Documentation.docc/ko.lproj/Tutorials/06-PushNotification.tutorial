@@ -1,0 +1,116 @@
+@Tutorial(time: 25) {
+    @Intro(title: "푸시 알림 연동") {
+        CloudKit 구독에서 발생하는 푸시 알림을 처리합니다.
+        Silent Push로 백그라운드 동기화를 구현합니다.
+    }
+    
+    @Section(title: "푸시 알림 설정") {
+        @ContentAndMedia {
+            CloudKit 푸시 알림을 받으려면 앱에서 원격 알림을 등록해야 합니다.
+        }
+        @Steps {
+            @Step {
+                Xcode에서 Push Notifications capability를 추가합니다.
+                Background Modes에서 Remote notifications도 활성화합니다.
+                @Code(name: "Setup.md", file: "06-01-capability.md")
+            }
+            @Step {
+                AppDelegate에서 원격 알림을 등록합니다.
+                @Code(name: "AppDelegate.swift", file: "06-02-registernotification.swift")
+            }
+            @Step {
+                디바이스 토큰을 처리합니다.
+                CloudKit은 자동으로 토큰을 관리하지만 로깅용으로 확인합니다.
+                @Code(name: "AppDelegate.swift", file: "06-03-devicetoken.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CloudKit 알림 처리") {
+        @ContentAndMedia {
+            CKNotification을 파싱하여 변경된 데이터를 동기화합니다.
+        }
+        @Steps {
+            @Step {
+                didReceiveRemoteNotification에서 CloudKit 알림을 처리합니다.
+                @Code(name: "AppDelegate.swift", file: "06-04-receivenotification.swift")
+            }
+            @Step {
+                CKNotification 타입을 구분하여 처리합니다.
+                @Code(name: "CloudKitManager.swift", file: "06-05-parsenotification.swift")
+            }
+            @Step {
+                CKQueryNotification에서 변경 정보를 추출합니다.
+                @Code(name: "CloudKitManager.swift", file: "06-06-querynotification.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Silent Push와 백그라운드 동기화") {
+        @ContentAndMedia {
+            사용자에게 알리지 않고 백그라운드에서 데이터를 동기화합니다.
+            content-available을 사용한 Silent Push를 구현합니다.
+        }
+        @Steps {
+            @Step {
+                Silent Push를 위한 NotificationInfo를 설정합니다.
+                @Code(name: "CloudKitManager.swift", file: "06-07-silentpush.swift")
+            }
+            @Step {
+                백그라운드에서 데이터를 페치합니다.
+                completionHandler를 적절히 호출해야 합니다.
+                @Code(name: "AppDelegate.swift", file: "06-08-backgroundfetch.swift")
+            }
+            @Step {
+                동기화 상태를 관리합니다.
+                마지막 동기화 시간을 추적합니다.
+                @Code(name: "SyncManager.swift", file: "06-09-syncstate.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CloudKit Silent Push에 필요한 CKNotificationInfo 설정은?
+            @Choice(isCorrect: false) {
+                alertBody 설정
+                @Justification(reaction: "다시 생각해보세요.") {
+                    alertBody는 사용자에게 보이는 알림입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                shouldSendContentAvailable = true
+                @Justification(reaction: "정답입니다!") {
+                    Silent Push는 content-available: 1을 전송해야 합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                soundName 설정
+                @Justification(reaction: "다시 생각해보세요.") {
+                    소리는 사용자 알림용입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            백그라운드 페치 완료 후 반드시 호출해야 하는 것은?
+            @Choice(isCorrect: true) {
+                completionHandler(.newData) 또는 유사한 결과
+                @Justification(reaction: "정답입니다!") {
+                    시스템에 작업 완료를 알려야 앱이 적절히 관리됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                UIApplication.shared.endBackgroundTask
+                @Justification(reaction: "다시 생각해보세요.") {
+                    그것은 beginBackgroundTask와 쌍으로 사용합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                NotificationCenter.post
+                @Justification(reaction: "다시 생각해보세요.") {
+                    로컬 알림과 관련 없습니다.
+                }
+            }
+        }
+    }
+}

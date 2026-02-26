@@ -1,0 +1,159 @@
+@Tutorial(time: 35) {
+    @Intro(title: "이미지 확장") {
+        ExtensibleImage의 핵심 기능인 이미지 확장으로 기존 이미지의 경계를 넘어 새로운 콘텐츠를 생성합니다.
+        
+        Generative AI를 활용하여 자연스럽게 이미지를 확장하는 방법을 학습합니다.
+        
+        @Image(source: "image-extension-hero.png", alt: "이미지 확장 예시")
+    }
+    
+    @Section(title: "이미지 확장 기초") {
+        @ContentAndMedia {
+            `ExtensibleImage.Extender`는 온디바이스 생성 모델을 사용하여 이미지의 보이지 않는 영역을 자연스럽게 채웁니다.
+            
+            원본 이미지의 스타일, 색상, 맥락을 분석하여 일관된 결과물을 생성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ImageExtender를 초기화하고 확장 방향을 지정합니다.
+                
+                @Code(name: "ImageExtension.swift", file: "07-extension-01.swift")
+            }
+            
+            @Step {
+                확장 크기를 픽셀 또는 비율로 설정합니다.
+                
+                @Code(name: "ImageExtension.swift", file: "07-extension-02.swift")
+            }
+            
+            @Step {
+                확장을 실행하고 진행 상황을 모니터링합니다.
+                
+                @Code(name: "ImageExtension.swift", file: "07-extension-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "방향별 확장") {
+        @ContentAndMedia {
+            상하좌우 특정 방향만 확장하거나, 전체 방향으로 동시에 확장할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                특정 방향으로만 확장합니다.
+                
+                @Code(name: "DirectionalExtend.swift", file: "07-extension-04.swift")
+            }
+            
+            @Step {
+                비대칭 확장으로 원하는 구도를 만듭니다.
+                
+                @Code(name: "DirectionalExtend.swift", file: "07-extension-05.swift")
+            }
+            
+            @Step {
+                캔버스 비율에 맞게 자동으로 확장 방향을 계산합니다.
+                
+                @Code(name: "DirectionalExtend.swift", file: "07-extension-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프롬프트 기반 확장") {
+        @ContentAndMedia {
+            텍스트 프롬프트를 사용하여 확장 영역에 특정 콘텐츠가 생성되도록 가이드합니다.
+        }
+        
+        @Steps {
+            @Step {
+                확장 시 텍스트 프롬프트를 제공합니다.
+                
+                @Code(name: "PromptExtend.swift", file: "07-extension-07.swift")
+            }
+            
+            @Step {
+                네거티브 프롬프트로 원치 않는 요소를 제외합니다.
+                
+                @Code(name: "PromptExtend.swift", file: "07-extension-08.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Outpainting UI 구현") {
+        @ContentAndMedia {
+            사용자가 직접 확장 영역을 지정하고 결과를 확인할 수 있는 인터페이스를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                확장 영역을 시각화하는 캔버스 뷰를 만듭니다.
+                
+                @Code(name: "OutpaintCanvas.swift", file: "07-extension-09.swift")
+            }
+            
+            @Step {
+                드래그로 확장 영역 크기를 조절할 수 있게 합니다.
+                
+                @Code(name: "OutpaintCanvas.swift", file: "07-extension-10.swift")
+            }
+            
+            @Step {
+                확장 결과를 미리 보고 되돌리기 기능을 추가합니다.
+                
+                @Code(name: "OutpaintCanvas.swift", file: "07-extension-11.swift")
+            }
+        }
+    }
+    
+    @Section(title: "확장 품질 최적화") {
+        @ContentAndMedia {
+            생성 품질과 처리 시간의 균형을 맞추는 옵션들을 살펴봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                품질 프리셋을 선택하고 세부 옵션을 조정합니다.
+                
+                @Code(name: "QualityOptions.swift", file: "07-extension-12.swift")
+            }
+            
+            @Step {
+                시드 값을 고정하여 재현 가능한 결과를 얻습니다.
+                
+                @Code(name: "QualityOptions.swift", file: "07-extension-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            이미지 확장 시 원본과 자연스럽게 연결되지 않는 문제가 발생할 때 가장 효과적인 해결책은?
+            
+            @Choice(isCorrect: false) {
+                확장 크기를 늘린다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    확장 크기를 늘리면 오히려 불일치가 더 눈에 띌 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                품질 설정을 .fast로 변경한다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    빠른 품질 설정은 오히려 경계 부분의 자연스러움을 떨어뜨릴 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .blendRadius를 증가시키고 .seamlessMode를 활성화한다
+                
+                @Justification(reaction: "정답입니다!") {
+                    블렌드 반경 증가와 심리스 모드는 원본과 확장 영역 사이의 전환을 부드럽게 만듭니다.
+                }
+            }
+        }
+    }
+}

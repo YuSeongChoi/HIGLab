@@ -1,0 +1,240 @@
+@Tutorial(time: 20) {
+    @Intro(title: "HealthKit 위젯") {
+        WidgetKit을 사용하여 홈 화면에 건강 데이터를 표시하는 위젯을 만듭니다.
+        App Groups를 통한 데이터 공유와 권한 처리를 다룹니다.
+    }
+    
+    @Section(title: "Widget Extension 생성") {
+        @ContentAndMedia {
+            Widget Extension을 추가하고 HealthKit 연동을 위한 
+            기본 설정을 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Widget Extension 추가**
+                
+                File > New > Target에서 Widget Extension을 선택합니다.
+                "Include Configuration App Intent"를 체크합니다.
+                
+                @Code(name: "WidgetTarget.swift", file: "09-widget-target.swift")
+            }
+            
+            @Step {
+                **HealthKit Capability 추가**
+                
+                Widget Extension에도 HealthKit capability를 추가해야 합니다.
+                메인 앱과 별도로 설정이 필요합니다.
+                
+                @Code(name: "WidgetCapability.swift", file: "09-widget-capability.swift")
+            }
+            
+            @Step {
+                **App Groups 설정**
+                
+                메인 앱과 위젯이 데이터를 공유하려면 App Groups가 필요합니다.
+                메인 앱과 위젯 모두에 동일한 그룹을 추가합니다.
+                
+                @Code(name: "AppGroups.swift", file: "09-app-groups.swift")
+            }
+        }
+    }
+    
+    @Section(title: "위젯에서 HealthKit 사용") {
+        @ContentAndMedia {
+            위젯에서 직접 HealthKit 데이터를 조회하는 것은 
+            제한이 있으므로, 적절한 전략이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **위젯의 HealthKit 제한**
+                
+                위젯에서 직접 HKHealthStore를 사용할 수 있지만,
+                권한이 없으면 데이터를 가져올 수 없습니다.
+                메인 앱에서 먼저 권한을 받아야 합니다.
+                
+                @Code(name: "WidgetLimitations.swift", file: "09-widget-limitations.swift")
+            }
+            
+            @Step {
+                **TimelineProvider 구현**
+                
+                HealthKit 데이터를 조회하여 Timeline Entry를 생성합니다.
+                async getTimeline을 사용합니다.
+                
+                @Code(name: "TimelineProvider.swift", file: "09-timeline-provider.swift")
+            }
+            
+            @Step {
+                **Entry 모델 정의**
+                
+                위젯에 표시할 데이터를 담는 Entry를 정의합니다.
+                
+                @Code(name: "WidgetEntry.swift", file: "09-widget-entry.swift")
+            }
+            
+            @Step {
+                **위젯용 HealthKit 쿼리**
+                
+                위젯에서 사용할 간단한 HealthKit 조회 로직을 작성합니다.
+                
+                @Code(name: "WidgetHealthQuery.swift", file: "09-widget-health-query.swift")
+            }
+        }
+    }
+    
+    @Section(title: "위젯 UI 구현") {
+        @ContentAndMedia {
+            걸음 수와 목표 달성률을 표시하는 위젯 뷰를 만듭니다.
+            크기별로 다른 레이아웃을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Small 위젯 뷰**
+                
+                현재 걸음 수와 링 형태의 진행률을 표시합니다.
+                
+                @Code(name: "SmallWidgetView.swift", file: "09-small-widget-view.swift")
+            }
+            
+            @Step {
+                **Medium 위젯 뷰**
+                
+                걸음 수와 함께 심박수, 칼로리도 표시합니다.
+                
+                @Code(name: "MediumWidgetView.swift", file: "09-medium-widget-view.swift")
+            }
+            
+            @Step {
+                **권한 없음 상태 처리**
+                
+                HealthKit 권한이 없을 때 안내 메시지를 표시합니다.
+                
+                @Code(name: "NoPermissionView.swift", file: "09-no-permission-view.swift")
+            }
+            
+            @Step {
+                **Widget 정의**
+                
+                위젯 전체 구조를 정의하고 크기별 뷰를 연결합니다.
+                
+                @Code(name: "FitnessWidget.swift", file: "09-fitness-widget.swift")
+            }
+        }
+    }
+    
+    @Section(title: "위젯 갱신 전략") {
+        @ContentAndMedia {
+            위젯이 최신 데이터를 표시하도록 적절한 갱신 전략을 설정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Timeline 정책**
+                
+                .atEnd 또는 .after(date)로 다음 갱신 시점을 설정합니다.
+                건강 데이터는 15분~1시간 간격이 적절합니다.
+                
+                @Code(name: "TimelinePolicy.swift", file: "09-timeline-policy.swift")
+            }
+            
+            @Step {
+                **백그라운드 배달 연동**
+                
+                앞서 배운 enableBackgroundDelivery와 연동하면
+                데이터 변경 시 즉시 위젯을 갱신할 수 있습니다.
+                
+                @Code(name: "BackgroundWidgetRefresh.swift", file: "09-background-widget-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            위젯에서 HealthKit을 사용하려면 필요한 설정은?
+            
+            @Choice(isCorrect: true) {
+                Widget Extension에도 HealthKit capability를 추가
+                
+                @Justification(reaction: "정답!") {
+                    위젯은 별도의 타겟이므로 독립적으로 capability를 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메인 앱의 설정이 자동으로 적용된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Extension은 별도 타겟으로, 각각 설정이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HealthKit은 위젯에서 사용 불가
+                
+                @Justification(reaction: "아쉽네요") {
+                    위젯에서도 HealthKit을 사용할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            메인 앱과 위젯이 데이터를 공유하려면?
+            
+            @Choice(isCorrect: true) {
+                App Groups를 설정한다
+                
+                @Justification(reaction: "정답!") {
+                    App Groups를 통해 UserDefaults나 파일을 공유할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동으로 공유된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    앱과 Extension은 별도의 샌드박스에서 실행됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NotificationCenter를 사용한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    NotificationCenter는 같은 프로세스 내에서만 동작합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            위젯에서 HealthKit 권한이 없으면?
+            
+            @Choice(isCorrect: true) {
+                데이터를 가져올 수 없으므로 안내 메시지를 표시
+                
+                @Justification(reaction: "정답!") {
+                    위젯에서 권한을 요청할 수 없으므로, 
+                    앱에서 권한을 설정하라는 안내가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                위젯에서 권한 요청 UI가 나타난다
+                
+                @Justification(reaction: "아쉽네요") {
+                    위젯에서는 권한 요청 UI를 표시할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기본값이 표시된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    사용자에게 상황을 알려주는 것이 좋은 UX입니다.
+                }
+            }
+        }
+    }
+}

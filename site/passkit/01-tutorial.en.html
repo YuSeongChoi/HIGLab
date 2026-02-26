@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to PassKit passes/payments framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="💳 PassKit & Apple Pay — HIG Lab">
+    <meta property="og:description" content="Complete guide to PassKit passes/payments framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/passkit/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="💳 PassKit & Apple Pay — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to PassKit passes/payments framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/passkit/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/passkit/01-tutorial.en.html">
+<title>💳 PassKit & Apple Pay — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>💳 PassKit & Apple Pay</h1>
+<p>Integrate with the Wallet app and implement Apple Pay. One tap to pay!</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 2-3h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ PassKit is?</h2>
+<p>PassKit provides two key features: (1) Wallet Pass creation (membership cards, coupons, tickets, etc.), and (2) Apple Pay payment processing.</p>
+
+<h2>💳 Apple Pay Payment Implementation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ApplePayManager.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PassKit</span>
+
+<span class="kw">class</span> <span class="type">ApplePayManager</span>: <span class="type">NSObject</span>, <span class="type">PKPaymentAuthorizationViewControllerDelegate</span> {
+    <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">ApplePayManager</span>()
+
+    <span class="comment">// Apple Pay 지원 여부 확인</span>
+    <span class="kw">func</span> <span class="func">canMakePayments</span>() -> <span class="type">Bool</span> {
+        <span class="kw">return</span> <span class="type">PKPaymentAuthorizationViewController</span>.<span class="func">canMakePayments</span>()
+    }
+
+    <span class="comment">// 결제 요청 생성</span>
+    <span class="kw">func</span> <span class="func">createPaymentRequest</span>() -> <span class="type">PKPaymentRequest</span> {
+        <span class="kw">let</span> request = <span class="type">PKPaymentRequest</span>()
+        request.merchantIdentifier = <span class="str">"merchant.com.yourcompany.app"</span>
+        request.supportedNetworks = [.visa, .masterCard, .amex]
+        request.merchantCapabilities = .capability3DS
+        request.countryCode = <span class="str">"KR"</span>
+        request.currencyCode = <span class="str">"KRW"</span>
+
+        <span class="comment">// 결제 항목</span>
+        <span class="kw">let</span> item = <span class="type">PKPaymentSummaryItem</span>(
+            label: <span class="str">"프리미엄 멤버십"</span>,
+            amount: <span class="type">NSDecimalNumber</span>(value: <span class="num">9900</span>)
+        )
+
+        request.paymentSummaryItems = [item]
+        <span class="kw">return</span> request
+    }
+
+    <span class="comment">// 결제 시트 표시</span>
+    <span class="kw">func</span> <span class="func">startPayment</span>(from viewController: <span class="type">UIViewController</span>) {
+        <span class="kw">let</span> request = <span class="func">createPaymentRequest</span>()
+        <span class="kw">guard let</span> paymentVC = <span class="type">PKPaymentAuthorizationViewController</span>(paymentRequest: request) <span class="kw">else</span> {
+            <span class="kw">return</span>
+        }
+
+        paymentVC.delegate = <span class="kw">self</span>
+        viewController.present(paymentVC, animated: <span class="kw">true</span>)
+    }
+
+    <span class="comment">// 결제 완료 처리</span>
+    <span class="kw">func</span> <span class="func">paymentAuthorizationViewController</span>(
+        _ controller: <span class="type">PKPaymentAuthorizationViewController</span>,
+        didAuthorizePayment payment: <span class="type">PKPayment</span>,
+        handler completion: @<span class="kw">escaping</span> (<span class="type">PKPaymentAuthorizationResult</span>) -> <span class="type">Void</span>
+    ) {
+        <span class="comment">// 백엔드로 payment.token 전송</span>
+        <span class="func">processPayment</span>(payment.token) { success <span class="kw">in</span>
+            <span class="kw">if</span> success {
+                completion(<span class="type">PKPaymentAuthorizationResult</span>(status: .success, errors: <span class="kw">nil</span>))
+            } <span class="kw">else</span> {
+                completion(<span class="type">PKPaymentAuthorizationResult</span>(status: .failure, errors: <span class="kw">nil</span>))
+            }
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">paymentAuthorizationViewControllerDidFinish</span>(_ controller: <span class="type">PKPaymentAuthorizationViewController</span>) {
+        controller.dismiss(animated: <span class="kw">true</span>)
+    }
+
+    <span class="kw">func</span> <span class="func">processPayment</span>(_ token: <span class="type">PKPaymentToken</span>, completion: @<span class="kw">escaping</span> (<span class="type">Bool</span>) -> <span class="type">Void</span>) {
+        <span class="comment">// 실제 결제 처리 로직</span>
+        completion(<span class="kw">true</span>)
+    }
+}</pre></div>
+
+<h2>🎨 Apple Pay Button in SwiftUI</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ApplePayButton.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PassKit</span>
+
+<span class="kw">struct</span> <span class="type">ApplePayButtonView</span>: <span class="type">UIViewRepresentable</span> {
+    <span class="kw">var</span> <span class="prop">action</span>: () -> <span class="type">Void</span>
+
+    <span class="kw">func</span> <span class="func">makeUIView</span>(context: <span class="type">Context</span>) -> <span class="type">PKPaymentButton</span> {
+        <span class="kw">let</span> button = <span class="type">PKPaymentButton</span>(
+            paymentButtonType: .buy,
+            paymentButtonStyle: .black
+        )
+        button.addTarget(
+            context.coordinator,
+            action: #selector(<span class="type">Coordinator</span>.buttonTapped),
+            for: .touchUpInside
+        )
+        <span class="kw">return</span> button
+    }
+
+    <span class="kw">func</span> <span class="func">updateUIView</span>(_ uiView: <span class="type">PKPaymentButton</span>, context: <span class="type">Context</span>) {}
+
+    <span class="kw">func</span> <span class="func">makeCoordinator</span>() -> <span class="type">Coordinator</span> {
+        <span class="type">Coordinator</span>(action: action)
+    }
+
+    <span class="kw">class</span> <span class="type">Coordinator</span>: <span class="type">NSObject</span> {
+        <span class="kw">var</span> <span class="prop">action</span>: () -> <span class="type">Void</span>
+
+        <span class="kw">init</span>(action: @<span class="kw">escaping</span> () -> <span class="type">Void</span>) {
+            <span class="kw">self</span>.action = action
+        }
+
+        @<span class="func">objc</span> <span class="kw">func</span> <span class="func">buttonTapped</span>() {
+            <span class="func">action</span>()
+        }
+    }
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">struct</span> <span class="type">CheckoutView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"총 9,900원"</span>)
+                .font(.title)
+
+            <span class="type">ApplePayButtonView</span> {
+                <span class="comment">// Apple Pay 결제 시작</span>
+                <span class="type">ApplePayManager</span>.shared.<span class="func">startPayment</span>(from: <span class="type">UIApplication</span>.shared.windows.first!.rootViewController!)
+            }
+            .frame(height: <span class="num">50</span>)
+            .padding()
+        }
+    }
+}</pre></div>
+
+<h2>🎫 Creating Wallet Pass</h2>
+<p>Add membership cards, coupons, tickets and more to the Wallet app.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">CreatePass.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PassKit</span>
+
+<span class="kw">func</span> <span class="func">addPassToWallet</span>(passURL: <span class="type">URL</span>) {
+    <span class="kw">guard let</span> passData = <span class="kw">try</span>? <span class="type">Data</span>(contentsOf: passURL) <span class="kw">else</span> { <span class="kw">return</span> }
+    <span class="kw">guard let</span> pass = <span class="kw">try</span>? <span class="type">PKPass</span>(data: passData) <span class="kw">else</span> { <span class="kw">return</span> }
+
+    <span class="kw">let</span> addPassVC = <span class="type">PKAddPassesViewController</span>(pass: pass)
+    <span class="comment">// present addPassVC</span>
+}
+
+<span class="comment">// Pass 업데이트 푸시 알림</span>
+<span class="kw">func</span> <span class="func">sendPassUpdateNotification</span>(passTypeIdentifier: <span class="type">String</span>, serialNumber: <span class="type">String</span>) {
+    <span class="comment">// Server에서 Apple Push Notification 전송</span>
+    <span class="comment">// User Wallet의 Pass가 Automatically 업데이트됨</span>
+}</pre></div>
+
+<h2>📱 Accessing Pass Library</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">PassLibrary.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PassKit</span>
+
+<span class="kw">class</span> <span class="type">PassManager</span> {
+    <span class="kw">let</span> <span class="prop">library</span> = <span class="type">PKPassLibrary</span>()
+
+    <span class="comment">// User의 Wallet에 특정 Pass가 있는지 확인</span>
+    <span class="kw">func</span> <span class="func">hasPass</span>(passTypeIdentifier: <span class="type">String</span>, serialNumber: <span class="type">String</span>) -> <span class="type">Bool</span> {
+        <span class="kw">return</span> library.<span class="func">containsPass</span>(
+            withPassTypeIdentifier: passTypeIdentifier,
+            serialNumber: serialNumber
+        )
+    }
+
+    <span class="comment">// 특정 Pass Fetch</span>
+    <span class="kw">func</span> <span class="func">getPass</span>(passTypeIdentifier: <span class="type">String</span>, serialNumber: <span class="type">String</span>) -> <span class="type">PKPass</span>? {
+        <span class="kw">return</span> library.<span class="func">pass</span>(
+            withPassTypeIdentifier: passTypeIdentifier,
+            serialNumber: serialNumber
+        )
+    }
+
+    <span class="comment">// all Pass Fetch</span>
+    <span class="kw">func</span> <span class="func">getAllPasses</span>() -> [<span class="type">PKPass</span>] {
+        <span class="kw">return</span> library.passes
+    }
+
+    <span class="comment">// Pass 삭제</span>
+    <span class="kw">func</span> <span class="func">removePass</span>(_ pass: <span class="type">PKPass</span>) {
+        library.<span class="func">removePass</span>(pass)
+    }
+}</pre></div>
+
+<h2>🔄 Detecting Pass Updates</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">PassNotifications.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">PassKit</span>
+
+<span class="kw">class</span> <span class="type">PassObserver</span> {
+    <span class="kw">let</span> <span class="prop">library</span> = <span class="type">PKPassLibrary</span>()
+
+    <span class="kw">func</span> <span class="func">observePassChanges</span>() {
+        <span class="type">NotificationCenter</span>.default.<span class="func">addObserver</span>(
+            <span class="kw">self</span>,
+            selector: #selector(<span class="func">passLibraryDidChange</span>),
+            name: .<span class="type">PKPassLibraryDidChange</span>,
+            object: library
+        )
+
+        <span class="type">NotificationCenter</span>.default.<span class="func">addObserver</span>(
+            <span class="kw">self</span>,
+            selector: #selector(<span class="func">passLibraryRemoteDidChange</span>),
+            name: .<span class="type">PKPassLibraryRemotePaymentPassesDidChange</span>,
+            object: library
+        )
+    }
+
+    @<span class="func">objc</span> <span class="kw">func</span> <span class="func">passLibraryDidChange</span>() {
+        <span class="func">print</span>(<span class="str">"Pass 라이브러리 변경됨"</span>)
+        <span class="comment">// UI 업데이트</span>
+    }
+
+    @<span class="func">objc</span> <span class="kw">func</span> <span class="func">passLibraryRemoteDidChange</span>() {
+        <span class="func">print</span>(<span class="str">"원격 결제 Pass 변경됨"</span>)
+    }
+}</pre></div>
+
+<h2>💰 Requesting Shipping Info</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ShippingMethods.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">createPaymentRequest</span>() -> <span class="type">PKPaymentRequest</span> {
+    <span class="kw">let</span> request = <span class="type">PKPaymentRequest</span>()
+    <span class="comment">// ... Default settings</span>
+
+    <span class="comment">// 배송 정보 요청</span>
+    request.requiredShippingContactFields = [.name, .postalAddress, .phoneNumber]
+
+    <span class="comment">// 배송 방법</span>
+    <span class="kw">let</span> standard = <span class="type">PKShippingMethod</span>(
+        label: <span class="str">"일반 배송"</span>,
+        amount: <span class="type">NSDecimalNumber</span>(value: <span class="num">3000</span>)
+    )
+    standard.identifier = <span class="str">"standard"</span>
+    standard.detail = <span class="str">"3-5일 소요"</span>
+
+    <span class="kw">let</span> express = <span class="type">PKShippingMethod</span>(
+        label: <span class="str">"빠른 배송"</span>,
+        amount: <span class="type">NSDecimalNumber</span>(value: <span class="num">5000</span>)
+    )
+    express.identifier = <span class="str">"express"</span>
+    express.detail = <span class="str">"1-2일 소요"</span>
+
+    request.shippingMethods = [standard, express]
+
+    <span class="kw">return</span> request
+}
+
+<span class="comment">// 배송 정보 변경 시</span>
+<span class="kw">func</span> <span class="func">paymentAuthorizationViewController</span>(
+    _ controller: <span class="type">PKPaymentAuthorizationViewController</span>,
+    didSelect shippingMethod: <span class="type">PKShippingMethod</span>,
+    handler completion: @<span class="kw">escaping</span> (<span class="type">PKPaymentRequestShippingMethodUpdate</span>) -> <span class="type">Void</span>
+) {
+    <span class="comment">// 배송 방법에 따라 총액 업데이트</span>
+    <span class="kw">let</span> item = <span class="type">PKPaymentSummaryItem</span>(label: <span class="str">"상품"</span>, amount: <span class="num">9900</span>)
+    <span class="kw">let</span> shipping = <span class="type">PKPaymentSummaryItem</span>(label: shippingMethod.label, amount: shippingMethod.amount)
+    <span class="kw">let</span> total = <span class="type">PKPaymentSummaryItem</span>(
+        label: <span class="str">"총 합계"</span>,
+        amount: item.amount.adding(shipping.amount)
+    )
+
+    <span class="kw">let</span> update = <span class="type">PKPaymentRequestShippingMethodUpdate</span>(paymentSummaryItems: [item, shipping, total])
+    completion(update)
+}</pre></div>
+
+<h2>🎯 Applying Coupons</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CouponCode.swift</span></div>
+<pre class="code-body"><span class="kw">func</span> <span class="func">createPaymentRequest</span>() -> <span class="type">PKPaymentRequest</span> {
+    <span class="kw">let</span> request = <span class="type">PKPaymentRequest</span>()
+    <span class="comment">// ... Default settings</span>
+
+    <span class="comment">// 쿠폰 코드 입력 지원 (iOS 15+)</span>
+    request.supportsCouponCode = <span class="kw">true</span>
+
+    <span class="kw">return</span> request
+}
+
+<span class="kw">func</span> <span class="func">paymentAuthorizationViewController</span>(
+    _ controller: <span class="type">PKPaymentAuthorizationViewController</span>,
+    didChangeCouponCode couponCode: <span class="type">String</span>,
+    handler completion: @<span class="kw">escaping</span> (<span class="type">PKPaymentRequestCouponCodeUpdate</span>) -> <span class="type">Void</span>
+) {
+    <span class="comment">// 쿠폰 유효성 검사</span>
+    <span class="kw">if</span> couponCode == <span class="str">"WELCOME10"</span> {
+        <span class="kw">let</span> discount = <span class="type">PKPaymentSummaryItem</span>(
+            label: <span class="str">"할인 (-10%)"</span>,
+            amount: <span class="type">NSDecimalNumber</span>(value: <span class="num">-990</span>)
+        )
+        <span class="kw">let</span> item = <span class="type">PKPaymentSummaryItem</span>(label: <span class="str">"상품"</span>, amount: <span class="num">9900</span>)
+        <span class="kw">let</span> total = <span class="type">PKPaymentSummaryItem</span>(label: <span class="str">"총 합계"</span>, amount: <span class="num">8910</span>)
+
+        <span class="kw">let</span> update = <span class="type">PKPaymentRequestCouponCodeUpdate</span>(
+            paymentSummaryItems: [item, discount, total]
+        )
+        completion(update)
+    } <span class="kw">else</span> {
+        <span class="kw">let</span> error = <span class="type">PKPaymentRequest</span>.<span class="type">Error</span>(
+            .couponCodeInvalid,
+            localizedDescription: <span class="str">"유효하지 않은 쿠폰 코드입니다"</span>
+        )
+        <span class="kw">let</span> update = <span class="type">PKPaymentRequestCouponCodeUpdate</span>(errors: [error], paymentSummaryItems: [], shippingMethods: [])
+        completion(update)
+    }
+}</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ Use official Apple Pay buttons (custom designs not allowed)<br>
+✅ 결제 전 총액 명확히 표시<br>
+✅ 배송비, 세금 등 추가 비용 명시<br>
+✅ 에러 메시지는 사용자 친화적으로<br>
+✅ 결제 완료 후 명확한 피드백</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/apple-pay" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+<a href="https://developer.apple.com/documentation/passkit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/passkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=PassKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

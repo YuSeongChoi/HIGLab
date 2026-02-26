@@ -1,0 +1,117 @@
+@Tutorial(time: 20) {
+    @Intro(title: "App Entity 정의하기") {
+        앱의 데이터 모델을 Siri와 단축어에서 사용할 수 있도록 Entity로 노출합니다.
+        
+        @Image(source: "placeholder.png", alt: "App Entity 개념")
+    }
+    
+    @Section(title: "AppEntity 프로토콜") {
+        @ContentAndMedia {
+            `AppEntity`는 앱의 핵심 데이터를 시스템에 노출하는 프로토콜입니다.
+            
+            - 고유 식별자 (`id`)
+            - 표시 이름 (`displayRepresentation`)
+            - 타입 설명 (`typeDisplayRepresentation`)
+        }
+        
+        @Steps {
+            @Step {
+                앱의 데이터 모델을 Entity로 변환합니다.
+                
+                `AppEntity` 프로토콜을 채택하고 필수 속성들을 구현합니다.
+                
+                @Code(name: "BookEntity.swift", file: "06-entity.swift")
+            }
+            
+            @Step {
+                `displayRepresentation`으로 Siri가 Entity를 어떻게 표시할지 정의합니다.
+                
+                제목, 부제목, 이미지를 포함할 수 있습니다.
+                
+                @Code(name: "BookEntity.swift", file: "06-entity-display.swift")
+            }
+            
+            @Step {
+                `typeDisplayRepresentation`으로 Entity 타입의 이름을 정의합니다.
+                
+                "책", "할 일" 등 사용자가 이해하기 쉬운 이름을 사용합니다.
+                
+                @Code(name: "BookEntity.swift", file: "06-entity-type.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Entity 속성 노출하기") {
+        @ContentAndMedia {
+            `@Property` 래퍼를 사용해 Entity의 속성을 Siri에서 접근할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Entity의 속성에 `@Property`를 적용합니다.
+                
+                이 속성들은 단축어에서 필터링이나 정렬에 사용됩니다.
+                
+                @Code(name: "BookEntity.swift", file: "06-entity-properties.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AppEntity에서 반드시 구현해야 하는 속성은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                `name`과 `description`
+                
+                @Justification(reaction: "다시 생각해보세요!") {
+                    이 속성들은 AppEntity의 필수 요구사항이 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `id`와 `displayRepresentation`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AppEntity는 고유 식별자와 표시 방법이 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `title`과 `subtitle`
+                
+                @Justification(reaction: "아쉽네요!") {
+                    이것들은 DisplayRepresentation의 구성요소이지 Entity의 필수 속성이 아닙니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Entity의 속성을 단축어에서 사용하려면 어떤 래퍼를 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                `@Property`
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    @Property로 래핑된 속성은 단축어에서 필터링과 정렬에 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `@Published`
+                
+                @Justification(reaction: "아니에요!") {
+                    @Published는 Combine 프레임워크의 속성 래퍼입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `@State`
+                
+                @Justification(reaction: "다시 확인해보세요!") {
+                    @State는 SwiftUI의 뷰 상태 관리용 래퍼입니다.
+                }
+            }
+        }
+    }
+}

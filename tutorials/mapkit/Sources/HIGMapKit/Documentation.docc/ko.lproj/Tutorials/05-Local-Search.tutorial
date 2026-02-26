@@ -1,0 +1,178 @@
+@Tutorial(time: 25) {
+    @Intro(title: "지역 검색 (MKLocalSearch)") {
+        MKLocalSearch를 사용하여 주변 맛집을 검색합니다.
+        자연어 쿼리와 카테고리 필터로 원하는 장소를 찾습니다.
+    }
+    
+    @Section(title: "MKLocalSearch 기초") {
+        @ContentAndMedia {
+            MKLocalSearch는 Apple Maps의 POI(Point of Interest) 데이터를 검색합니다.
+            음식점, 카페 등 다양한 장소를 찾을 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **검색 요청 생성**
+                
+                MKLocalSearch.Request로 검색 조건을 설정합니다.
+                검색어, 검색 영역, 결과 유형을 지정합니다.
+                
+                @Code(name: "SearchService.swift", file: "05-search-request.swift")
+            }
+            
+            @Step {
+                **검색 실행**
+                
+                async/await로 검색을 실행하고 결과를 받습니다.
+                MKMapItem 배열로 장소 정보가 반환됩니다.
+                
+                @Code(name: "SearchService.swift", file: "05-execute-search.swift")
+            }
+            
+            @Step {
+                **검색 결과 파싱**
+                
+                MKMapItem에서 이름, 좌표, 전화번호, URL 등을 추출합니다.
+                우리의 Restaurant 모델로 변환합니다.
+                
+                @Code(name: "SearchService.swift", file: "05-parse-results.swift")
+            }
+        }
+    }
+    
+    @Section(title: "카테고리 기반 검색") {
+        @ContentAndMedia {
+            MKPointOfInterestCategory를 사용하면 
+            특정 유형의 장소만 필터링할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **음식점 카테고리 필터**
+                
+                .restaurant, .cafe, .bakery 등 음식 관련 카테고리로 검색합니다.
+                pointOfInterestFilter로 결과를 제한합니다.
+                
+                @Code(name: "SearchService.swift", file: "05-category-filter.swift")
+            }
+            
+            @Step {
+                **복수 카테고리 검색**
+                
+                여러 카테고리를 포함하는 필터를 만듭니다.
+                맛집 앱에 적합한 모든 음식점 유형을 검색합니다.
+                
+                @Code(name: "SearchService.swift", file: "05-multi-category.swift")
+            }
+            
+            @Step {
+                **자연어 쿼리와 조합**
+                
+                "이탈리안 레스토랑", "비건 카페" 등 
+                자연어 검색과 카테고리 필터를 함께 사용합니다.
+                
+                @Code(name: "SearchService.swift", file: "05-natural-query.swift")
+            }
+        }
+    }
+    
+    @Section(title: "검색 UI 구현") {
+        @ContentAndMedia {
+            검색창과 결과 목록을 만들어 
+            사용자가 맛집을 검색할 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SearchViewModel 생성**
+                
+                검색 상태와 로직을 관리하는 ViewModel을 만듭니다.
+                debounce로 타이핑 중 과도한 API 호출을 방지합니다.
+                
+                @Code(name: "SearchViewModel.swift", file: "05-search-viewmodel.swift")
+            }
+            
+            @Step {
+                **검색 UI 구성**
+                
+                TextField와 검색 결과 List를 구현합니다.
+                .searchable 수정자로 네이티브 검색 UX를 제공합니다.
+                
+                @Code(name: "SearchView.swift", file: "05-search-ui.swift")
+            }
+            
+            @Step {
+                **지도와 연동**
+                
+                검색 결과 선택 시 지도에서 해당 위치로 이동합니다.
+                마커를 강조 표시합니다.
+                
+                @Code(name: "ContentView.swift", file: "05-map-integration.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MKLocalSearch의 결과 타입은?
+            
+            @Choice(isCorrect: true) {
+                MKLocalSearch.Response (MKMapItem 배열 포함)
+                
+                @Justification(reaction: "정답!") {
+                    search.start()는 MKLocalSearch.Response를 반환하고,
+                    response.mapItems로 결과 배열에 접근합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                [CLLocation] 배열
+                
+                @Justification(reaction: "아쉽네요") {
+                    CLLocation은 위치 정보만 담습니다.
+                    검색 결과는 MKMapItem으로 반환되며 장소의 다양한 정보를 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                [String] 장소명 배열
+                
+                @Justification(reaction: "아쉽네요") {
+                    MKMapItem은 이름, 좌표, 연락처, URL 등 
+                    풍부한 장소 정보를 포함합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            검색 영역을 제한하려면 어떤 프로퍼티를 설정해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                request.region
+                
+                @Justification(reaction: "정확합니다!") {
+                    MKLocalSearch.Request의 region 프로퍼티로 
+                    검색 범위를 MKCoordinateRegion으로 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                request.coordinate
+                
+                @Justification(reaction: "아쉽네요") {
+                    단일 좌표가 아닌 region(영역)을 설정해야 합니다.
+                    region은 중심점과 span(범위)을 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                request.radius
+                
+                @Justification(reaction: "아쉽네요") {
+                    radius 프로퍼티는 없습니다.
+                    region의 span으로 검색 범위를 조절합니다.
+                }
+            }
+        }
+    }
+}

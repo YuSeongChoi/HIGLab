@@ -1,0 +1,239 @@
+@Tutorial(time: 15) {
+    @Intro(title: "백그라운드 배달 (enableBackgroundDelivery)") {
+        HealthKit 데이터가 변경될 때 백그라운드에서 알림을 받는 방법을 배웁니다.
+        앱이 실행 중이지 않아도 최신 데이터를 유지할 수 있습니다.
+    }
+    
+    @Section(title: "백그라운드 배달 이해하기") {
+        @ContentAndMedia {
+            **enableBackgroundDelivery**를 사용하면 HealthKit 데이터가 
+            변경될 때 시스템이 앱을 깨워 알려줍니다.
+            위젯 업데이트, 알림 전송 등에 활용됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **동작 방식**
+                
+                1. 앱에서 enableBackgroundDelivery 등록
+                2. 다른 앱/기기에서 HealthKit 데이터 변경
+                3. 시스템이 앱을 백그라운드에서 깨움
+                4. HKObserverQuery 콜백 실행
+                5. 필요한 작업 수행 (위젯 갱신, 알림 등)
+                
+                @Code(name: "BackgroundFlow.swift", file: "08-background-flow.swift")
+            }
+            
+            @Step {
+                **빈도 설정**
+                
+                HKUpdateFrequency로 알림 빈도를 설정합니다:
+                - .immediate: 즉시 (배터리 소모 주의)
+                - .hourly: 시간당 최대 1회
+                - .daily: 하루 최대 1회
+                - .weekly: 주당 최대 1회
+                
+                @Code(name: "UpdateFrequency.swift", file: "08-update-frequency.swift")
+            }
+            
+            @Step {
+                **Background Modes 설정**
+                
+                Xcode에서 Background Modes capability를 추가하고
+                "Background fetch"를 활성화해야 합니다.
+                
+                @Code(name: "BackgroundModes.swift", file: "08-background-modes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HKObserverQuery 구현") {
+        @ContentAndMedia {
+            **HKObserverQuery**는 데이터 변경을 감지하는 장기 실행 쿼리입니다.
+            백그라운드 배달과 함께 사용하면 앱이 꺼져있어도 알림을 받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ObserverQuery 생성**
+                
+                특정 데이터 타입의 변경을 감지하는 Observer를 생성합니다.
+                
+                @Code(name: "ObserverQuery.swift", file: "08-observer-query.swift")
+            }
+            
+            @Step {
+                **completionHandler 호출 필수**
+                
+                백그라운드에서 깨어났을 때 반드시 completionHandler를 호출해야 합니다.
+                시스템에게 작업 완료를 알리는 것입니다.
+                
+                @Code(name: "CompletionHandler.swift", file: "08-completion-handler.swift")
+            }
+            
+            @Step {
+                **enableBackgroundDelivery 호출**
+                
+                앱 시작 시 백그라운드 배달을 활성화합니다.
+                보통 AppDelegate 또는 @main App에서 호출합니다.
+                
+                @Code(name: "EnableDelivery.swift", file: "08-enable-delivery.swift")
+            }
+            
+            @Step {
+                **여러 데이터 타입 등록**
+                
+                걸음 수, 심박수 등 여러 타입에 대해 등록할 수 있습니다.
+                
+                @Code(name: "MultipleTypes.swift", file: "08-multiple-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실전 활용: 위젯 갱신") {
+        @ContentAndMedia {
+            백그라운드 배달을 사용하여 건강 데이터가 변경되면
+            자동으로 위젯을 갱신하는 패턴을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **WidgetCenter 갱신 요청**
+                
+                데이터 변경 시 WidgetCenter.shared.reloadTimelines를 호출합니다.
+                
+                @Code(name: "WidgetRefresh.swift", file: "08-widget-refresh.swift")
+            }
+            
+            @Step {
+                **HealthManager에 통합**
+                
+                백그라운드 배달 설정을 HealthManager에 통합합니다.
+                
+                @Code(name: "HealthManager.swift", file: "08-health-manager-background.swift")
+            }
+            
+            @Step {
+                **App에서 초기화**
+                
+                앱 시작 시 백그라운드 배달을 설정합니다.
+                
+                @Code(name: "AppSetup.swift", file: "08-app-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "주의사항 & 최적화") {
+        @ContentAndMedia {
+            백그라운드 배달은 배터리와 시스템 리소스를 사용합니다.
+            적절한 빈도 설정과 효율적인 처리가 중요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **배터리 최적화**
+                
+                .immediate 대신 .hourly나 .daily를 사용하면
+                배터리 소모를 크게 줄일 수 있습니다.
+                
+                @Code(name: "BatteryOptimization.swift", file: "08-battery-optimization.swift")
+            }
+            
+            @Step {
+                **시뮬레이터 제한**
+                
+                백그라운드 배달은 시뮬레이터에서 테스트가 어렵습니다.
+                실제 기기에서 테스트해야 합니다.
+                
+                @Code(name: "SimulatorNote.swift", file: "08-simulator-note.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            enableBackgroundDelivery를 사용하려면 필요한 설정은?
+            
+            @Choice(isCorrect: true) {
+                Background Modes capability의 "Background fetch" 활성화
+                
+                @Justification(reaction: "정답!") {
+                    이 설정 없이는 백그라운드에서 앱이 깨어나지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Push Notifications 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    HealthKit 백그라운드 배달은 Push와 별개입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Location Updates 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    위치가 아닌 건강 데이터 업데이트를 감지합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HKUpdateFrequency.immediate의 단점은?
+            
+            @Choice(isCorrect: true) {
+                배터리 소모가 크다
+                
+                @Justification(reaction: "정답!") {
+                    즉각적인 알림은 배터리를 많이 소모합니다. 
+                    꼭 필요한 경우가 아니면 hourly나 daily를 권장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                정확도가 떨어진다
+                
+                @Justification(reaction: "아쉽네요") {
+                    immediate가 가장 빠르고 정확합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                시뮬레이터에서만 동작한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    오히려 시뮬레이터에서 테스트가 어렵습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HKObserverQuery 콜백에서 반드시 해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                completionHandler() 호출
+                
+                @Justification(reaction: "정답!") {
+                    시스템에게 작업 완료를 알려야 앱이 다시 suspended 상태로 갈 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                healthStore.stop(query)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Observer는 계속 실행되어야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UserDefaults 저장
+                
+                @Justification(reaction: "아쉽네요") {
+                    필수는 아닙니다.
+                }
+            }
+        }
+    }
+}

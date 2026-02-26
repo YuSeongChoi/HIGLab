@@ -1,0 +1,159 @@
+@Tutorial(time: 12) {
+    @Intro(title: "차단 & 스팸 식별") {
+        Call Directory Extension을 활용하여 
+        스팸 전화 차단과 식별 기능을 구현합니다.
+    }
+    
+    @Section(title: "전화번호 차단 구현") {
+        @ContentAndMedia {
+            `addBlockingEntry`를 사용하여 
+            특정 전화번호를 차단합니다.
+        }
+        
+        @Steps {
+            @Step {
+                차단할 전화번호 목록을 준비합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "09-01-block-list.swift")
+            }
+            
+            @Step {
+                addBlockingEntry 메서드로 등록합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "09-02-add-blocking.swift")
+            }
+            
+            @Step {
+                차단 및 식별을 함께 구현합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "09-03-block-identify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "스팸 데이터베이스 관리") {
+        @ContentAndMedia {
+            스팸 전화번호 데이터베이스를 
+            구축하고 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                스팸 데이터 모델을 정의합니다.
+                
+                @Code(name: "SpamEntry.swift", file: "09-04-spam-model.swift")
+            }
+            
+            @Step {
+                로컬 스팸 데이터베이스를 구현합니다.
+                
+                @Code(name: "SpamDatabase.swift", file: "09-05-spam-db.swift")
+            }
+            
+            @Step {
+                서버에서 스팸 목록을 동기화합니다.
+                
+                @Code(name: "SpamSyncService.swift", file: "09-06-sync.swift")
+            }
+            
+            @Step {
+                증분 업데이트를 구현합니다.
+                
+                @Code(name: "CallDirectoryHandler.swift", file: "09-07-incremental-update.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사용자 신고 기능") {
+        @ContentAndMedia {
+            사용자가 스팸 전화를 신고할 수 있는 
+            기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                스팸 신고 UI를 구현합니다.
+                
+                @Code(name: "ReportSpamView.swift", file: "09-08-report-ui.swift")
+            }
+            
+            @Step {
+                신고 데이터를 저장합니다.
+                
+                @Code(name: "SpamReporter.swift", file: "09-09-report-save.swift")
+            }
+            
+            @Step {
+                Extension 새로고침을 트리거합니다.
+                
+                @Code(name: "SpamReporter.swift", file: "09-10-trigger-reload.swift")
+            }
+            
+            @Step {
+                전체 스팸 관리 시스템을 완성합니다.
+                
+                @Code(name: "SpamManager.swift", file: "09-11-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Call Directory Extension에서 전화번호를 차단하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `addBlockingEntry(withNextSequentialPhoneNumber:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이 메서드로 전화번호를 
+                    시스템 차단 목록에 추가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `blockPhoneNumber(_:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `addToBlockList(phoneNumber:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 메서드는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            차단과 발신자 식별 중 어떤 것이 먼저 등록되어야 하나요?
+            
+            @Choice(isCorrect: true) {
+                차단 (Blocking)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `beginRequest`에서 차단 항목을 먼저 등록한 후 
+                    식별 항목을 등록해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                발신자 식별 (Identification)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    차단 항목이 먼저 등록되어야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                순서 상관없음
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    시스템은 특정 순서를 요구합니다.
+                }
+            }
+        }
+    }
+}

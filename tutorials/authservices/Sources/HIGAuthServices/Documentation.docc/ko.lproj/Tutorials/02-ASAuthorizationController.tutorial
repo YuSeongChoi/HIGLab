@@ -1,0 +1,194 @@
+@Tutorial(time: 18) {
+    @Intro(title: "ASAuthorizationController 설정") {
+        인증 컨트롤러를 초기화하고 델리게이트를 구성하여
+        Sign in with Apple 인증 흐름을 관리합니다.
+        
+        @Image(source: "auth-controller.png", alt: "ASAuthorizationController 구조")
+    }
+    
+    @Section(title: "ASAuthorizationAppleIDProvider 생성") {
+        @ContentAndMedia {
+            ASAuthorizationAppleIDProvider는 Apple ID 인증 요청을 
+            생성하는 핵심 클래스입니다.
+            
+            - 인증 요청(Request) 생성
+            - 자격 증명 상태 확인
+            - User Identifier 기반 검증
+        }
+        
+        @Steps {
+            @Step {
+                Provider를 생성하고 인증 요청을 만듭니다.
+                요청 시 필요한 정보 범위(scopes)를 지정합니다.
+                
+                @Code(name: "AppleIDProvider.swift", file: "02-01-provider.swift")
+            }
+            
+            @Step {
+                fullName과 email scope를 요청하면
+                사용자에게 해당 정보 공유 동의를 요청합니다.
+                
+                @Code(name: "RequestScopes.swift", file: "02-02-scopes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ASAuthorizationController 초기화") {
+        @ContentAndMedia {
+            ASAuthorizationController는 실제 인증 UI를 표시하고
+            사용자 인터랙션을 처리합니다.
+            
+            - 하나 이상의 인증 요청을 받아 처리
+            - 시스템 인증 시트 표시
+            - 결과를 델리게이트로 전달
+        }
+        
+        @Steps {
+            @Step {
+                Authorization 요청 배열로 컨트롤러를 초기화합니다.
+                여러 인증 방식을 동시에 제공할 수 있습니다.
+                
+                @Code(name: "ControllerInit.swift", file: "02-03-controller-init.swift")
+            }
+            
+            @Step {
+                delegate와 presentationContextProvider를 설정합니다.
+                두 프로토콜 모두 구현이 필요합니다.
+                
+                @Code(name: "DelegateSetup.swift", file: "02-04-delegate-setup.swift")
+            }
+            
+            @Step {
+                performRequests()를 호출하여 인증 흐름을 시작합니다.
+                시스템이 적절한 인증 UI를 자동으로 표시합니다.
+                
+                @Code(name: "PerformRequests.swift", file: "02-05-perform-requests.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Delegate 프로토콜 구현") {
+        @ContentAndMedia {
+            ASAuthorizationControllerDelegate를 통해
+            인증 성공/실패 결과를 처리합니다.
+            
+            - `didCompleteWithAuthorization`: 성공 시 자격 증명 수신
+            - `didCompleteWithError`: 오류 처리
+        }
+        
+        @Steps {
+            @Step {
+                didCompleteWithAuthorization에서 
+                ASAuthorizationAppleIDCredential을 추출합니다.
+                
+                @Code(name: "SuccessHandler.swift", file: "02-06-success-handler.swift")
+            }
+            
+            @Step {
+                인증 실패 시 발생하는 오류를 처리합니다.
+                사용자가 취소한 경우와 실제 오류를 구분합니다.
+                
+                @Code(name: "ErrorHandler.swift", file: "02-07-error-handler.swift")
+            }
+            
+            @Step {
+                ASError.Code를 활용해 세부 오류를 구분합니다.
+                
+                - `.canceled`: 사용자가 취소
+                - `.failed`: 인증 실패
+                - `.invalidResponse`: 잘못된 응답
+                - `.notHandled`: 처리되지 않음
+                
+                @Code(name: "ErrorCodes.swift", file: "02-08-error-codes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PresentationContextProvider 구현") {
+        @ContentAndMedia {
+            ASAuthorizationControllerPresentationContextProviding은
+            인증 시트를 표시할 윈도우를 지정합니다.
+            
+            UIKit과 SwiftUI에서 구현 방식이 다릅니다.
+        }
+        
+        @Steps {
+            @Step {
+                UIKit에서는 현재 ViewController의 
+                view.window를 반환합니다.
+                
+                @Code(name: "UIKitContext.swift", file: "02-09-uikit-context.swift")
+            }
+            
+            @Step {
+                SwiftUI에서는 UIWindowScene을 통해 
+                활성 윈도우를 찾습니다.
+                
+                @Code(name: "SwiftUIContext.swift", file: "02-10-swiftui-context.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ASAuthorizationController를 사용하려면 
+            반드시 구현해야 하는 프로토콜은?
+            
+            @Choice(isCorrect: false) {
+                ASAuthorizationControllerDelegate만 구현하면 된다.
+                
+                @Justification(reaction: "일부만 맞습니다.") {
+                    PresentationContextProviding도 함께 
+                    구현해야 인증 시트가 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ASAuthorizationControllerDelegate와 
+                ASAuthorizationControllerPresentationContextProviding.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Delegate는 결과 처리, PresentationContextProviding은
+                    UI 표시 위치를 지정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASAuthorizationAppleIDProviderDelegate.
+                
+                @Justification(reaction: "존재하지 않는 프로토콜입니다.") {
+                    Provider에는 별도의 delegate가 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사용자가 인증을 취소했을 때 발생하는 오류 코드는?
+            
+            @Choice(isCorrect: true) {
+                ASError.Code.canceled
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    취소 시 .canceled 오류가 발생하며,
+                    이는 오류 메시지를 표시하지 않아도 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASError.Code.failed
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    .failed는 실제 인증 실패 시 발생합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASError.Code.userCancelled
+                
+                @Justification(reaction: "오류 코드 이름이 다릅니다.") {
+                    정확한 이름은 .canceled입니다.
+                }
+            }
+        }
+    }
+}

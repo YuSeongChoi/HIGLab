@@ -1,0 +1,157 @@
+@Tutorial(time: 15) {
+    @Intro(title: "리마인더 관리") {
+        EventKit으로 리마인더를 생성, 조회, 
+        완료 처리하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "리마인더 권한") {
+        @ContentAndMedia {
+            리마인더는 캘린더와 별도의 권한을 요청해야 합니다.
+            iOS 17부터 `requestFullAccessToReminders()`를 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                리마인더 접근 권한을 요청합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "08-01-auth.swift")
+            }
+            
+            @Step {
+                리마인더용 캘린더를 가져옵니다.
+                
+                @Code(name: "CalendarManager.swift", file: "08-02-calendars.swift")
+            }
+        }
+    }
+    
+    @Section(title: "리마인더 생성") {
+        @ContentAndMedia {
+            `EKReminder`로 새로운 리마인더를 생성합니다. 
+            제목, 기한, 우선순위를 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                새 리마인더를 생성합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-03-create.swift")
+            }
+            
+            @Step {
+                기한(due date)을 설정합니다.
+                
+                리마인더는 DateComponents를 사용합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-04-due.swift")
+            }
+            
+            @Step {
+                우선순위를 설정합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-05-priority.swift")
+            }
+            
+            @Step {
+                리마인더를 저장합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-06-save.swift")
+            }
+        }
+    }
+    
+    @Section(title: "리마인더 조회 및 완료") {
+        @ContentAndMedia {
+            미완료/완료 리마인더를 조회하고 
+            완료 상태를 변경합니다.
+        }
+        
+        @Steps {
+            @Step {
+                미완료 리마인더를 조회합니다.
+                
+                `predicateForIncompleteReminders()`를 사용합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-07-fetch.swift")
+            }
+            
+            @Step {
+                완료된 리마인더를 조회합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-08-completed.swift")
+            }
+            
+            @Step {
+                리마인더를 완료 처리합니다.
+                
+                @Code(name: "ReminderManager.swift", file: "08-09-complete.swift")
+            }
+            
+            @Step {
+                리마인더 목록 View를 구현합니다.
+                
+                @Code(name: "ReminderListView.swift", file: "08-10-list.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            EKReminder의 기한을 설정하는 프로퍼티는?
+            
+            @Choice(isCorrect: false) {
+                `dueDate`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `dueDate`는 존재하지만 읽기 전용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `dueDateComponents`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    리마인더의 기한은 `DateComponents`로 설정합니다.
+                    시간대 독립적인 설정이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `deadline`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 프로퍼티는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            리마인더 조회는 이벤트 조회와 어떤 차이가 있나요?
+            
+            @Choice(isCorrect: true) {
+                비동기로 실행되고 completion handler를 사용
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `fetchReminders(matching:completion:)`은 
+                    비동기로 실행되며 completion handler로 결과를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                동기로 실행되고 배열을 반환
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이벤트는 동기지만, 리마인더는 비동기입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                차이가 없다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이벤트와 리마인더의 조회 방식은 다릅니다.
+                }
+            }
+        }
+    }
+}

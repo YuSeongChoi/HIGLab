@@ -1,0 +1,270 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CloudKit 동기화: 모든 기기에서 연결") {
+        iCloud 연동으로 iPhone, iPad, Mac에서
+        동일한 할 일 목록을 사용합니다.
+        놀랍게도 단 몇 줄의 설정만 필요합니다.
+    }
+    
+    @Section(title: "CloudKit 기본 설정") {
+        @ContentAndMedia {
+            SwiftData와 CloudKit을 연동하면 자동으로 데이터가 동기화됩니다.
+            별도의 동기화 코드 작성이 필요 없습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudKit 요구사항**
+                
+                CloudKit 동기화를 위한 전제조건을 확인합니다.
+                Apple Developer 계정과 프로비저닝 설정이 필요합니다.
+                
+                @Code(name: "CloudKitRequirements.swift", file: "10-requirements.swift")
+            }
+            
+            @Step {
+                **Capability 추가**
+                
+                Xcode에서 iCloud와 CloudKit capability를 추가합니다.
+                Background Modes도 활성화하면 백그라운드 동기화가 가능합니다.
+                
+                @Code(name: "Capabilities.swift", file: "10-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "모델 CloudKit 호환성") {
+        @ContentAndMedia {
+            CloudKit과 호환되려면 모델이 특정 규칙을 따라야 합니다.
+            옵셔널 사용, 기본값 설정 등 주의사항을 확인합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudKit 호환 모델 규칙**
+                
+                모든 프로퍼티가 옵셔널이거나 기본값이 있어야 합니다.
+                CloudKit은 새 레코드를 부분적으로 생성할 수 있기 때문입니다.
+                
+                @Code(name: "CloudKitModel.swift", file: "10-model-rules.swift")
+            }
+            
+            @Step {
+                **관계의 CloudKit 호환성**
+                
+                @Relationship도 CloudKit과 호환됩니다.
+                삭제 규칙에 따른 동기화 동작을 이해합니다.
+                
+                @Code(name: "CloudKitRelationships.swift", file: "10-relationship-rules.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ModelContainer CloudKit 설정") {
+        @ContentAndMedia {
+            ModelConfiguration에 CloudKit 컨테이너를 설정합니다.
+            이것만으로 자동 동기화가 활성화됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 CloudKit 컨테이너**
+                
+                cloudKitContainerIdentifier를 설정합니다.
+                앱의 iCloud Container ID와 일치해야 합니다.
+                
+                @Code(name: "CloudKitContainer.swift", file: "10-container-basic.swift")
+            }
+            
+            @Step {
+                **Private Database 사용**
+                
+                기본적으로 사용자의 Private Database를 사용합니다.
+                사용자만 접근할 수 있는 개인 데이터입니다.
+                
+                @Code(name: "PrivateDatabase.swift", file: "10-private-db.swift")
+            }
+            
+            @Step {
+                **앱 진입점 설정**
+                
+                TaskMasterApp에 CloudKit 설정을 적용합니다.
+                개발/프로덕션 환경을 구분하여 설정합니다.
+                
+                @Code(name: "AppEntry.swift", file: "10-app-entry.swift")
+            }
+        }
+    }
+    
+    @Section(title: "동기화 상태 모니터링") {
+        @ContentAndMedia {
+            동기화 상태를 사용자에게 표시합니다.
+            네트워크 오류, 충돌 처리 등을 다룹니다.
+        }
+        
+        @Steps {
+            @Step {
+                **동기화 상태 확인**
+                
+                NSPersistentCloudKitContainer의 이벤트를 관찰합니다.
+                import, export 진행 상황을 추적할 수 있습니다.
+                
+                @Code(name: "SyncStatus.swift", file: "10-sync-status.swift")
+            }
+            
+            @Step {
+                **충돌 해결**
+                
+                같은 데이터를 여러 기기에서 수정하면 충돌이 발생합니다.
+                SwiftData/CloudKit의 기본 충돌 해결 정책을 이해합니다.
+                
+                @Code(name: "ConflictResolution.swift", file: "10-conflict.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 데이터베이스 (선택)") {
+        @ContentAndMedia {
+            다른 사용자와 데이터를 공유하려면 
+            Shared Database를 사용합니다.
+            가족 공유나 협업 기능에 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CKShare 이해**
+                
+                CloudKit의 공유 메커니즘을 이해합니다.
+                소유자, 참여자, 권한 개념을 파악합니다.
+                
+                @Code(name: "CKShareBasics.swift", file: "10-ckshare-basics.swift")
+            }
+            
+            @Step {
+                **SwiftData에서 공유 구현**
+                
+                현재 SwiftData는 공유 API가 제한적입니다.
+                Core Data 레이어에 직접 접근하는 방법을 소개합니다.
+                
+                @Code(name: "SharingImplementation.swift", file: "10-sharing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CloudKit 디버깅") {
+        @ContentAndMedia {
+            CloudKit 동기화 문제를 진단하고 해결하는 방법입니다.
+            CloudKit Dashboard와 콘솔 로그를 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudKit Dashboard 활용**
+                
+                웹 기반 CloudKit Dashboard에서 데이터를 확인합니다.
+                레코드 조회, 수정, 삭제가 가능합니다.
+                
+                @Code(name: "Dashboard.swift", file: "10-dashboard.swift")
+            }
+            
+            @Step {
+                **디버깅 팁**
+                
+                일반적인 CloudKit 오류와 해결 방법을 정리합니다.
+                로그 분석, 네트워크 시뮬레이션 등을 다룹니다.
+                
+                @Code(name: "DebuggingTips.swift", file: "10-debugging.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftData CloudKit 동기화를 위한 모델 요구사항은?
+            
+            @Choice(isCorrect: true) {
+                모든 프로퍼티가 옵셔널이거나 기본값이 있어야 함
+                
+                @Justification(reaction: "정답!") {
+                    CloudKit은 레코드를 부분적으로 생성할 수 있어서
+                    nil이 될 수 있는 상황을 처리해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @CloudKit 매크로로 마킹
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 매크로는 없습니다. 프로퍼티 규칙만 따르면 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Codable 프로토콜 채택
+                
+                @Justification(reaction: "아쉽네요") {
+                    Codable은 필수가 아닙니다. 옵셔널/기본값 규칙이 중요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CloudKit 동기화 설정에 필요한 최소 작업은?
+            
+            @Choice(isCorrect: true) {
+                iCloud capability 추가 + cloudKitContainerIdentifier 설정
+                
+                @Justification(reaction: "정확합니다!") {
+                    Xcode에서 capability를 추가하고 
+                    ModelConfiguration에 컨테이너 ID만 설정하면 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 동기화 코드 작성
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData가 자동으로 처리합니다. 설정만 하면 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CloudKit 서버 인스턴스 생성
+                
+                @Justification(reaction: "아쉽네요") {
+                    Apple이 제공하는 CloudKit 인프라를 사용합니다.
+                    별도 서버 생성이 필요 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            여러 기기에서 같은 데이터를 동시에 수정하면?
+            
+            @Choice(isCorrect: true) {
+                CloudKit의 충돌 해결 정책에 따라 자동 처리
+                
+                @Justification(reaction: "정답!") {
+                    기본적으로 "last writer wins" 정책이 적용되며,
+                    필요시 커스텀 충돌 해결 로직을 추가할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러가 발생하고 수동 해결 필요
+                
+                @Justification(reaction: "아쉽네요") {
+                    에러 없이 자동 해결됩니다. 기본 정책은 마지막 변경 우선입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                양쪽 변경사항이 모두 병합됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    기본적으로 병합이 아닌 "마지막 변경 우선" 정책입니다.
+                    필드별 병합이 필요하면 커스텀 구현이 필요합니다.
+                }
+            }
+        }
+    }
+}

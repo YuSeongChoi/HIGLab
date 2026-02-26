@@ -1,0 +1,208 @@
+@Tutorial(time: 20) {
+    @Intro(title: "재생 속도 조절") {
+        0.5x ~ 2.0x 재생 속도와 프레임 단위 이동을 
+        구현하여 유연한 시청 경험을 제공합니다.
+        
+        @Image(source: "playback-speed.png", alt: "재생 속도 조절")
+    }
+    
+    @Section(title: "재생 속도 기본") {
+        @ContentAndMedia {
+            AVPlayer의 rate 속성으로 재생 속도를 조절합니다.
+            
+            - **0.0**: 정지
+            - **0.5**: 0.5배속 (슬로우)
+            - **1.0**: 정상 속도
+            - **2.0**: 2배속
+            
+            @Image(source: "rate-values.png", alt: "재생 속도 값")
+        }
+        
+        @Steps {
+            @Step {
+                rate 속성으로 재생 속도를 변경합니다.
+                1.0이 정상 속도입니다.
+                
+                @Code(name: "BasicRate.swift", file: "07-01-basic-rate.swift")
+            }
+            
+            @Step {
+                음성 콘텐츠는 audioTimePitchAlgorithm으로
+                피치 보정을 적용할 수 있습니다.
+                
+                @Code(name: "PitchCorrection.swift", file: "07-02-pitch-correction.swift")
+            }
+            
+            @Step {
+                배속 재생 시 오디오 피치를 유지하여
+                자연스러운 음성을 제공합니다.
+                
+                @Code(name: "TimePitch.swift", file: "07-03-time-pitch.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재생 속도 UI") {
+        @ContentAndMedia {
+            사용자가 쉽게 재생 속도를 변경할 수 있는
+            인터페이스를 구현합니다.
+            
+            - 속도 선택 메뉴
+            - 단계별 조절 버튼
+            - 현재 속도 표시
+        }
+        
+        @Steps {
+            @Step {
+                일반적으로 사용되는 재생 속도 옵션을 정의합니다.
+                
+                @Code(name: "SpeedOptions.swift", file: "07-04-speed-options.swift")
+            }
+            
+            @Step {
+                SwiftUI Picker를 사용해 속도 선택 메뉴를 만듭니다.
+                
+                @Code(name: "SpeedPicker.swift", file: "07-05-speed-picker.swift")
+            }
+            
+            @Step {
+                세그먼트 컨트롤 스타일의 속도 버튼을 구현합니다.
+                
+                @Code(name: "SpeedSegments.swift", file: "07-06-speed-segments.swift")
+            }
+        }
+    }
+    
+    @Section(title: "역재생과 프레임 이동") {
+        @ContentAndMedia {
+            음수 rate로 역재생하고,
+            step() 메서드로 프레임 단위 이동을 구현합니다.
+            
+            - 역재생 (일부 포맷만 지원)
+            - 프레임 단위 앞으로/뒤로
+            - 정밀한 편집 기능
+        }
+        
+        @Steps {
+            @Step {
+                음수 rate를 설정하여 역재생합니다.
+                모든 비디오가 역재생을 지원하지는 않습니다.
+                
+                @Code(name: "ReversePlay.swift", file: "07-07-reverse-play.swift")
+            }
+            
+            @Step {
+                canPlayReverse로 역재생 가능 여부를 확인합니다.
+                
+                @Code(name: "CheckReverse.swift", file: "07-08-check-reverse.swift")
+            }
+            
+            @Step {
+                step(byCount:)로 프레임 단위 이동을 구현합니다.
+                영상 편집 앱에서 유용합니다.
+                
+                @Code(name: "StepFrame.swift", file: "07-09-step-frame.swift")
+            }
+            
+            @Step {
+                프레임 앞으로/뒤로 버튼을 구현합니다.
+                
+                @Code(name: "FrameButtons.swift", file: "07-10-frame-buttons.swift")
+            }
+        }
+    }
+    
+    @Section(title: "스트리밍 속도 지원") {
+        @ContentAndMedia {
+            HLS 스트리밍에서 배속 재생을 지원하려면
+            서버 측 고려사항이 있습니다.
+            
+            - 적응형 비트레이트 조정
+            - 버퍼 관리
+            - 대역폭 고려
+        }
+        
+        @Steps {
+            @Step {
+                HLS 스트림에서 배속 재생 시 
+                preferredPeakBitRate를 조정할 수 있습니다.
+                
+                @Code(name: "HLSSpeed.swift", file: "07-11-hls-speed.swift")
+            }
+            
+            @Step {
+                버퍼 상태를 모니터링하여 
+                원활한 재생을 보장합니다.
+                
+                @Code(name: "BufferMonitor.swift", file: "07-12-buffer-monitor.swift")
+            }
+            
+            @Step {
+                네트워크 상태에 따라 
+                배속 재생 가능 여부를 동적으로 조절합니다.
+                
+                @Code(name: "NetworkAdaptive.swift", file: "07-13-network-adaptive.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            배속 재생 시 음성 피치를 자연스럽게 유지하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                rate를 천천히 변경한다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    rate 변경 속도와 피치 보정은 관련이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                audioTimePitchAlgorithm을 .timeDomain이나 .spectral로 설정한다
+                
+                @Justification(reaction: "정확합니다! 🎵") {
+                    이 알고리즘들은 재생 속도 변경 시 
+                    자연스러운 음성 피치를 유지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 오디오 프로세싱이 필요하다
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    AVPlayerItem의 내장 기능으로 충분합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            step(byCount:)의 용도는 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                프레임 단위로 영상을 앞뒤로 이동한다
+                
+                @Justification(reaction: "맞습니다! 🎬") {
+                    양수는 앞으로, 음수는 뒤로 
+                    지정된 프레임 수만큼 이동합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                재생 속도를 단계적으로 변경한다
+                
+                @Justification(reaction: "다릅니다.") {
+                    재생 속도 변경은 rate 속성을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                볼륨을 단계적으로 조절한다
+                
+                @Justification(reaction: "관련 없습니다.") {
+                    볼륨은 volume 속성으로 조절합니다.
+                }
+            }
+        }
+    }
+}

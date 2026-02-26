@@ -1,0 +1,163 @@
+@Tutorial(time: 10) {
+    @Intro(title: "MCNearbyServiceAdvertiser (광고)") {
+        MCNearbyServiceAdvertiser를 사용하여 
+        자신의 기기를 주변에 광고하고 연결 초대를 받습니다.
+    }
+    
+    @Section(title: "MCNearbyServiceAdvertiser 이해하기") {
+        @ContentAndMedia {
+            MCNearbyServiceAdvertiser는 자신의 존재를 
+            주변 기기에 알리는 역할을 합니다.
+            
+            광고 중인 기기는 브라우저를 통해 발견됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCNearbyServiceAdvertiser의 기본 구조를 살펴봅니다.
+                
+                PeerID, discoveryInfo, 서비스 타입으로 초기화합니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-01-advertiser-basic.swift")
+            }
+            
+            @Step {
+                discoveryInfo에 추가 정보를 설정합니다.
+                
+                이 정보는 브라우저 측에서 확인할 수 있습니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-02-discovery-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "광고 시작 및 중지") {
+        @ContentAndMedia {
+            광고를 시작하면 브라우저가 이 기기를 발견할 수 있고,
+            연결 초대를 받을 수 있게 됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCNearbyServiceAdvertiserDelegate를 구현합니다.
+                
+                초대 수신 이벤트를 처리합니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-03-delegate.swift")
+            }
+            
+            @Step {
+                광고를 시작하는 메서드를 구현합니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-04-start.swift")
+            }
+            
+            @Step {
+                광고를 중지하는 메서드를 구현합니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-05-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연결 초대 처리") {
+        @ContentAndMedia {
+            브라우저로부터 연결 초대를 받으면 
+            수락 또는 거절할 수 있습니다.
+            
+            invitationHandler 클로저로 응답합니다.
+        }
+        
+        @Steps {
+            @Step {
+                초대 수신 콜백을 구현합니다.
+                
+                자동으로 수락하는 간단한 구현입니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-06-receive-invite.swift")
+            }
+            
+            @Step {
+                사용자에게 확인을 받는 구현으로 변경합니다.
+                
+                Alert를 통해 수락 여부를 결정합니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-07-confirm-invite.swift")
+            }
+            
+            @Step {
+                초대 확인 UI를 SwiftUI View로 구현합니다.
+                
+                @Code(name: "InvitationView.swift", file: "04-08-invitation-view.swift")
+            }
+            
+            @Step {
+                초대 컨텍스트를 활용합니다.
+                
+                context에는 초대자가 보낸 추가 데이터가 포함될 수 있습니다.
+                
+                @Code(name: "AdvertiserManager.swift", file: "04-09-context.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MCNearbyServiceAdvertiser의 discoveryInfo 매개변수에 대한 설명으로 올바른 것은?
+            
+            @Choice(isCorrect: false) {
+                필수 매개변수이다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    discoveryInfo는 nil로 설정할 수 있는 선택적 매개변수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                브라우저가 피어를 발견할 때 함께 전달된다
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    discoveryInfo는 foundPeer 콜백에서 
+                    withDiscoveryInfo 매개변수로 전달됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                암호화된 상태로 전송된다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    discoveryInfo는 암호화되지 않고 평문으로 전송됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            invitationHandler 클로저의 역할은?
+            
+            @Choice(isCorrect: true) {
+                초대 수락 여부와 세션을 전달한다
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    invitationHandler(true, session)으로 수락하고,
+                    invitationHandler(false, nil)로 거절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                초대를 보낸다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    초대를 보내는 것은 브라우저의 역할입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                피어 정보를 업데이트한다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    invitationHandler는 초대 응답 전용입니다.
+                }
+            }
+        }
+    }
+}

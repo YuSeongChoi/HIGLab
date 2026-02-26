@@ -1,0 +1,119 @@
+@Tutorial(time: 20) {
+    @Intro(title: "구독 (CKSubscription)") {
+        CKSubscription으로 데이터 변경을 실시간으로 감지합니다.
+        서버 측 알림을 설정하여 동기화를 자동화합니다.
+    }
+    
+    @Section(title: "구독 이해하기") {
+        @ContentAndMedia {
+            CKSubscription은 서버에서 데이터 변경을 감지하여 푸시 알림을 보냅니다.
+            폴링 없이 실시간 동기화가 가능합니다.
+        }
+        @Steps {
+            @Step {
+                세 가지 구독 타입을 이해합니다.
+                Query, RecordZone, Database 구독이 있습니다.
+                @Code(name: "Subscriptions.swift", file: "05-01-subscriptiontypes.swift")
+            }
+            @Step {
+                CKQuerySubscription을 생성합니다.
+                특정 조건의 레코드 변경을 감지합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-02-querysubscription.swift")
+            }
+            @Step {
+                알림 정보(CKNotificationInfo)를 설정합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-03-notificationinfo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Zone 기반 구독") {
+        @ContentAndMedia {
+            CKRecordZoneSubscription은 Private Database의 Zone 변경을 추적합니다.
+            효율적인 동기화에 최적화되어 있습니다.
+        }
+        @Steps {
+            @Step {
+                CKRecordZoneSubscription을 생성합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-04-zonesubscription.swift")
+            }
+            @Step {
+                구독을 서버에 저장합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-05-savesubscription.swift")
+            }
+            @Step {
+                기존 구독을 조회하고 관리합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-06-managesubscriptions.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Database 구독") {
+        @ContentAndMedia {
+            CKDatabaseSubscription은 전체 데이터베이스 변경을 추적합니다.
+            Shared Database의 변경 감지에 특히 유용합니다.
+        }
+        @Steps {
+            @Step {
+                CKDatabaseSubscription을 설정합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-07-databasesubscription.swift")
+            }
+            @Step {
+                구독 ID 관리 전략을 구현합니다.
+                중복 구독을 방지합니다.
+                @Code(name: "CloudKitManager.swift", file: "05-08-subscriptionid.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CKRecordZoneSubscription을 사용할 수 있는 데이터베이스는?
+            @Choice(isCorrect: true) {
+                Private Database
+                @Justification(reaction: "정답입니다!") {
+                    Zone 구독은 커스텀 Zone이 있는 Private Database에서만 사용합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Public Database는 기본 Zone만 있어 Zone 구독이 불가합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Shared Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Shared Database는 Database 구독을 사용합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CKQuerySubscription의 firesOn 옵션에 포함되지 않는 것은?
+            @Choice(isCorrect: false) {
+                .recordCreation
+                @Justification(reaction: "다시 생각해보세요.") {
+                    레코드 생성 시 알림을 받을 수 있습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .recordUpdate
+                @Justification(reaction: "다시 생각해보세요.") {
+                    레코드 수정 시 알림을 받을 수 있습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .recordDeletion
+                @Justification(reaction: "다시 생각해보세요.") {
+                    레코드 삭제 시 알림을 받을 수 있습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .recordQuery
+                @Justification(reaction: "정답입니다!") {
+                    쿼리는 이벤트가 아니므로 firesOn 옵션에 없습니다.
+                }
+            }
+        }
+    }
+}

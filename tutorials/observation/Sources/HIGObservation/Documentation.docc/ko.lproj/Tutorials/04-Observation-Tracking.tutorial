@@ -1,0 +1,165 @@
+@Tutorial(time: 15) {
+    @Intro(title: "관찰 추적 원리 (willSet 기반)") {
+        Observation 프레임워크가 내부적으로 어떻게 동작하는지 깊이 파헤칩니다.
+        willSet 기반 추적의 원리와 withObservationTracking의 사용법을 배웁니다.
+    }
+    
+    @Section(title: "추적의 핵심: willSet") {
+        @ContentAndMedia {
+            Observation은 **willSet** 시점에 변화를 알립니다.
+            값이 바뀌기 **직전**에 관찰자에게 통지하고,
+            관찰자는 다음 RunLoop에서 새 값을 읽습니다.
+            
+            이것이 ObservableObject의 objectWillChange와 같은 원리입니다.
+        }
+        
+        @Steps {
+            @Step {
+                willSet vs didSet - 왜 willSet인가요?
+                
+                SwiftUI는 변경 **전에** 알림을 받아서
+                현재 스냅샷과 비교 후 애니메이션을 계획합니다.
+                
+                @Code(name: "WillSetVsDidSet.swift", file: "04-willset-vs-didset.swift")
+            }
+            
+            @Step {
+                withMutation의 동작을 살펴봅니다.
+                프로퍼티 변경 시 willSet, 값 변경, didSet 순서로 실행됩니다.
+                
+                @Code(name: "MutationFlow.swift", file: "04-mutation-flow.swift")
+            }
+            
+            @Step {
+                SwiftUI가 body를 실행할 때 무슨 일이 일어나는지 봅시다.
+                접근한 프로퍼티를 자동으로 추적하고,
+                해당 프로퍼티 변경 시 뷰를 다시 그립니다.
+                
+                @Code(name: "SwiftUITracking.swift", file: "04-swiftui-tracking.swift")
+            }
+        }
+    }
+    
+    @Section(title: "withObservationTracking 이해하기") {
+        @ContentAndMedia {
+            SwiftUI 없이도 Observation을 사용할 수 있습니다.
+            `withObservationTracking` 함수로 직접 변화를 감지해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                withObservationTracking의 기본 구조입니다.
+                apply 클로저에서 접근한 프로퍼티가 변하면 
+                onChange 클로저가 호출됩니다.
+                
+                @Code(name: "BasicTracking.swift", file: "04-basic-tracking.swift")
+            }
+            
+            @Step {
+                중요: onChange는 **한 번만** 호출됩니다!
+                지속적인 관찰을 위해서는 재등록이 필요합니다.
+                
+                @Code(name: "ReRegister.swift", file: "04-re-register.swift")
+            }
+            
+            @Step {
+                실제 사용 예: 커스텀 로깅 시스템을 만들어봅니다.
+                상태 변화를 자동으로 기록하는 디버깅 도구입니다.
+                
+                @Code(name: "CustomLogging.swift", file: "04-custom-logging.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 디버그 콘솔 추가") {
+        @ContentAndMedia {
+            CartFlow 앱에 상태 변화를 실시간으로 보여주는
+            디버그 콘솔을 추가해봅시다.
+            withObservationTracking을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                상태 변화를 기록하는 DebugStore를 만듭니다.
+                
+                @Code(name: "DebugStore.swift", file: "04-debug-store.swift")
+            }
+            
+            @Step {
+                CartStore의 변화를 감시하는 로직을 추가합니다.
+                
+                @Code(name: "ObserveCart.swift", file: "04-observe-cart.swift")
+            }
+            
+            @Step {
+                디버그 콘솔 뷰를 만들어 앱에 추가합니다.
+                개발 중에만 표시되도록 #if DEBUG로 감쌉니다.
+                
+                @Code(name: "DebugConsole.swift", file: "04-debug-console.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Observation이 willSet 시점에 알림을 보내는 이유는?
+            
+            @Choice(isCorrect: true) {
+                SwiftUI가 변경 전 스냅샷과 비교해 애니메이션을 계획하기 위해
+                
+                @Justification(reaction: "정답!") {
+                    SwiftUI는 willSet 알림을 받고, 다음 RunLoop에서 새 값을 읽어
+                    이전 값과 비교한 후 적절한 애니메이션을 적용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                didSet보다 성능이 좋아서
+                
+                @Justification(reaction: "아쉽네요") {
+                    성능 차이는 없습니다. SwiftUI의 렌더링 파이프라인과
+                    맞추기 위해 willSet을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                값 변경을 취소할 수 있어서
+                
+                @Justification(reaction: "아쉽네요") {
+                    Observation의 willSet은 변경 취소와 무관합니다.
+                    알림 타이밍을 맞추기 위한 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            withObservationTracking의 onChange 클로저는 몇 번 호출되나요?
+            
+            @Choice(isCorrect: true) {
+                한 번 - 재등록이 필요함
+                
+                @Justification(reaction: "완벽합니다!") {
+                    onChange는 처음 변화 감지 시 한 번만 호출됩니다.
+                    지속적인 관찰을 위해 재귀적으로 재등록해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                프로퍼티가 변할 때마다 계속
+                
+                @Justification(reaction: "아쉽네요") {
+                    아닙니다. 한 번 호출 후 등록이 해제됩니다.
+                    지속적인 관찰을 위해서는 재등록이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                추적 중인 프로퍼티 개수만큼
+                
+                @Justification(reaction: "아쉽네요") {
+                    프로퍼티 개수와 무관하게 한 번만 호출됩니다.
+                }
+            }
+        }
+    }
+}

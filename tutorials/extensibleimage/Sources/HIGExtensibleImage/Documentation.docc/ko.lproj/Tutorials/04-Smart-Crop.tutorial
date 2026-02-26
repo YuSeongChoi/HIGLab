@@ -1,0 +1,105 @@
+@Tutorial(time: 25) {
+    @Intro(title: "스마트 크롭") {
+        ExtensibleImage의 스마트 크롭 기능으로 이미지의 핵심 영역을 자동으로 감지하고 최적의 구도로 자릅니다.
+        
+        @Image(source: "smart-crop-hero.png", alt: "스마트 크롭 예시")
+    }
+    
+    @Section(title: "스마트 크롭 이해하기") {
+        @ContentAndMedia {
+            스마트 크롭은 Vision 프레임워크의 주목도(saliency) 분석과 얼굴 인식을 결합하여 이미지에서 가장 중요한 영역을 자동으로 찾아냅니다.
+            
+            iOS 26에서는 `ExtensibleImage.SmartCrop` API가 이 과정을 단순화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                먼저 ExtensibleImage를 임포트하고 기본 크롭 요청을 생성합니다.
+                
+                @Code(name: "SmartCrop.swift", file: "04-smart-crop-01.swift")
+            }
+            
+            @Step {
+                크롭 옵션을 설정합니다. 얼굴 우선 모드를 활성화하면 인물 사진에서 더 나은 결과를 얻을 수 있습니다.
+                
+                @Code(name: "SmartCrop.swift", file: "04-smart-crop-02.swift")
+            }
+            
+            @Step {
+                비동기로 크롭을 실행하고 결과를 처리합니다.
+                
+                @Code(name: "SmartCrop.swift", file: "04-smart-crop-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "다양한 비율로 크롭하기") {
+        @ContentAndMedia {
+            소셜 미디어 플랫폼마다 요구하는 이미지 비율이 다릅니다. 스마트 크롭은 여러 비율을 한 번에 처리할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                여러 비율에 대한 크롭 요청을 배열로 생성합니다.
+                
+                @Code(name: "MultiCrop.swift", file: "04-smart-crop-04.swift")
+            }
+            
+            @Step {
+                배치 처리로 모든 비율의 크롭을 동시에 수행합니다.
+                
+                @Code(name: "MultiCrop.swift", file: "04-smart-crop-05.swift")
+            }
+        }
+    }
+    
+    @Section(title: "크롭 영역 미리보기") {
+        @ContentAndMedia {
+            사용자에게 크롭 영역을 미리 보여주고 필요시 조정할 수 있도록 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SwiftUI 뷰에서 크롭 영역을 오버레이로 표시합니다.
+                
+                @Code(name: "CropPreview.swift", file: "04-smart-crop-06.swift")
+            }
+            
+            @Step {
+                사용자 제스처로 크롭 영역을 미세 조정할 수 있도록 합니다.
+                
+                @Code(name: "CropPreview.swift", file: "04-smart-crop-07.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            스마트 크롭에서 얼굴 우선 모드가 유용한 상황은?
+            
+            @Choice(isCorrect: false) {
+                풍경 사진을 자를 때
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    풍경 사진에는 일반적으로 얼굴이 없으므로 주목도 기반 크롭이 더 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                그룹 인물 사진을 자를 때
+                
+                @Justification(reaction: "정답입니다!") {
+                    얼굴 우선 모드는 모든 인물의 얼굴이 크롭 영역에 포함되도록 보장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제품 사진을 자를 때
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    제품 사진에는 주목도 기반 크롭이 제품을 중심으로 자르는 데 더 효과적입니다.
+                }
+            }
+        }
+    }
+}

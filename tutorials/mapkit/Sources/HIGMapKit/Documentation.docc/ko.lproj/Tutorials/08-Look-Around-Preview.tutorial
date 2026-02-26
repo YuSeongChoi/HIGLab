@@ -1,0 +1,159 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Look Around 미리보기") {
+        Apple Maps의 Look Around 기능을 앱에 통합합니다.
+        맛집 외관을 360° 파노라마로 미리 볼 수 있습니다.
+    }
+    
+    @Section(title: "Look Around 소개") {
+        @ContentAndMedia {
+            Look Around는 Apple의 스트리트뷰 기능입니다.
+            지원 지역에서 실제 거리 모습을 360° 이미지로 볼 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Look Around 가용성 확인**
+                
+                모든 지역에서 Look Around를 사용할 수 있는 것은 아닙니다.
+                MKLookAroundSceneRequest로 가용성을 확인합니다.
+                
+                @Code(name: "LookAroundService.swift", file: "08-availability-check.swift")
+            }
+            
+            @Step {
+                **Scene 요청**
+                
+                좌표를 기반으로 MKLookAroundScene을 가져옵니다.
+                async/await로 비동기 처리합니다.
+                
+                @Code(name: "LookAroundService.swift", file: "08-scene-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "LookAroundPreview 뷰") {
+        @ContentAndMedia {
+            SwiftUI에서 LookAroundPreview를 사용하여 
+            미리보기를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 미리보기 표시**
+                
+                LookAroundPreview에 scene을 전달합니다.
+                자동으로 파노라마 이미지가 로드됩니다.
+                
+                @Code(name: "LookAroundView.swift", file: "08-basic-preview.swift")
+            }
+            
+            @Step {
+                **미리보기 스타일링**
+                
+                .frame과 .clipShape로 크기와 모양을 설정합니다.
+                카드 스타일의 미리보기를 만듭니다.
+                
+                @Code(name: "LookAroundView.swift", file: "08-preview-style.swift")
+            }
+            
+            @Step {
+                **인터랙션 설정**
+                
+                .badgePosition, .allowsNavigation으로 
+                UI 요소와 탐색 기능을 제어합니다.
+                
+                @Code(name: "LookAroundView.swift", file: "08-interaction.swift")
+            }
+        }
+    }
+    
+    @Section(title: "전체 화면 Look Around") {
+        @ContentAndMedia {
+            탭하면 전체 화면 Look Around 뷰어로 전환합니다.
+            몰입감 있는 거리 탐색 경험을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **전체 화면 뷰어**
+                
+                .fullScreenCover로 전체 화면 Look Around를 표시합니다.
+                사용자가 자유롭게 360° 탐색할 수 있습니다.
+                
+                @Code(name: "LookAroundView.swift", file: "08-fullscreen.swift")
+            }
+            
+            @Step {
+                **맛집 상세에 통합**
+                
+                맛집 상세 화면에 Look Around 미리보기를 추가합니다.
+                가용하지 않은 경우 대체 이미지를 표시합니다.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "08-detail-integration.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Look Around 가용성을 확인하는 방법은?
+            
+            @Choice(isCorrect: true) {
+                MKLookAroundSceneRequest로 scene 요청 후 nil 체크
+                
+                @Justification(reaction: "정답!") {
+                    scene이 nil이면 해당 위치에서 Look Around를 
+                    사용할 수 없다는 의미입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CLLocation.hasLookAround 프로퍼티 확인
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 프로퍼티는 없습니다. 
+                    MKLookAroundSceneRequest를 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Info.plist에서 지역 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    Look Around 가용성은 Apple이 촬영한 지역에 따라 결정됩니다.
+                    앱 설정으로 제어할 수 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            LookAroundPreview에서 360° 탐색을 비활성화하려면?
+            
+            @Choice(isCorrect: true) {
+                .allowsNavigation(false)
+                
+                @Justification(reaction: "정확합니다!") {
+                    allowsNavigation을 false로 설정하면 
+                    정적 미리보기만 표시됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .isUserInteractionEnabled(false)
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftUI에서는 .allowsNavigation 수정자를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .disabled(true)
+                
+                @Justification(reaction: "아쉽네요") {
+                    .disabled는 전체 뷰를 비활성화합니다.
+                    탐색만 제어하려면 .allowsNavigation을 사용하세요.
+                }
+            }
+        }
+    }
+}

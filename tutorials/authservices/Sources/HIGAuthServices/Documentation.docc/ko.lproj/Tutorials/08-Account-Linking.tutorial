@@ -1,0 +1,194 @@
+@Tutorial(time: 18) {
+    @Intro(title: "기존 계정 연동") {
+        iCloud Keychain의 기존 계정과 Sign in with Apple을
+        연동하여 원활한 계정 마이그레이션을 구현합니다.
+        
+        @Image(source: "account-linking.png", alt: "계정 연동")
+    }
+    
+    @Section(title: "Password Credential 요청") {
+        @ContentAndMedia {
+            ASAuthorizationPasswordProvider를 사용하면
+            iCloud Keychain에 저장된 기존 계정 정보를 
+            Sign in with Apple과 함께 제공할 수 있습니다.
+            
+            사용자가 선택할 수 있는 옵션:
+            - Sign in with Apple (새 방식)
+            - iCloud Keychain 저장 계정 (기존 방식)
+        }
+        
+        @Steps {
+            @Step {
+                Apple ID와 Password 두 가지 요청을 
+                함께 생성합니다.
+                
+                @Code(name: "DualRequest.swift", file: "08-01-dual-request.swift")
+            }
+            
+            @Step {
+                두 요청을 배열로 ASAuthorizationController에 전달합니다.
+                시스템이 통합 UI를 표시합니다.
+                
+                @Code(name: "CombinedController.swift", file: "08-02-combined-controller.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Credential 타입 구분") {
+        @ContentAndMedia {
+            인증 성공 시 반환되는 Credential 타입에 따라
+            다르게 처리해야 합니다.
+            
+            - `ASAuthorizationAppleIDCredential`: Apple ID 로그인
+            - `ASPasswordCredential`: 기존 계정 로그인
+        }
+        
+        @Steps {
+            @Step {
+                authorization.credential의 타입을 확인하여
+                적절한 처리 로직을 실행합니다.
+                
+                @Code(name: "TypeCheck.swift", file: "08-03-type-check.swift")
+            }
+            
+            @Step {
+                ASPasswordCredential에서 
+                username과 password를 추출합니다.
+                
+                @Code(name: "PasswordCredential.swift", file: "08-04-password-credential.swift")
+            }
+            
+            @Step {
+                기존 계정으로 로그인 후 
+                Apple ID 연결을 제안할 수 있습니다.
+                
+                @Code(name: "SuggestAppleID.swift", file: "08-05-suggest-appleid.swift")
+            }
+        }
+    }
+    
+    @Section(title: "계정 마이그레이션 전략") {
+        @ContentAndMedia {
+            기존 계정을 Apple ID로 마이그레이션하는 전략:
+            
+            1. 기존 계정으로 먼저 로그인
+            2. Apple ID 연결 유도
+            3. 두 계정 정보 연결 저장
+            4. 이후에는 Apple ID로만 로그인 가능
+        }
+        
+        @Steps {
+            @Step {
+                서버에서 기존 계정과 Apple User ID를 연결합니다.
+                
+                @Code(name: "LinkAccounts.swift", file: "08-06-link-accounts.swift")
+            }
+            
+            @Step {
+                연결 완료 후 사용자에게 안내합니다.
+                이제 Apple ID로 빠르게 로그인할 수 있습니다.
+                
+                @Code(name: "MigrationComplete.swift", file: "08-07-migration-complete.swift")
+            }
+            
+            @Step {
+                기존 비밀번호 삭제를 선택적으로 제안합니다.
+                Apple ID만 사용하도록 유도합니다.
+                
+                @Code(name: "RemovePassword.swift", file: "08-08-remove-password.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Existing Account Preference") {
+        @ContentAndMedia {
+            performRequests(options:)의 
+            .preferImmediatelyAvailableCredentials 옵션을 사용하면
+            기존 자격 증명을 우선 표시합니다.
+            
+            키체인에 저장된 계정이 있으면 빠르게 로그인하고,
+            없으면 Sign in with Apple을 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                preferImmediatelyAvailableCredentials 옵션으로
+                저장된 자격 증명을 우선 확인합니다.
+                
+                @Code(name: "PreferExisting.swift", file: "08-09-prefer-existing.swift")
+            }
+            
+            @Step {
+                저장된 자격 증명이 없으면 
+                전체 로그인 옵션을 표시합니다.
+                
+                @Code(name: "FallbackToFull.swift", file: "08-10-fallback-full.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iCloud Keychain의 기존 계정과 Apple ID를 
+            함께 제공하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                ASAuthorizationAppleIDRequest와 
+                ASAuthorizationPasswordRequest를 함께 요청한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    두 요청을 배열로 전달하면
+                    시스템이 통합 UI를 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASAuthorizationController를 두 번 호출한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    하나의 컨트롤러에 여러 요청을 
+                    배열로 전달해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 UI를 직접 구현해야 한다.
+                
+                @Justification(reaction: "불필요합니다.") {
+                    시스템이 통합 UI를 자동으로 제공합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ASPasswordCredential에서 얻을 수 있는 정보는?
+            
+            @Choice(isCorrect: true) {
+                user(username)와 password.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    iCloud Keychain에 저장된 
+                    계정 정보를 가져옵니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple User ID와 Identity Token.
+                
+                @Justification(reaction: "다른 Credential입니다.") {
+                    그것은 ASAuthorizationAppleIDCredential에서 
+                    제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이메일과 전화번호.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Password Credential은 username과 
+                    password만 제공합니다.
+                }
+            }
+        }
+    }
+}

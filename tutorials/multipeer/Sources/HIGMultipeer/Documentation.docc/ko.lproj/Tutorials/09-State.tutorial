@@ -1,0 +1,179 @@
+@Tutorial(time: 10) {
+    @Intro(title: "연결 상태 관리") {
+        피어의 연결 상태를 추적하고,
+        연결 해제와 재연결을 적절히 처리합니다.
+    }
+    
+    @Section(title: "연결 상태 이해하기") {
+        @ContentAndMedia {
+            MCSessionState는 각 피어의 연결 상태를 나타냅니다.
+            
+            - notConnected: 연결되지 않음
+            - connecting: 연결 중
+            - connected: 연결됨
+        }
+        
+        @Steps {
+            @Step {
+                MCSessionState 열거형을 이해합니다.
+                
+                @Code(name: "StateManager.swift", file: "09-01-session-state.swift")
+            }
+            
+            @Step {
+                상태 변화를 추적하는 구조를 만듭니다.
+                
+                @Code(name: "StateManager.swift", file: "09-02-peer-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "상태 변화 처리") {
+        @ContentAndMedia {
+            상태 변화 콜백에서 UI 업데이트와 
+            필요한 로직을 수행합니다.
+        }
+        
+        @Steps {
+            @Step {
+                상태 변화 델리게이트를 구현합니다.
+                
+                @Code(name: "StateManager.swift", file: "09-03-state-delegate.swift")
+            }
+            
+            @Step {
+                연결 성공 시 처리 로직을 추가합니다.
+                
+                @Code(name: "StateManager.swift", file: "09-04-on-connected.swift")
+            }
+            
+            @Step {
+                연결 해제 시 처리 로직을 추가합니다.
+                
+                @Code(name: "StateManager.swift", file: "09-05-on-disconnected.swift")
+            }
+            
+            @Step {
+                연결 중 상태를 UI에 표시합니다.
+                
+                @Code(name: "StateManager.swift", file: "09-06-connecting-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재연결 전략") {
+        @ContentAndMedia {
+            연결이 끊어졌을 때 자동으로 재연결을 
+            시도하는 전략을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                재연결 로직을 구현합니다.
+                
+                지수 백오프를 적용합니다.
+                
+                @Code(name: "ReconnectManager.swift", file: "09-07-reconnect.swift")
+            }
+            
+            @Step {
+                재연결 시도 횟수를 제한합니다.
+                
+                @Code(name: "ReconnectManager.swift", file: "09-08-retry-limit.swift")
+            }
+            
+            @Step {
+                사용자에게 연결 상태를 알립니다.
+                
+                @Code(name: "ConnectionBanner.swift", file: "09-09-banner.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연결 상태 UI") {
+        @ContentAndMedia {
+            연결된 피어 목록과 각 피어의 상태를 
+            실시간으로 표시하는 UI를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                피어 상태 아이콘 컴포넌트를 만듭니다.
+                
+                @Code(name: "PeerStatusIcon.swift", file: "09-10-status-icon.swift")
+            }
+            
+            @Step {
+                연결된 피어 리스트 View를 구현합니다.
+                
+                @Code(name: "ConnectedPeersView.swift", file: "09-11-peers-view.swift")
+            }
+            
+            @Step {
+                연결 상태 대시보드를 완성합니다.
+                
+                @Code(name: "ConnectionDashboard.swift", file: "09-12-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MCSessionState.connecting 상태는 언제 발생하나요?
+            
+            @Choice(isCorrect: true) {
+                초대를 보내거나 받은 후 연결을 설정하는 중
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    connecting은 연결 핸드셰이크가 
+                    진행 중임을 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                연결이 끊어지는 중
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    연결 해제 시에는 notConnected로 바뀝니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                데이터를 전송하는 중
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    데이터 전송 중에는 connected 상태입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            재연결 시 지수 백오프를 사용하는 이유는?
+            
+            @Choice(isCorrect: false) {
+                더 빠른 재연결을 위해
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    지수 백오프는 대기 시간을 늘립니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                네트워크 부하를 줄이고 복구 시간을 주기 위해
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    반복적인 즉시 재연결 시도는 네트워크에 부담을 주고,
+                    일시적 문제가 해결될 시간을 주지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                보안을 강화하기 위해
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    지수 백오프는 보안과 직접 관련이 없습니다.
+                }
+            }
+        }
+    }
+}

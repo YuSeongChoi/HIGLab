@@ -1,0 +1,220 @@
+@Tutorial(time: 20) {
+    @Intro(title: "걸음 수 읽기 (HKQuantityType)") {
+        HKQuantityType을 사용하여 걸음 수 데이터를 쿼리합니다.
+        HKSampleQuery와 Predicate를 활용하여 원하는 기간의 데이터를 가져옵니다.
+    }
+    
+    @Section(title: "HKQuantityType 이해하기") {
+        @ContentAndMedia {
+            **HKQuantityType**은 숫자로 측정되는 건강 데이터를 나타냅니다.
+            걸음 수, 이동 거리, 칼로리, 심박수 등이 여기에 속합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **걸음 수 타입 정의**
+                
+                HKQuantityType을 사용하여 걸음 수 타입을 정의합니다.
+                .stepCount 식별자를 사용합니다.
+                
+                @Code(name: "StepType.swift", file: "04-step-type.swift")
+            }
+            
+            @Step {
+                **HKUnit 이해하기**
+                
+                각 QuantityType은 특정 단위(Unit)와 함께 사용됩니다.
+                걸음 수는 .count() 단위를 사용합니다.
+                
+                @Code(name: "Units.swift", file: "04-units.swift")
+            }
+            
+            @Step {
+                **호환 단위 확인**
+                
+                is(compatibleWith:)로 단위 호환성을 확인할 수 있습니다.
+                잘못된 단위를 사용하면 런타임 에러가 발생합니다.
+                
+                @Code(name: "UnitCheck.swift", file: "04-unit-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HKSampleQuery로 데이터 조회") {
+        @ContentAndMedia {
+            **HKSampleQuery**는 HealthKit에서 샘플 데이터를 조회하는
+            가장 기본적인 쿼리입니다. Predicate로 조건을 지정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Predicate 생성**
+                
+                HKQuery.predicateForSamples를 사용하여
+                조회할 기간을 지정합니다.
+                
+                @Code(name: "Predicate.swift", file: "04-predicate.swift")
+            }
+            
+            @Step {
+                **오늘의 걸음 수 쿼리**
+                
+                오늘 자정부터 현재까지의 걸음 수를 조회합니다.
+                여러 소스(Apple Watch, iPhone)의 데이터가 모두 포함됩니다.
+                
+                @Code(name: "TodaySteps.swift", file: "04-today-steps.swift")
+            }
+            
+            @Step {
+                **결과 처리**
+                
+                쿼리 결과는 [HKSample] 배열로 반환됩니다.
+                HKQuantitySample로 캐스팅하여 값을 추출합니다.
+                
+                @Code(name: "ProcessResults.swift", file: "04-process-results.swift")
+            }
+            
+            @Step {
+                **async/await 래퍼**
+                
+                completion handler 대신 async/await를 사용하면
+                코드가 더 깔끔해집니다.
+                
+                @Code(name: "AsyncWrapper.swift", file: "04-async-wrapper.swift")
+            }
+        }
+    }
+    
+    @Section(title: "걸음 수 UI 구현") {
+        @ContentAndMedia {
+            조회한 걸음 수를 SwiftUI View에 표시합니다.
+            목표 대비 진행률을 링 형태로 시각화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **StepsView 생성**
+                
+                걸음 수를 표시하는 카드 형태의 View를 만듭니다.
+                
+                @Code(name: "StepsView.swift", file: "04-steps-view.swift")
+            }
+            
+            @Step {
+                **진행률 링 추가**
+                
+                목표 걸음 수 대비 진행률을 원형 프로그레스로 표시합니다.
+                Apple Fitness 스타일의 링 디자인을 구현합니다.
+                
+                @Code(name: "ProgressRing.swift", file: "04-progress-ring.swift")
+            }
+            
+            @Step {
+                **HealthManager에 통합**
+                
+                걸음 수 조회 로직을 HealthManager에 추가합니다.
+                @Published 프로퍼티로 UI와 바인딩합니다.
+                
+                @Code(name: "HealthManager.swift", file: "04-health-manager-steps.swift")
+            }
+            
+            @Step {
+                **자동 새로고침**
+                
+                View가 나타날 때마다 최신 데이터를 가져옵니다.
+                .task modifier를 활용합니다.
+                
+                @Code(name: "AutoRefresh.swift", file: "04-auto-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            걸음 수 데이터의 HKUnit은?
+            
+            @Choice(isCorrect: true) {
+                .count()
+                
+                @Justification(reaction: "정답!") {
+                    걸음 수는 개수이므로 .count() 단위를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .meter()
+                
+                @Justification(reaction: "아쉽네요") {
+                    .meter()는 거리 단위입니다. 걸음 수는 .count()를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .kilocalorie()
+                
+                @Justification(reaction: "아쉽네요") {
+                    .kilocalorie()는 칼로리 단위입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HKSampleQuery 결과에 여러 소스의 데이터가 포함되면?
+            
+            @Choice(isCorrect: true) {
+                모든 샘플이 반환되므로 중복 처리가 필요할 수 있다
+                
+                @Justification(reaction: "정답!") {
+                    Apple Watch와 iPhone이 동시에 기록한 걸음 수가 
+                    모두 반환될 수 있어 적절한 집계가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동으로 중복이 제거된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    HKSampleQuery는 모든 샘플을 반환합니다. 
+                    중복 제거는 HKStatisticsQuery를 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가장 정확한 소스만 반환된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    모든 소스의 데이터가 반환됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            오늘의 걸음 수를 쿼리할 때 startDate는?
+            
+            @Choice(isCorrect: true) {
+                오늘 자정 (Calendar.startOfDay)
+                
+                @Justification(reaction: "정답!") {
+                    Calendar.current.startOfDay(for: Date())로 
+                    오늘 자정을 구할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                24시간 전
+                
+                @Justification(reaction: "아쉽네요") {
+                    24시간 전은 어제 데이터도 포함될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                nil (전체 기간)
+                
+                @Justification(reaction: "아쉽네요") {
+                    전체 기간을 조회하면 너무 많은 데이터가 반환됩니다.
+                }
+            }
+        }
+    }
+}

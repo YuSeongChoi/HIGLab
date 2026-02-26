@@ -1,0 +1,252 @@
+@Tutorial(time: 20) {
+    @Intro(title: "스키마 마이그레이션: 안전한 데이터 모델 변경") {
+        앱이 업데이트되면 데이터 모델도 변경됩니다.
+        VersionedSchema와 SchemaMigrationPlan으로
+        사용자 데이터를 안전하게 마이그레이션합니다.
+    }
+    
+    @Section(title: "마이그레이션이 필요한 이유") {
+        @ContentAndMedia {
+            새 프로퍼티 추가, 타입 변경, 이름 변경 등
+            데이터 모델 변경 시 기존 데이터와의 호환성을 유지해야 합니다.
+            마이그레이션 없이는 앱이 크래시할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **마이그레이션 시나리오**
+                
+                TaskMaster v2에서 우선순위를 숫자에서 열거형으로 변경합니다.
+                이런 변경은 자동 마이그레이션이 불가능합니다.
+                
+                @Code(name: "MigrationScenario.swift", file: "09-scenario.swift")
+            }
+            
+            @Step {
+                **경량 마이그레이션 vs 커스텀 마이그레이션**
+                
+                새 프로퍼티 추가 같은 단순 변경은 자동(경량) 마이그레이션됩니다.
+                복잡한 변경은 커스텀 마이그레이션이 필요합니다.
+                
+                @Code(name: "MigrationTypes.swift", file: "09-migration-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "VersionedSchema 정의") {
+        @ContentAndMedia {
+            각 버전의 스키마를 VersionedSchema 프로토콜로 정의합니다.
+            이전 버전 모델도 유지하여 마이그레이션에 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **버전 1 스키마**
+                
+                현재 앱의 모델을 V1 스키마로 정의합니다.
+                versionIdentifier로 버전을 구분합니다.
+                
+                @Code(name: "SchemaV1.swift", file: "09-schema-v1.swift")
+            }
+            
+            @Step {
+                **버전 2 스키마**
+                
+                변경된 모델을 V2 스키마로 정의합니다.
+                Priority를 열거형으로 변경합니다.
+                
+                @Code(name: "SchemaV2.swift", file: "09-schema-v2.swift")
+            }
+            
+            @Step {
+                **현재 스키마 타입 별칭**
+                
+                typealias로 현재 사용할 스키마를 지정합니다.
+                앱 코드에서는 이 타입을 사용합니다.
+                
+                @Code(name: "CurrentSchema.swift", file: "09-current-schema.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SchemaMigrationPlan 작성") {
+        @ContentAndMedia {
+            마이그레이션 순서와 각 단계의 로직을 
+            SchemaMigrationPlan으로 정의합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MigrationPlan 기본 구조**
+                
+                schemas 배열로 버전 순서를 지정합니다.
+                stages 배열로 각 마이그레이션 단계를 정의합니다.
+                
+                @Code(name: "MigrationPlan.swift", file: "09-migration-plan.swift")
+            }
+            
+            @Step {
+                **커스텀 마이그레이션 로직**
+                
+                숫자 우선순위를 열거형으로 변환하는 로직을 작성합니다.
+                MigrationStage.custom의 willMigrate에서 처리합니다.
+                
+                @Code(name: "CustomMigration.swift", file: "09-custom-migration.swift")
+            }
+            
+            @Step {
+                **경량 마이그레이션 단계**
+                
+                단순 변경은 lightweight 스테이지로 충분합니다.
+                SwiftData가 자동으로 처리합니다.
+                
+                @Code(name: "LightweightMigration.swift", file: "09-lightweight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "마이그레이션 적용") {
+        @ContentAndMedia {
+            작성한 MigrationPlan을 ModelContainer에 적용합니다.
+            앱 시작 시 자동으로 마이그레이션이 실행됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **ModelContainer 설정**
+                
+                migrationPlan 파라미터로 마이그레이션 플랜을 전달합니다.
+                앱 실행 시 필요한 마이그레이션이 자동 실행됩니다.
+                
+                @Code(name: "ContainerSetup.swift", file: "09-container-setup.swift")
+            }
+            
+            @Step {
+                **마이그레이션 테스트**
+                
+                시뮬레이터에서 이전 버전 데이터로 테스트합니다.
+                유닛 테스트로 마이그레이션 로직을 검증합니다.
+                
+                @Code(name: "MigrationTest.swift", file: "09-migration-test.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실전 마이그레이션 팁") {
+        @ContentAndMedia {
+            복잡한 마이그레이션을 안전하게 수행하기 위한 
+            실전 팁과 주의사항을 정리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **마이그레이션 체크리스트**
+                
+                배포 전 확인해야 할 사항들입니다.
+                백업, 테스트, 롤백 계획을 준비합니다.
+                
+                @Code(name: "MigrationChecklist.swift", file: "09-checklist.swift")
+            }
+            
+            @Step {
+                **여러 버전 건너뛰기**
+                
+                사용자가 v1에서 v3로 직접 업데이트하는 경우,
+                중간 마이그레이션도 순차적으로 실행됩니다.
+                
+                @Code(name: "MultiVersionMigration.swift", file: "09-multi-version.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            새 프로퍼티를 추가하고 기본값을 설정하면 어떤 마이그레이션이 필요한가요?
+            
+            @Choice(isCorrect: true) {
+                경량(lightweight) 마이그레이션 — 자동 처리됨
+                
+                @Justification(reaction: "정답!") {
+                    기본값이 있는 새 프로퍼티 추가는 경량 마이그레이션으로
+                    SwiftData가 자동 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                커스텀 마이그레이션 필수
+                
+                @Justification(reaction: "아쉽네요") {
+                    단순 추가는 경량 마이그레이션으로 충분합니다.
+                    타입 변경이나 데이터 변환이 필요할 때 커스텀을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                마이그레이션 불필요
+                
+                @Justification(reaction: "아쉽네요") {
+                    스키마 변경 시 항상 마이그레이션 설정이 필요합니다.
+                    경량이라도 VersionedSchema 정의를 권장합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MigrationStage.custom의 willMigrate와 didMigrate의 차이는?
+            
+            @Choice(isCorrect: true) {
+                willMigrate는 이전 스키마 데이터 접근, didMigrate는 새 스키마
+                
+                @Justification(reaction: "정확합니다!") {
+                    willMigrate에서 이전 데이터를 읽어 변환 준비를 하고,
+                    didMigrate에서 새 스키마에 맞게 데이터를 설정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                willMigrate가 먼저, didMigrate가 나중에 실행
+                
+                @Justification(reaction: "아쉽네요") {
+                    실행 순서는 맞지만, 핵심 차이는 접근하는 스키마 버전입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                willMigrate는 취소 가능, didMigrate는 취소 불가
+                
+                @Justification(reaction: "아쉽네요") {
+                    취소 관련 차이가 아닙니다. 스키마 버전 접근이 다릅니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            VersionedSchema의 versionIdentifier 역할은?
+            
+            @Choice(isCorrect: true) {
+                스키마 버전을 고유하게 식별하여 마이그레이션 추적
+                
+                @Justification(reaction: "정답!") {
+                    versionIdentifier로 현재 저장된 데이터의 스키마 버전을
+                    확인하고 필요한 마이그레이션을 결정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                App Store 버전과 동기화
+                
+                @Justification(reaction: "아쉽네요") {
+                    앱 버전과는 별개입니다. 데이터 스키마 식별용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사용자에게 표시할 버전 문자열
+                
+                @Justification(reaction: "아쉽네요") {
+                    내부 스키마 식별용이며 UI 표시용이 아닙니다.
+                }
+            }
+        }
+    }
+}

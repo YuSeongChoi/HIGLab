@@ -1,0 +1,127 @@
+@Tutorial(time: 20) {
+    @Intro(title: "동적 옵션") {
+        Intent 파라미터에 동적으로 생성되는 옵션 목록을 제공합니다.
+        
+        @Image(source: "placeholder.png", alt: "Dynamic Options 개념")
+    }
+    
+    @Section(title: "DynamicOptionsProvider") {
+        @ContentAndMedia {
+            `DynamicOptionsProvider`는 런타임에 파라미터의 선택 가능한 옵션을 제공합니다.
+            
+            - 사용자의 데이터에 기반한 옵션
+            - 네트워크에서 가져온 옵션
+            - 앱 상태에 따라 달라지는 옵션
+        }
+        
+        @Steps {
+            @Step {
+                `DynamicOptionsProvider`를 채택한 구조체를 만듭니다.
+                
+                `results()` 메서드에서 옵션 배열을 반환합니다.
+                
+                @Code(name: "CategoryOptions.swift", file: "08-dynamic-basic.swift")
+            }
+            
+            @Step {
+                파라미터에 `@Parameter(optionsProvider:)`로 연결합니다.
+                
+                @Code(name: "FilterIntent.swift", file: "08-dynamic-intent.swift")
+            }
+        }
+    }
+    
+    @Section(title: "의존성 있는 옵션") {
+        @ContentAndMedia {
+            다른 파라미터의 값에 따라 옵션이 달라지는 경우를 처리합니다.
+            
+            예: 선택한 카테고리에 따라 다른 항목 목록 표시
+        }
+        
+        @Steps {
+            @Step {
+                `@IntentParameterDependency`로 다른 파라미터를 주입받습니다.
+                
+                @Code(name: "ItemOptions.swift", file: "08-dynamic-dependency.swift")
+            }
+            
+            @Step {
+                의존성을 활용해 조건부 옵션을 반환합니다.
+                
+                @Code(name: "ItemOptions.swift", file: "08-dynamic-conditional.swift")
+            }
+        }
+    }
+    
+    @Section(title: "검색 가능한 옵션") {
+        @ContentAndMedia {
+            옵션이 많을 때 검색 기능을 제공하려면 `searchable`을 활성화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `defaultQuery`를 제공하고 검색 쿼리를 처리합니다.
+                
+                @Code(name: "SearchableOptions.swift", file: "08-dynamic-searchable.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            DynamicOptionsProvider에서 옵션을 반환하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                `results()`
+                
+                @Justification(reaction: "정확합니다! ✅") {
+                    results() 메서드에서 선택 가능한 옵션 배열을 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `options()`
+                
+                @Justification(reaction: "아니에요!") {
+                    DynamicOptionsProvider의 메서드 이름은 results()입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `provide()`
+                
+                @Justification(reaction: "다시 확인해보세요!") {
+                    이런 이름의 메서드는 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            다른 파라미터 값에 의존하는 옵션을 만들려면 어떤 래퍼를 사용하나요?
+            
+            @Choice(isCorrect: false) {
+                `@Dependency`
+                
+                @Justification(reaction: "아쉽네요!") {
+                    SwiftUI의 Environment와 혼동하셨네요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `@ParameterValue`
+                
+                @Justification(reaction: "틀렸습니다!") {
+                    이런 래퍼는 App Intents에 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `@IntentParameterDependency`
+                
+                @Justification(reaction: "맞습니다! 🎯") {
+                    @IntentParameterDependency로 다른 파라미터를 주입받습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,228 @@
+@Tutorial(time: 15) {
+    @Intro(title: "알림 소개 & 권한 요청") {
+        UserNotifications 프레임워크는 iOS 앱에서 알림을 관리하는 핵심 API입니다.
+        
+        사용자의 허락 없이는 알림을 보낼 수 없습니다.
+        권한 요청은 앱의 첫인상을 결정하는 중요한 순간입니다.
+    }
+    
+    @Section(title: "UserNotifications 프레임워크 이해하기") {
+        @ContentAndMedia {
+            UserNotifications는 iOS 10에서 도입되어 기존의 UILocalNotification을 대체했습니다.
+            
+            - 로컬 알림과 푸시 알림을 통합 관리
+            - 미디어 첨부, 액션 버튼 지원
+            - 알림 그룹화 및 스레딩
+        }
+        
+        @Steps {
+            @Step {
+                **핵심 타입 살펴보기**
+                
+                UNUserNotificationCenter가 모든 알림 작업의 중심입니다.
+                싱글톤 패턴으로 앱 전체에서 하나의 인스턴스를 공유합니다.
+                
+                @Code(name: "NotificationBasics.swift", file: "01-notification-basics.swift")
+            }
+            
+            @Step {
+                **알림의 3요소: Content, Trigger, Request**
+                
+                알림은 세 가지 구성요소로 만들어집니다.
+                Content(내용) + Trigger(조건) = Request(요청)
+                
+                @Code(name: "NotificationComponents.swift", file: "01-notification-components.swift")
+            }
+            
+            @Step {
+                **RemindMe 프로젝트 생성**
+                
+                이 튜토리얼에서 만들 리마인더 앱 프로젝트를 시작합니다.
+                Xcode에서 새 iOS App 프로젝트를 만듭니다.
+                
+                @Code(name: "RemindMeApp.swift", file: "01-remindme-app.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 요청하기") {
+        @ContentAndMedia {
+            iOS는 사용자 프라이버시를 중시합니다.
+            알림을 보내려면 반드시 사용자에게 허락을 구해야 합니다.
+            
+            **HIG 팁**: 권한을 요청하기 전에 왜 필요한지 설명하세요.
+            앱 설치 직후보다 실제 알림이 필요한 맥락에서 요청하면 승인율이 높아집니다.
+        }
+        
+        @Steps {
+            @Step {
+                **권한 옵션 이해하기**
+                
+                요청할 수 있는 권한 종류를 살펴봅니다.
+                .alert, .sound, .badge가 가장 기본입니다.
+                
+                @Code(name: "PermissionOptions.swift", file: "01-permission-options.swift")
+            }
+            
+            @Step {
+                **NotificationManager 클래스 생성**
+                
+                알림 관련 로직을 캡슐화하는 매니저 클래스를 만듭니다.
+                @Observable 매크로로 SwiftUI와 연동합니다.
+                
+                @Code(name: "NotificationManager.swift", file: "01-notification-manager.swift")
+            }
+            
+            @Step {
+                **권한 요청 메서드 구현**
+                
+                requestAuthorization 메서드로 권한을 요청합니다.
+                async/await로 깔끔하게 처리합니다.
+                
+                @Code(name: "RequestPermission.swift", file: "01-request-permission.swift")
+            }
+            
+            @Step {
+                **권한 상태 확인**
+                
+                현재 권한 상태를 확인하는 메서드를 추가합니다.
+                .notDetermined, .denied, .authorized, .provisional 등을 처리합니다.
+                
+                @Code(name: "CheckPermission.swift", file: "01-check-permission.swift")
+            }
+            
+            @Step {
+                **권한 요청 UI 구현**
+                
+                사용자에게 권한의 필요성을 설명하는 온보딩 뷰를 만듭니다.
+                설명 후 시스템 권한 다이얼로그를 표시합니다.
+                
+                @Code(name: "PermissionView.swift", file: "01-permission-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 거부 대응하기") {
+        @ContentAndMedia {
+            사용자가 권한을 거부하면 앱 내에서 다시 요청할 수 없습니다.
+            
+            설정 앱으로 유도하는 것이 유일한 방법입니다.
+            하지만 너무 강요하면 사용자 경험이 나빠집니다.
+        }
+        
+        @Steps {
+            @Step {
+                **설정 앱으로 이동하기**
+                
+                UIApplication.openSettingsURLString으로 설정 앱을 엽니다.
+                사용자가 직접 권한을 변경할 수 있습니다.
+                
+                @Code(name: "OpenSettings.swift", file: "01-open-settings.swift")
+            }
+            
+            @Step {
+                **권한 거부 시 UI 처리**
+                
+                권한이 거부된 상태에서 적절한 안내 메시지를 표시합니다.
+                부드럽게 설정 변경을 유도합니다.
+                
+                @Code(name: "DeniedView.swift", file: "01-denied-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            UserNotifications에서 모든 알림 작업의 중심이 되는 클래스는?
+            
+            @Choice(isCorrect: true) {
+                UNUserNotificationCenter
+                
+                @Justification(reaction: "정답입니다!") {
+                    UNUserNotificationCenter.current()로 싱글톤 인스턴스에 접근하여
+                    권한 요청, 알림 예약, 알림 관리 등 모든 작업을 수행합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UNNotificationCenter
+                
+                @Justification(reaction: "아쉽네요") {
+                    정확한 이름은 UNUserNotificationCenter입니다.
+                    User가 포함된 것을 기억하세요!
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NotificationCenter
+                
+                @Justification(reaction: "혼동하기 쉬워요") {
+                    NotificationCenter는 앱 내부 이벤트 전달용입니다.
+                    사용자 알림은 UNUserNotificationCenter를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사용자가 알림 권한을 거부한 후, 앱에서 다시 권한을 요청할 수 있을까요?
+            
+            @Choice(isCorrect: false) {
+                예, requestAuthorization을 다시 호출하면 됩니다
+                
+                @Justification(reaction: "아쉽네요") {
+                    한 번 거부되면 앱 내에서 다시 요청할 수 없습니다.
+                    시스템 다이얼로그가 다시 나타나지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                아니요, 사용자가 직접 설정 앱에서 변경해야 합니다
+                
+                @Justification(reaction: "정확합니다!") {
+                    권한이 거부되면 설정 앱으로 유도하는 것이 유일한 방법입니다.
+                    UIApplication.openSettingsURLString을 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                24시간 후에 다시 요청할 수 있습니다
+                
+                @Justification(reaction: "아쉽네요") {
+                    iOS는 이런 제한을 두지 않습니다.
+                    한 번 결정된 권한은 사용자가 직접 변경해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            알림 권한 요청 시 가장 좋은 시점은?
+            
+            @Choice(isCorrect: false) {
+                앱 첫 실행 직후
+                
+                @Justification(reaction: "권장하지 않습니다") {
+                    사용자가 앱의 가치를 이해하기 전에 권한을 요청하면
+                    거부율이 높아집니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                사용자가 알림이 필요한 기능을 사용할 때
+                
+                @Justification(reaction: "HIG 모범 사례입니다!") {
+                    리마인더를 설정하려 할 때, 알림이 왜 필요한지 자연스럽게 이해됩니다.
+                    맥락 있는 권한 요청이 승인율을 높입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                설정 화면에서
+                
+                @Justification(reaction: "가능하지만 최선은 아닙니다") {
+                    설정 화면에 있어도 되지만, 실제 필요한 순간에 
+                    요청하는 것이 더 자연스럽습니다.
+                }
+            }
+        }
+    }
+}

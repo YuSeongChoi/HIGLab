@@ -2,15 +2,18 @@
 
 > **Apple Frameworks를 코드로 실습하는 곳**
 
+🇰🇷 **한국어** | 🇺🇸 [English](README.en.md)
+
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2017+-blue.svg)](https://developer.apple.com/ios/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학습합니다. 각 기술별로 3가지를 제공:
+Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학습합니다. 각 기술별로 4가지를 제공:
 
 1. **📝 블로그 포스트** — HIG 가이드라인 한글 해설 + 실전 예제
 2. **📚 DocC 튜토리얼** — Xcode에서 바로 실습 가능한 step-by-step 가이드 (10챕터)
 3. **💻 샘플 프로젝트** — 시니어급 완성도의 SwiftUI 앱 (평균 5,000줄+)
+4. **🛠️ AI Skills** — Claude Code, Cursor, Copilot에서 바로 사용 가능한 설정 파일
 
 🌐 **라이브 사이트**: [m1zz.github.io/HIGLab](https://m1zz.github.io/HIGLab/)
 
@@ -26,6 +29,7 @@ Apple의 **367개 프레임워크** 중 핵심 50개를 실전 중심으로 학�
 | 📝 블로그 | **50/50** | 100% ✅ |
 | 📚 DocC | **50/50** (10챕터+) | 100% ✅ |
 | 💻 샘플 | **43개** (50기술 커버) | 100% ✅ |
+| 🛠️ Skills | **3종** (Claude/Cursor/Copilot) | 100% ✅ |
 
 > **🎉 프로젝트 완성!** 50개 기술 전체 커버리지 달성
 
@@ -145,6 +149,12 @@ HIGLab/
 │   └── {framework}/        # Swift Package + DocC
 ├── samples/               # 💻 샘플 프로젝트 (43개)
 │   └── {SampleName}/      # 완성된 SwiftUI 앱
+├── ai-reference/          # 🤖 AI Reference (50개)
+│   └── {framework}.md
+├── skills/                # 🛠️ AI Skills (Claude/Cursor/Copilot)
+│   ├── claude-code/
+│   ├── cursor/
+│   └── copilot/
 └── SSOT.json              # Single Source of Truth
 ```
 
@@ -242,8 +252,12 @@ HIGLab/
 │   └── {framework}/        # Swift Package + DocC
 ├── samples/               # 💻 샘플 프로젝트 (43개)
 │   └── {SampleName}/      # 완성된 SwiftUI 앱 + README.md
-├── ai-reference/          # 🤖 AI 코드 생성용 참조 문서
+├── ai-reference/          # 🤖 AI Reference (50개)
 │   └── {framework}.md
+├── skills/                # 🛠️ AI Skills (Claude/Cursor/Copilot)
+│   ├── claude-code/
+│   ├── cursor/
+│   └── copilot/
 └── SSOT.json              # Single Source of Truth
 ```
 
@@ -269,6 +283,90 @@ swift package --disable-sandbox preview-documentation --target HIGWidgets
 cd samples/WeatherWidget
 cat README.md
 ```
+
+---
+
+## 🛠️ AI Skills — AI 코딩 도구 연동
+
+### Skills가 뭔가요?
+
+AI 코딩 도구(Claude Code, Cursor, Copilot)가 **iOS 코드를 더 정확하게 생성**하도록 도와주는 설정 파일입니다.
+
+**문제**: AI는 종종 deprecated API를 사용하거나, iOS 17+ 최신 패턴(`@Observable`, `SwiftData`)을 모릅니다.  
+**해결**: HIG Lab의 AI Reference를 Skills로 연동하면, AI가 50개 Apple 프레임워크의 최신 베스트 프랙티스를 참고합니다.
+
+👉 **[상세 설치 가이드](skills/README.md)**
+
+---
+
+### 📦 빠른 설치
+
+#### Claude Code — `/hig` 커맨드
+
+```bash
+# 전역 설치 (모든 프로젝트에서 사용)
+mkdir -p ~/.claude/commands
+curl -o ~/.claude/commands/hig.md https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/claude-code/hig.md
+```
+
+#### Cursor
+
+```bash
+# 프로젝트 루트에 복사
+curl -o .cursorrules https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/cursor/.cursorrules
+```
+
+#### GitHub Copilot
+
+```bash
+mkdir -p .github
+curl -o .github/copilot-instructions.md https://raw.githubusercontent.com/M1zz/HIGLab/main/skills/copilot/copilot-instructions.md
+```
+
+---
+
+### 💡 사용 예시
+
+#### Claude Code에서 `/hig` 커맨드 사용
+
+```
+You: /hig storekit
+     인앱결제 기능을 추가해줘
+
+AI:  (StoreKit 2 AI Reference를 자동으로 불러온 후)
+     Product.products(for:)와 @Observable 패턴으로 구현합니다...
+```
+
+한국어 키워드도 지원합니다:
+
+```
+/hig 인앱결제    → StoreKit 2
+/hig 위젯       → WidgetKit
+/hig 생체인증    → LocalAuthentication
+/hig list      → 50개 프레임워크 전체 목록
+```
+
+#### Before & After
+
+| | Before (Skills 없이) | After (Skills 적용) |
+|---|---|---|
+| 상태관리 | `@StateObject`, `ObservableObject` | ✅ `@Observable` (iOS 17+) |
+| 데이터 | Core Data + `@FetchRequest` | ✅ SwiftData + `@Query` |
+| 인앱결제 | StoreKit 1 completion handler | ✅ StoreKit 2 async/await |
+| 에러처리 | `print(error)` | ✅ `LocalizedError` 프로토콜 |
+
+---
+
+### 🔧 지원 도구
+
+| 도구 | 파일 | 설명 |
+|------|------|------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `skills/claude-code/hig.md` | `/hig` 슬래시 커맨드 |
+| [Cursor](https://cursor.sh) | `skills/cursor/.cursorrules` | 자동 컨텍스트 인식 |
+| [GitHub Copilot](https://github.com/features/copilot) | `skills/copilot/copilot-instructions.md` | VS Code 자동 적용 |
+| 기타 AI | `llms.txt` / `llms-full.txt` | URL 제공: `https://m1zz.github.io/HIGLab/llms.txt` |
+
+> 💡 프로젝트를 클론하고 AI 코딩 도구로 열면, AI가 자동으로 50개 프레임워크 레퍼런스를 참고하여 정확한 iOS 코드를 생성합니다.
 
 ---
 

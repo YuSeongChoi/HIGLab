@@ -1,0 +1,206 @@
+@Tutorial(time: 25) {
+    @Intro(title: "AHAP 파일 로드") {
+        Apple Haptic Audio Pattern(AHAP) 파일 형식을 이해하고
+        디자이너와 협업하여 햅틱을 관리하는 방법을 배웁니다.
+        
+        @Image(source: "ahap-files.png", alt: "AHAP 파일 구조")
+    }
+    
+    @Section(title: "AHAP 파일 형식 이해") {
+        @ContentAndMedia {
+            AHAP(Apple Haptic Audio Pattern)은 
+            JSON 기반의 햅틱 패턴 정의 파일입니다.
+            
+            **장점:**
+            - 코드 변경 없이 햅틱 수정 가능
+            - 디자이너가 직접 햅틱 패턴 작성 가능
+            - 버전 관리 및 A/B 테스트 용이
+            - 실시간 리로드로 빠른 이터레이션
+        }
+        
+        @Steps {
+            @Step {
+                AHAP 파일의 기본 구조를 살펴봅니다.
+                Version, Pattern, Event로 구성됩니다.
+                
+                @Code(name: "simple.ahap", file: "06-01-ahap-structure.json")
+            }
+            
+            @Step {
+                Transient 이벤트를 AHAP으로 정의합니다.
+                Time, EventType, EventParameters를 설정합니다.
+                
+                @Code(name: "tap.ahap", file: "06-02-transient-ahap.json")
+            }
+            
+            @Step {
+                Continuous 이벤트도 AHAP으로 정의할 수 있습니다.
+                EventDuration 파라미터가 추가됩니다.
+                
+                @Code(name: "vibration.ahap", file: "06-03-continuous-ahap.json")
+            }
+        }
+    }
+    
+    @Section(title: "AHAP 파일 로드하기") {
+        @ContentAndMedia {
+            번들에 포함된 AHAP 파일을 로드하여 
+            CHHapticPattern으로 변환합니다.
+            
+            파일 로드 실패에 대한 적절한 에러 처리가 중요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                AHAP 파일을 번들에서 로드합니다.
+                URL을 통해 파일 경로를 지정합니다.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-04-load-ahap.swift")
+            }
+            
+            @Step {
+                Data로 직접 AHAP을 전달할 수도 있습니다.
+                서버에서 동적으로 햅틱을 받아올 때 유용합니다.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-05-load-from-data.swift")
+            }
+            
+            @Step {
+                딕셔너리에서 직접 패턴을 생성하는 방법입니다.
+                프로그래매틱하게 AHAP 구조를 생성할 때 사용합니다.
+                
+                @Code(name: "AHAPLoader.swift", file: "06-06-from-dictionary.swift")
+            }
+        }
+    }
+    
+    @Section(title: "복잡한 AHAP 패턴") {
+        @ContentAndMedia {
+            여러 이벤트와 파라미터 커브를 조합하여 
+            복잡한 패턴을 AHAP으로 정의합니다.
+            
+            실제 프로덕션에서 사용할 법한 
+            완성도 있는 패턴을 만들어봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                여러 이벤트를 시퀀스로 구성합니다.
+                하트비트 패턴을 AHAP으로 정의합니다.
+                
+                @Code(name: "heartbeat.ahap", file: "06-07-heartbeat-ahap.json")
+            }
+            
+            @Step {
+                파라미터 커브를 AHAP에 포함시킵니다.
+                점점 강해지는 빌드업 효과를 정의합니다.
+                
+                @Code(name: "buildup.ahap", file: "06-08-curve-ahap.json")
+            }
+            
+            @Step {
+                오디오와 햅틱을 함께 정의하는 AHAP입니다.
+                AudioCustom 이벤트를 추가합니다.
+                
+                @Code(name: "audio-haptic.ahap", file: "06-09-audio-ahap.json")
+            }
+        }
+    }
+    
+    @Section(title: "AHAP 관리 시스템") {
+        @ContentAndMedia {
+            앱의 모든 AHAP 파일을 체계적으로 관리하는 
+            시스템을 구축합니다.
+            
+            캐싱, 프리로딩, 에러 처리를 포함한 
+            프로덕션 레디 구조를 만들어봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                AHAP 파일을 관리하는 HapticLibrary 클래스를 만듭니다.
+                파일 이름을 enum으로 타입 세이프하게 관리합니다.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-10-haptic-library.swift")
+            }
+            
+            @Step {
+                로드한 패턴을 캐싱하여 반복 로드를 방지합니다.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-11-caching.swift")
+            }
+            
+            @Step {
+                앱 시작 시 자주 사용하는 패턴을 미리 로드합니다.
+                첫 번째 햅틱의 지연을 최소화합니다.
+                
+                @Code(name: "HapticLibrary.swift", file: "06-12-preload.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AHAP 파일을 사용하는 주요 장점은?
+            
+            @Choice(isCorrect: false) {
+                코드로 정의하는 것보다 성능이 좋다
+                
+                @Justification(reaction: "성능 차이는 거의 없습니다.") {
+                    AHAP은 결국 CHHapticPattern으로 변환되므로
+                    런타임 성능은 동일합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                코드 변경 없이 햅틱을 수정할 수 있고
+                디자이너와 협업이 용이하다
+                
+                @Justification(reaction: "정확합니다! 🎨") {
+                    AHAP 파일만 교체하면 앱 업데이트 없이도
+                    햅틱을 변경할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 강한 햅틱을 만들 수 있다
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    AHAP은 패턴 정의 방식일 뿐,
+                    햅틱의 물리적 특성과는 무관합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            AHAP 파일에서 Continuous 이벤트를 정의할 때 
+            필수로 추가해야 하는 파라미터는?
+            
+            @Choice(isCorrect: true) {
+                EventDuration
+                
+                @Justification(reaction: "맞습니다! ⏱️") {
+                    Continuous 이벤트는 지속 시간을 명시해야 합니다.
+                    Transient는 순간적이므로 필요 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EventWaveform
+                
+                @Justification(reaction: "그런 파라미터는 없습니다.") {
+                    파형은 EventType과 파라미터 조합으로 결정됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                EventRepeat
+                
+                @Justification(reaction: "존재하지 않는 파라미터입니다.") {
+                    반복은 여러 이벤트를 배치하거나
+                    코드에서 반복 재생으로 구현합니다.
+                }
+            }
+        }
+    }
+}

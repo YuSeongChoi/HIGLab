@@ -1,0 +1,280 @@
+@Tutorial(time: 25) {
+    @Intro(title: "알림 확장 (Service/Content Extension)") {
+        Notification Extension으로 알림을 강력하게 확장합니다.
+        
+        Service Extension으로 푸시 내용을 수정하고,
+        Content Extension으로 완전한 커스텀 UI를 구현합니다.
+    }
+    
+    @Section(title: "Notification Service Extension") {
+        @ContentAndMedia {
+            Service Extension은 푸시 알림이 사용자에게 표시되기 전에
+            내용을 수정할 수 있는 기회를 제공합니다.
+            
+            **주요 용도:**
+            - 이미지/미디어 다운로드 후 첨부
+            - 알림 내용 복호화
+            - 알림 내용 동적 수정
+        }
+        
+        @Steps {
+            @Step {
+                **Service Extension 타겟 추가**
+                
+                File > New > Target에서 
+                Notification Service Extension을 선택합니다.
+                
+                @Code(name: "AddServiceExtension.swift", file: "09-add-service-extension.swift")
+            }
+            
+            @Step {
+                **NotificationService 클래스 구조**
+                
+                자동 생성된 템플릿 코드를 살펴봅니다.
+                didReceive와 serviceExtensionTimeWillExpire가 핵심 메서드입니다.
+                
+                @Code(name: "ServiceTemplate.swift", file: "09-service-template.swift")
+            }
+            
+            @Step {
+                **mutable-content 설정**
+                
+                Service Extension이 호출되려면 푸시 페이로드에
+                mutable-content: 1이 있어야 합니다.
+                
+                @Code(name: "MutableContent.swift", file: "09-mutable-content.swift")
+            }
+            
+            @Step {
+                **이미지 다운로드 및 첨부**
+                
+                푸시에 포함된 URL에서 이미지를 다운로드하고 첨부합니다.
+                30초 제한 시간이 있습니다.
+                
+                @Code(name: "DownloadAndAttach.swift", file: "09-download-and-attach.swift")
+            }
+            
+            @Step {
+                **타임아웃 처리**
+                
+                시간 초과가 임박하면 serviceExtensionTimeWillExpire가 호출됩니다.
+                현재까지 처리된 내용을 반환해야 합니다.
+                
+                @Code(name: "HandleTimeout.swift", file: "09-handle-timeout.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Notification Content Extension") {
+        @ContentAndMedia {
+            Content Extension은 알림을 확장했을 때 
+            완전한 커스텀 UI를 표시합니다.
+            
+            스토리보드나 SwiftUI로 복잡한 인터페이스를 구현할 수 있습니다.
+            이미지 갤러리, 지도, 차트 등 다양한 UI가 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Content Extension 타겟 추가**
+                
+                File > New > Target에서 
+                Notification Content Extension을 선택합니다.
+                
+                @Code(name: "AddContentExtension.swift", file: "09-add-content-extension.swift")
+            }
+            
+            @Step {
+                **Info.plist 설정**
+                
+                NSExtension 딕셔너리에서 카테고리를 연결합니다.
+                UNNotificationExtensionCategory 키를 설정합니다.
+                
+                @Code(name: "ContentInfoPlist.swift", file: "09-content-info-plist.swift")
+            }
+            
+            @Step {
+                **NotificationViewController 구현**
+                
+                UNNotificationContentExtension 프로토콜을 구현합니다.
+                didReceive에서 알림 내용을 UI에 표시합니다.
+                
+                @Code(name: "ContentViewController.swift", file: "09-content-view-controller.swift")
+            }
+            
+            @Step {
+                **커스텀 UI 구성**
+                
+                스토리보드에서 원하는 UI를 디자인합니다.
+                이미지 뷰, 레이블, 버튼 등을 배치합니다.
+                
+                @Code(name: "CustomUI.swift", file: "09-custom-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Content Extension 인터랙션") {
+        @ContentAndMedia {
+            Content Extension에서 액션 버튼과 연동하여
+            복잡한 인터랙션을 구현할 수 있습니다.
+            
+            사용자 입력을 받아 실시간으로 UI를 업데이트합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **액션 응답 가로채기**
+                
+                didReceive(_:completionHandler:)로 액션 응답을 처리합니다.
+                메인 앱으로 전달하거나 Extension에서 직접 처리합니다.
+                
+                @Code(name: "InterceptAction.swift", file: "09-intercept-action.swift")
+            }
+            
+            @Step {
+                **텍스트 입력 처리**
+                
+                텍스트 입력 액션의 내용을 UI에 표시합니다.
+                
+                @Code(name: "HandleTextInExtension.swift", file: "09-handle-text-extension.swift")
+            }
+            
+            @Step {
+                **미디어 재생 버튼**
+                
+                UNNotificationContentExtension의 
+                mediaPlayPauseButtonType으로 미디어 컨트롤을 추가합니다.
+                
+                @Code(name: "MediaControls.swift", file: "09-media-controls.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Extension과 메인 앱 간 데이터 공유") {
+        @ContentAndMedia {
+            Extension은 메인 앱과 별도의 프로세스에서 실행됩니다.
+            
+            App Group을 사용하여 데이터를 공유합니다.
+            UserDefaults(suiteName:)이나 공유 파일 컨테이너를 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **App Group 설정**
+                
+                메인 앱과 Extension에 동일한 App Group을 추가합니다.
+                Signing & Capabilities에서 설정합니다.
+                
+                @Code(name: "AppGroup.swift", file: "09-app-group.swift")
+            }
+            
+            @Step {
+                **공유 UserDefaults**
+                
+                App Group을 통해 UserDefaults를 공유합니다.
+                
+                @Code(name: "SharedUserDefaults.swift", file: "09-shared-userdefaults.swift")
+            }
+            
+            @Step {
+                **공유 파일 컨테이너**
+                
+                큰 데이터는 파일로 공유합니다.
+                FileManager의 containerURL(forSecurityApplicationGroupIdentifier:)를 사용합니다.
+                
+                @Code(name: "SharedContainer.swift", file: "09-shared-container.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Notification Service Extension이 호출되려면 푸시 페이로드에 무엇이 필요할까요?
+            
+            @Choice(isCorrect: true) {
+                mutable-content: 1
+                
+                @Justification(reaction: "정답!") {
+                    mutable-content 플래그가 있어야 시스템이 
+                    Service Extension을 호출합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                content-available: 1
+                
+                @Justification(reaction: "혼동하지 마세요") {
+                    content-available은 Silent Push용입니다.
+                    Service Extension은 mutable-content입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                특별한 설정 없이 항상 호출됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    mutable-content 플래그가 반드시 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Notification Service Extension의 작업 제한 시간은?
+            
+            @Choice(isCorrect: true) {
+                약 30초
+                
+                @Justification(reaction: "정답!") {
+                    30초 안에 작업을 완료해야 합니다.
+                    시간이 초과되면 serviceExtensionTimeWillExpire가 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                5초
+                
+                @Justification(reaction: "더 깁니다") {
+                    이미지 다운로드 등을 위해 30초 정도 주어집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                제한 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    배터리와 사용자 경험을 위해 시간 제한이 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Extension과 메인 앱 간 데이터를 공유하려면 무엇을 사용해야 할까요?
+            
+            @Choice(isCorrect: true) {
+                App Group
+                
+                @Justification(reaction: "정확합니다!") {
+                    Extension은 별도 프로세스이므로 App Group을 통해
+                    공유 컨테이너와 UserDefaults에 접근합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                일반 UserDefaults
+                
+                @Justification(reaction: "아쉽네요") {
+                    일반 UserDefaults는 앱별로 분리되어 있습니다.
+                    App Group의 suite를 사용해야 공유됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                전역 변수
+                
+                @Justification(reaction: "불가능합니다") {
+                    별도 프로세스이므로 메모리를 공유하지 않습니다.
+                }
+            }
+        }
+    }
+}

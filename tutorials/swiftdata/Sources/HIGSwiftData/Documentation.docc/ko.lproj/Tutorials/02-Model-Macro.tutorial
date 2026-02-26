@@ -1,0 +1,177 @@
+@Tutorial(time: 15) {
+    @Intro(title: "@Model 매크로로 데이터 모델 정의하기") {
+        @Model 매크로는 SwiftData의 심장입니다.
+        순수 Swift 클래스를 영속 가능한 데이터 모델로 변환합니다.
+        
+        TaskItem 모델을 만들며 @Model의 모든 기능을 탐구합니다.
+    }
+    
+    @Section(title: "TaskItem 모델 생성") {
+        @ContentAndMedia {
+            TaskMaster 앱의 핵심 모델인 TaskItem을 정의합니다.
+            할 일의 제목, 설명, 완료 상태, 우선순위, 마감일을 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 모델 구조**
+                
+                새 Swift 파일 `TaskItem.swift`를 생성합니다.
+                @Model 매크로를 클래스에 적용합니다.
+                
+                중요: @Model은 반드시 class에만 적용됩니다. struct는 불가!
+                
+                @Code(name: "TaskItem.swift", file: "02-model-basic.swift")
+            }
+            
+            @Step {
+                **지원되는 프로퍼티 타입**
+                
+                SwiftData는 다양한 타입을 자동으로 영속화합니다.
+                
+                - 기본 타입: String, Int, Double, Bool, Date, UUID, URL, Data
+                - Optional: 모든 기본 타입의 옵셔널
+                - 컬렉션: Array, Dictionary, Set (Codable 요소)
+                - Codable: RawRepresentable enum 포함
+                
+                @Code(name: "TaskItem.swift", file: "02-model-types.swift")
+            }
+            
+            @Step {
+                **Priority enum 추가**
+                
+                할 일의 우선순위를 enum으로 정의합니다.
+                Codable을 채택하면 SwiftData가 자동으로 처리합니다.
+                
+                @Code(name: "TaskItem.swift", file: "02-model-enum.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Attribute 매크로") {
+        @ContentAndMedia {
+            @Attribute 매크로로 프로퍼티의 영속성 동작을 세밀하게 제어합니다.
+            유니크 제약, 외부 저장, Spotlight 인덱싱 등을 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **유니크 제약 조건**
+                
+                `.unique`로 중복을 방지합니다.
+                같은 값이 삽입되면 기존 데이터를 업데이트(upsert)합니다.
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-unique.swift")
+            }
+            
+            @Step {
+                **외부 데이터 저장**
+                
+                `.externalStorage`로 큰 데이터를 별도 파일로 저장합니다.
+                이미지, 첨부 파일 등에 유용합니다.
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-external.swift")
+            }
+            
+            @Step {
+                **Spotlight 인덱싱**
+                
+                `.spotlight`로 시스템 검색에 노출합니다.
+                사용자가 Spotlight에서 할 일을 검색할 수 있습니다.
+                
+                @Code(name: "TaskItem.swift", file: "02-attribute-spotlight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "@Transient 매크로") {
+        @ContentAndMedia {
+            저장하지 않을 프로퍼티는 @Transient로 표시합니다.
+            캐시, 임시 상태, 계산값 등에 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **임시 프로퍼티 정의**
+                
+                @Transient 프로퍼티는 메모리에서만 존재합니다.
+                앱 재시작 시 기본값으로 초기화됩니다.
+                
+                반드시 기본값을 제공해야 합니다!
+                
+                @Code(name: "TaskItem.swift", file: "02-transient.swift")
+            }
+            
+            @Step {
+                **최종 TaskItem 모델**
+                
+                지금까지 배운 내용을 종합한 완성된 모델입니다.
+                이 모델을 앞으로의 튜토리얼에서 계속 사용합니다.
+                
+                @Code(name: "TaskItem.swift", file: "02-model-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @Model 매크로는 어떤 타입에 적용할 수 있나요?
+            
+            @Choice(isCorrect: true) {
+                class에만 적용 가능
+                
+                @Justification(reaction: "정답!") {
+                    @Model은 참조 타입인 class에만 적용됩니다.
+                    struct, enum에는 사용할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                struct에만 적용 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    struct는 값 타입이라 SwiftData의 변경 추적이 불가능합니다.
+                    @Model은 class 전용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                class와 struct 모두 적용 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Model은 class에만 적용됩니다.
+                    struct 데이터는 Codable로 class 프로퍼티 안에 저장합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            저장하지 않을 임시 프로퍼티를 표시하는 매크로는?
+            
+            @Choice(isCorrect: true) {
+                @Transient
+                
+                @Justification(reaction: "정확합니다!") {
+                    @Transient는 해당 프로퍼티를 영속화에서 제외합니다.
+                    반드시 기본값을 제공해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Ignore
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData에서는 @Transient를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Ephemeral
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData에서는 @Transient를 사용합니다.
+                }
+            }
+        }
+    }
+}

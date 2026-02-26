@@ -1,0 +1,177 @@
+@Tutorial(time: 20) {
+    @Intro(title: "사용자 위치 추적") {
+        CLLocationManager를 사용하여 사용자의 실시간 위치를 추적하고
+        지도에 표시합니다. 권한 요청과 백그라운드 위치 업데이트를 다룹니다.
+    }
+    
+    @Section(title: "위치 권한 설정") {
+        @ContentAndMedia {
+            iOS에서 위치 정보를 사용하려면 
+            사용자의 명시적 권한이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Info.plist 설정**
+                
+                위치 사용 목적을 설명하는 문구를 추가합니다.
+                NSLocationWhenInUseUsageDescription 키가 필수입니다.
+                
+                @Code(name: "Info.plist", file: "07-info-plist.swift")
+            }
+            
+            @Step {
+                **CLLocationManager 생성**
+                
+                위치 관리자를 생성하고 권한을 요청합니다.
+                델리게이트로 권한 상태 변화를 감지합니다.
+                
+                @Code(name: "LocationManager.swift", file: "07-location-manager.swift")
+            }
+            
+            @Step {
+                **권한 상태 처리**
+                
+                .notDetermined, .denied, .authorizedWhenInUse 등
+                각 상태에 따른 UI를 제공합니다.
+                
+                @Code(name: "LocationManager.swift", file: "07-auth-status.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 위치 추적") {
+        @ContentAndMedia {
+            startUpdatingLocation으로 지속적인 위치 업데이트를 받습니다.
+            정확도와 배터리 효율의 균형을 맞춥니다.
+        }
+        
+        @Steps {
+            @Step {
+                **위치 업데이트 시작**
+                
+                desiredAccuracy로 정확도를, 
+                distanceFilter로 업데이트 빈도를 설정합니다.
+                
+                @Code(name: "LocationManager.swift", file: "07-start-updates.swift")
+            }
+            
+            @Step {
+                **위치 변경 감지**
+                
+                델리게이트 메서드로 새 위치를 받습니다.
+                @Published 프로퍼티로 SwiftUI 뷰에 전달합니다.
+                
+                @Code(name: "LocationManager.swift", file: "07-location-delegate.swift")
+            }
+            
+            @Step {
+                **배터리 최적화**
+                
+                activityType으로 이동 패턴을 알려주면 
+                시스템이 배터리를 효율적으로 관리합니다.
+                
+                @Code(name: "LocationManager.swift", file: "07-battery-optimization.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지도에 사용자 위치 표시") {
+        @ContentAndMedia {
+            SwiftUI Map에서 사용자 위치를 
+            내장 UserAnnotation으로 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **UserAnnotation 추가**
+                
+                Map 콘텐츠에 UserAnnotation()을 추가합니다.
+                파란 점과 정확도 원이 자동으로 표시됩니다.
+                
+                @Code(name: "MapView.swift", file: "07-user-annotation.swift")
+            }
+            
+            @Step {
+                **현재 위치로 이동 버튼**
+                
+                사용자 위치를 중심으로 지도를 이동하는 버튼을 추가합니다.
+                .userLocation(.followsHeading)으로 방향까지 추적합니다.
+                
+                @Code(name: "MapView.swift", file: "07-follow-user.swift")
+            }
+            
+            @Step {
+                **주변 맛집 자동 검색**
+                
+                현재 위치가 업데이트되면 
+                주변 500m 내 맛집을 자동으로 검색합니다.
+                
+                @Code(name: "MapView.swift", file: "07-nearby-search.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iOS에서 위치 권한 요청을 위해 필수로 설정해야 하는 Info.plist 키는?
+            
+            @Choice(isCorrect: true) {
+                NSLocationWhenInUseUsageDescription
+                
+                @Justification(reaction: "정답!") {
+                    앱 사용 중 위치 권한을 요청하려면 
+                    이 키에 사용 목적을 설명해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSLocationPermission
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 키는 없습니다. 
+                    NSLocationWhenInUseUsageDescription을 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CFBundleLocationUsage
+                
+                @Justification(reaction: "아쉽네요") {
+                    올바른 키 이름이 아닙니다.
+                    NSLocation...UsageDescription 형식을 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CLLocationAccuracy.kCLLocationAccuracyBest의 특징은?
+            
+            @Choice(isCorrect: true) {
+                가장 정확하지만 배터리 소모가 큼
+                
+                @Justification(reaction: "정확합니다!") {
+                    GPS, Wi-Fi, 셀룰러를 모두 활용하여 최고 정확도를 제공하지만
+                    그만큼 배터리 소모가 큽니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                가장 빠르게 위치를 반환
+                
+                @Justification(reaction: "아쉽네요") {
+                    높은 정확도를 위해 오히려 더 많은 시간이 걸릴 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리 효율이 가장 좋음
+                
+                @Justification(reaction: "아쉽네요") {
+                    배터리 효율을 원한다면 kCLLocationAccuracyHundredMeters나
+                    kCLLocationAccuracyKilometer를 사용하세요.
+                }
+            }
+        }
+    }
+}

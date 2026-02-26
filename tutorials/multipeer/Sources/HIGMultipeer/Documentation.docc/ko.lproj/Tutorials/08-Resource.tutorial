@@ -1,0 +1,189 @@
+@Tutorial(time: 15) {
+    @Intro(title: "리소스 전송 (파일)") {
+        MCSession의 sendResource 메서드를 사용하여 
+        파일을 다른 피어에게 전송합니다.
+    }
+    
+    @Section(title: "리소스 전송 이해하기") {
+        @ContentAndMedia {
+            sendResource는 URL로 지정된 파일을 전송합니다.
+            
+            대용량 파일도 효율적으로 전송할 수 있고,
+            전송 진행률을 추적할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                sendResource 메서드의 구조를 살펴봅니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-01-resource-basic.swift")
+            }
+            
+            @Step {
+                Progress 객체로 진행률을 추적합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-02-progress.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파일 전송 구현") {
+        @ContentAndMedia {
+            문서 디렉터리의 파일이나 
+            사진 라이브러리의 이미지를 전송합니다.
+        }
+        
+        @Steps {
+            @Step {
+                파일 전송 메서드를 구현합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-03-send-file.swift")
+            }
+            
+            @Step {
+                이미지를 전송합니다.
+                
+                임시 파일로 저장 후 전송합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-04-send-image.swift")
+            }
+            
+            @Step {
+                여러 피어에게 동시에 전송합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-05-send-multiple.swift")
+            }
+            
+            @Step {
+                진행률 UI를 구현합니다.
+                
+                @Code(name: "TransferProgressView.swift", file: "08-06-progress-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파일 수신 구현") {
+        @ContentAndMedia {
+            세션 델리게이트에서 파일 수신을 처리합니다.
+            
+            수신 시작, 진행, 완료 콜백이 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                수신 시작 콜백을 구현합니다.
+                
+                resourceName과 Progress를 확인합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-07-receive-start.swift")
+            }
+            
+            @Step {
+                수신 완료 콜백을 구현합니다.
+                
+                localURL에서 파일을 영구 저장소로 이동합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-08-receive-finish.swift")
+            }
+            
+            @Step {
+                수신 오류를 처리합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-09-receive-error.swift")
+            }
+            
+            @Step {
+                수신된 파일을 문서 디렉터리에 저장합니다.
+                
+                @Code(name: "ResourceManager.swift", file: "08-10-save-file.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파일 공유 앱 완성") {
+        @ContentAndMedia {
+            파일 선택, 전송, 수신을 통합하여 
+            완전한 파일 공유 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                파일 선택 UI를 구현합니다.
+                
+                @Code(name: "FilePickerView.swift", file: "08-11-file-picker.swift")
+            }
+            
+            @Step {
+                전송/수신 기록을 관리합니다.
+                
+                @Code(name: "TransferHistory.swift", file: "08-12-history.swift")
+            }
+            
+            @Step {
+                파일 공유 메인 View를 완성합니다.
+                
+                @Code(name: "FileShareView.swift", file: "08-13-share-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            sendResource 메서드가 반환하는 객체는?
+            
+            @Choice(isCorrect: true) {
+                Progress
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    Progress 객체로 전송 진행률을 추적하고,
+                    전송을 취소할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Bool
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    sendResource는 Progress를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Data
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    파일 데이터가 아닌 Progress를 반환합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            수신 완료 시 localURL에 대한 주의사항은?
+            
+            @Choice(isCorrect: false) {
+                영구적으로 유지된다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    localURL은 임시 위치이므로 이동해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                임시 위치이므로 영구 저장소로 이동해야 한다
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    localURL은 임시 디렉터리에 있으므로,
+                    문서 디렉터리 등으로 이동해야 보존됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동으로 앱 번들에 저장된다
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    앱 번들은 읽기 전용입니다.
+                }
+            }
+        }
+    }
+}

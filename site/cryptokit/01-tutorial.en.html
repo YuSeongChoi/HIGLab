@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to CryptoKit cryptography framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="🔒 Mastering CryptoKit — HIG Lab">
+    <meta property="og:description" content="Complete guide to CryptoKit cryptography framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🔒 Mastering CryptoKit — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to CryptoKit cryptography framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/cryptokit/01-tutorial.en.html">
+<title>🔒 Mastering CryptoKit — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🔒 Mastering CryptoKit</h1>
+<p>From encryption to signatures! Fully protect your data with Apple's modern cryptography framework.</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 1-2h</span>
+  <span>📂 System & Network</span>
+</div>
+
+<h2>✨ CryptoKit is?</h2>
+<p>CryptoKit is Apple's Swift-native cryptography framework. It lets you implement hashing, symmetric encryption, public-key encryption, and digital signatures concisely and safely. Available on iOS 13+, all cryptographic operations are processed in the Secure Enclave.</p>
+
+<h2>📦 Key Features</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Feature Overview</span></div>
+<pre class="code-body"><span class="comment">✅ 해싱 (SHA-256, SHA-384, SHA-512)
+✅ 대칭키 암호화 (AES-GCM, ChaCha20-Poly1305)
+✅ 공개키 암호화 (Curve25519, P-256, P-384, P-521)
+✅ 디지털 서명 (ECDSA, EdDSA)
+✅ 키 교환 (ECDH)
+✅ HKDF (키 유도)
+✅ HMAC (메시지 인증 코드)</span></pre></div>
+
+<h2>🔑 Hashing</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Hashing.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+<span class="kw">import</span> <span class="type">Foundation</span>
+
+<span class="comment">// SHA-256 해싱</span>
+<span class="kw">func</span> <span class="func">hashData</span>(_ input: <span class="type">String</span>) -> <span class="type">String</span> {
+    <span class="kw">let</span> data = <span class="type">Data</span>(input.utf8)
+    <span class="kw">let</span> hash = <span class="type">SHA256</span>.<span class="func">hash</span>(data: data)
+
+    <span class="comment">// Hex 문자열로 변환</span>
+    <span class="kw">return</span> hash.<span class="func">compactMap</span> { <span class="type">String</span>(format: <span class="str">"%02x"</span>, $0) }.joined()
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> password = <span class="str">"mySecurePassword123"</span>
+<span class="kw">let</span> hashed = <span class="func">hashData</span>(password)
+<span class="func">print</span>(hashed)
+<span class="comment">// "b3d2f8c5..." (64자 hex 문자열)</span>
+
+<span class="comment">// SHA-512 해싱</span>
+<span class="kw">func</span> <span class="func">hashSHA512</span>(_ input: <span class="type">String</span>) -> <span class="type">String</span> {
+    <span class="kw">let</span> data = <span class="type">Data</span>(input.utf8)
+    <span class="kw">let</span> hash = <span class="type">SHA512</span>.<span class="func">hash</span>(data: data)
+    <span class="kw">return</span> hash.description  <span class="comment">// or hex 변환</span>
+}
+
+<span class="comment">// File 해싱</span>
+<span class="kw">func</span> <span class="func">hashFile</span>(at url: <span class="type">URL</span>) <span class="kw">throws</span> -> <span class="type">String</span> {
+    <span class="kw">let</span> data = <span class="kw">try</span> <span class="type">Data</span>(contentsOf: url)
+    <span class="kw">let</span> hash = <span class="type">SHA256</span>.<span class="func">hash</span>(data: data)
+    <span class="kw">return</span> hash.<span class="func">compactMap</span> { <span class="type">String</span>(format: <span class="str">"%02x"</span>, $0) }.joined()
+}</pre></div>
+
+<h2>🔐 Symmetric Encryption (AES-GCM)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SymmetricEncryption.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// AES-GCM 암호화</span>
+<span class="kw">func</span> <span class="func">encryptData</span>(_ plaintext: <span class="type">String</span>, key: <span class="type">SymmetricKey</span>) <span class="kw">throws</span> -> <span class="type">Data</span> {
+    <span class="kw">let</span> data = <span class="type">Data</span>(plaintext.utf8)
+
+    <span class="comment">// AES-GCM 암호화 (인증 태그 포함)</span>
+    <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">seal</span>(data, using: key)
+
+    <span class="comment">// combined: nonce + ciphertext + tag</span>
+    <span class="kw">return</span> sealedBox.combined!
+}
+
+<span class="kw">func</span> <span class="func">decryptData</span>(_ encrypted: <span class="type">Data</span>, key: <span class="type">SymmetricKey</span>) <span class="kw">throws</span> -> <span class="type">String</span> {
+    <span class="comment">// SealedBox 복원</span>
+    <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="type">SealedBox</span>(combined: encrypted)
+
+    <span class="comment">// 복호화</span>
+    <span class="kw">let</span> decryptedData = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">open</span>(sealedBox, using: key)
+
+    <span class="kw">return</span> <span class="type">String</span>(data: decryptedData, encoding: .utf8)!
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> key = <span class="type">SymmetricKey</span>(size: .bits256)  <span class="comment">// 랜덤 키 생성</span>
+<span class="kw">let</span> message = <span class="str">"Secret message"</span>
+
+<span class="kw">let</span> encrypted = <span class="kw">try</span> <span class="func">encryptData</span>(message, key: key)
+<span class="kw">let</span> decrypted = <span class="kw">try</span> <span class="func">decryptData</span>(encrypted, key: key)
+
+<span class="func">print</span>(decrypted)  <span class="comment">// "Secret message"</span></pre></div>
+
+<h2>🔑 Key Storage & Management</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">KeyManagement.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+<span class="kw">import</span> <span class="type">Foundation</span>
+
+<span class="comment">// 키를 Keychain에 저장</span>
+<span class="kw">func</span> <span class="func">saveKey</span>(_ key: <span class="type">SymmetricKey</span>, tag: <span class="type">String</span>) <span class="kw">throws</span> {
+    <span class="kw">let</span> keyData = key.withUnsafeBytes { <span class="type">Data</span>($0) }
+
+    <span class="kw">let</span> query: [<span class="type">String</span>: <span class="type">Any</span>] = [
+        kSecClass <span class="kw">as</span> <span class="type">String</span>: kSecClassGenericPassword,
+        kSecAttrAccount <span class="kw">as</span> <span class="type">String</span>: tag,
+        kSecValueData <span class="kw">as</span> <span class="type">String</span>: keyData
+    ]
+
+    <span class="kw">let</span> status = <span class="type">SecItemAdd</span>(query <span class="kw">as</span> <span class="type">CFDictionary</span>, <span class="kw">nil</span>)
+
+    <span class="kw">guard</span> status == errSecSuccess <span class="kw">else</span> {
+        <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"KeychainError"</span>, code: <span class="type">Int</span>(status))
+    }
+}
+
+<span class="kw">func</span> <span class="func">loadKey</span>(tag: <span class="type">String</span>) <span class="kw">throws</span> -> <span class="type">SymmetricKey</span> {
+    <span class="kw">let</span> query: [<span class="type">String</span>: <span class="type">Any</span>] = [
+        kSecClass <span class="kw">as</span> <span class="type">String</span>: kSecClassGenericPassword,
+        kSecAttrAccount <span class="kw">as</span> <span class="type">String</span>: tag,
+        kSecReturnData <span class="kw">as</span> <span class="type">String</span>: <span class="kw">true</span>
+    ]
+
+    <span class="kw">var</span> item: <span class="type">CFTypeRef</span>?
+    <span class="kw">let</span> status = <span class="type">SecItemCopyMatching</span>(query <span class="kw">as</span> <span class="type">CFDictionary</span>, &item)
+
+    <span class="kw">guard</span> status == errSecSuccess,
+          <span class="kw">let</span> keyData = item <span class="kw">as</span>? <span class="type">Data</span> <span class="kw">else</span> {
+        <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"KeychainError"</span>, code: <span class="type">Int</span>(status))
+    }
+
+    <span class="kw">return</span> <span class="type">SymmetricKey</span>(data: keyData)
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> key = <span class="type">SymmetricKey</span>(size: .bits256)
+<span class="kw">try</span> <span class="func">saveKey</span>(key, tag: <span class="str">"MyEncryptionKey"</span>)
+
+<span class="comment">// 나중에 키 불러오기</span>
+<span class="kw">let</span> loadedKey = <span class="kw">try</span> <span class="func">loadKey</span>(tag: <span class="str">"MyEncryptionKey"</span>)</pre></div>
+
+<h2>🌐 Public Key Encryption (Curve25519)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">PublicKeyEncryption.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// 키 쌍 생성</span>
+<span class="kw">let</span> alicePrivateKey = <span class="type">Curve25519</span>.<span class="type">KeyAgreement</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> alicePublicKey = alicePrivateKey.publicKey
+
+<span class="kw">let</span> bobPrivateKey = <span class="type">Curve25519</span>.<span class="type">KeyAgreement</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> bobPublicKey = bobPrivateKey.publicKey
+
+<span class="comment">// ECDH 키 교환</span>
+<span class="kw">let</span> aliceSharedSecret = <span class="kw">try</span> alicePrivateKey.<span class="func">sharedSecretFromKeyAgreement</span>(with: bobPublicKey)
+<span class="kw">let</span> bobSharedSecret = <span class="kw">try</span> bobPrivateKey.<span class="func">sharedSecretFromKeyAgreement</span>(with: alicePublicKey)
+
+<span class="comment">// 공유 비밀에서 대칭키 생성</span>
+<span class="kw">let</span> aliceSymmetricKey = aliceSharedSecret.<span class="func">hkdfDerivedSymmetricKey</span>(
+    using: <span class="type">SHA256</span>.<span class="kw">self</span>,
+    salt: <span class="type">Data</span>(),
+    sharedInfo: <span class="type">Data</span>(<span class="str">"Encryption Key"</span>.utf8),
+    outputByteCount: <span class="num">32</span>
+)
+
+<span class="kw">let</span> bobSymmetricKey = bobSharedSecret.<span class="func">hkdfDerivedSymmetricKey</span>(
+    using: <span class="type">SHA256</span>.<span class="kw">self</span>,
+    salt: <span class="type">Data</span>(),
+    sharedInfo: <span class="type">Data</span>(<span class="str">"Encryption Key"</span>.utf8),
+    outputByteCount: <span class="num">32</span>
+)
+
+<span class="comment">// 이제 Alice와 Bob은 like 대칭키를 가짐</span>
+<span class="kw">let</span> message = <span class="str">"Secret message"</span>
+<span class="kw">let</span> encrypted = <span class="kw">try</span> <span class="func">encryptData</span>(message, key: aliceSymmetricKey)
+<span class="kw">let</span> decrypted = <span class="kw">try</span> <span class="func">decryptData</span>(encrypted, key: bobSymmetricKey)
+
+<span class="func">print</span>(decrypted)  <span class="comment">// "Secret message"</span></pre></div>
+
+<h2>✍️ Digital Signatures (EdDSA)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">DigitalSignature.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// 서명 키 생성</span>
+<span class="kw">let</span> signingKey = <span class="type">Curve25519</span>.<span class="type">Signing</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> publicKey = signingKey.publicKey
+
+<span class="comment">// Data 서명</span>
+<span class="kw">func</span> <span class="func">signData</span>(_ data: <span class="type">Data</span>, with key: <span class="type">Curve25519</span>.<span class="type">Signing</span>.<span class="type">PrivateKey</span>) <span class="kw">throws</span> -> <span class="type">Data</span> {
+    <span class="kw">let</span> signature = <span class="kw">try</span> key.<span class="func">signature</span>(for: data)
+    <span class="kw">return</span> <span class="type">Data</span>(signature)
+}
+
+<span class="comment">// 서명 검증</span>
+<span class="kw">func</span> <span class="func">verifySignature</span>(
+    _ signature: <span class="type">Data</span>,
+    for data: <span class="type">Data</span>,
+    publicKey: <span class="type">Curve25519</span>.<span class="type">Signing</span>.<span class="type">PublicKey</span>
+) -> <span class="type">Bool</span> {
+    <span class="kw">do</span> {
+        <span class="kw">return try</span> publicKey.<span class="func">isValidSignature</span>(signature, for: data)
+    } <span class="kw">catch</span> {
+        <span class="kw">return false</span>
+    }
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> document = <span class="type">Data</span>(<span class="str">"중요한 문서"</span>.utf8)
+
+<span class="comment">// 서명 생성</span>
+<span class="kw">let</span> signature = <span class="kw">try</span> <span class="func">signData</span>(document, with: signingKey)
+
+<span class="comment">// 서명 검증</span>
+<span class="kw">let</span> isValid = <span class="func">verifySignature</span>(signature, for: document, publicKey: publicKey)
+<span class="func">print</span>(<span class="str">"서명 유효: \(isValid)"</span>)  <span class="comment">// true</span>
+
+<span class="comment">// 문서 변조 시</span>
+<span class="kw">let</span> tamperedDoc = <span class="type">Data</span>(<span class="str">"변조된 문서"</span>.utf8)
+<span class="kw">let</span> isValid2 = <span class="func">verifySignature</span>(signature, for: tamperedDoc, publicKey: publicKey)
+<span class="func">print</span>(<span class="str">"서명 유효: \(isValid2)"</span>)  <span class="comment">// false</span></pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">EncryptionView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="kw">struct</span> <span class="type">EncryptionDemoView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> plaintext = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> encrypted = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> decrypted = <span class="str">""</span>
+
+    <span class="kw">let</span> <span class="prop">key</span> = <span class="type">SymmetricKey</span>(size: .bits256)
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="type">Text</span>(<span class="str">"AES-GCM 암호화"</span>)
+                .font(.title)
+                .bold()
+
+            <span class="type">TextField</span>(<span class="str">"암호화할 텍스트"</span>, text: $plaintext)
+                .textFieldStyle(.roundedBorder)
+
+            <span class="type">Button</span>(<span class="str">"암호화"</span>) {
+                <span class="func">encrypt</span>()
+            }
+            .buttonStyle(.borderedProminent)
+
+            <span class="kw">if</span> !encrypted.isEmpty {
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">8</span>) {
+                    <span class="type">Text</span>(<span class="str">"암호화된 데이터:"</span>)
+                        .font(.headline)
+                    <span class="type">Text</span>(encrypted)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                }
+                .padding()
+                .background(.gray.opacity(<span class="num">0.1</span>))
+                .cornerRadius(<span class="num">8</span>)
+
+                <span class="type">Button</span>(<span class="str">"복호화"</span>) {
+                    <span class="func">decrypt</span>()
+                }
+                .buttonStyle(.bordered)
+
+                <span class="kw">if</span> !decrypted.isEmpty {
+                    <span class="type">Text</span>(<span class="str">"복호화 결과: \(decrypted)"</span>)
+                        .font(.headline)
+                        .foregroundStyle(.green)
+                }
+            }
+        }
+        .padding()
+    }
+
+    <span class="kw">func</span> <span class="func">encrypt</span>() {
+        <span class="kw">guard</span> !plaintext.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">do</span> {
+            <span class="kw">let</span> data = <span class="type">Data</span>(plaintext.utf8)
+            <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">seal</span>(data, using: key)
+            encrypted = sealedBox.combined!.<span class="func">base64EncodedString</span>()
+        } <span class="kw">catch</span> {
+            encrypted = <span class="str">"암호화 실패: \(error)"</span>
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">decrypt</span>() {
+        <span class="kw">guard let</span> data = <span class="type">Data</span>(base64Encoded: encrypted) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">do</span> {
+            <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="type">SealedBox</span>(combined: data)
+            <span class="kw">let</span> decryptedData = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">open</span>(sealedBox, using: key)
+            decrypted = <span class="type">String</span>(data: decryptedData, encoding: .utf8) ?? <span class="str">"오류"</span>
+        } <span class="kw">catch</span> {
+            decrypted = <span class="str">"복호화 실패"</span>
+        }
+    }
+}</pre></div>
+
+<h2>🔐 Practical Example: Secure Notes App</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SecureNote.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// 암호화된 노트 모델</span>
+<span class="kw">struct</span> <span class="type">SecureNote</span>: <span class="type">Identifiable</span>, <span class="type">Codable</span> {
+    <span class="kw">let</span> <span class="prop">id</span>: <span class="type">UUID</span>
+    <span class="kw">let</span> <span class="prop">encryptedContent</span>: <span class="type">Data</span>
+    <span class="kw">let</span> <span class="prop">createdAt</span>: <span class="type">Date</span>
+}
+
+<span class="kw">class</span> <span class="type">SecureNoteManager</span> {
+    <span class="kw">private let</span> <span class="prop">key</span>: <span class="type">SymmetricKey</span>
+
+    <span class="kw">init</span>() {
+        <span class="comment">// App 시작 시 키 로드 or 생성</span>
+        <span class="kw">if let</span> savedKey = <span class="kw">try</span>? <span class="func">loadKey</span>(tag: <span class="str">"SecureNoteKey"</span>) {
+            key = savedKey
+        } <span class="kw">else</span> {
+            key = <span class="type">SymmetricKey</span>(size: .bits256)
+            <span class="kw">try</span>? <span class="func">saveKey</span>(key, tag: <span class="str">"SecureNoteKey"</span>)
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">createNote</span>(_ content: <span class="type">String</span>) <span class="kw">throws</span> -> <span class="type">SecureNote</span> {
+        <span class="kw">let</span> data = <span class="type">Data</span>(content.utf8)
+        <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">seal</span>(data, using: key)
+
+        <span class="kw">return</span> <span class="type">SecureNote</span>(
+            id: <span class="type">UUID</span>(),
+            encryptedContent: sealedBox.combined!,
+            createdAt: <span class="type">Date</span>()
+        )
+    }
+
+    <span class="kw">func</span> <span class="func">decryptNote</span>(_ note: <span class="type">SecureNote</span>) <span class="kw">throws</span> -> <span class="type">String</span> {
+        <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="type">SealedBox</span>(combined: note.encryptedContent)
+        <span class="kw">let</span> decryptedData = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">open</span>(sealedBox, using: key)
+        <span class="kw">return</span> <span class="type">String</span>(data: decryptedData, encoding: .utf8) ?? <span class="str">""</span>
+    }
+}
+
+<span class="comment">// SwiftUI View</span>
+<span class="kw">struct</span> <span class="type">SecureNoteView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> notes: [<span class="type">SecureNote</span>] = []
+    @<span class="type">State</span> <span class="kw">private var</span> newNoteContent = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> selectedNote: <span class="type">SecureNote</span>?
+
+    <span class="kw">let</span> <span class="prop">manager</span> = <span class="type">SecureNoteManager</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span> {
+                <span class="type">Section</span> {
+                    <span class="type">TextField</span>(<span class="str">"새 노트 내용"</span>, text: $newNoteContent)
+                    <span class="type">Button</span>(<span class="str">"Save"</span>) {
+                        <span class="func">saveNote</span>()
+                    }
+                    .disabled(newNoteContent.isEmpty)
+                }
+
+                <span class="type">Section</span>(<span class="str">"암호화된 노트"</span>) {
+                    <span class="type">ForEach</span>(notes) { note <span class="kw">in</span>
+                        <span class="type">Button</span>(<span class="str">"노트 \(note.id.uuidString.prefix(8))..."</span>) {
+                            selectedNote = note
+                        }
+                    }
+                }
+            }
+            .navigationTitle(<span class="str">"안전한 노트"</span>)
+            .sheet(item: $selectedNote) { note <span class="kw">in</span>
+                <span class="type">NoteDetailView</span>(note: note, manager: manager)
+            }
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">saveNote</span>() {
+        <span class="kw">do</span> {
+            <span class="kw">let</span> note = <span class="kw">try</span> manager.<span class="func">createNote</span>(newNoteContent)
+            notes.append(note)
+            newNoteContent = <span class="str">""</span>
+        } <span class="kw">catch</span> {
+            <span class="func">print</span>(<span class="str">"암호화 실패: \(error)"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">NoteDetailView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">note</span>: <span class="type">SecureNote</span>
+    <span class="kw">let</span> <span class="prop">manager</span>: <span class="type">SecureNoteManager</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="kw">if let</span> content = <span class="kw">try</span>? manager.<span class="func">decryptNote</span>(note) {
+                <span class="type">Text</span>(content)
+                    .padding()
+            } <span class="kw">else</span> {
+                <span class="type">Text</span>(<span class="str">"복호화 실패"</span>)
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+}</pre></div>
+
+<h2>🔑 P-256 (NIST Standard Curve)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">P256Example.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// P-256 ECDSA 서명</span>
+<span class="kw">let</span> privateKey = <span class="type">P256</span>.<span class="type">Signing</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> publicKey = privateKey.publicKey
+
+<span class="kw">let</span> data = <span class="type">Data</span>(<span class="str">"중요한 데이터"</span>.utf8)
+
+<span class="comment">// 서명 생성</span>
+<span class="kw">let</span> signature = <span class="kw">try</span> privateKey.<span class="func">signature</span>(for: data)
+
+<span class="comment">// 서명 검증</span>
+<span class="kw">let</span> isValid = publicKey.<span class="func">isValidSignature</span>(signature, for: data)
+<span class="func">print</span>(<span class="str">"P-256 서명 유효: \(isValid)"</span>)
+
+<span class="comment">// P-256 키 교환</span>
+<span class="kw">let</span> aliceKey = <span class="type">P256</span>.<span class="type">KeyAgreement</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> bobKey = <span class="type">P256</span>.<span class="type">KeyAgreement</span>.<span class="type">PrivateKey</span>()
+
+<span class="kw">let</span> sharedSecret = <span class="kw">try</span> aliceKey.<span class="func">sharedSecretFromKeyAgreement</span>(with: bobKey.publicKey)
+<span class="kw">let</span> symmetricKey = sharedSecret.<span class="func">hkdfDerivedSymmetricKey</span>(
+    using: <span class="type">SHA256</span>.<span class="kw">self</span>,
+    salt: <span class="type">Data</span>(),
+    sharedInfo: <span class="type">Data</span>(),
+    outputByteCount: <span class="num">32</span>
+)</pre></div>
+
+<h2>🔒 ChaCha20-Poly1305 Encryption</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ChaCha20.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// ChaCha20-Poly1305 (AES 대안, 모바일에서 더 빠름)</span>
+<span class="kw">func</span> <span class="func">encryptWithChaCha</span>(_ plaintext: <span class="type">String</span>, key: <span class="type">SymmetricKey</span>) <span class="kw">throws</span> -> <span class="type">Data</span> {
+    <span class="kw">let</span> data = <span class="type">Data</span>(plaintext.utf8)
+    <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">ChaChaPoly</span>.<span class="func">seal</span>(data, using: key)
+    <span class="kw">return</span> sealedBox.combined
+}
+
+<span class="kw">func</span> <span class="func">decryptWithChaCha</span>(_ encrypted: <span class="type">Data</span>, key: <span class="type">SymmetricKey</span>) <span class="kw">throws</span> -> <span class="type">String</span> {
+    <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">ChaChaPoly</span>.<span class="type">SealedBox</span>(combined: encrypted)
+    <span class="kw">let</span> decryptedData = <span class="kw">try</span> <span class="type">ChaChaPoly</span>.<span class="func">open</span>(sealedBox, using: key)
+    <span class="kw">return</span> <span class="type">String</span>(data: decryptedData, encoding: .utf8)!
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> key = <span class="type">SymmetricKey</span>(size: .bits256)
+<span class="kw">let</span> encrypted = <span class="kw">try</span> <span class="func">encryptWithChaCha</span>(<span class="str">"Secret message"</span>, key: key)
+<span class="kw">let</span> decrypted = <span class="kw">try</span> <span class="func">decryptWithChaCha</span>(encrypted, key: key)</pre></div>
+
+<h2>💡 HIG Guidelines</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Security Best Practices</span></div>
+<pre class="code-body"><span class="comment">✅ DO
+1. 암호화 키는 Keychain에 저장
+2. 대칭키는 256비트 사용 (.bits256)
+3. 서명 검증 필수 (무결성 확인)
+4. 민감한 데이터는 메모리에서 즉시 제거
+5. SHA-256 이상 사용 (SHA-1 금지)
+
+❌ DON'T
+1. 하드코딩된 암호화 키
+2. UserDefaults에 키 저장
+3. 커스텀 암호화 알고리즘 구현
+4. 평문으로 네트워크 전송
+5. 로그에 민감한 데이터 출력</span></pre></div>
+
+<h2>🔧 Practical Tips</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Real-World Patterns</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CryptoKit</span>
+
+<span class="comment">// 1. HMAC으로 메시지 인증</span>
+<span class="kw">func</span> <span class="func">authenticateMessage</span>(_ message: <span class="type">String</span>, key: <span class="type">SymmetricKey</span>) -> <span class="type">Data</span> {
+    <span class="kw">let</span> data = <span class="type">Data</span>(message.utf8)
+    <span class="kw">let</span> authCode = <span class="type">HMAC</span>&lt;<span class="type">SHA256</span>&gt;.<span class="func">authenticationCode</span>(for: data, using: key)
+    <span class="kw">return</span> <span class="type">Data</span>(authCode)
+}
+
+<span class="comment">// 2. Password에서 키 생성 (PBKDF2 대신 Argon2 권장)</span>
+<span class="kw">func</span> <span class="func">deriveKey</span>(from password: <span class="type">String</span>, salt: <span class="type">Data</span>) -> <span class="type">SymmetricKey</span> {
+    <span class="kw">let</span> passwordData = <span class="type">Data</span>(password.utf8)
+    <span class="kw">let</span> hash = <span class="type">SHA256</span>.<span class="func">hash</span>(data: passwordData + salt)
+    <span class="kw">return</span> <span class="type">SymmetricKey</span>(data: hash)
+}
+
+<span class="comment">// 3. 파일 암호화</span>
+<span class="kw">func</span> <span class="func">encryptFile</span>(at url: <span class="type">URL</span>, key: <span class="type">SymmetricKey</span>) <span class="kw">throws</span> {
+    <span class="kw">let</span> data = <span class="kw">try</span> <span class="type">Data</span>(contentsOf: url)
+    <span class="kw">let</span> sealedBox = <span class="kw">try</span> <span class="type">AES</span>.<span class="type">GCM</span>.<span class="func">seal</span>(data, using: key)
+    <span class="kw">try</span> sealedBox.combined!.<span class="func">write</span>(to: url.appendingPathExtension(<span class="str">"encrypted"</span>))
+}
+
+<span class="comment">// 4. 공개키를 Data로 변환 (전송용)</span>
+<span class="kw">let</span> privateKey = <span class="type">Curve25519</span>.<span class="type">Signing</span>.<span class="type">PrivateKey</span>()
+<span class="kw">let</span> publicKeyData = privateKey.publicKey.rawRepresentation
+
+<span class="comment">// Data에서 공개키 복원</span>
+<span class="kw">let</span> restoredPublicKey = <span class="kw">try</span> <span class="type">Curve25519</span>.<span class="type">Signing</span>.<span class="type">PublicKey</span>(rawRepresentation: publicKeyData)</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 CryptoKit 핵심</strong><br>
+✅ Swift 네이티브 암호화 프레임워크<br>
+✅ Secure Enclave 활용<br>
+✅ AES-GCM, ChaCha20-Poly1305 Supported<br>
+✅ Curve25519, P-256 공개키 암호화<br>
+✅ 디지털 서명 및 키 교환</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/documentation/cryptokit" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+<a href="https://developer.apple.com/videos/play/wwdc2019/709/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🎥</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">WWDC 2019</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/cryptokit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=CryptoKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

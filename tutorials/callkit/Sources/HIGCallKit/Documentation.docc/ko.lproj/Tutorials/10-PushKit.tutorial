@@ -1,0 +1,169 @@
+@Tutorial(time: 15) {
+    @Intro(title: "PushKit 연동") {
+        PushKit을 사용하여 VoIP 푸시 알림을 받고 
+        백그라운드에서 수신 전화를 처리하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "PushKit 설정") {
+        @ContentAndMedia {
+            PushKit 프레임워크를 설정하고 
+            VoIP 푸시 등록을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PushKit을 import하고 PKPushRegistry를 생성합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-01-import.swift")
+            }
+            
+            @Step {
+                VoIP 푸시 타입으로 등록합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-02-register.swift")
+            }
+            
+            @Step {
+                PKPushRegistryDelegate를 구현합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-03-delegate.swift")
+            }
+            
+            @Step {
+                디바이스 토큰을 서버에 전송합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-04-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "VoIP 푸시 처리") {
+        @ContentAndMedia {
+            VoIP 푸시가 도착했을 때 
+            CallKit과 연동하여 수신 전화를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                didReceiveIncomingPush를 구현합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-05-receive-push.swift")
+            }
+            
+            @Step {
+                푸시 페이로드에서 통화 정보를 파싱합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-06-parse-payload.swift")
+            }
+            
+            @Step {
+                CallKit으로 수신 전화를 보고합니다.
+                
+                반드시 푸시 콜백 내에서 reportNewIncomingCall을 호출해야 합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-07-report-call.swift")
+            }
+            
+            @Step {
+                푸시 처리 실패 시 에러를 처리합니다.
+                
+                @Code(name: "PushKitManager.swift", file: "10-08-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "서버 사이드 구현") {
+        @ContentAndMedia {
+            VoIP 푸시를 전송하는 
+            서버 사이드 구현을 살펴봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                VoIP 인증서를 생성합니다.
+                
+                Apple Developer에서 VoIP Services Certificate를 생성합니다.
+                
+                @Code(name: "VoIPCertificate.md", file: "10-09-certificate.swift")
+            }
+            
+            @Step {
+                APNs에 VoIP 푸시를 전송하는 형식을 확인합니다.
+                
+                @Code(name: "ServerPayload.swift", file: "10-10-payload.swift")
+            }
+            
+            @Step {
+                JWT 기반 인증을 사용합니다.
+                
+                @Code(name: "JWTAuth.swift", file: "10-11-jwt.swift")
+            }
+            
+            @Step {
+                전체 VoIP 시스템을 완성합니다.
+                
+                @Code(name: "VoIPSystem.swift", file: "10-12-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            VoIP 푸시 알림을 받기 위해 등록해야 하는 푸시 타입은?
+            
+            @Choice(isCorrect: true) {
+                `.voIP`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `PKPushType.voIP`으로 등록해야 
+                    VoIP 푸시를 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.complication`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 watchOS 컴플리케이션용입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.fileProvider`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 파일 프로바이더용입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            VoIP 푸시를 받았을 때 반드시 해야 하는 작업은?
+            
+            @Choice(isCorrect: true) {
+                `reportNewIncomingCall`을 콜백 내에서 호출
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    iOS 13부터 VoIP 푸시를 받으면 반드시 
+                    CallKit으로 전화를 보고해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                로컬 알림 표시
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    VoIP 푸시는 반드시 CallKit과 연동해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드 작업 시작
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CallKit 연동이 우선입니다.
+                }
+            }
+        }
+    }
+}

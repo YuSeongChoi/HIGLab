@@ -1,0 +1,257 @@
+@Tutorial(time: 25) {
+    @Intro(title: "빌트인 필터 적용") {
+        CoreImage가 제공하는 200개 이상의 빌트인 필터를 탐색하고,
+        다양한 이미지 효과를 적용하는 방법을 학습합니다.
+        
+        @Image(source: "builtin-filters.png", alt: "빌트인 필터")
+    }
+    
+    @Section(title: "필터 카테고리 이해하기") {
+        @ContentAndMedia {
+            CoreImage 필터는 용도에 따라 여러 카테고리로 분류됩니다.
+            원하는 효과를 찾을 때 카테고리를 활용하면 편리합니다.
+            
+            - **CICategoryColorEffect**: 세피아, 흑백 등 색상 효과
+            - **CICategoryBlur**: 가우시안, 모션 블러 등
+            - **CICategoryDistortionEffect**: 왜곡, 휘어짐 효과
+            - **CICategorySharpen**: 선명도 향상
+            - **CICategoryStylize**: 픽셀화, 에지 강조 등 스타일 효과
+            
+            @Image(source: "filter-categories.png", alt: "필터 카테고리")
+        }
+        
+        @Steps {
+            @Step {
+                특정 카테고리에 속하는 모든 필터를 조회합니다.
+                CIFilter.filterNames(inCategory:)를 사용합니다.
+                
+                @Code(name: "FilterCategories.swift", file: "03-01-categories.swift")
+            }
+            
+            @Step {
+                필터의 입력 파라미터를 확인합니다.
+                어떤 값을 조절할 수 있는지 알 수 있습니다.
+                
+                @Code(name: "FilterAttributes.swift", file: "03-02-attributes.swift")
+            }
+            
+            @Step {
+                타입 안전한 필터 API를 사용합니다.
+                iOS 13+에서는 CIFilter 확장 메서드를 활용할 수 있습니다.
+                
+                @Code(name: "TypeSafeFilters.swift", file: "03-03-type-safe.swift")
+            }
+        }
+    }
+    
+    @Section(title: "색상 조정 필터") {
+        @ContentAndMedia {
+            사진 편집 앱에서 가장 많이 사용되는 색상 조정 필터들입니다.
+            밝기, 대비, 채도, 색온도 등을 조절할 수 있습니다.
+            
+            주요 색상 조정 필터:
+            - CIColorControls: 밝기, 대비, 채도 조절
+            - CIExposureAdjust: 노출 조절
+            - CITemperatureAndTint: 색온도와 틴트 조절
+            - CIVibrance: 자연스러운 채도 증가
+        }
+        
+        @Steps {
+            @Step {
+                CIColorControls로 밝기, 대비, 채도를 한번에 조절합니다.
+                가장 범용적인 색상 조절 필터입니다.
+                
+                @Code(name: "ColorControls.swift", file: "03-04-color-controls.swift")
+            }
+            
+            @Step {
+                CIExposureAdjust로 노출을 조절합니다.
+                EV(Exposure Value) 단위로 밝기를 조절합니다.
+                
+                @Code(name: "ExposureAdjust.swift", file: "03-05-exposure.swift")
+            }
+            
+            @Step {
+                CITemperatureAndTint로 색온도를 조절합니다.
+                따뜻한 느낌 또는 차가운 느낌을 줄 수 있습니다.
+                
+                @Code(name: "TemperatureAndTint.swift", file: "03-06-temperature.swift")
+            }
+            
+            @Step {
+                CIVibrance로 채도를 자연스럽게 높입니다.
+                이미 채도가 높은 부분은 덜 영향받아 자연스럽습니다.
+                
+                @Code(name: "Vibrance.swift", file: "03-07-vibrance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "블러와 선명도 필터") {
+        @ContentAndMedia {
+            블러는 배경 흐리기, 개인정보 보호 등에 활용됩니다.
+            선명도 필터는 디테일을 강화하는 데 사용됩니다.
+            
+            - CIGaussianBlur: 균일한 원형 블러
+            - CIBoxBlur: 박스 형태의 빠른 블러
+            - CIMaskedVariableBlur: 마스크 기반 가변 블러
+            - CISharpenLuminance: 밝기 기반 선명도 향상
+            - CIUnsharpMask: 언샤프 마스크 선명화
+        }
+        
+        @Steps {
+            @Step {
+                CIGaussianBlur로 부드러운 블러 효과를 적용합니다.
+                radius 값으로 블러 강도를 조절합니다.
+                
+                @Code(name: "GaussianBlur.swift", file: "03-08-gaussian-blur.swift")
+            }
+            
+            @Step {
+                블러 적용 후 이미지 가장자리가 잘리는 문제를 해결합니다.
+                clampedToExtent()로 가장자리를 확장합니다.
+                
+                @Code(name: "BlurEdgeFix.swift", file: "03-09-blur-edge.swift")
+            }
+            
+            @Step {
+                CIUnsharpMask로 이미지를 선명하게 만듭니다.
+                과도하게 적용하면 노이즈가 증가하므로 주의합니다.
+                
+                @Code(name: "UnsharpMask.swift", file: "03-10-unsharp.swift")
+            }
+        }
+    }
+    
+    @Section(title: "스타일 필터와 효과") {
+        @ContentAndMedia {
+            인스타그램 같은 앱의 필터 효과를 구현할 수 있는 
+            다양한 스타일 필터가 있습니다.
+            
+            - CISepiaTone: 세피아 톤 (빈티지)
+            - CIPhotoEffectNoir: 흑백 필름 효과
+            - CIPhotoEffectChrome: 크롬 효과
+            - CIVignette: 비네트 효과 (가장자리 어둡게)
+            - CIPixellate: 픽셀화 (모자이크)
+        }
+        
+        @Steps {
+            @Step {
+                CISepiaTone으로 빈티지 느낌을 연출합니다.
+                intensity로 효과의 강도를 조절합니다.
+                
+                @Code(name: "SepiaTone.swift", file: "03-11-sepia.swift")
+            }
+            
+            @Step {
+                CIPhotoEffect 시리즈로 다양한 필름 룩을 적용합니다.
+                Noir, Chrome, Fade, Instant 등이 있습니다.
+                
+                @Code(name: "PhotoEffects.swift", file: "03-12-photo-effects.swift")
+            }
+            
+            @Step {
+                CIVignette로 가장자리를 자연스럽게 어둡게 만듭니다.
+                사진에 집중감을 더해줍니다.
+                
+                @Code(name: "Vignette.swift", file: "03-13-vignette.swift")
+            }
+            
+            @Step {
+                여러 필터를 조합해 커스텀 프리셋을 만듭니다.
+                실제 앱에서 사용할 수 있는 필터 셋을 구성합니다.
+                
+                @Code(name: "FilterPreset.swift", file: "03-14-preset.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CIGaussianBlur 적용 후 이미지 가장자리가 잘리는 이유는?
+            
+            @Choice(isCorrect: true) {
+                블러가 이미지 경계를 넘어서 확장되기 때문이다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    블러는 주변 픽셀을 샘플링하므로 가장자리에서 
+                    extent가 확장됩니다. clampedToExtent()로 해결할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메모리 부족으로 인해 가장자리가 손실된다.
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    메모리 문제가 아닌 필터의 동작 특성입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIContext의 버그로 인한 현상이다.
+                
+                @Justification(reaction: "버그가 아닙니다.") {
+                    이는 블러 필터의 정상적인 동작입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIColorControls 필터로 조절할 수 없는 것은?
+            
+            @Choice(isCorrect: false) {
+                밝기(brightness)
+                
+                @Justification(reaction: "조절 가능합니다.") {
+                    inputBrightness 파라미터로 조절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                채도(saturation)
+                
+                @Justification(reaction: "조절 가능합니다.") {
+                    inputSaturation 파라미터로 조절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                색온도(temperature)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    색온도는 CITemperatureAndTint 필터를 사용해야 합니다.
+                    CIColorControls는 밝기, 대비, 채도만 조절합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIVibrance와 일반 채도 조절(saturation)의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                CIVibrance는 이미 채도가 높은 부분은 덜 영향받는다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    이 특성 덕분에 피부톤 같은 부분은 자연스럽게 유지되면서
+                    전체적으로 생동감 있는 색상을 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CIVibrance는 밝기도 함께 조절한다.
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    CIVibrance는 채도만 지능적으로 조절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                둘 다 완전히 동일한 결과를 낸다.
+                
+                @Justification(reaction: "차이가 있습니다.") {
+                    CIVibrance는 더 자연스러운 결과를 제공합니다.
+                }
+            }
+        }
+    }
+}

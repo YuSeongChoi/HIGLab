@@ -1,0 +1,180 @@
+@Tutorial(time: 12) {
+    @Intro(title: "ModelContainer & ModelContext 설정하기") {
+        ModelContainer는 데이터가 저장되는 곳이고,
+        ModelContext는 데이터를 조작하는 작업 공간입니다.
+        
+        SwiftUI 앱에 SwiftData를 연결하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "ModelContainer 설정") {
+        @ContentAndMedia {
+            ModelContainer는 앱의 데이터 저장소입니다.
+            일반적으로 앱 진입점에서 한 번만 생성하고 전체 앱에서 공유합니다.
+            
+            SwiftUI의 `.modelContainer` 수정자로 쉽게 설정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **가장 간단한 설정**
+                
+                앱 진입점에서 `.modelContainer(for:)`를 호출합니다.
+                단 한 줄로 SwiftData 설정이 완료됩니다.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-simple.swift")
+            }
+            
+            @Step {
+                **여러 모델 등록**
+                
+                앱에서 여러 @Model을 사용할 때는 배열로 전달합니다.
+                나중에 Category 모델을 추가할 예정입니다.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-multiple.swift")
+            }
+            
+            @Step {
+                **커스텀 설정**
+                
+                메모리 전용 저장, 읽기 전용 모드, App Group 공유 등
+                세밀한 제어가 필요할 때 ModelConfiguration을 사용합니다.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-container-config.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ModelContext 사용하기") {
+        @ContentAndMedia {
+            ModelContext는 실제 CRUD 연산이 일어나는 작업 공간입니다.
+            SwiftUI 뷰에서는 Environment를 통해 자동으로 주입됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Environment에서 가져오기**
+                
+                `@Environment(\.modelContext)`로 컨텍스트에 접근합니다.
+                부모 뷰에서 `.modelContainer`를 설정했다면 자동으로 사용 가능합니다.
+                
+                @Code(name: "ContentView.swift", file: "03-context-environment.swift")
+            }
+            
+            @Step {
+                **mainContext vs 새 Context**
+                
+                SwiftUI 뷰에서는 mainContext를 사용합니다.
+                백그라운드 작업에는 새 Context를 생성합니다.
+                
+                @Code(name: "BackgroundWork.swift", file: "03-context-background.swift")
+            }
+            
+            @Step {
+                **자동 저장 이해하기**
+                
+                SwiftData는 기본적으로 autosave가 활성화되어 있습니다.
+                대부분의 경우 명시적 save()가 필요 없습니다.
+                
+                @Code(name: "AutoSave.swift", file: "03-context-autosave.swift")
+            }
+        }
+    }
+    
+    @Section(title: "TaskMaster 앱에 적용") {
+        @ContentAndMedia {
+            지금까지 배운 내용을 TaskMaster 앱에 적용합니다.
+            TaskItem 모델을 연결하고 기본 UI를 준비합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 진입점 업데이트**
+                
+                TaskMasterApp.swift에 modelContainer를 추가합니다.
+                이제 모든 하위 뷰에서 SwiftData를 사용할 수 있습니다.
+                
+                @Code(name: "TaskMasterApp.swift", file: "03-app-setup.swift")
+            }
+            
+            @Step {
+                **ContentView 준비**
+                
+                ModelContext를 주입받고 기본 UI 구조를 만듭니다.
+                다음 챕터에서 @Query로 데이터를 표시할 예정입니다.
+                
+                @Code(name: "ContentView.swift", file: "03-contentview-setup.swift")
+            }
+            
+            @Step {
+                **Preview에서 SwiftData 사용**
+                
+                Preview에서도 modelContainer를 설정해야 합니다.
+                메모리 전용 컨테이너로 테스트 데이터를 주입합니다.
+                
+                @Code(name: "ContentView.swift", file: "03-preview-setup.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftUI 뷰에서 ModelContext에 접근하는 방법은?
+            
+            @Choice(isCorrect: true) {
+                @Environment(\.modelContext)
+                
+                @Justification(reaction: "정답!") {
+                    SwiftUI Environment를 통해 ModelContext가 자동 주입됩니다.
+                    부모 뷰에서 .modelContainer를 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State var context: ModelContext
+                
+                @Justification(reaction: "아쉽네요") {
+                    ModelContext는 @State가 아닌 @Environment로 주입받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ModelContext.shared
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData에는 shared 싱글톤이 없습니다.
+                    Environment를 통해 접근합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftData의 autosave 기본 동작은?
+            
+            @Choice(isCorrect: true) {
+                활성화됨 — 자동으로 변경사항 저장
+                
+                @Justification(reaction: "정확합니다!") {
+                    SwiftData는 기본적으로 autosave가 활성화되어 있어
+                    대부분의 경우 명시적 save() 호출이 필요 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                비활성화됨 — 항상 수동 save() 필요
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData는 autosave가 기본 활성화되어 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                30초마다 자동 저장
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData의 autosave는 시간 기반이 아닌 
+                    런루프 기반으로 적절한 시점에 자동 저장합니다.
+                }
+            }
+        }
+    }
+}

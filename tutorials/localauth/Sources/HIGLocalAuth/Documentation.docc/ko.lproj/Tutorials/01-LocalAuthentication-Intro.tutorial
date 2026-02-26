@@ -1,0 +1,176 @@
+@Tutorial(time: 8) {
+    @Intro(title: "LocalAuthentication 소개") {
+        Apple의 LocalAuthentication 프레임워크가 무엇인지,
+        왜 생체 인증이 중요한지, 그리고 보안 금고 앱에서 어떻게 활용하는지 알아봅니다.
+    }
+    
+    @Section(title: "LocalAuthentication이란?") {
+        @ContentAndMedia {
+            **LocalAuthentication**은 Apple이 제공하는 생체 인증 프레임워크입니다.
+            Face ID, Touch ID, 그리고 기기 패스코드를 통해 
+            사용자 신원을 안전하게 확인할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                LocalAuthentication은 iOS 8에서 처음 도입되었습니다.
+                Touch ID가 iPhone 5s에서 처음 등장했을 때, 
+                앱 개발자들이 이를 활용할 수 있도록 제공된 프레임워크입니다.
+                
+                @Code(name: "Overview.swift", file: "01-framework-overview.swift")
+            }
+            
+            @Step {
+                **핵심 클래스: LAContext**
+                
+                모든 인증 작업은 LAContext 인스턴스를 통해 이루어집니다.
+                - 생체 인증 가용성 확인
+                - 인증 요청 및 결과 처리
+                - 인증 UI 커스터마이징
+                
+                @Code(name: "LAContextBasics.swift", file: "01-lacontext-basics.swift")
+            }
+            
+            @Step {
+                **지원되는 인증 방식**
+                
+                - **Face ID**: iPhone X 이후 모델 (TrueDepth 카메라)
+                - **Touch ID**: iPhone 5s~8, SE, 일부 iPad
+                - **Optic ID**: Apple Vision Pro
+                - **패스코드**: 생체 인증 실패 시 폴백
+                
+                @Code(name: "BiometryTypes.swift", file: "01-biometry-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "보안 금고 앱 설계") {
+        @ContentAndMedia {
+            우리가 만들 앱은 **SecureVault**입니다.
+            민감한 메모와 파일을 Face ID/Touch ID로 보호하는 개인 금고 앱이죠.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 구조 설계**
+                
+                보안 금고 앱의 핵심 화면:
+                1. 잠금 화면 (인증 요청)
+                2. 금고 목록 (보호된 아이템들)
+                3. 아이템 상세 (민감한 정보)
+                
+                @Code(name: "AppStructure.swift", file: "01-app-structure.swift")
+            }
+            
+            @Step {
+                **언제 인증을 요청할까?**
+                
+                - 앱 최초 실행 시
+                - 백그라운드에서 복귀 시 (설정에 따라)
+                - 민감한 작업 수행 전 (삭제, 내보내기 등)
+                
+                @Code(name: "AuthTriggers.swift", file: "01-auth-triggers.swift")
+            }
+            
+            @Step {
+                **Info.plist 설정**
+                
+                Face ID를 사용하려면 `NSFaceIDUsageDescription` 키가 **필수**입니다.
+                사용자에게 왜 생체 인증이 필요한지 명확히 설명하세요.
+                
+                @Code(name: "InfoPlist.swift", file: "01-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로젝트 시작하기") {
+        @ContentAndMedia {
+            Xcode에서 새 프로젝트를 생성하고,
+            LocalAuthentication 프레임워크를 추가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **프로젝트 생성**
+                
+                Xcode에서 iOS App 템플릿을 선택하고,
+                프로젝트 이름을 "SecureVault"로 설정합니다.
+                Interface: SwiftUI, Language: Swift
+                
+                @Code(name: "ProjectSetup.swift", file: "01-project-setup.swift")
+            }
+            
+            @Step {
+                **프레임워크 임포트**
+                
+                LocalAuthentication을 사용할 파일 상단에 import 문을 추가합니다.
+                
+                @Code(name: "Import.swift", file: "01-import.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            LocalAuthentication 프레임워크의 핵심 클래스는 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                LAContext
+                
+                @Justification(reaction: "정답입니다!") {
+                    LAContext는 모든 생체 인증 작업의 중심입니다.
+                    인증 가용성 확인, 인증 요청, UI 커스터마이징 모두 이 클래스를 통해 이루어집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                BiometricAuth
+                
+                @Justification(reaction: "아쉽네요") {
+                    BiometricAuth라는 클래스는 존재하지 않습니다.
+                    LocalAuthentication의 핵심 클래스는 LAContext입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                FaceIDManager
+                
+                @Justification(reaction: "아쉽네요") {
+                    Apple은 FaceIDManager라는 클래스를 제공하지 않습니다.
+                    LAContext가 Face ID, Touch ID 모두를 담당합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Face ID를 사용하기 위해 Info.plist에 필수로 추가해야 하는 키는?
+            
+            @Choice(isCorrect: true) {
+                NSFaceIDUsageDescription
+                
+                @Justification(reaction: "맞습니다!") {
+                    이 키가 없으면 앱이 크래시됩니다.
+                    사용자에게 Face ID 사용 목적을 명확히 설명하는 문자열을 제공하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NSBiometricUsageDescription
+                
+                @Justification(reaction: "아쉽네요") {
+                    올바른 키 이름은 NSFaceIDUsageDescription입니다.
+                    Touch ID는 별도의 키가 필요 없지만, Face ID는 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도의 키가 필요 없다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Face ID 사용 시 NSFaceIDUsageDescription 키가 필수입니다.
+                    누락 시 런타임에 앱이 크래시됩니다.
+                }
+            }
+        }
+    }
+}

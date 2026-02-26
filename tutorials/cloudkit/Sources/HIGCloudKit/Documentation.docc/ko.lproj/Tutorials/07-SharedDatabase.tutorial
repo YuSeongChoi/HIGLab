@@ -1,0 +1,110 @@
+@Tutorial(time: 20) {
+    @Intro(title: "공유 데이터베이스") {
+        Shared Database의 구조와 동작 원리를 이해합니다.
+        다른 사용자로부터 공유받은 데이터에 접근하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "Shared Database 이해하기") {
+        @ContentAndMedia {
+            Shared Database는 CKShare를 통해 공유받은 레코드가 저장되는 곳입니다.
+            읽기/쓰기 권한에 따라 접근 수준이 달라집니다.
+        }
+        @Steps {
+            @Step {
+                세 데이터베이스의 역할을 비교합니다.
+                @Code(name: "DatabaseComparison.swift", file: "07-01-comparison.swift")
+            }
+            @Step {
+                Shared Database 참조를 얻습니다.
+                @Code(name: "CloudKitManager.swift", file: "07-02-shareddb.swift")
+            }
+            @Step {
+                공유받은 Zone 목록을 조회합니다.
+                각 공유자별로 별도의 Zone이 생성됩니다.
+                @Code(name: "CloudKitManager.swift", file: "07-03-sharedzones.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 데이터 조회") {
+        @ContentAndMedia {
+            Shared Database에서 레코드를 조회하고 권한을 확인합니다.
+        }
+        @Steps {
+            @Step {
+                특정 Zone의 레코드를 조회합니다.
+                @Code(name: "CloudKitManager.swift", file: "07-04-fetchshared.swift")
+            }
+            @Step {
+                CKShare 정보를 조회하여 권한을 확인합니다.
+                @Code(name: "CloudKitManager.swift", file: "07-05-checkpermission.swift")
+            }
+            @Step {
+                공유 참여자 정보를 가져옵니다.
+                @Code(name: "CloudKitManager.swift", file: "07-06-participants.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 데이터 수정") {
+        @ContentAndMedia {
+            쓰기 권한이 있을 때 공유 데이터를 수정합니다.
+        }
+        @Steps {
+            @Step {
+                쓰기 권한을 확인한 후 레코드를 수정합니다.
+                @Code(name: "CloudKitManager.swift", file: "07-07-updateshared.swift")
+            }
+            @Step {
+                Shared Database에 레코드를 저장합니다.
+                올바른 데이터베이스에 저장해야 합니다.
+                @Code(name: "CloudKitManager.swift", file: "07-08-saveshared.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Shared Database에 대한 설명으로 올바른 것은?
+            @Choice(isCorrect: false) {
+                내가 공유한 데이터가 저장되는 곳
+                @Justification(reaction: "다시 생각해보세요.") {
+                    내가 공유한 데이터는 여전히 내 Private Database에 있습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                다른 사람이 공유해준 데이터가 보이는 곳
+                @Justification(reaction: "정답입니다!") {
+                    Shared Database는 타인이 공유한 레코드의 참조를 제공합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database와 동일한 기능
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Public은 누구나 접근, Shared는 명시적 공유가 필요합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CKShare.Participant.Permission에서 읽기만 가능한 권한은?
+            @Choice(isCorrect: true) {
+                .readOnly
+                @Justification(reaction: "정답입니다!") {
+                    readOnly 권한은 조회만 가능하고 수정이 불가합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .readWrite
+                @Justification(reaction: "다시 생각해보세요.") {
+                    readWrite는 읽기와 쓰기 모두 가능합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .none
+                @Justification(reaction: "다시 생각해보세요.") {
+                    none은 권한이 없음을 의미합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,138 @@
+@Tutorial(time: 25) {
+    @Intro(title: "CKShare 협업") {
+        CKShare를 사용하여 다른 사용자와 메모를 공유합니다.
+        UICloudSharingController로 공유 UI를 구현합니다.
+    }
+    
+    @Section(title: "CKShare 이해하기") {
+        @ContentAndMedia {
+            CKShare는 레코드 공유를 위한 특수 레코드 타입입니다.
+            공유 URL과 참여자 권한을 관리합니다.
+        }
+        @Steps {
+            @Step {
+                CKShare의 구조를 이해합니다.
+                rootRecord, participants, publicPermission 등의 속성이 있습니다.
+                @Code(name: "ShareStructure.swift", file: "08-01-structure.swift")
+            }
+            @Step {
+                CKShare를 생성합니다.
+                공유할 레코드를 root로 지정합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-02-createshare.swift")
+            }
+            @Step {
+                공유 권한을 설정합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-03-permission.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 UI 구현") {
+        @ContentAndMedia {
+            UICloudSharingController를 사용하면 시스템 공유 UI를 쉽게 표시할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                UICloudSharingController를 생성합니다.
+                @Code(name: "SharingController.swift", file: "08-04-sharingcontroller.swift")
+            }
+            @Step {
+                SwiftUI에서 UICloudSharingController를 래핑합니다.
+                @Code(name: "CloudSharingView.swift", file: "08-05-swiftuiwrapper.swift")
+            }
+            @Step {
+                Delegate를 구현하여 공유 완료를 처리합니다.
+                @Code(name: "CloudSharingView.swift", file: "08-06-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "공유 수락 처리") {
+        @ContentAndMedia {
+            공유 URL을 받은 사용자가 공유를 수락하는 과정을 처리합니다.
+        }
+        @Steps {
+            @Step {
+                공유 URL 스킴을 처리합니다.
+                CKShare.Metadata를 가져옵니다.
+                @Code(name: "SceneDelegate.swift", file: "08-07-acceptshare.swift")
+            }
+            @Step {
+                CKAcceptSharesOperation으로 공유를 수락합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-08-acceptoperation.swift")
+            }
+            @Step {
+                공유 수락 후 데이터를 동기화합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-09-syncafteraccept.swift")
+            }
+        }
+    }
+    
+    @Section(title: "참여자 관리") {
+        @ContentAndMedia {
+            기존 공유의 참여자를 추가하거나 제거합니다.
+        }
+        @Steps {
+            @Step {
+                참여자를 추가합니다.
+                CKUserIdentityLookupInfo를 사용합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-10-addparticipant.swift")
+            }
+            @Step {
+                참여자를 제거하고 공유를 중단합니다.
+                @Code(name: "CloudKitManager.swift", file: "08-11-removeparticipant.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CKShare의 publicPermission에 해당하지 않는 것은?
+            @Choice(isCorrect: false) {
+                .none
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .none은 URL만으로는 접근 불가를 의미합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .readOnly
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .readOnly는 URL을 통해 읽기 접근을 허용합니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .owner
+                @Justification(reaction: "정답입니다!") {
+                    owner는 권한이 아닌 참여자 역할입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .readWrite
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .readWrite는 URL을 통해 읽기/쓰기 접근을 허용합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            공유 URL을 받아 처리하기 위해 AppDelegate/SceneDelegate에서 사용하는 메서드는?
+            @Choice(isCorrect: true) {
+                userDidAcceptCloudKitShare(with:)
+                @Justification(reaction: "정답입니다!") {
+                    CloudKit 공유 URL 처리를 위한 전용 메서드입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                openURL(_:options:)
+                @Justification(reaction: "다시 생각해보세요.") {
+                    일반 URL 열기 메서드입니다. CloudKit 공유는 별도 처리가 필요합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                handleUniversalLink(_:)
+                @Justification(reaction: "다시 생각해보세요.") {
+                    유니버설 링크용 메서드입니다.
+                }
+            }
+        }
+    }
+}

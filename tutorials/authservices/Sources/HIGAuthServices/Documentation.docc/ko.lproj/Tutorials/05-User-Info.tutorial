@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "사용자 정보 수집") {
+        이름, 이메일 등 사용자 정보를 안전하게 수집하고
+        프라이버시를 존중하는 방식으로 처리합니다.
+        
+        @Image(source: "user-info.png", alt: "사용자 정보 수집")
+    }
+    
+    @Section(title: "PersonNameComponents 처리") {
+        @ContentAndMedia {
+            fullName은 PersonNameComponents 타입으로 제공됩니다.
+            
+            - `givenName`: 이름 (First Name)
+            - `familyName`: 성 (Last Name)
+            - `middleName`: 중간 이름
+            - `namePrefix`: 호칭 (Dr., Mr. 등)
+            - `nameSuffix`: 접미사 (Jr., III 등)
+            - `nickname`: 별명
+            
+            문화권에 따라 제공되는 필드가 다릅니다.
+        }
+        
+        @Steps {
+            @Step {
+                PersonNameComponents에서 이름을 추출합니다.
+                givenName과 familyName이 가장 일반적입니다.
+                
+                @Code(name: "ExtractName.swift", file: "05-01-extract-name.swift")
+            }
+            
+            @Step {
+                PersonNameComponentsFormatter로 
+                현지화된 전체 이름을 생성합니다.
+                
+                @Code(name: "FormatName.swift", file: "05-02-format-name.swift")
+            }
+            
+            @Step {
+                다양한 포맷 스타일을 활용합니다.
+                - `.short`: 간단한 이름
+                - `.medium`: 일반적인 이름
+                - `.long`: 전체 이름
+                
+                @Code(name: "NameStyles.swift", file: "05-03-name-styles.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이메일 처리") {
+        @ContentAndMedia {
+            사용자는 실제 이메일 또는 
+            Private Email Relay 주소를 선택할 수 있습니다.
+            
+            - 실제 이메일: user@example.com
+            - Relay 이메일: xxx@privaterelay.appleid.com
+            
+            두 경우 모두 동일하게 사용 가능하지만,
+            Relay 이메일은 추가 설정이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                이메일을 추출하고 저장합니다.
+                nil 체크가 필수입니다.
+                
+                @Code(name: "ExtractEmail.swift", file: "05-04-extract-email.swift")
+            }
+            
+            @Step {
+                Private Relay 이메일인지 확인합니다.
+                도메인으로 쉽게 구분할 수 있습니다.
+                
+                @Code(name: "CheckRelay.swift", file: "05-05-check-relay.swift")
+            }
+            
+            @Step {
+                Private Relay로 이메일을 보내려면
+                Apple에 발신 도메인을 등록해야 합니다.
+                
+                @Code(name: "RelaySetup.swift", file: "05-06-relay-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Private Email Relay 설정") {
+        @ContentAndMedia {
+            Private Email Relay로 이메일을 전송하려면:
+            
+            1. Apple Developer 포털에서 도메인 등록
+            2. SPF 레코드 설정
+            3. 발신 이메일 주소 등록
+            
+            이 설정 없이는 Relay 이메일로 전송이 불가합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Apple Developer 포털에서 
+                Certificates, Identifiers & Profiles로 이동합니다.
+                
+                Services > Sign in with Apple for Email Communication을 설정합니다.
+                
+                @Code(name: "DomainRegistration.swift", file: "05-07-domain-registration.swift")
+            }
+            
+            @Step {
+                DNS에 SPF 레코드를 추가합니다.
+                Apple의 메일 서버를 허용해야 합니다.
+                
+                @Code(name: "SPFRecord.swift", file: "05-08-spf-record.swift")
+            }
+            
+            @Step {
+                발신 이메일 주소를 등록합니다.
+                noreply@yourdomain.com 형태가 일반적입니다.
+                
+                @Code(name: "SenderEmail.swift", file: "05-09-sender-email.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사용자 정보 저장 전략") {
+        @ContentAndMedia {
+            사용자 정보는 한 번만 제공되므로
+            안전하고 영구적으로 저장해야 합니다.
+            
+            - Keychain: 민감한 정보 (user identifier)
+            - Core Data/Realm: 일반 프로필 정보
+            - 서버: 백업 및 동기화
+        }
+        
+        @Steps {
+            @Step {
+                Keychain에 User Identifier를 저장합니다.
+                앱 재설치 후에도 유지됩니다.
+                
+                @Code(name: "KeychainStorage.swift", file: "05-10-keychain.swift")
+            }
+            
+            @Step {
+                프로필 정보는 서버에 동기화합니다.
+                기기 변경 시에도 복원 가능합니다.
+                
+                @Code(name: "ServerSync.swift", file: "05-11-server-sync.swift")
+            }
+            
+            @Step {
+                정보 분실 시 대응 전략을 마련합니다.
+                사용자에게 직접 입력을 요청할 수 있습니다.
+                
+                @Code(name: "FallbackStrategy.swift", file: "05-12-fallback.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Private Email Relay 이메일로 
+            메시지를 보내려면 무엇이 필요한가요?
+            
+            @Choice(isCorrect: true) {
+                Apple Developer 포털에서 발신 도메인을 등록해야 한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    도메인과 발신 이메일 주소를 등록하고
+                    SPF 레코드를 설정해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                특별한 설정 없이 바로 사용 가능하다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    등록되지 않은 도메인에서 보낸 
+                    이메일은 전달되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사용자의 실제 이메일 주소를 알아야 한다.
+                
+                @Justification(reaction: "프라이버시 위반입니다.") {
+                    Relay 이메일의 목적이 
+                    실제 이메일을 숨기는 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PersonNameComponentsFormatter를 사용하는 이유는?
+            
+            @Choice(isCorrect: false) {
+                이름을 암호화하기 위해서.
+                
+                @Justification(reaction: "관계 없습니다.") {
+                    Formatter는 포맷팅 용도입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                문화권에 맞게 이름을 올바르게 조합하기 위해서.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    한국은 "성+이름", 서양은 "이름+성" 순서처럼
+                    문화권마다 다른 형식을 자동 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이름 유효성 검사를 위해서.
+                
+                @Justification(reaction: "Formatter의 역할이 아닙니다.") {
+                    Formatter는 표시 형식을 지정합니다.
+                }
+            }
+        }
+    }
+}

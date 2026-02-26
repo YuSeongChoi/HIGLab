@@ -1,0 +1,166 @@
+@Tutorial(time: 25) {
+    @Intro(title: "비디오 녹화") {
+        AVCaptureMovieFileOutput을 사용하여 비디오를 녹화합니다.
+        녹화 시작/중지, 타이머, 파일 저장까지 구현합니다.
+    }
+    
+    @Section(title: "Movie File Output 설정") {
+        @ContentAndMedia {
+            AVCaptureMovieFileOutput은 비디오와 오디오를 파일로 기록합니다.
+            QuickTime 형식(.mov)으로 저장되며, 나중에 다른 포맷으로 변환할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                CameraManager에 movieOutput 프로퍼티를 추가합니다.
+                비디오 녹화를 위한 출력 객체입니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-movie-output-property.swift")
+            }
+            
+            @Step {
+                세션에 movieOutput을 추가합니다.
+                비디오와 오디오 모두 캡처하려면 오디오 입력도 필요합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-add-movie-output.swift")
+            }
+            
+            @Step {
+                오디오 입력을 추가합니다.
+                마이크에서 오디오를 캡처하여 비디오와 함께 녹화합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-add-audio-input.swift")
+            }
+        }
+    }
+    
+    @Section(title: "녹화 시작과 중지") {
+        @ContentAndMedia {
+            녹화를 시작하고 중지하는 기능을 구현합니다.
+            임시 파일에 녹화한 후 완료 시 사진 라이브러리로 이동합니다.
+        }
+        
+        @Steps {
+            @Step {
+                AVCaptureFileOutputRecordingDelegate를 구현합니다.
+                녹화 시작과 완료 이벤트를 받습니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-delegate.swift")
+            }
+            
+            @Step {
+                녹화 시작 메서드를 구현합니다.
+                임시 디렉토리에 고유한 파일명으로 녹화합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-start-recording.swift")
+            }
+            
+            @Step {
+                녹화 중지 메서드를 구현합니다.
+                stopRecording()을 호출하면 델리게이트 콜백이 호출됩니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-stop-recording.swift")
+            }
+            
+            @Step {
+                녹화 완료 처리를 구현합니다.
+                사진 라이브러리에 비디오를 저장합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-finish-recording.swift")
+            }
+        }
+    }
+    
+    @Section(title: "녹화 UI 구현") {
+        @ContentAndMedia {
+            녹화 버튼, 타이머, 상태 표시를 SwiftUI로 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                녹화 상태를 추적하는 프로퍼티를 추가합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-state.swift")
+            }
+            
+            @Step {
+                녹화 타이머를 구현합니다.
+                녹화 시간을 실시간으로 표시합니다.
+                
+                @Code(name: "CameraManager.swift", file: "04-recording-timer.swift")
+            }
+            
+            @Step {
+                녹화 버튼 UI를 구현합니다.
+                녹화 중일 때 빨간색으로 표시됩니다.
+                
+                @Code(name: "CameraView.swift", file: "04-record-button.swift")
+            }
+            
+            @Step {
+                녹화 시간 표시 UI를 추가합니다.
+                분:초 형식으로 경과 시간을 표시합니다.
+                
+                @Code(name: "CameraView.swift", file: "04-timer-display.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVCaptureMovieFileOutput으로 녹화된 비디오의 기본 파일 형식은?
+            
+            @Choice(isCorrect: true) {
+                QuickTime (.mov)
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AVCaptureMovieFileOutput은 기본적으로 QuickTime 형식으로 녹화합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MP4 (.mp4)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MP4는 나중에 변환을 통해 생성할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVI (.avi)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVFoundation은 AVI 형식을 기본 지원하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비디오 녹화 완료 시 호출되는 델리게이트 메서드는?
+            
+            @Choice(isCorrect: false) {
+                `fileOutput(_:didStartRecordingTo:from:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 메서드는 녹화 시작 시 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `fileOutput(_:didFinishRecordingTo:from:error:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    녹화가 완료되면 이 메서드가 호출되며, 파일 URL을 통해 저장된 비디오에 접근할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `fileOutput(_:didOutputSampleBuffer:from:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 AVCaptureVideoDataOutput의 델리게이트 메서드입니다.
+                }
+            }
+        }
+    }
+}

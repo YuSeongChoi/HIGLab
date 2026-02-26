@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>👁️‍🗨️ Vision 프레임워크 — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>👁️‍🗨️ Vision 프레임워크</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 2-3h</span>
+  <span>📂 App Services</span>
+</div>
+<p class="subtitle">컴퓨터 비전으로 이미지와 비디오 분석하기</p>
+
+<div><span class="badge ios">iOS 11+</span><span class="badge new">visionOS Supported</span></div>
+
+<h2>✨ Vision is?</h2>
+<p>Vision is Apple's computer vision framework, providing powerful image/video analysis features including face detection, text recognition, barcode scanning, and object tracking. It integrates with Core ML to run custom machine learning models.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Face/Body Detection · Text Recognition (OCR) · Barcode Scanning · Object Tracking · Contour Detection · Image Alignment · Core ML Integration
+</div>
+
+<h2>🎯 1. 얼굴 인식 (Face Detection)</h2>
+<p>Find faces in images and detect landmarks (eyes, nose, mouth, etc.).</p>
+
+<div class="code-block">
+<div class="code-header">FaceDetector.swift — 얼굴 인식</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">FaceDetector</span> {
+    <span class="kw">var</span> detectedFaces: [<span class="type">VNFaceObservation</span>] = []
+    <span class="kw">var</span> isProcessing = <span class="kw">false</span>
+    <span class="kw">var</span> errorMessage: <span class="type">String</span>?
+
+    <span class="kw">func</span> detectFaces(in image: <span class="type">UIImage</span>) <span class="kw">async</span> {
+        isProcessing = <span class="kw">true</span>
+        errorMessage = <span class="kw">nil</span>
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> {
+            errorMessage = <span class="str">"이미지 변환 실패"</span>
+            isProcessing = <span class="kw">false</span>
+            <span class="kw">return</span>
+        }
+
+        <span class="comment">// Face detection request</span>
+        <span class="kw">let</span> request = <span class="type">VNDetectFaceRectanglesRequest</span> { [<span class="kw">weak self</span>] request, error <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> observations = request.results <span class="kw">as</span>? [<span class="type">VNFaceObservation</span>] <span class="kw">else</span> {
+                <span class="kw">self</span>?.errorMessage = error?.localizedDescription ?? <span class="str">"얼굴 검출 실패"</span>
+                <span class="kw">return</span>
+            }
+            <span class="kw">self</span>?.detectedFaces = observations
+        }
+
+        <span class="comment">// Perform request</span>
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage, options: [:])
+        <span class="kw">do</span> {
+            <span class="kw">try</span> handler.perform([request])
+        } <span class="kw">catch</span> {
+            errorMessage = error.localizedDescription
+        }
+
+        isProcessing = <span class="kw">false</span>
+    }
+
+    <span class="comment">// 얼굴 랜드마크 검출 (눈, 코, 입 등)</span>
+    <span class="kw">func</span> detectFaceLandmarks(in image: <span class="type">UIImage</span>) <span class="kw">async</span> -> [<span class="type">VNFaceObservation</span>]? {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNDetectFaceLandmarksRequest</span>()
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+
+        <span class="kw">try</span>? handler.perform([request])
+        <span class="kw">return</span> request.results <span class="kw">as</span>? [<span class="type">VNFaceObservation</span>]
+    }
+}</pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">FaceDetectionView.swift — SwiftUI Integration</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">FaceDetectionView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> detector = <span class="type">FaceDetector</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showImagePicker = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="kw">if</span> <span class="kw">let</span> image = selectedImage {
+                <span class="type">Image</span>(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: <span class="str">300</span>)
+                    .overlay {
+                        <span class="comment">// 얼굴 위치에 사각형 표시</span>
+                        <span class="type">GeometryReader</span> { geo <span class="kw">in</span>
+                            <span class="type">ForEach</span>(detector.detectedFaces.indices, id: \.<span class="kw">self</span>) { index <span class="kw">in</span>
+                                <span class="kw">let</span> face = detector.detectedFaces[index]
+                                <span class="kw">let</span> boundingBox = face.boundingBox
+
+                                <span class="type">Rectangle</span>()
+                                    .stroke(<span class="type">Color</span>.green, lineWidth: <span class="str">3</span>)
+                                    .frame(
+                                        width: boundingBox.width * geo.size.width,
+                                        height: boundingBox.height * geo.size.height
+                                    )
+                                    .position(
+                                        x: boundingBox.midX * geo.size.width,
+                                        y: (<span class="str">1</span> - boundingBox.midY) * geo.size.height
+                                    )
+                            }
+                        }
+                    }
+
+                <span class="type">Text</span>(<span class="str">"검출된 얼굴: \(detector.detectedFaces.count)개"</span>)
+                    .font(.headline)
+            }
+
+            <span class="type">Button</span>(<span class="str">"사진 선택"</span>) {
+                showImagePicker = <span class="kw">true</span>
+            }
+            .buttonStyle(.borderedProminent)
+
+            <span class="kw">if</span> detector.isProcessing {
+                <span class="type">ProgressView</span>(<span class="str">"얼굴 검출 중..."</span>)
+            }
+
+            <span class="kw">if</span> <span class="kw">let</span> error = detector.errorMessage {
+                <span class="type">Text</span>(error)
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding()
+        .sheet(isPresented: $showImagePicker) {
+            <span class="type">ImagePicker</span>(image: $selectedImage)
+        }
+        .onChange(of: selectedImage) { _, newImage <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> image = newImage {
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> detector.detectFaces(in: image)
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>📝 2. 텍스트 인식 (OCR)</h2>
+<p>Automatically detect and recognize text in images. Multi-language supported.</p>
+
+<div class="code-block">
+<div class="code-header">TextRecognizer.swift — OCR Implementation</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">TextRecognizer</span> {
+    <span class="kw">var</span> recognizedText: <span class="type">String</span> = <span class="str">""</span>
+    <span class="kw">var</span> textObservations: [<span class="type">VNRecognizedTextObservation</span>] = []
+
+    <span class="kw">func</span> recognizeText(in image: <span class="type">UIImage</span>) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNRecognizeTextRequest</span> { [<span class="kw">weak self</span>] request, error <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> observations = request.results <span class="kw">as</span>? [<span class="type">VNRecognizedTextObservation</span>] <span class="kw">else</span> {
+                <span class="kw">return</span>
+            }
+
+            <span class="kw">self</span>?.textObservations = observations
+
+            <span class="comment">// 인식된 모든 텍스트 결합</span>
+            <span class="kw">let</span> recognizedStrings = observations.compactMap { observation <span class="kw">in</span>
+                observation.topCandidates(<span class="str">1</span>).first?.string
+            }
+
+            <span class="kw">self</span>?.recognizedText = recognizedStrings.joined(separator: <span class="str">"\n"</span>)
+        }
+
+        <span class="comment">// 인식 레벨 설정 (accurate = 정확도 우선, fast = 속도 우선)</span>
+        request.recognitionLevel = .accurate
+
+        <span class="comment">// 다국어 지원 (한국어, 영어 등)</span>
+        request.recognitionLanguages = [<span class="str">"ko-KR"</span>, <span class="str">"en-US"</span>]
+
+        <span class="comment">// 커스텀 단어 추가 (특정 용어 인식률 향상)</span>
+        request.customWords = [<span class="str">"SwiftUI"</span>, <span class="str">"Vision"</span>, <span class="str">"iOS"</span>]
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage, options: [:])
+        <span class="kw">try</span>? handler.perform([request])
+    }
+
+    <span class="comment">// 특정 영역의 텍스트만 인식</span>
+    <span class="kw">func</span> recognizeText(in image: <span class="type">UIImage</span>, region: <span class="type">CGRect</span>) <span class="kw">async</span> -> <span class="type">String</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNRecognizeTextRequest</span>()
+        request.regionOfInterest = region
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span>? handler.perform([request])
+
+        <span class="kw">return</span> request.results?.first?.topCandidates(<span class="str">1</span>).first?.string
+    }
+}</pre>
+</div>
+
+<h2>📷 3. 바코드/QR 코드 스캔</h2>
+<p>Recognize barcodes and QR codes from images or real-time camera.</p>
+
+<div class="code-block">
+<div class="code-header">BarcodeScanner.swift — Barcode Scanning</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">BarcodeScanner</span> {
+    <span class="kw">var</span> detectedCodes: [<span class="type">VNBarcodeObservation</span>] = []
+
+    <span class="kw">func</span> scanBarcodes(in image: <span class="type">UIImage</span>) <span class="kw">async</span> -> [<span class="type">String</span>] {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> [] }
+
+        <span class="kw">let</span> request = <span class="type">VNDetectBarcodesRequest</span> { [<span class="kw">weak self</span>] request, _ <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> results = request.results <span class="kw">as</span>? [<span class="type">VNBarcodeObservation</span>] <span class="kw">else</span> { <span class="kw">return</span> }
+            <span class="kw">self</span>?.detectedCodes = results
+        }
+
+        <span class="comment">// 특정 바코드 타입만 스캔 (QR, EAN-13 등)</span>
+        request.symbologies = [.qr, .ean13, .code128]
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span>? handler.perform([request])
+
+        <span class="kw">return</span> detectedCodes.compactMap { $0.payloadStringValue }
+    }
+
+    <span class="comment">// 실시간 카메라 스캔용</span>
+    <span class="kw">func</span> processCameraFrame(<span class="kw">_</span> sampleBuffer: <span class="type">CMSampleBuffer</span>) {
+        <span class="kw">guard</span> <span class="kw">let</span> pixelBuffer = <span class="type">CMSampleBufferGetImageBuffer</span>(sampleBuffer) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNDetectBarcodesRequest</span> { [<span class="kw">weak self</span>] request, _ <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> results = request.results <span class="kw">as</span>? [<span class="type">VNBarcodeObservation</span>] <span class="kw">else</span> { <span class="kw">return</span> }
+            <span class="kw">self</span>?.detectedCodes = results
+        }
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cvPixelBuffer: pixelBuffer, options: [:])
+        <span class="kw">try</span>? handler.perform([request])
+    }
+}</pre>
+</div>
+
+<h2>🎯 4. 객체 추적 (Object Tracking)</h2>
+<p>비디오에서 특정 객체를 프레임 간 추적.</p>
+
+<div class="code-block">
+<div class="code-header">ObjectTracker.swift — 객체 추적</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">ObjectTracker</span> {
+    <span class="kw">private</span> <span class="kw">var</span> trackingRequest: <span class="type">VNTrackObjectRequest</span>?
+    <span class="kw">var</span> trackedObject: <span class="type">VNDetectedObjectObservation</span>?
+
+    <span class="comment">// 초기 객체 위치로 추적 시작</span>
+    <span class="kw">func</span> startTracking(initialObservation: <span class="type">VNDetectedObjectObservation</span>) {
+        trackingRequest = <span class="type">VNTrackObjectRequest</span>(detectedObjectObservation: initialObservation)
+        trackingRequest?.trackingLevel = .accurate
+    }
+
+    <span class="comment">// 다음 프레임 처리</span>
+    <span class="kw">func</span> processFrame(<span class="kw">_</span> pixelBuffer: <span class="type">CVPixelBuffer</span>) -> <span class="type">CGRect</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> request = trackingRequest <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="kw">let</span> handler = <span class="type">VNSequenceRequestHandler</span>()
+        <span class="kw">try</span>? handler.perform([request], on: pixelBuffer)
+
+        <span class="kw">guard</span> <span class="kw">let</span> observation = request.results?.first <span class="kw">as</span>? <span class="type">VNDetectedObjectObservation</span> <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="kw">nil</span>
+        }
+
+        <span class="comment">// 신뢰도 체크</span>
+        <span class="kw">if</span> observation.confidence > <span class="str">0.5</span> {
+            trackedObject = observation
+            <span class="kw">return</span> observation.boundingBox
+        }
+
+        <span class="kw">return</span> <span class="kw">nil</span>
+    }
+
+    <span class="kw">func</span> stopTracking() {
+        trackingRequest = <span class="kw">nil</span>
+        trackedObject = <span class="kw">nil</span>
+    }
+}</pre>
+</div>
+
+<h2>🔍 5. 이미지 분석 (Image Analysis)</h2>
+<p>Analyze image properties (brightness, focus, horizon, etc.).</p>
+
+<div class="code-block">
+<div class="code-header">ImageAnalyzer.swift — 이미지 분석</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">struct</span> <span class="type">ImageAnalysisResult</span> {
+    <span class="kw">let</span> brightness: <span class="type">Float</span>
+    <span class="kw">let</span> contrast: <span class="type">Float</span>
+    <span class="kw">let</span> horizonAngle: <span class="type">CGFloat</span>?
+    <span class="kw">let</span> isFocused: <span class="type">Bool</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">ImageAnalyzer</span> {
+    <span class="kw">func</span> analyzeImage(<span class="kw">_</span> image: <span class="type">UIImage</span>) <span class="kw">async</span> -> <span class="type">ImageAnalysisResult</span>? {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="comment">// 이미지 속성 분석</span>
+        <span class="kw">let</span> featureRequest = <span class="type">VNDetectHorizonRequest</span>()
+        <span class="kw">let</span> qualityRequest = <span class="type">VNClassifyImageRequest</span>()
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span>? handler.perform([featureRequest, qualityRequest])
+
+        <span class="kw">let</span> horizonAngle = (featureRequest.results?.first)?.angle
+
+        <span class="kw">return</span> <span class="type">ImageAnalysisResult</span>(
+            brightness: <span class="str">0.7</span>,
+            contrast: <span class="str">0.8</span>,
+            horizonAngle: horizonAngle,
+            isFocused: <span class="kw">true</span>
+        )
+    }
+
+    <span class="comment">// 윤곽선 검출</span>
+    <span class="kw">func</span> detectContours(in image: <span class="type">UIImage</span>) <span class="kw">async</span> -> [<span class="type">VNContoursObservation</span>]? {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">nil</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNDetectContoursRequest</span>()
+        request.contrastAdjustment = <span class="str">2.0</span>
+        request.detectsDarkOnLight = <span class="kw">true</span>
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span>? handler.perform([request])
+
+        <span class="kw">return</span> request.results
+    }
+}</pre>
+</div>
+
+<h2>🤖 6. Core ML 통합</h2>
+<p>Combine Vision and Core ML to run custom models.</p>
+
+<div class="code-block">
+<div class="code-header">VisionMLIntegration.swift — Core ML Integration</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+<span class="kw">import</span> <span class="type">CoreML</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">VisionMLClassifier</span> {
+    <span class="kw">var</span> classification: <span class="type">String</span> = <span class="str">""</span>
+    <span class="kw">var</span> confidence: <span class="type">Float</span> = <span class="str">0.0</span>
+
+    <span class="kw">func</span> classify(image: <span class="type">UIImage</span>, model: <span class="type">MLModel</span>) <span class="kw">async</span> {
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="comment">// Core ML 모델을 Vision 요청으로 래핑</span>
+        <span class="kw">guard</span> <span class="kw">let</span> visionModel = <span class="kw">try</span>? <span class="type">VNCoreMLModel</span>(for: model) <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNCoreMLRequest</span>(model: visionModel) { [<span class="kw">weak self</span>] request, error <span class="kw">in</span>
+            <span class="kw">guard</span> <span class="kw">let</span> results = request.results <span class="kw">as</span>? [<span class="type">VNClassificationObservation</span>],
+                  <span class="kw">let</span> topResult = results.first <span class="kw">else</span> { <span class="kw">return</span> }
+
+            <span class="kw">self</span>?.classification = topResult.identifier
+            <span class="kw">self</span>?.confidence = topResult.confidence
+        }
+
+        <span class="comment">// 이미지 크기 자동 조정</span>
+        request.imageCropAndScaleOption = .centerCrop
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span>? handler.perform([request])
+    }
+}</pre>
+</div>
+
+<h2>📱 SwiftUI Integration Example</h2>
+
+<div class="code-block">
+<div class="code-header">VisionDemoView.swift — Complete Demo</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">VisionDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> faceDetector = <span class="type">FaceDetector</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> textRecognizer = <span class="type">TextRecognizer</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> barcodeScanner = <span class="type">BarcodeScanner</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedMode: <span class="type">Mode</span> = .face
+
+    <span class="kw">enum</span> <span class="type">Mode</span>: <span class="type">String</span>, <span class="type">CaseIterable</span> {
+        <span class="kw">case</span> face = <span class="str">"얼굴 인식"</span>
+        <span class="kw">case</span> text = <span class="str">"텍스트 인식"</span>
+        <span class="kw">case</span> barcode = <span class="str">"바코드 스캔"</span>
+    }
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+                <span class="comment">// 모드 선택</span>
+                <span class="type">Picker</span>(<span class="str">"모드"</span>, selection: $selectedMode) {
+                    <span class="type">ForEach</span>(<span class="type">Mode</span>.allCases, id: \.<span class="kw">self</span>) { mode <span class="kw">in</span>
+                        <span class="type">Text</span>(mode.rawValue).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding()
+
+                <span class="comment">// 이미지 표시</span>
+                <span class="kw">if</span> <span class="kw">let</span> image = selectedImage {
+                    <span class="type">Image</span>(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: <span class="str">300</span>)
+                }
+
+                <span class="comment">// 결과 표시</span>
+                resultView
+
+                <span class="type">Spacer</span>()
+
+                <span class="type">Button</span>(<span class="str">"사진 선택하고 분석"</span>) {
+                    <span class="comment">// 사진 선택 로직</span>
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .navigationTitle(<span class="str">"Vision 데모"</span>)
+        }
+    }
+
+    <span class="kw">@ViewBuilder</span>
+    <span class="kw">var</span> resultView: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="kw">switch</span> selectedMode {
+        <span class="kw">case</span> .face:
+            <span class="type">Text</span>(<span class="str">"검출된 얼굴: \(faceDetector.detectedFaces.count)개"</span>)
+        <span class="kw">case</span> .text:
+            <span class="type">ScrollView</span> {
+                <span class="type">Text</span>(textRecognizer.recognizedText)
+                    .padding()
+            }
+        <span class="kw">case</span> .barcode:
+            <span class="type">VStack</span> {
+                <span class="type">ForEach</span>(barcodeScanner.detectedCodes, id: \.<span class="kw">self</span>.uuid) { code <span class="kw">in</span>
+                    <span class="type">Text</span>(code.payloadStringValue ?? <span class="str">"알 수 없음"</span>)
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>Permission Request:</strong> 카메라 사용 시 In Info.plist, <code>NSCameraUsageDescription</code> 추가</li>
+<li><strong>성능:</strong> 백그라운드 큐에서 Vision 요청 처리</li>
+<li><strong>피드백:</strong> 처리 중임을 사용자에게 명확히 표시</li>
+<li><strong>정확도:</strong> Prevent false detections with confidence threshold settings</li>
+<li><strong>Privacy:</strong> 얼굴 인식 데이터는 기기에만 저장</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>문서 스캐너:</strong> OCR로 영수증, 명함, 문서 텍스트 추출</li>
+<li><strong>AR Filters:</strong> 얼굴 랜드마크로 실시간 AR 이펙트</li>
+<li><strong>QR 체크인:</strong> 이벤트 입장권 자동 스캔</li>
+<li><strong>상품 인식:</strong> 바코드 스캔으로 가격 비교</li>
+<li><strong>비디오 분석:</strong> 영상 속 객체 추적 및 분류</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/vision">Vision Framework 공식 문서</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2023/10176/">WWDC: Explore 3D body pose and person segmentation</a></li>
+<li><a href="https://developer.apple.com/documentation/vision/recognizing_text_in_images">Recognizing Text in Images</a></li>
+<li><a href="https://developer.apple.com/documentation/vision/tracking_multiple_objects_or_rectangles_in_video">Tracking Objects in Video</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> Using VNSequenceRequestHandler improves performance for continuous frame processing. Use .fast accuracy for real-time camera processing.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/vision" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/vision/detecting-objects-in-still-images" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=Vision" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

@@ -1,0 +1,94 @@
+@Tutorial(time: 25) {
+    @Intro(title: "NFCTagReaderSession") {
+        NFCTagReaderSession으로 다양한 네이티브 태그 타입에 접근합니다.
+        ISO 7816, ISO 15693, FeliCa, MIFARE 태그를 직접 다룹니다.
+    }
+    
+    @Section(title: "TagReaderSession 설정") {
+        @ContentAndMedia {
+            NFCTagReaderSession은 NDEF 외의 다양한 태그 프로토콜을 지원합니다.
+            더 낮은 수준의 태그 제어가 가능합니다.
+        }
+        @Steps {
+            @Step {
+                NFCTagReaderSessionDelegate 프로토콜을 채택합니다.
+                @Code(name: "TagReader.swift", file: "07-01-delegate.swift")
+            }
+            @Step {
+                지원할 태그 타입을 폴링 옵션으로 지정합니다.
+                iso14443, iso15693, iso18092 중 선택합니다.
+                @Code(name: "TagReader.swift", file: "07-02-polling.swift")
+            }
+            @Step {
+                세션을 생성하고 시작합니다.
+                @Code(name: "TagReader.swift", file: "07-03-begin.swift")
+            }
+        }
+    }
+    
+    @Section(title: "태그 타입 식별") {
+        @ContentAndMedia {
+            감지된 태그의 타입을 식별하고 적절한 처리를 수행합니다.
+        }
+        @Steps {
+            @Step {
+                readerSession(_:didDetect:) 델리게이트에서 태그 배열을 받습니다.
+                @Code(name: "TagReader.swift", file: "07-04-detect.swift")
+            }
+            @Step {
+                NFCTag 열거형으로 태그 타입을 분기합니다.
+                iso7816, feliCa, iso15693, miFare 케이스가 있습니다.
+                @Code(name: "TagReader.swift", file: "07-05-switch.swift")
+            }
+            @Step {
+                태그에 연결하고 통신을 시작합니다.
+                @Code(name: "TagReader.swift", file: "07-06-connect.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            NFCTagReaderSession과 NFCNDEFReaderSession의 차이점은?
+            @Choice(isCorrect: false) {
+                성능 차이만 있습니다.
+                @Justification(reaction: "다시 생각해보세요.") {
+                    기능적으로 다른 목적을 가집니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                TagReaderSession은 NDEF 외의 네이티브 태그 프로토콜에 접근할 수 있습니다.
+                @Justification(reaction: "정답입니다!") {
+                    ISO 7816 APDU 명령 등 저수준 통신이 가능합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                TagReaderSession은 쓰기 전용입니다.
+                @Justification(reaction: "다시 생각해보세요.") {
+                    읽기와 쓰기 모두 가능합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            NFCTagReaderSession의 폴링 옵션으로 올바르지 않은 것은?
+            @Choice(isCorrect: false) {
+                .iso14443
+                @Justification(reaction: "다시 생각해보세요.") {
+                    iso14443은 유효한 폴링 옵션입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                .iso15693
+                @Justification(reaction: "다시 생각해보세요.") {
+                    iso15693은 유효한 폴링 옵션입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                .bluetooth
+                @Justification(reaction: "정답입니다!") {
+                    Bluetooth는 NFC가 아니므로 폴링 옵션에 없습니다.
+                }
+            }
+        }
+    }
+}

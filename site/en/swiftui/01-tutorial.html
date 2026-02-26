@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to SwiftUI declarative UI framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="📱 Mastering SwiftUI — HIG Lab">
+    <meta property="og:description" content="Complete guide to SwiftUI declarative UI framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/swiftui/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="📱 Mastering SwiftUI — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to SwiftUI declarative UI framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/swiftui/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/swiftui/01-tutorial.en.html">
+<title>📱 Mastering SwiftUI — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>📱 Mastering SwiftUI</h1>
+<p>Build apps with a declarative UI framework. Code is UI, and UI is code.</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐</span>
+  <span>⏱️ Est. Time: 2-3h</span>
+  <span>📂 App Frameworks</span>
+</div>
+
+<h2>✨ SwiftUI?</h2>
+<p>SwiftUI is Apple's modern framework for building UI with declarative syntax. It replaces UIKit and is available from iOS 13+.</p>
+
+<h2>🎯 Basic View Structure</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ContentView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">16</span>) {
+            <span class="type">Text</span>(<span class="str">"Hello, SwiftUI!"</span>)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+
+            <span class="type">Image</span>(systemName: <span class="str">"star.fill"</span>)
+                .font(.system(size: <span class="num">48</span>))
+                .foregroundStyle(.yellow)
+
+            <span class="type">Button</span>(<span class="str">"탭하기"</span>) {
+                <span class="func">print</span>(<span class="str">"Button tapped!"</span>)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>📊 State & Binding</h2>
+<p>SwiftUI manages state with @State and connects data with $ bindings.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">StateExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">CounterView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> count = <span class="num">0</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="type">Text</span>(<span class="str">"카운트: \(count)"</span>)
+                .font(.title)
+
+            <span class="type">HStack</span>(spacing: <span class="num">16</span>) {
+                <span class="type">Button</span>(<span class="str">"-"</span>) { count -= <span class="num">1</span> }
+                    .buttonStyle(.bordered)
+
+                <span class="type">Button</span>(<span class="str">"+"</span>) { count += <span class="num">1</span> }
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>📝 TextField & Binding</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">FormExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">LoginView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> username = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> password = <span class="str">""</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">16</span>) {
+            <span class="type">TextField</span>(<span class="str">"아이디"</span>, text: $username)
+                .textFieldStyle(.roundedBorder)
+                .textInputAutocapitalization(.never)
+
+            <span class="type">SecureField</span>(<span class="str">"비밀번호"</span>, text: $password)
+                .textFieldStyle(.roundedBorder)
+
+            <span class="type">Button</span>(<span class="str">"로그인"</span>) {
+                <span class="func">login</span>(username: username, password: password)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(username.isEmpty || password.isEmpty)
+        }
+        .padding()
+    }
+
+    <span class="kw">func</span> <span class="func">login</span>(username: <span class="type">String</span>, password: <span class="type">String</span>) {
+        <span class="comment">// 로그인 처리</span>
+    }
+}</pre></div>
+
+<h2>📋 List & ForEach</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ListView.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">Todo</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span> = <span class="type">UUID</span>()
+    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">String</span>
+    <span class="kw">var</span> <span class="prop">isCompleted</span>: <span class="type">Bool</span> = <span class="kw">false</span>
+}
+
+<span class="kw">struct</span> <span class="type">TodoListView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> todos = [
+        <span class="type">Todo</span>(title: <span class="str">"SwiftUI 공부"</span>),
+        <span class="type">Todo</span>(title: <span class="str">"앱 만들기"</span>),
+        <span class="type">Todo</span>(title: <span class="str">"출시하기"</span>)
+    ]
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">List</span> {
+            <span class="type">ForEach</span>($todos) { $todo <span class="kw">in</span>
+                <span class="type">HStack</span> {
+                    <span class="type">Image</span>(systemName: todo.isCompleted ? <span class="str">"checkmark.circle.fill"</span> : <span class="str">"circle"</span>)
+                        .foregroundStyle(todo.isCompleted ? .green : .gray)
+
+                    <span class="type">Text</span>(todo.title)
+                        .strikethrough(todo.isCompleted)
+                }
+                .contentShape(<span class="type">Rectangle</span>())
+                .onTapGesture {
+                    todo.isCompleted.toggle()
+                }
+            }
+            .onDelete(perform: <span class="func">deleteTodos</span>)
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">deleteTodos</span>(at offsets: <span class="type">IndexSet</span>) {
+        todos.remove(atOffsets: offsets)
+    }
+}</pre></div>
+
+<h2>🧭 Navigation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">NavigationExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span>(<span class="num">1</span>..&lt;<span class="num">11</span>, id: \.self) { number <span class="kw">in</span>
+                <span class="type">NavigationLink</span>(<span class="str">"아이템 \(number)"</span>) {
+                    <span class="type">DetailView</span>(number: number)
+                }
+            }
+            .navigationTitle(<span class="str">"목록"</span>)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">DetailView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">number</span>: <span class="type">Int</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"아이템 #\(number)"</span>)
+                .font(.largeTitle)
+        }
+        .navigationTitle(<span class="str">"상세"</span>)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}</pre></div>
+
+<h2>🎨 Modifier & Custom Style</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">CustomModifier.swift</span></div>
+<pre class="code-body"><span class="comment">// Custom Modifier</span>
+<span class="kw">struct</span> <span class="type">CardModifier</span>: <span class="type">ViewModifier</span> {
+    <span class="kw">func</span> <span class="func">body</span>(content: <span class="type">Content</span>) -> <span class="kw">some</span> <span class="type">View</span> {
+        content
+            .padding()
+            .background(<span class="type">Color</span>.white)
+            .cornerRadius(<span class="num">12</span>)
+            .shadow(color: .black.opacity(<span class="num">0.1</span>), radius: <span class="num">8</span>, x: <span class="num">0</span>, y: <span class="num">4</span>)
+    }
+}
+
+<span class="kw">extension</span> <span class="type">View</span> {
+    <span class="kw">func</span> <span class="func">cardStyle</span>() -> <span class="kw">some</span> <span class="type">View</span> {
+        <span class="func">modifier</span>(<span class="type">CardModifier</span>())
+    }
+}
+
+<span class="comment">// 사용 예시</span>
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"카드 1"</span>)
+                .<span class="func">cardStyle</span>()
+
+            <span class="type">Text</span>(<span class="str">"카드 2"</span>)
+                .<span class="func">cardStyle</span>()
+        }
+        .padding()
+    }
+}</pre></div>
+
+<h2>⏱️ Animation</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">AnimationExample.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">AnimationView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> isExpanded = <span class="kw">false</span>
+    @<span class="type">State</span> <span class="kw">private var</span> rotation = <span class="num">0.0</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">32</span>) {
+            <span class="comment">// 크기 애니메이션</span>
+            <span class="type">RoundedRectangle</span>(cornerRadius: <span class="num">12</span>)
+                .fill(<span class="type">Color</span>.blue)
+                .frame(
+                    width: isExpanded ? <span class="num">200</span> : <span class="num">100</span>,
+                    height: isExpanded ? <span class="num">200</span> : <span class="num">100</span>
+                )
+                .animation(.spring(response: <span class="num">0.6</span>), value: isExpanded)
+
+            <span class="comment">// 회전 애니메이션</span>
+            <span class="type">Image</span>(systemName: <span class="str">"star.fill"</span>)
+                .font(.system(size: <span class="num">48</span>))
+                .foregroundStyle(.yellow)
+                .rotationEffect(.degrees(rotation))
+                .animation(.linear(duration: <span class="num">1</span>).repeatForever(autoreverses: <span class="kw">false</span>), value: rotation)
+
+            <span class="type">Button</span>(<span class="str">"토글"</span>) {
+                isExpanded.toggle()
+                rotation += <span class="num">360</span>
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}</pre></div>
+
+<h2>🔄 State Management: @Observable (iOS 17+) vs ObservableObject</h2>
+
+<p style="background:#0071e310;border:1px solid #0071e340;border-radius:12px;padding:16px 20px;margin:16px 0"><strong style="color:#0071e3">💡 @Observable is recommended for iOS 17+!</strong><br>
+<code>ObservableObject</code> is a legacy approach. For new projects, use <code>@Observable</code>  macro. 
+For more details, see the <a href="../observation/01-tutorial.html" style="color:#0071e3">Observation Tutorial</a>.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">ViewModel.swift (iOS 17+ Recommended)</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Observation</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">TodoViewModel</span> {
+    <span class="kw">var</span> todos: [<span class="type">Todo</span>] = []  <span class="comment">// @Published 불필요!</span>
+    <span class="kw">var</span> isLoading = <span class="kw">false</span>
+
+    <span class="kw">func</span> <span class="func">addTodo</span>(title: <span class="type">String</span>) {
+        <span class="kw">let</span> newTodo = <span class="type">Todo</span>(title: title)
+        todos.append(newTodo)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> viewModel = <span class="type">TodoViewModel</span>()  <span class="comment">// @StateObject 불필요!</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">List</span>(viewModel.todos) { todo <span class="kw">in</span>
+            <span class="type">Text</span>(todo.title)
+        }
+    }
+}</pre></div>
+
+<details style="margin:16px 0;padding:16px;background:#f5f5f7;border-radius:12px">
+<summary style="cursor:pointer;font-weight:700">📜 Legacy: ObservableObject (iOS 13-16)</summary>
+<div class="code-block" style="margin-top:16px"><div class="code-header"><span class="code-filename">ViewModel.swift (Legacy)</span></div>
+<pre class="code-body"><span class="kw">class</span> <span class="type">TodoViewModel</span>: <span class="type">ObservableObject</span> {
+    @<span class="type">Published</span> <span class="kw">var</span> todos: [<span class="type">Todo</span>] = []
+    @<span class="type">Published</span> <span class="kw">var</span> isLoading = <span class="kw">false</span>
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    @<span class="type">StateObject</span> <span class="kw">private var</span> viewModel = <span class="type">TodoViewModel</span>()
+    <span class="comment">// ...</span>
+}</pre></div>
+</details>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 HIG Checklist</strong><br>
+✅ Use SF Symbols for icons<br>
+✅ Sufficient spacing with .padding()<br>
+✅ Define button styles with .buttonStyle()<br>
+✅ Express state with .disabled()<br>
+✅ Automatic Dark Mode support</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/design/human-interface-guidelines/layouts" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple HIG Docs</div>
+</a>
+<a href="https://developer.apple.com/tutorials/swiftui" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Tutorial</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/swiftui" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/tutorials/swiftui" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=SwiftUI" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

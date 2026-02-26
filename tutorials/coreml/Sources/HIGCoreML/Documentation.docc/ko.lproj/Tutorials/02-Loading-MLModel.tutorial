@@ -1,0 +1,164 @@
+@Tutorial(time: 12) {
+    @Intro(title: "MLModel 로드 & 사용") {
+        .mlmodel 파일을 프로젝트에 추가하고,
+        Swift에서 모델을 로드하여 사용하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "MLModel 추가하기") {
+        @ContentAndMedia {
+            Xcode에서 .mlmodel 파일을 추가하면
+            자동으로 Swift 클래스가 생성됩니다.
+            
+            이 자동 생성된 클래스를 통해 타입 안전하게 모델을 사용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                MobileNetV2.mlmodel 파일을 Xcode 프로젝트에
+                드래그 앤 드롭으로 추가합니다.
+                
+                Xcode가 자동으로 MobileNetV2 클래스를 생성합니다.
+                
+                @Code(name: "MobileNetV2.swift", file: "02-model-generated.swift")
+            }
+            
+            @Step {
+                모델 파일을 선택하면 Xcode에서
+                입력/출력 정보를 확인할 수 있습니다.
+                
+                - **Input**: 224×224 컬러 이미지
+                - **Output**: 1000개 클래스 확률, 예측 레이블
+                
+                @Code(name: "ModelInspector.swift", file: "02-model-inspector.swift")
+            }
+        }
+    }
+    
+    @Section(title: "모델 로딩 패턴") {
+        @ContentAndMedia {
+            CoreML 모델을 로드하는 여러 패턴을 학습합니다.
+            동기/비동기 로딩과 에러 처리를 다룹니다.
+        }
+        
+        @Steps {
+            @Step {
+                **동기 로딩**: 간단하지만 UI를 블로킹할 수 있습니다.
+                작은 모델이나 앱 시작 시 사용합니다.
+                
+                @Code(name: "SyncLoading.swift", file: "02-sync-loading.swift")
+            }
+            
+            @Step {
+                **비동기 로딩**: 큰 모델에 권장됩니다.
+                로딩 중 UI가 반응성을 유지합니다.
+                
+                @Code(name: "AsyncLoading.swift", file: "02-async-loading.swift")
+            }
+            
+            @Step {
+                **MLModelConfiguration 활용**
+                
+                컴퓨팅 유닛, 메모리 제약 등을 설정할 수 있습니다.
+                Neural Engine만 사용하거나 CPU로 제한할 수 있습니다.
+                
+                @Code(name: "ModelConfiguration.swift", file: "02-configuration.swift")
+            }
+            
+            @Step {
+                **에러 처리 패턴**
+                
+                모델 로딩 실패에 대비한 견고한 코드를 작성합니다.
+                폴백 전략과 사용자 피드백을 포함합니다.
+                
+                @Code(name: "ErrorHandling.swift", file: "02-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ImageClassifier 서비스") {
+        @ContentAndMedia {
+            모델 로딩 로직을 캡슐화한 서비스 클래스를 만듭니다.
+            앱 전체에서 재사용할 수 있는 구조로 설계합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ImageClassifierService 클래스를 생성합니다.
+                싱글톤 패턴으로 모델을 한 번만 로드합니다.
+                
+                @Code(name: "ImageClassifierService.swift", file: "02-classifier-service.swift")
+            }
+            
+            @Step {
+                SwiftUI View에서 서비스를 사용합니다.
+                @StateObject로 서비스를 관리합니다.
+                
+                @Code(name: "ContentView.swift", file: "02-content-view-service.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            .mlmodel 파일을 Xcode에 추가하면 무엇이 자동 생성되나요?
+            
+            @Choice(isCorrect: true) {
+                타입 안전한 Swift 클래스
+                
+                @Justification(reaction: "정답!") {
+                    Xcode는 mlmodel 파일을 분석하여 
+                    입력/출력 타입이 정의된 Swift 클래스를 자동 생성합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                JSON 설정 파일
+                
+                @Justification(reaction: "아쉽네요") {
+                    Xcode는 Swift 클래스를 생성합니다.
+                    이 클래스로 타입 안전하게 모델을 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아무것도 생성되지 않음
+                
+                @Justification(reaction: "아쉽네요") {
+                    Xcode가 자동으로 Swift 클래스를 생성해줍니다.
+                    이것이 CoreML의 큰 장점 중 하나입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            큰 ML 모델을 로드할 때 권장되는 방식은?
+            
+            @Choice(isCorrect: true) {
+                비동기 로딩 — UI 반응성 유지
+                
+                @Justification(reaction: "정확합니다!") {
+                    큰 모델은 로딩에 시간이 걸릴 수 있으므로
+                    비동기로 로드하여 UI가 멈추지 않게 해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                항상 동기 로딩
+                
+                @Justification(reaction: "아쉽네요") {
+                    동기 로딩은 UI를 블로킹할 수 있습니다.
+                    큰 모델은 비동기 로딩을 권장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                백그라운드 스레드에서 동기 로딩
+                
+                @Justification(reaction: "아쉽네요") {
+                    가능하지만, Swift의 async/await를 사용한 
+                    비동기 로딩이 더 현대적이고 권장됩니다.
+                }
+            }
+        }
+    }
+}

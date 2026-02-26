@@ -1,0 +1,170 @@
+@Tutorial(time: 15) {
+    @Intro(title: "ImagePlayground 시트 표시") {
+        imagePlaygroundSheet 수정자를 사용하여 
+        이미지 생성 UI를 표시하는 방법을 학습합니다.
+        
+        @Image(source: "presenting-sheet.png", alt: "ImagePlayground 시트")
+    }
+    
+    @Section(title: "기본 시트 표시") {
+        @ContentAndMedia {
+            ImagePlayground는 SwiftUI의 sheet 패턴을 따릅니다.
+            `imagePlaygroundSheet` 수정자를 사용하여 
+            이미지 생성 UI를 모달로 표시합니다.
+            
+            시트가 열리면 사용자는:
+            - 텍스트 프롬프트를 입력
+            - 제안된 개념을 선택
+            - 참조 이미지를 추가
+            
+            @Image(source: "sheet-overview.png", alt: "시트 UI 개요")
+        }
+        
+        @Steps {
+            @Step {
+                먼저 시트 표시 상태를 관리할 State 변수를 선언합니다.
+                생성된 이미지를 저장할 변수도 준비합니다.
+                
+                @Code(name: "SheetState.swift", file: "02-01-state.swift")
+            }
+            
+            @Step {
+                버튼을 탭하면 시트가 나타나도록 구성합니다.
+                `imagePlaygroundSheet` 수정자를 뷰에 연결합니다.
+                
+                @Code(name: "BasicSheet.swift", file: "02-02-basic-sheet.swift")
+            }
+            
+            @Step {
+                완성된 기본 구현입니다.
+                사용자가 이미지를 선택하면 클로저가 호출되고,
+                생성된 URL을 통해 이미지에 접근할 수 있습니다.
+                
+                @Code(name: "CompleteBasic.swift", file: "02-03-complete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "시트 바인딩 이해") {
+        @ContentAndMedia {
+            `imagePlaygroundSheet`는 `isPresented` 바인딩을 통해 
+            시트의 표시 상태를 제어합니다.
+            
+            - `true`로 설정하면 시트가 나타남
+            - 사용자가 시트를 닫으면 자동으로 `false`로 변경
+            - 이미지를 선택해도 시트가 자동으로 닫힘
+            
+            이 패턴은 SwiftUI의 다른 시트 수정자와 동일합니다.
+        }
+        
+        @Steps {
+            @Step {
+                표시 상태와 생성 결과를 별도로 관리합니다.
+                시트가 닫힌 후에도 결과에 접근할 수 있습니다.
+                
+                @Code(name: "StateManagement.swift", file: "02-04-state-management.swift")
+            }
+            
+            @Step {
+                생성된 이미지 URL은 임시 위치를 가리킵니다.
+                앱에서 계속 사용하려면 영구 저장소로 복사해야 합니다.
+                
+                @Code(name: "ImageURL.swift", file: "02-05-image-url.swift")
+            }
+        }
+    }
+    
+    @Section(title: "iPad 및 Mac에서의 시트") {
+        @ContentAndMedia {
+            iPhone에서 시트는 화면 아래에서 
+            올라오는 카드 형태로 나타납니다.
+            
+            iPad와 Mac에서는 더 큰 화면을 활용하여 
+            넓은 편집 공간을 제공합니다.
+            
+            ImagePlayground는 이러한 플랫폼 차이를 자동으로 처리하므로,
+            추가 코드가 필요하지 않습니다.
+        }
+        
+        @Steps {
+            @Step {
+                동일한 코드가 모든 플랫폼에서 작동합니다.
+                시스템이 플랫폼별 UI 조정을 자동으로 처리합니다.
+                
+                @Code(name: "CrossPlatform.swift", file: "02-06-cross-platform.swift")
+            }
+            
+            @Step {
+                macOS에서는 윈도우 형태로 나타날 수 있습니다.
+                필요하다면 플랫폼별로 다른 진입점을 제공할 수 있습니다.
+                
+                @Code(name: "PlatformSpecific.swift", file: "02-07-platform-specific.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            imagePlaygroundSheet에서 생성된 이미지 URL의 특징은?
+            
+            @Choice(isCorrect: true) {
+                임시 위치를 가리키며, 영구 저장을 위해 복사해야 한다.
+                
+                @Justification(reaction: "정답입니다! 🎯") {
+                    생성된 이미지 URL은 임시 디렉토리를 가리키므로,
+                    Documents나 사진 앨범에 복사해야 
+                    계속 사용할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                영구적인 URL로 iCloud에 자동 동기화된다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    URL은 임시 위치를 가리키며 
+                    자동 동기화되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱의 Documents 폴더에 자동 저장된다.
+                
+                @Justification(reaction: "아닙니다.") {
+                    자동 저장되지 않으며,
+                    개발자가 직접 저장 로직을 구현해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ImagePlayground 시트의 표시 상태를 제어하는 올바른 방법은?
+            
+            @Choice(isCorrect: false) {
+                직접 `showSheet()` 메서드를 호출한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    ImagePlayground는 선언적 SwiftUI 패턴을 따르며,
+                    명령형 API가 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `@State` 변수를 `Binding`으로 전달하여 제어한다.
+                
+                @Justification(reaction: "정답입니다! ✨") {
+                    SwiftUI의 표준 sheet 패턴과 동일하게 
+                    `isPresented` 바인딩을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                NotificationCenter를 통해 표시/숨김을 제어한다.
+                
+                @Justification(reaction: "아닙니다.") {
+                    SwiftUI에서는 바인딩을 통한 
+                    선언적 상태 관리가 권장됩니다.
+                }
+            }
+        }
+    }
+}

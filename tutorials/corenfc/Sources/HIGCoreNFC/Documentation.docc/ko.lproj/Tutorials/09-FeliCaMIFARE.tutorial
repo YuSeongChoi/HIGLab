@@ -1,0 +1,96 @@
+@Tutorial(time: 25) {
+    @Intro(title: "FeliCa & MIFARE") {
+        일본의 FeliCa와 NXP의 MIFARE 태그를 다루는 방법을 학습합니다.
+        교통카드, 전자화폐 등에서 사용되는 태그 타입입니다.
+    }
+    
+    @Section(title: "FeliCa 태그") {
+        @ContentAndMedia {
+            FeliCa는 Sony가 개발한 비접촉식 RFID 기술입니다.
+            일본의 Suica, PASMO 등 교통카드에서 사용됩니다.
+        }
+        @Steps {
+            @Step {
+                NFCFeliCaTag의 주요 속성을 확인합니다.
+                IDm(제조 ID), PMm(제조 파라미터)이 있습니다.
+                @Code(name: "FeliCaReader.swift", file: "09-01-felica-props.swift")
+            }
+            @Step {
+                시스템 코드를 지정하여 폴링합니다.
+                0x88B4는 공통 영역, 0x0003은 Suica입니다.
+                @Code(name: "FeliCaReader.swift", file: "09-02-felica-polling.swift")
+            }
+            @Step {
+                서비스 코드를 지정하여 블록 데이터를 읽습니다.
+                @Code(name: "FeliCaReader.swift", file: "09-03-felica-read.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MIFARE 태그") {
+        @ContentAndMedia {
+            MIFARE는 NXP Semiconductors의 비접촉식 스마트카드 기술입니다.
+            MIFARE Classic, Ultralight, DESFire 등 여러 제품군이 있습니다.
+        }
+        @Steps {
+            @Step {
+                NFCMiFareTag의 mifareFamily 속성으로 제품군을 식별합니다.
+                @Code(name: "MIFAREReader.swift", file: "09-04-mifare-family.swift")
+            }
+            @Step {
+                MIFARE Ultralight 태그의 페이지를 읽습니다.
+                @Code(name: "MIFAREReader.swift", file: "09-05-ultralight-read.swift")
+            }
+            @Step {
+                MIFARE 네이티브 명령을 전송합니다.
+                sendMiFareCommand 메서드를 사용합니다.
+                @Code(name: "MIFAREReader.swift", file: "09-06-mifare-command.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            FeliCa 태그의 IDm은 무엇인가요?
+            @Choice(isCorrect: true) {
+                제조 ID (Manufacture ID)
+                @Justification(reaction: "정답입니다!") {
+                    IDm은 8바이트의 고유 제조 식별자입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                인터넷 도메인
+                @Justification(reaction: "다시 생각해보세요.") {
+                    IDm은 태그의 고유 식별자입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                데이터 메모리
+                @Justification(reaction: "다시 생각해보세요.") {
+                    IDm은 Identification의 약자입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            MIFARE Ultralight의 특징은?
+            @Choice(isCorrect: false) {
+                대용량 저장공간 (수 MB)
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Ultralight는 소용량(64~192바이트)입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                저비용, 소용량의 일회용/저가 태그
+                @Justification(reaction: "정답입니다!") {
+                    일회용 교통권, 이벤트 티켓 등에 사용됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                고급 암호화 지원
+                @Justification(reaction: "다시 생각해보세요.") {
+                    고급 암호화는 DESFire 제품군입니다.
+                }
+            }
+        }
+    }
+}

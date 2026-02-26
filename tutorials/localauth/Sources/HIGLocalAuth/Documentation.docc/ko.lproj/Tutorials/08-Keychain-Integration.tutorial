@@ -1,0 +1,197 @@
+@Tutorial(time: 15) {
+    @Intro(title: "키체인과 통합") {
+        LocalAuthentication과 키체인을 연동하여
+        생체 인증으로 보호되는 안전한 데이터 저장소를 구축합니다.
+    }
+    
+    @Section(title: "키체인 기초") {
+        @ContentAndMedia {
+            키체인은 iOS의 안전한 자격 증명 저장소입니다.
+            민감한 데이터를 암호화하여 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **왜 키체인을 사용할까?**
+                
+                - 하드웨어 수준의 암호화
+                - 앱 삭제 후에도 데이터 유지 가능
+                - 기기 간 동기화 지원
+                - 생체 인증과의 자연스러운 통합
+                
+                @Code(name: "WhyKeychain.swift", file: "08-why-keychain.swift")
+            }
+            
+            @Step {
+                **Security 프레임워크 임포트**
+                
+                키체인 API는 Security 프레임워크에 있습니다.
+                
+                @Code(name: "ImportSecurity.swift", file: "08-import-security.swift")
+            }
+            
+            @Step {
+                **기본 저장 및 조회**
+                
+                SecItemAdd, SecItemCopyMatching을 사용합니다.
+                복잡하므로 래퍼 클래스를 만드는 것이 좋습니다.
+                
+                @Code(name: "BasicKeychain.swift", file: "08-basic-keychain.swift")
+            }
+        }
+    }
+    
+    @Section(title: "생체 인증으로 보호되는 키체인 아이템") {
+        @ContentAndMedia {
+            kSecAccessControlBiometryAny 플래그를 사용하면
+            키체인 아이템에 접근할 때 자동으로 생체 인증이 요청됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SecAccessControl 생성**
+                
+                생체 인증을 요구하는 접근 제어 설정을 만듭니다.
+                
+                @Code(name: "AccessControl.swift", file: "08-access-control.swift")
+            }
+            
+            @Step {
+                **보호된 아이템 저장**
+                
+                kSecAttrAccessControl 속성에 접근 제어를 설정합니다.
+                
+                @Code(name: "SecureSave.swift", file: "08-secure-save.swift")
+            }
+            
+            @Step {
+                **보호된 아이템 조회**
+                
+                조회 시 시스템이 자동으로 생체 인증을 요청합니다.
+                LAContext를 함께 전달하여 메시지를 커스터마이징할 수 있습니다.
+                
+                @Code(name: "SecureLoad.swift", file: "08-secure-load.swift")
+            }
+        }
+    }
+    
+    @Section(title: "KeychainManager 구현") {
+        @ContentAndMedia {
+            복잡한 키체인 API를 감싸는 깔끔한 매니저 클래스를 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                **KeychainManager 클래스**
+                
+                저장, 조회, 삭제 메서드를 제공하는 간단한 인터페이스입니다.
+                
+                @Code(name: "KeychainManager.swift", file: "08-keychain-manager.swift")
+            }
+            
+            @Step {
+                **제네릭 지원**
+                
+                Codable을 준수하는 어떤 타입이든 저장/조회할 수 있습니다.
+                
+                @Code(name: "GenericKeychain.swift", file: "08-generic-keychain.swift")
+            }
+            
+            @Step {
+                **보안 금고 앱에 적용**
+                
+                VaultItem을 키체인에 안전하게 저장합니다.
+                
+                @Code(name: "VaultItemStorage.swift", file: "08-vault-item-storage.swift")
+            }
+        }
+    }
+    
+    @Section(title: "에러 처리") {
+        @ContentAndMedia {
+            키체인 작업에서 발생할 수 있는 에러를 적절히 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **OSStatus 에러 코드**
+                
+                키체인 API는 OSStatus를 반환합니다.
+                주요 에러 코드를 이해하고 처리합니다.
+                
+                @Code(name: "OSStatusErrors.swift", file: "08-os-status-errors.swift")
+            }
+            
+            @Step {
+                **인증 취소 처리**
+                
+                사용자가 생체 인증을 취소하면 errSecAuthFailed가 반환됩니다.
+                
+                @Code(name: "AuthCancelled.swift", file: "08-auth-cancelled.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            키체인에 생체 인증 보호를 적용하려면 어떤 속성을 사용해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                kSecAttrAccessControl에 SecAccessControl 설정
+                
+                @Justification(reaction: "정답입니다!") {
+                    SecAccessControlCreateWithFlags로 접근 제어를 만들고,
+                    kSecAttrAccessControl에 설정하면 생체 인증 보호가 적용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                kSecAttrBiometricProtected를 true로 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 속성은 존재하지 않습니다.
+                    SecAccessControl을 사용해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                kSecAttrAccessible을 kSecAttrAccessibleWhenUnlockedThisDeviceOnly로 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    그 설정은 접근 시점만 제어합니다.
+                    생체 인증 요구는 SecAccessControl로 설정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            키체인에서 생체 인증으로 보호된 아이템을 조회할 때, 인증 메시지를 커스터마이징하려면?
+            
+            @Choice(isCorrect: true) {
+                LAContext를 설정하고 kSecUseAuthenticationContext에 전달
+                
+                @Justification(reaction: "맞습니다!") {
+                    LAContext의 localizedReason을 설정한 후
+                    키체인 쿼리의 kSecUseAuthenticationContext에 전달합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                kSecAttrLabel에 메시지를 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    kSecAttrLabel은 아이템 식별용입니다.
+                    인증 메시지는 LAContext를 통해 설정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                커스터마이징이 불가능하고 시스템 기본 메시지만 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    LAContext를 활용하면 메시지 커스터마이징이 가능합니다.
+                }
+            }
+        }
+    }
+}

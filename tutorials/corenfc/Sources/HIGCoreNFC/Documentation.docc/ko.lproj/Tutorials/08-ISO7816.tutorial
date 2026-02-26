@@ -1,0 +1,96 @@
+@Tutorial(time: 30) {
+    @Intro(title: "ISO 7816 태그") {
+        ISO 7816 표준 태그와 통신하는 방법을 학습합니다.
+        APDU 명령을 전송하고 응답을 처리합니다.
+    }
+    
+    @Section(title: "ISO 7816 태그 접근") {
+        @ContentAndMedia {
+            ISO 7816은 스마트카드 통신의 국제 표준입니다.
+            신용카드, 신분증, 여권 등의 칩에서 사용됩니다.
+        }
+        @Steps {
+            @Step {
+                NFCISO7816Tag 프로토콜의 속성을 확인합니다.
+                identifier, historicalBytes, applicationData 등이 있습니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-01-properties.swift")
+            }
+            @Step {
+                초기 UID와 ATS(Answer To Select) 데이터를 읽습니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-02-initial.swift")
+            }
+        }
+    }
+    
+    @Section(title: "APDU 명령 전송") {
+        @ContentAndMedia {
+            APDU(Application Protocol Data Unit)는 스마트카드와 통신하는 
+            명령-응답 프로토콜입니다.
+        }
+        @Steps {
+            @Step {
+                NFCISO7816APDU 객체를 생성합니다.
+                CLA, INS, P1, P2, Data, Le 필드로 구성됩니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-03-apdu.swift")
+            }
+            @Step {
+                SELECT 명령으로 애플리케이션을 선택합니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-04-select.swift")
+            }
+            @Step {
+                READ BINARY 명령으로 데이터를 읽습니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-05-read.swift")
+            }
+            @Step {
+                응답의 상태 코드(SW1, SW2)를 해석합니다.
+                0x9000은 성공, 그 외는 에러 코드입니다.
+                @Code(name: "ISO7816Reader.swift", file: "08-06-status.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            APDU 응답에서 SW1=0x90, SW2=0x00의 의미는?
+            @Choice(isCorrect: true) {
+                명령이 성공적으로 처리됨
+                @Justification(reaction: "정답입니다!") {
+                    0x9000은 ISO 7816의 표준 성공 코드입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                데이터를 찾을 수 없음
+                @Justification(reaction: "다시 생각해보세요.") {
+                    데이터 없음은 다른 상태 코드로 표시됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                인증 실패
+                @Justification(reaction: "다시 생각해보세요.") {
+                    인증 실패는 0x6300 계열 코드입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            ISO 7816 SELECT 명령의 INS 바이트 값은?
+            @Choice(isCorrect: false) {
+                0xB0
+                @Justification(reaction: "다시 생각해보세요.") {
+                    0xB0은 READ BINARY 명령입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                0xA4
+                @Justification(reaction: "정답입니다!") {
+                    SELECT 명령의 INS는 0xA4입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                0xD6
+                @Justification(reaction: "다시 생각해보세요.") {
+                    0xD6은 UPDATE BINARY 명령입니다.
+                }
+            }
+        }
+    }
+}

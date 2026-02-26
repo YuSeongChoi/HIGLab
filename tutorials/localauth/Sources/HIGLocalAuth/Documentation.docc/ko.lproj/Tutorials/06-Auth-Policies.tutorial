@@ -1,0 +1,177 @@
+@Tutorial(time: 12) {
+    @Intro(title: "인증 정책: biometryAny vs biometryCurrentSet") {
+        두 가지 생체 인증 정책의 차이점을 이해하고,
+        보안 요구사항에 맞는 정책을 선택하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "두 정책의 핵심 차이") {
+        @ContentAndMedia {
+            Apple은 생체 인증만을 사용하는 두 가지 정책을 제공합니다.
+            보안 수준에 따라 적절한 정책을 선택해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **biometryAny (기본)**
+                
+                등록된 어떤 생체 데이터로도 인증을 허용합니다.
+                새로운 얼굴/지문이 추가되어도 인증이 유지됩니다.
+                
+                @Code(name: "BiometryAny.swift", file: "06-biometry-any.swift")
+            }
+            
+            @Step {
+                **biometryCurrentSet (엄격)**
+                
+                인증 설정 시점의 생체 데이터만 허용합니다.
+                새 데이터가 추가되거나 변경되면 인증이 무효화됩니다.
+                
+                @Code(name: "BiometryCurrentSet.swift", file: "06-biometry-currentset.swift")
+            }
+            
+            @Step {
+                **어떤 정책을 선택할까?**
+                
+                - **biometryAny**: 일반 앱, 편의성 우선
+                - **biometryCurrentSet**: 금융 앱, 보안 우선
+                
+                @Code(name: "PolicyChoice.swift", file: "06-policy-choice.swift")
+            }
+        }
+    }
+    
+    @Section(title: "evaluatedPolicyDomainState 활용") {
+        @ContentAndMedia {
+            생체 데이터 변경을 감지하는 핵심 속성입니다.
+            이 값을 저장해두고 비교하면 변경 여부를 알 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **domainState란?**
+                
+                evaluatedPolicyDomainState는 현재 등록된 생체 데이터의 해시값입니다.
+                데이터가 변경되면 이 값도 변경됩니다.
+                
+                @Code(name: "DomainState.swift", file: "06-domain-state.swift")
+            }
+            
+            @Step {
+                **domainState 저장**
+                
+                최초 인증 성공 시 domainState를 키체인에 저장합니다.
+                
+                @Code(name: "SaveDomainState.swift", file: "06-save-domain-state.swift")
+            }
+            
+            @Step {
+                **변경 감지 로직**
+                
+                재인증 시 저장된 값과 현재 값을 비교합니다.
+                다르면 생체 데이터가 변경된 것입니다.
+                
+                @Code(name: "DetectChange.swift", file: "06-detect-change.swift")
+            }
+            
+            @Step {
+                **변경 시 대응**
+                
+                보안 수준에 따라 재등록을 요구하거나, 
+                사용자에게 알림을 표시합니다.
+                
+                @Code(name: "HandleChange.swift", file: "06-handle-change.swift")
+            }
+        }
+    }
+    
+    @Section(title: "보안 금고 앱에 적용하기") {
+        @ContentAndMedia {
+            보안 금고 앱은 높은 보안 수준이 필요합니다.
+            biometryCurrentSet와 domainState 감지를 조합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **정책 설정**
+                
+                보안 금고 앱에는 biometryCurrentSet을 사용합니다.
+                새 얼굴/지문 추가 시 마스터 비밀번호 재인증을 요구합니다.
+                
+                @Code(name: "SecureVaultPolicy.swift", file: "06-secure-vault-policy.swift")
+            }
+            
+            @Step {
+                **변경 감지 통합**
+                
+                AuthenticationManager에 domainState 확인 로직을 추가합니다.
+                
+                @Code(name: "IntegratedCheck.swift", file: "06-integrated-check.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            다음 상황에서 biometryCurrentSet 정책을 사용하면 어떻게 되나요?
+            "사용자가 새로운 지문을 추가한 후 앱을 열었다"
+            
+            @Choice(isCorrect: true) {
+                이전 인증이 무효화되어 다시 인증 설정이 필요하다
+                
+                @Justification(reaction: "정답입니다!") {
+                    biometryCurrentSet은 설정 시점의 생체 데이터만 인정합니다.
+                    새 지문이 추가되면 이전 인증이 무효화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                새 지문으로도 정상적으로 인증된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    그건 biometryAny 정책의 동작입니다.
+                    biometryCurrentSet은 더 엄격합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱이 크래시된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    크래시가 아니라 정상적인 보안 동작입니다.
+                    앱이 재인증을 요구하게 됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            evaluatedPolicyDomainState의 역할은?
+            
+            @Choice(isCorrect: true) {
+                현재 등록된 생체 데이터의 상태를 나타내는 해시값
+                
+                @Justification(reaction: "맞습니다!") {
+                    이 값을 비교하면 생체 데이터가 변경되었는지 감지할 수 있습니다.
+                    보안 앱에서 필수적인 기능입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                마지막 인증 시간을 저장하는 값
+                
+                @Justification(reaction: "아쉽네요") {
+                    domainState는 시간이 아니라 생체 데이터 상태를 나타냅니다.
+                    데이터가 변경되면 이 값도 변경됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                인증 성공/실패 횟수를 카운트하는 값
+                
+                @Justification(reaction: "아쉽네요") {
+                    domainState는 횟수가 아니라 생체 데이터 해시입니다.
+                    변경 감지에 사용됩니다.
+                }
+            }
+        }
+    }
+}

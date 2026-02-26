@@ -1,0 +1,251 @@
+@Tutorial(time: 25) {
+    @Intro(title: "RAW 이미지 처리") {
+        CIRAWFilter를 활용해 RAW 포맷 이미지를 
+        전문적으로 처리하는 방법을 학습합니다.
+        
+        @Image(source: "raw-processing.png", alt: "RAW 처리")
+    }
+    
+    @Section(title: "RAW 이미지 이해하기") {
+        @ContentAndMedia {
+            RAW 파일은 카메라 센서의 원본 데이터를 담고 있습니다.
+            JPEG보다 훨씬 많은 정보를 보존하여 후보정에 유리합니다.
+            
+            RAW의 장점:
+            - **넓은 다이나믹 레인지**: 하이라이트/섀도우 복구 가능
+            - **높은 비트 심도**: 12-14비트 (JPEG는 8비트)
+            - **화이트밸런스 조절**: 후보정으로 정확히 조절 가능
+            - **비압축/무손실**: 이미지 품질 손실 없음
+            
+            @Image(source: "raw-vs-jpeg.png", alt: "RAW vs JPEG")
+        }
+        
+        @Steps {
+            @Step {
+                RAW 파일을 지원하는 포맷을 확인합니다.
+                DNG, CR2, NEF, ARW 등 주요 카메라 RAW를 지원합니다.
+                
+                @Code(name: "SupportedFormats.swift", file: "09-01-supported-formats.swift")
+            }
+            
+            @Step {
+                RAW 파일에서 CIImage를 로드합니다.
+                CIRAWFilter를 사용해 RAW 데이터를 처리합니다.
+                
+                @Code(name: "LoadRAW.swift", file: "09-02-load-raw.swift")
+            }
+            
+            @Step {
+                RAW 파일의 메타데이터를 읽습니다.
+                EXIF, 촬영 정보 등을 확인할 수 있습니다.
+                
+                @Code(name: "RAWMetadata.swift", file: "09-03-raw-metadata.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CIRAWFilter 기본 조절") {
+        @ContentAndMedia {
+            CIRAWFilter는 RAW 이미지의 다양한 파라미터를 조절합니다.
+            노출, 화이트밸런스, 하이라이트 복구 등을 제어합니다.
+            
+            주요 파라미터:
+            - exposure: 노출 조절 (EV 단위)
+            - temperature/tint: 색온도와 틴트
+            - neutralChromaticityX/Y: 화이트 포인트
+            - shadowBias: 섀도우 복구
+            - boostAmount: 밝기 부스트
+        }
+        
+        @Steps {
+            @Step {
+                노출(Exposure)을 조절합니다.
+                RAW의 넓은 다이나믹 레인지를 활용해 밝기를 보정합니다.
+                
+                @Code(name: "RAWExposure.swift", file: "09-04-raw-exposure.swift")
+            }
+            
+            @Step {
+                화이트밸런스를 조절합니다.
+                색온도와 틴트로 자연스러운 색감을 찾습니다.
+                
+                @Code(name: "RAWWhiteBalance.swift", file: "09-05-raw-white-balance.swift")
+            }
+            
+            @Step {
+                섀도우와 하이라이트를 복구합니다.
+                RAW의 풍부한 정보로 디테일을 살립니다.
+                
+                @Code(name: "RAWShadowHighlight.swift", file: "09-06-raw-shadow-highlight.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 RAW 처리") {
+        @ContentAndMedia {
+            전문적인 RAW 처리를 위한 고급 파라미터를 사용합니다.
+            노이즈 리덕션, 샤프닝, 렌즈 보정 등을 적용합니다.
+            
+            고급 기능:
+            - noiseReductionAmount: 노이즈 감소
+            - noiseReductionSharpnessAmount: 샤프닝
+            - noiseReductionContrastAmount: 디테일 보존
+            - linearSpaceFilter: 선형 색공간 처리
+        }
+        
+        @Steps {
+            @Step {
+                노이즈 리덕션을 적용합니다.
+                고ISO 사진의 노이즈를 줄이면서 디테일을 보존합니다.
+                
+                @Code(name: "RAWNoiseReduction.swift", file: "09-07-raw-noise-reduction.swift")
+            }
+            
+            @Step {
+                샤프닝을 적용합니다.
+                RAW 디모자이킹 후 적절한 선명도를 더합니다.
+                
+                @Code(name: "RAWSharpening.swift", file: "09-08-raw-sharpening.swift")
+            }
+            
+            @Step {
+                색상 프로파일을 적용합니다.
+                카메라 프로파일이나 커스텀 LUT를 사용합니다.
+                
+                @Code(name: "RAWColorProfile.swift", file: "09-09-raw-color-profile.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ProRAW 및 Apple RAW") {
+        @ContentAndMedia {
+            iPhone의 ProRAW는 Apple의 이미지 파이프라인 정보가 
+            포함된 특별한 RAW 포맷입니다.
+            
+            ProRAW 특징:
+            - Deep Fusion, Smart HDR 정보 보존
+            - DNG 포맷 기반
+            - 컴퓨테이셔널 포토그래피 + RAW 유연성
+            - 12비트 색상 정보
+        }
+        
+        @Steps {
+            @Step {
+                iPhone에서 ProRAW 촬영을 활성화합니다.
+                AVCapturePhotoOutput 설정을 구성합니다.
+                
+                @Code(name: "ProRAWCapture.swift", file: "09-10-proraw-capture.swift")
+            }
+            
+            @Step {
+                ProRAW 파일을 처리합니다.
+                Apple의 시맨틱 렌더링 정보를 활용합니다.
+                
+                @Code(name: "ProcessProRAW.swift", file: "09-11-process-proraw.swift")
+            }
+            
+            @Step {
+                RAW 처리 결과를 내보냅니다.
+                HEIF, JPEG, TIFF 등 다양한 포맷으로 저장합니다.
+                
+                @Code(name: "ExportRAW.swift", file: "09-12-export-raw.swift")
+            }
+            
+            @Step {
+                배치 RAW 처리를 구현합니다.
+                여러 RAW 파일에 동일한 설정을 적용합니다.
+                
+                @Code(name: "BatchRAWProcess.swift", file: "09-13-batch-raw.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            RAW 이미지가 JPEG보다 후보정에 유리한 이유는?
+            
+            @Choice(isCorrect: true) {
+                더 높은 비트 심도와 넓은 다이나믹 레인지를 보존하기 때문
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    RAW는 12-14비트 정보를 보존해 
+                    하이라이트/섀도우 복구가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                파일 크기가 작아서 빠르게 처리되기 때문
+                
+                @Justification(reaction: "오히려 반대입니다.") {
+                    RAW 파일은 JPEG보다 훨씬 큽니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 기기에서 볼 수 있는 표준 포맷이기 때문
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    RAW는 호환성이 제한적이며, 처리가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIRAWFilter에서 조절할 수 없는 것은?
+            
+            @Choice(isCorrect: false) {
+                노출 (exposure)
+                
+                @Justification(reaction: "조절 가능합니다.") {
+                    exposure 파라미터로 EV 단위 조절이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                화이트밸런스 (temperature)
+                
+                @Justification(reaction: "조절 가능합니다.") {
+                    temperature와 tint로 화이트밸런스를 조절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                촬영 시점의 ISO 값 변경
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    ISO는 촬영 시 결정되며, RAW 처리 시 
+                    시뮬레이션만 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iPhone ProRAW의 특별한 점은?
+            
+            @Choice(isCorrect: true) {
+                Deep Fusion, Smart HDR 등 컴퓨테이셔널 포토그래피 정보 포함
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    ProRAW는 Apple의 이미지 파이프라인 정보를 
+                    RAW 데이터와 함께 저장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                일반 DNG보다 파일 크기가 작다
+                
+                @Justification(reaction: "오히려 더 큽니다.") {
+                    추가 정보 때문에 파일 크기가 더 큽니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                8비트 색상만 지원한다
+                
+                @Justification(reaction: "12비트를 지원합니다.") {
+                    ProRAW는 12비트 색상 정보를 저장합니다.
+                }
+            }
+        }
+    }
+}

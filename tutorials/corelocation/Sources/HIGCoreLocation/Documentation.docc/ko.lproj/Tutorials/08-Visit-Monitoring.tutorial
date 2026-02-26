@@ -1,0 +1,217 @@
+@Tutorial(time: 10) {
+    @Intro(title: "방문 모니터링 (CLVisit)") {
+        사용자가 특정 장소에 머문 것을 자동으로 감지하는
+        방문 모니터링 기능을 활용합니다.
+        
+        러닝 코스의 자주 가는 장소를 자동으로 기록합니다.
+    }
+    
+    @Section(title: "CLVisit 이해하기") {
+        @ContentAndMedia {
+            `CLVisit`은 사용자가 특정 장소에 도착하고 떠난 것을 
+            시스템이 자동으로 감지하여 알려주는 기능입니다.
+            
+            직접 위치를 추적하지 않아도 방문 기록을 받을 수 있어
+            매우 배터리 효율적입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CLVisit 속성 이해**
+                
+                CLVisit은 다음 정보를 제공합니다:
+                - `coordinate`: 방문 장소의 좌표
+                - `arrivalDate`: 도착 시간
+                - `departureDate`: 출발 시간
+                - `horizontalAccuracy`: 위치 정확도
+                
+                @Code(name: "VisitData.swift", file: "08-visit-properties.swift")
+            }
+            
+            @Step {
+                **방문 모니터링 시작**
+                
+                `startMonitoringVisits()`를 호출하면
+                시스템이 백그라운드에서 방문을 감지합니다.
+                
+                @Code(name: "VisitManager.swift", file: "08-start-monitoring.swift")
+            }
+            
+            @Step {
+                **방문 이벤트 수신**
+                
+                `locationManager(_:didVisit:)` 델리게이트 메서드에서
+                방문 정보를 받습니다.
+                
+                @Code(name: "VisitManager.swift", file: "08-did-visit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "방문 데이터 활용") {
+        @ContentAndMedia {
+            방문 데이터를 분석하여 사용자의 러닝 패턴을 파악하고,
+            자주 방문하는 장소를 즐겨찾기로 제안할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **방문 기록 저장**
+                
+                방문 데이터를 Core Data나 파일로 저장하여
+                러닝 히스토리를 구축합니다.
+                
+                @Code(name: "VisitStorage.swift", file: "08-visit-storage.swift")
+            }
+            
+            @Step {
+                **체류 시간 계산**
+                
+                arrivalDate와 departureDate의 차이로
+                얼마나 오래 머물렀는지 계산합니다.
+                
+                주의: departureDate가 `.distantFuture`면 아직 머물고 있는 중입니다.
+                
+                @Code(name: "VisitAnalytics.swift", file: "08-duration.swift")
+            }
+            
+            @Step {
+                **자주 가는 장소 분석**
+                
+                비슷한 좌표의 방문을 그룹화하여
+                자주 가는 러닝 장소를 식별합니다.
+                
+                @Code(name: "VisitAnalytics.swift", file: "08-frequent-places.swift")
+            }
+        }
+    }
+    
+    @Section(title: "러닝 장소 추천") {
+        @ContentAndMedia {
+            방문 데이터를 기반으로 러닝 장소를 추천하고,
+            각 장소에서의 러닝 통계를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **장소 모델 생성**
+                
+                자주 방문하는 장소를 저장할 모델을 만듭니다.
+                이름, 좌표, 방문 횟수, 총 러닝 거리 등을 포함합니다.
+                
+                @Code(name: "FavoritePlace.swift", file: "08-place-model.swift")
+            }
+            
+            @Step {
+                **장소 목록 UI**
+                
+                자주 가는 러닝 장소를 목록으로 표시합니다.
+                각 장소의 통계와 마지막 방문 시간을 보여줍니다.
+                
+                @Code(name: "PlacesListView.swift", file: "08-places-list.swift")
+            }
+            
+            @Step {
+                **장소 기반 러닝 시작**
+                
+                즐겨찾기 장소를 선택하면 해당 위치로 이동하여
+                바로 러닝을 시작할 수 있게 합니다.
+                
+                @Code(name: "QuickStartView.swift", file: "08-quick-start.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CLVisit의 departureDate가 .distantFuture일 때의 의미는?
+            
+            @Choice(isCorrect: true) {
+                아직 해당 장소에 머물고 있음
+                
+                @Justification(reaction: "정답!") {
+                    .distantFuture는 출발 시간이 아직 결정되지 않았음을 의미합니다.
+                    사용자가 해당 장소를 떠나면 실제 시간으로 업데이트됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                방문 데이터가 유효하지 않음
+                
+                @Justification(reaction: "아쉽네요") {
+                    .distantFuture는 정상적인 값으로, 현재 머물고 있음을 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                영원히 머물 예정
+                
+                @Justification(reaction: "아쉽네요") {
+                    이것은 시스템이 아직 출발을 감지하지 못했다는 의미입니다.
+                    사용자가 떠나면 실제 시간으로 변경됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            방문 모니터링의 장점은?
+            
+            @Choice(isCorrect: true) {
+                배터리 효율이 매우 좋음
+                
+                @Justification(reaction: "정확합니다!") {
+                    방문 모니터링은 시스템이 이미 수집하는 데이터를 활용하므로
+                    추가 배터리 소모가 거의 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실시간 위치 추적보다 정확함
+                
+                @Justification(reaction: "아쉽네요") {
+                    방문 모니터링은 대략적인 장소만 감지합니다.
+                    정밀한 경로 추적에는 적합하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 이동을 기록함
+                
+                @Justification(reaction: "아쉽네요") {
+                    방문 모니터링은 특정 장소에 머문 경우만 감지합니다.
+                    이동 중인 경로는 기록하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            방문 모니터링에 필요한 권한 수준은?
+            
+            @Choice(isCorrect: true) {
+                Always 권한
+                
+                @Justification(reaction: "정답!") {
+                    방문 모니터링은 백그라운드에서 동작하므로
+                    "Always" 위치 권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                When In Use 권한
+                
+                @Justification(reaction: "아쉽네요") {
+                    방문 모니터링은 앱이 백그라운드에 있을 때도 동작해야 하므로
+                    "Always" 권한이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                권한 필요 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    모든 위치 서비스는 사용자 권한이 필요합니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,227 @@
+@Tutorial(time: 18) {
+    @Intro(title: "통계 쿼리 (HKStatisticsQuery)") {
+        HKStatisticsQuery와 HKStatisticsCollectionQuery를 사용하여
+        건강 데이터의 합계, 평균, 최소/최대값을 효율적으로 집계합니다.
+    }
+    
+    @Section(title: "HKStatisticsQuery 기본") {
+        @ContentAndMedia {
+            **HKStatisticsQuery**는 지정된 기간의 통계를 한 번에 계산합니다.
+            HKSampleQuery로 모든 샘플을 가져와 합산하는 것보다 훨씬 효율적입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Statistics vs Sample Query**
+                
+                SampleQuery: 개별 샘플을 모두 가져와 직접 계산
+                StatisticsQuery: HealthKit이 내부적으로 집계하여 결과만 반환
+                
+                특히 중복 소스 처리를 자동으로 해줍니다.
+                
+                @Code(name: "Comparison.swift", file: "07-comparison.swift")
+            }
+            
+            @Step {
+                **통계 옵션**
+                
+                HKStatisticsOptions로 원하는 통계 타입을 지정합니다:
+                - .cumulativeSum: 합계 (걸음 수, 칼로리)
+                - .discreteAverage/Min/Max: 평균/최소/최대 (심박수, 체중)
+                - .mostRecent: 가장 최근 값
+                
+                @Code(name: "StatisticsOptions.swift", file: "07-statistics-options.swift")
+            }
+            
+            @Step {
+                **오늘의 걸음 수 합계**
+                
+                HKStatisticsQuery로 오늘의 총 걸음 수를 구합니다.
+                여러 소스(Apple Watch, iPhone)의 중복이 자동 처리됩니다.
+                
+                @Code(name: "TodayStepsSum.swift", file: "07-today-steps-sum.swift")
+            }
+            
+            @Step {
+                **심박수 평균/최소/최대**
+                
+                오늘의 심박수 통계를 한 번에 조회합니다.
+                
+                @Code(name: "HeartRateStats.swift", file: "07-heartrate-stats.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HKStatisticsCollectionQuery") {
+        @ContentAndMedia {
+            **HKStatisticsCollectionQuery**는 기간을 구간별로 나누어 각각 통계를 계산합니다.
+            일별, 시간별, 주별 트렌드 차트를 그릴 때 필수입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **DateComponents로 구간 정의**
+                
+                anchorDate와 intervalComponents로 구간을 정의합니다.
+                예: 매일 자정을 기준으로 24시간 단위
+                
+                @Code(name: "IntervalDefinition.swift", file: "07-interval-definition.swift")
+            }
+            
+            @Step {
+                **지난 7일 걸음 수**
+                
+                일별 걸음 수 합계를 배열로 조회합니다.
+                차트 데이터로 바로 사용할 수 있습니다.
+                
+                @Code(name: "WeeklySteps.swift", file: "07-weekly-steps.swift")
+            }
+            
+            @Step {
+                **결과 순회**
+                
+                enumerateStatistics로 각 구간의 통계를 순회합니다.
+                startDate, endDate, 통계값을 추출합니다.
+                
+                @Code(name: "EnumerateStats.swift", file: "07-enumerate-stats.swift")
+            }
+            
+            @Step {
+                **시간별 통계**
+                
+                intervalComponents를 hour: 1로 설정하면
+                시간별 통계를 구할 수 있습니다.
+                
+                @Code(name: "HourlyStats.swift", file: "07-hourly-stats.swift")
+            }
+        }
+    }
+    
+    @Section(title: "트렌드 차트 구현") {
+        @ContentAndMedia {
+            Swift Charts를 사용하여 건강 데이터 트렌드를 시각화합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **차트 데이터 모델**
+                
+                날짜와 값을 포함하는 간단한 모델을 정의합니다.
+                
+                @Code(name: "ChartData.swift", file: "07-chart-data.swift")
+            }
+            
+            @Step {
+                **주간 걸음 수 차트**
+                
+                Swift Charts의 BarMark로 일별 걸음 수를 표시합니다.
+                
+                @Code(name: "WeeklyStepsChart.swift", file: "07-weekly-steps-chart.swift")
+            }
+            
+            @Step {
+                **심박수 범위 차트**
+                
+                LineMark와 AreaMark로 심박수 변화를 표시합니다.
+                최소/최대 범위를 영역으로 표현합니다.
+                
+                @Code(name: "HeartRateChart.swift", file: "07-heartrate-chart.swift")
+            }
+            
+            @Step {
+                **HealthManager 통합**
+                
+                통계 쿼리 메서드들을 HealthManager에 추가합니다.
+                
+                @Code(name: "HealthManager.swift", file: "07-health-manager-stats.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            걸음 수 합계를 구할 때 적합한 HKStatisticsOptions는?
+            
+            @Choice(isCorrect: true) {
+                .cumulativeSum
+                
+                @Justification(reaction: "정답!") {
+                    걸음 수는 누적되는 값이므로 cumulativeSum을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .discreteAverage
+                
+                @Justification(reaction: "아쉽네요") {
+                    discreteAverage는 심박수처럼 순간 값의 평균에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .mostRecent
+                
+                @Justification(reaction: "아쉽네요") {
+                    mostRecent는 가장 최근 값 하나만 필요할 때 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HKStatisticsCollectionQuery의 주요 용도는?
+            
+            @Choice(isCorrect: true) {
+                일별/시간별 등 구간별 통계를 한 번에 조회
+                
+                @Justification(reaction: "정답!") {
+                    트렌드 차트를 그릴 때 필수적인 쿼리입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                여러 데이터 타입을 동시에 조회
+                
+                @Justification(reaction: "아쉽네요") {
+                    하나의 데이터 타입에 대한 구간별 통계를 구합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실시간 건강 데이터 스트리밍
+                
+                @Justification(reaction: "아쉽네요") {
+                    실시간 업데이트는 HKObserverQuery를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HKStatisticsQuery가 HKSampleQuery보다 나은 점은?
+            
+            @Choice(isCorrect: true) {
+                중복 소스 처리와 효율적인 집계를 자동으로 해준다
+                
+                @Justification(reaction: "정답!") {
+                    Apple Watch와 iPhone의 중복 데이터를 
+                    자동으로 처리해줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 많은 데이터를 가져올 수 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Statistics는 집계 결과만 반환하므로 개별 샘플은 얻을 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 데이터 타입에 사용할 수 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    Quantity 타입에 주로 사용됩니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,175 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Network 소개 & NWConnection") {
+        Apple의 Network 프레임워크와 핵심 타입인 NWConnection의 
+        기본 개념을 이해합니다.
+        
+        @Image(source: "network-intro.png", alt: "Network 프레임워크 개요")
+    }
+    
+    @Section(title: "Network 프레임워크란?") {
+        @ContentAndMedia {
+            Network 프레임워크는 iOS 12부터 도입된 
+            저수준 네트워크 API입니다.
+            
+            - **현대적 API**: URLSession보다 세밀한 제어 가능
+            - **프로토콜 지원**: TCP, UDP, QUIC, WebSocket 등
+            - **보안 내장**: TLS/DTLS 암호화 기본 지원
+            - **경로 인식**: Wi-Fi, 셀룰러 등 네트워크 경로 관리
+            
+            @Image(source: "network-architecture.png", alt: "Network 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                Network 프레임워크를 import합니다.
+                이 프레임워크는 iOS 12+, macOS 10.14+ 에서 사용 가능합니다.
+                
+                @Code(name: "NetworkImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                Network 프레임워크의 주요 구성요소를 살펴봅니다.
+                
+                - `NWConnection`: 단일 연결 관리
+                - `NWListener`: 들어오는 연결 수신 (서버)
+                - `NWBrowser`: 네트워크 서비스 탐색
+                - `NWPathMonitor`: 네트워크 상태 모니터링
+                
+                @Code(name: "NetworkOverview.swift", file: "01-02-overview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "NWEndpoint와 NWParameters") {
+        @ContentAndMedia {
+            연결을 생성하기 위해서는 목적지(Endpoint)와 
+            연결 설정(Parameters)이 필요합니다.
+            
+            NWEndpoint는 연결 대상을 나타내며:
+            - `.host(NWEndpoint.Host, NWEndpoint.Port)`: 호스트와 포트
+            - `.service(name:type:domain:)`: Bonjour 서비스
+            - `.url(URL)`: WebSocket URL
+        }
+        
+        @Steps {
+            @Step {
+                NWEndpoint.Host로 연결 대상을 지정합니다.
+                IP 주소나 도메인 이름을 사용할 수 있습니다.
+                
+                @Code(name: "Endpoint.swift", file: "01-03-endpoint.swift")
+            }
+            
+            @Step {
+                NWParameters로 연결의 프로토콜과 옵션을 설정합니다.
+                TCP와 UDP에 대한 기본 설정을 제공합니다.
+                
+                @Code(name: "Parameters.swift", file: "01-04-parameters.swift")
+            }
+            
+            @Step {
+                NWConnection을 생성하고 상태를 확인합니다.
+                연결은 비동기로 진행되며 상태 핸들러로 결과를 받습니다.
+                
+                @Code(name: "Connection.swift", file: "01-05-connection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "URLSession과의 비교") {
+        @ContentAndMedia {
+            URLSession은 HTTP 레벨의 고수준 API이고,
+            Network 프레임워크는 소켓 레벨의 저수준 API입니다.
+            
+            | 기능 | URLSession | Network.framework |
+            |-----|------------|-------------------|
+            | 주 용도 | HTTP 요청 | 소켓 통신 |
+            | 프로토콜 | HTTP/HTTPS | TCP/UDP/QUIC |
+            | 추상화 수준 | 높음 | 낮음 |
+            | P2P 통신 | 제한적 | 완벽 지원 |
+        }
+        
+        @Steps {
+            @Step {
+                URLSession은 REST API 호출에 적합합니다.
+                HTTP 메서드, 헤더, 바디를 추상화합니다.
+                
+                @Code(name: "URLSessionExample.swift", file: "01-06-urlsession.swift")
+            }
+            
+            @Step {
+                Network 프레임워크는 다음 상황에 적합합니다:
+                
+                - 커스텀 프로토콜 구현
+                - P2P 직접 통신
+                - 게임 서버 연결
+                - IoT 디바이스 통신
+                
+                @Code(name: "WhenToUseNetwork.swift", file: "01-07-when-to-use.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Network 프레임워크의 NWConnection은 어떤 역할을 하나요?
+            
+            @Choice(isCorrect: false) {
+                HTTP 요청을 보내고 응답을 받는다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    HTTP 요청은 URLSession이 담당합니다.
+                    NWConnection은 TCP/UDP 소켓 레벨의 연결을 관리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                단일 네트워크 연결의 생성과 데이터 송수신을 관리한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    NWConnection은 TCP나 UDP 연결 하나를 나타내며,
+                    연결 상태 관리와 데이터 송수신을 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서버로 동작하며 클라이언트 연결을 수신한다.
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    서버 역할은 NWListener가 담당합니다.
+                    NWConnection은 클라이언트 측 연결입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            URLSession 대신 Network 프레임워크를 사용해야 하는 경우는?
+            
+            @Choice(isCorrect: false) {
+                REST API를 호출할 때
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    REST API 호출은 URLSession이 더 적합합니다.
+                    HTTP 레벨의 추상화가 필요하기 때문입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                커스텀 프로토콜로 P2P 통신을 구현할 때
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    P2P 통신이나 커스텀 프로토콜은 
+                    저수준 소켓 제어가 필요하므로 Network 프레임워크가 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                JSON 데이터를 서버에서 가져올 때
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    JSON 데이터 통신은 일반적으로 HTTP를 사용하며,
+                    URLSession이 더 편리합니다.
+                }
+            }
+        }
+    }
+}

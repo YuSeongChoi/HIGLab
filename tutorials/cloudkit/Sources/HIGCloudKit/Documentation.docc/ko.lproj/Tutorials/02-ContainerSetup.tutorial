@@ -1,0 +1,116 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CKContainer 설정") {
+        Xcode 프로젝트에서 CloudKit 컨테이너를 설정하고,
+        iCloud 권한을 구성하는 방법을 배웁니다.
+    }
+    
+    @Section(title: "Xcode 프로젝트 설정") {
+        @ContentAndMedia {
+            CloudKit을 사용하려면 Xcode에서 iCloud capability를 활성화해야 합니다.
+            Apple Developer 계정이 필요합니다.
+        }
+        @Steps {
+            @Step {
+                프로젝트 설정에서 iCloud capability를 추가합니다.
+                Signing & Capabilities 탭에서 + Capability를 클릭합니다.
+                @Code(name: "Setup.md", file: "02-01-capability.md")
+            }
+            @Step {
+                CloudKit 컨테이너 ID를 생성합니다.
+                기본적으로 `iCloud.{bundle-id}` 형식을 사용합니다.
+                @Code(name: "Setup.md", file: "02-02-containerid.md")
+            }
+            @Step {
+                Entitlements 파일을 확인합니다.
+                자동으로 생성된 CloudKit 설정을 검토합니다.
+                @Code(name: "App.entitlements", file: "02-03-entitlements.plist")
+            }
+        }
+    }
+    
+    @Section(title: "CKContainer 초기화") {
+        @ContentAndMedia {
+            코드에서 CKContainer에 접근하고 데이터베이스 참조를 얻습니다.
+        }
+        @Steps {
+            @Step {
+                기본 컨테이너에 접근합니다.
+                @Code(name: "CloudKitManager.swift", file: "02-04-defaultcontainer.swift")
+            }
+            @Step {
+                특정 컨테이너 ID로 접근하는 방법입니다.
+                여러 앱이 같은 컨테이너를 공유할 때 사용합니다.
+                @Code(name: "CloudKitManager.swift", file: "02-05-customcontainer.swift")
+            }
+            @Step {
+                세 가지 데이터베이스에 대한 참조를 얻습니다.
+                @Code(name: "CloudKitManager.swift", file: "02-06-databases.swift")
+            }
+            @Step {
+                iCloud 계정 상태를 확인하는 메서드를 추가합니다.
+                @Code(name: "CloudKitManager.swift", file: "02-07-accountstatus.swift")
+            }
+        }
+    }
+    
+    @Section(title: "커스텀 Zone 생성") {
+        @ContentAndMedia {
+            Private Database에서 커스텀 Zone을 사용하면 더 세밀한 데이터 관리가 가능합니다.
+        }
+        @Steps {
+            @Step {
+                커스텀 CKRecordZone을 생성합니다.
+                @Code(name: "CloudKitManager.swift", file: "02-08-customzone.swift")
+            }
+            @Step {
+                Zone 생성을 서버에 반영합니다.
+                @Code(name: "CloudKitManager.swift", file: "02-09-createzone.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CloudKit 컨테이너 ID의 기본 형식은?
+            @Choice(isCorrect: true) {
+                iCloud.{bundle-identifier}
+                @Justification(reaction: "정답입니다!") {
+                    CloudKit 컨테이너는 기본적으로 iCloud.{bundle-id} 형식을 따릅니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                cloudkit.{bundle-identifier}
+                @Justification(reaction: "다시 생각해보세요.") {
+                    접두사는 cloudkit이 아닌 iCloud입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                {bundle-identifier}.iCloud
+                @Justification(reaction: "다시 생각해보세요.") {
+                    iCloud가 접두사로 와야 합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            커스텀 Zone을 사용할 수 있는 데이터베이스는?
+            @Choice(isCorrect: true) {
+                Private Database
+                @Justification(reaction: "정답입니다!") {
+                    커스텀 Zone은 Private Database에서만 생성할 수 있습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                Public Database
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Public Database는 기본 Zone만 사용합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                모든 데이터베이스
+                @Justification(reaction: "다시 생각해보세요.") {
+                    커스텀 Zone은 Private Database 전용입니다.
+                }
+            }
+        }
+    }
+}
