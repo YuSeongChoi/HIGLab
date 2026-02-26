@@ -46,7 +46,7 @@ enum CityOption: String, AppEnum, Codable, CaseIterable, Sendable {
             image: .init(systemName: "paintbrush.fill")
         ),
         .incheon: DisplayRepresentation(
-            title: "인천",  
+            title: "인천",
             subtitle: "인천국제공항",
             image: .init(systemName: "airplane")
         ),
