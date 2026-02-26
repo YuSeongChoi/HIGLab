@@ -31,9 +31,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 2-3h</span>
   <span>📂 System & Network</span>
 </div>
-<p class="subtitle">근거리 P2P 통신 및 데이터 공유 프레임워크</p>
+<p class="subtitle">Nearby P2P communication and data sharing framework</p>
 
-<div><span class="badge ios">iOS 7+</span><span class="badge new">Wi-Fi/BLE 자동 전환</span></div>
+<div><span class="badge ios">iOS 7+</span><span class="badge new">Wi-Fi/BLE auto switch</span></div>
 
 <h2>✨ MultipeerConnectivity?</h2>
 <p>MultipeerConnectivity is a framework for exchanging data between nearby devices using Wi-Fi, Bluetooth, and P2P Wi-Fi. Up to 8 devices can form an ad-hoc network without internet, reliably transferring text, files, and stream data. You can implement AirDrop-like functionality directly in your app.</p>
@@ -42,8 +42,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Peer-to-Peer Communication · Auto Device Discovery · Wi-Fi/BLE Auto Switch · File Transfer · Stream Data · Up to 8 Connections · Encrypted Communication
 </div>
 
-<h2>📡 1. MCSession 초기화</h2>
-<p>Peer-to-Peer 세션을 생성하고 관리.</p>
+<h2>📡 1. MCSession Initialization</h2>
+<p>Create and manage Peer-to-Peer sessions.</p>
 
 <div class="code-block">
 <div class="code-header">MultipeerManager.swift — Session Initialization</div>
@@ -65,10 +65,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> isBrowsing = <span class="kw">false</span>
 
     <span class="kw">override</span> <span class="kw">init</span>() {
-        <span class="comment">// Peer ID 생성 (기기 이름 사용)</span>
+        <span class="comment">// Create Peer ID (using device name)</span>
         myPeerID = <span class="type">MCPeerID</span>(displayName: <span class="type">UIDevice</span>.current.name)
 
-        <span class="comment">// 세션 생성</span>
+        <span class="comment">// Session 생성</span>
         session = <span class="type">MCSession</span>(
             peer: myPeerID,
             securityIdentity: <span class="kw">nil</span>,
@@ -82,7 +82,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"📱 Peer ID: \(myPeerID.displayName)"</span>)
     }
 
-    <span class="comment">// Advertiser 시작 (다른 기기가 나를 발견할 수 있게)</span>
+    <span class="comment">// Advertiser 시작 (other 기기가 나를 발견할 수 있게)</span>
     <span class="kw">func</span> startAdvertising() {
         advertiser = <span class="type">MCNearbyServiceAdvertiser</span>(
             peer: myPeerID,
@@ -104,7 +104,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"⏹️ Advertising 중지"</span>)
     }
 
-    <span class="comment">// Browser 시작 (다른 기기 검색)</span>
+    <span class="comment">// Start Browser (search for devices)</span>
     <span class="kw">func</span> startBrowsing() {
         browser = <span class="type">MCNearbyServiceBrowser</span>(peer: myPeerID, serviceType: serviceType)
         browser?.delegate = <span class="kw">self</span>
@@ -136,7 +136,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"✉️ 초대 전송: \(peerID.displayName)"</span>)
     }
 
-    <span class="comment">// 연결 해제</span>
+    <span class="comment">// Connect 해제</span>
     <span class="kw">func</span> disconnect() {
         session.disconnect()
         connectedPeers.removeAll()
@@ -145,7 +145,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>💬 2. 메시지 전송</h2>
+<h2>💬 2. Sending Messages</h2>
 <p>연결된 Peer들에게 데이터를 전송.</p>
 
 <div class="code-block">
@@ -163,7 +163,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">guard</span> <span class="kw">let</span> data = message.data(using: .utf8) <span class="kw">else</span> { <span class="kw">return</span> }
 
         <span class="kw">do</span> {
-            <span class="comment">// 모든 연결된 Peer에게 전송</span>
+            <span class="comment">// all 연결된 Peer에게 전송</span>
             <span class="kw">try</span> session.send(
                 data,
                 toPeers: connectedPeers,
@@ -172,7 +172,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             print(<span class="str">"📤 메시지 전송: \(message)"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 전송 실패: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ Send failed: \(error.localizedDescription)"</span>)
         }
     }
 
@@ -184,11 +184,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">try</span> session.send(data, toPeers: [peer], with: .reliable)
             print(<span class="str">"📤 메시지 전송 (\(peer.displayName)): \(message)"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 전송 실패: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ Send failed: \(error.localizedDescription)"</span>)
         }
     }
 
-    <span class="comment">// 파일 전송</span>
+    <span class="comment">// File 전송</span>
     <span class="kw">func</span> sendFile(at url: <span class="type">URL</span>, to peer: <span class="type">MCPeerID</span>, withName name: <span class="type">String</span>) {
         session.sendResource(
             at: url,
@@ -196,9 +196,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             toPeer: peer,
             withCompletionHandler: { error <span class="kw">in</span>
                 <span class="kw">if</span> <span class="kw">let</span> error = error {
-                    print(<span class="str">"❌ 파일 전송 실패: \(error.localizedDescription)"</span>)
+                    print(<span class="str">"❌ 파일 Send failed: \(error.localizedDescription)"</span>)
                 } <span class="kw">else</span> {
-                    print(<span class="str">"✅ 파일 전송 완료: \(name)"</span>)
+                    print(<span class="str">"✅ 파일 Send completed: \(name)"</span>)
                 }
             }
         )
@@ -206,20 +206,20 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"📁 파일 전송 시작: \(name)"</span>)
     }
 
-    <span class="comment">// 이미지 전송</span>
+    <span class="comment">// Image 전송</span>
     <span class="kw">func</span> sendImage(<span class="kw">_</span> image: <span class="type">UIImage</span>) {
         <span class="kw">guard</span> !connectedPeers.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
         <span class="kw">guard</span> <span class="kw">let</span> imageData = image.jpegData(compressionQuality: <span class="str">0.8</span>) <span class="kw">else</span> { <span class="kw">return</span> }
 
         <span class="kw">do</span> {
             <span class="kw">try</span> session.send(imageData, toPeers: connectedPeers, with: .reliable)
-            print(<span class="str">"🖼️ 이미지 전송 완료"</span>)
+            print(<span class="str">"🖼️ 이미지 Send completed"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 이미지 전송 실패: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ 이미지 Send failed: \(error.localizedDescription)"</span>)
         }
     }
 
-    <span class="comment">// JSON 데이터 전송</span>
+    <span class="comment">// JSON Send data</span>
     <span class="kw">func</span> sendJSON<<span class="type">T</span>: <span class="type">Encodable</span>>(<span class="kw">_</span> object: <span class="type">T</span>) {
         <span class="kw">guard</span> !connectedPeers.isEmpty <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -228,33 +228,33 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> data = <span class="kw">try</span> encoder.encode(object)
 
             <span class="kw">try</span> session.send(data, toPeers: connectedPeers, with: .reliable)
-            print(<span class="str">"📦 JSON 전송 완료"</span>)
+            print(<span class="str">"📦 JSON Send completed"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ JSON 전송 실패: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ JSON Send failed: \(error.localizedDescription)"</span>)
         }
     }
 }</pre>
 </div>
 
-<h2>📥 3. Session 델리게이트</h2>
-<p>연결 상태 변화와 데이터 수신 handling.</p>
+<h2>📥 3. Session Delegate</h2>
+<p>연결 state change와 Receive data handling.</p>
 
 <div class="code-block">
 <div class="code-header">MultipeerManager+SessionDelegate.swift — Session Delegate</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">MultipeerConnectivity</span>
 
 <span class="kw">extension</span> <span class="type">MultipeerManager</span>: <span class="type">MCSessionDelegate</span> {
-    <span class="comment">// Peer 상태 변경</span>
+    <span class="comment">// Peer change state</span>
     <span class="kw">func</span> session(<span class="kw">_</span> session: <span class="type">MCSession</span>, peer peerID: <span class="type">MCPeerID</span>, didChange state: <span class="type">MCSessionState</span>) {
         <span class="kw">switch</span> state {
         <span class="kw">case</span> .connected:
-            print(<span class="str">"✅ 연결됨: \(peerID.displayName)"</span>)
+            print(<span class="str">"✅ Connected: \(peerID.displayName)"</span>)
             <span class="kw">if</span> !connectedPeers.contains(peerID) {
                 connectedPeers.append(peerID)
             }
 
         <span class="kw">case</span> .connecting:
-            print(<span class="str">"🔗 연결 중: \(peerID.displayName)"</span>)
+            print(<span class="str">"🔗 Connecting: \(peerID.displayName)"</span>)
 
         <span class="kw">case</span> .notConnected:
             print(<span class="str">"❌ 연결 해제: \(peerID.displayName)"</span>)
@@ -265,9 +265,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 데이터 수신</span>
+    <span class="comment">// Receive data</span>
     <span class="kw">func</span> session(<span class="kw">_</span> session: <span class="type">MCSession</span>, didReceive data: <span class="type">Data</span>, fromPeer peerID: <span class="type">MCPeerID</span>) {
-        print(<span class="str">"📥 데이터 수신 from \(peerID.displayName): \(data.count) bytes"</span>)
+        print(<span class="str">"📥 Receive data from \(peerID.displayName): \(data.count) bytes"</span>)
 
         <span class="comment">// 텍스트 메시지 시도</span>
         <span class="kw">if</span> <span class="kw">let</span> message = <span class="type">String</span>(data: data, encoding: .utf8) {
@@ -275,7 +275,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             receivedMessages.append(formattedMessage)
             print(<span class="str">"  💬 메시지: \(message)"</span>)
         }
-        <span class="comment">// 이미지 시도</span>
+        <span class="comment">// Image 시도</span>
         <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> image = <span class="type">UIImage</span>(data: data) {
             print(<span class="str">"  🖼️ 이미지 수신: \(image.size)"</span>)
             receivedMessages.append(<span class="str">"\(peerID.displayName): [이미지]"</span>)
@@ -287,7 +287,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 파일 수신 시작</span>
+    <span class="comment">// File 수신 시작</span>
     <span class="kw">func</span> session(
         <span class="kw">_</span> session: <span class="type">MCSession</span>,
         didStartReceivingResourceWithName resourceName: <span class="type">String</span>,
@@ -298,7 +298,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"  진행률: \(progress.fractionCompleted * 100)%"</span>)
     }
 
-    <span class="comment">// 파일 수신 완료</span>
+    <span class="comment">// File 수신 완료</span>
     <span class="kw">func</span> session(
         <span class="kw">_</span> session: <span class="type">MCSession</span>,
         didFinishReceivingResourceWithName resourceName: <span class="type">String</span>,
@@ -318,21 +318,21 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         receivedMessages.append(<span class="str">"\(peerID.displayName): [파일] \(resourceName)"</span>)
 
-        <span class="comment">// 파일을 Documents 폴더로 복사</span>
+        <span class="comment">// File을 Documents 폴더로 복사</span>
         <span class="kw">do</span> {
             <span class="kw">let</span> documentsURL = <span class="type">FileManager</span>.default
                 .urls(for: .documentDirectory, in: .userDomainMask)[<span class="str">0</span>]
             <span class="kw">let</span> destinationURL = documentsURL.appendingPathComponent(resourceName)
 
-            <span class="comment">// 기존 파일 삭제</span>
+            <span class="comment">// existing Delete file</span>
             <span class="kw">if</span> <span class="type">FileManager</span>.default.fileExists(atPath: destinationURL.path) {
                 <span class="kw">try</span> <span class="type">FileManager</span>.default.removeItem(at: destinationURL)
             }
 
             <span class="kw">try</span> <span class="type">FileManager</span>.default.copyItem(at: localURL, to: destinationURL)
-            print(<span class="str">"  📁 파일 저장: \(destinationURL.path)"</span>)
+            print(<span class="str">"  📁 File saved: \(destinationURL.path)"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 파일 저장 실패: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ 파일 Save failed: \(error.localizedDescription)"</span>)
         }
     }
 
@@ -344,13 +344,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         fromPeer peerID: <span class="type">MCPeerID</span>
     ) {
         print(<span class="str">"📡 스트림 수신: \(streamName) from \(peerID.displayName)"</span>)
-        <span class="comment">// 스트림 처리 로직 구현</span>
+        <span class="comment">// Implement stream handling logic</span>
     }
 }</pre>
 </div>
 
 <h2>🔍 4. Browser & Advertiser Delegates</h2>
-<p>Peer 검색과 초대 수락 handling.</p>
+<p>Handle peer discovery and invitation acceptance.</p>
 
 <div class="code-block">
 <div class="code-header">MultipeerManager+ServiceDelegate.swift — Service Delegate</div>
@@ -383,7 +383,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
     <span class="comment">// Browser 에러</span>
     <span class="kw">func</span> browser(<span class="kw">_</span> browser: <span class="type">MCNearbyServiceBrowser</span>, didNotStartBrowsingForPeers error: <span class="type">Error</span>) {
-        print(<span class="str">"❌ Browsing 시작 실패: \(error.localizedDescription)"</span>)
+        print(<span class="str">"❌ Browsing Start failed: \(error.localizedDescription)"</span>)
     }
 }
 
@@ -401,13 +401,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// 자동 수락</span>
         invitationHandler(<span class="kw">true</span>, session)
 
-        <span class="comment">// 또는 사용자에게 확인 (실제 앱에서는 UI로 처리)</span>
+        <span class="comment">// or Ask user for confirmation (In a real app UI로 처리)</span>
         <span class="comment">// invitationHandler(false, nil) // 거절</span>
     }
 
     <span class="comment">// Advertiser 에러</span>
     <span class="kw">func</span> advertiser(<span class="kw">_</span> advertiser: <span class="type">MCNearbyServiceAdvertiser</span>, didNotStartAdvertisingPeer error: <span class="type">Error</span>) {
-        print(<span class="str">"❌ Advertising 시작 실패: \(error.localizedDescription)"</span>)
+        print(<span class="str">"❌ Advertising Start failed: \(error.localizedDescription)"</span>)
     }
 }</pre>
 </div>
@@ -427,10 +427,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">NavigationStack</span> {
             <span class="type">VStack</span>(spacing: <span class="str">0</span>) {
-                <span class="comment">// 연결 상태</span>
+                <span class="comment">// Connect 상태</span>
                 connectionStatus
 
-                <span class="comment">// 메시지 목록</span>
+                <span class="comment">// Message 목록</span>
                 messageList
 
                 <span class="comment">// 입력 창</span>
@@ -460,7 +460,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 연결 상태 헤더</span>
+    <span class="comment">// Connect 상태 헤더</span>
     <span class="kw">private</span> <span class="kw">var</span> connectionStatus: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">HStack</span> {
             <span class="type">Circle</span>()
@@ -472,7 +472,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             } <span class="kw">else</span> {
-                <span class="type">Text</span>(<span class="str">"\(multipeerManager.connectedPeers.count)개 기기 연결됨"</span>)
+                <span class="type">Text</span>(<span class="str">"\(multipeerManager.connectedPeers.count)개 기기 Connected"</span>)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -483,7 +483,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         .background(<span class="type">Color</span>(.systemGroupedBackground))
     }
 
-    <span class="comment">// 메시지 목록</span>
+    <span class="comment">// Message 목록</span>
     <span class="kw">private</span> <span class="kw">var</span> messageList: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">ScrollView</span> {
             <span class="type">LazyVStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
@@ -498,7 +498,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 메시지 입력</span>
+    <span class="comment">// Message 입력</span>
     <span class="kw">private</span> <span class="kw">var</span> messageInput: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">HStack</span> {
             <span class="type">TextField</span>(<span class="str">"메시지 입력..."</span>, text: $messageText)
@@ -540,7 +540,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
                 <span class="type">Section</span>(<span class="str">"근처 기기"</span>) {
                     <span class="kw">if</span> multipeerManager.availablePeers.isEmpty {
-                        <span class="type">Text</span>(<span class="str">"검색된 기기 없음"</span>)
+                        <span class="type">Text</span>(<span class="str">"No devices found"</span>)
                             .foregroundStyle(.secondary)
                     } <span class="kw">else</span> {
                         <span class="type">ForEach</span>(multipeerManager.availablePeers, id: \.self) { peer <span class="kw">in</span>
@@ -562,7 +562,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .topBarTrailing) {
-                    <span class="type">Button</span>(<span class="str">"닫기"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Close"</span>) {
                         showingPeerList = <span class="kw">false</span>
                     }
                 }
@@ -601,7 +601,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/multipeerconnectivity">MultipeerConnectivity 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/multipeerconnectivity">MultipeerConnectivity Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2013/708/">WWDC: MultipeerConnectivity Session</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/multipeer-connectivity">HIG: Multipeer Connectivity</a></li>
 </ul>

@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> NDEF Tag Reading · Tag Writing (iOS 13+) · URL/Text Parsing · Multi-Record Support · Background Tag Reading · ISO 7816/ISO 15693 Support
 </div>
 
-<h2>📖 1. NDEF 태그 읽기</h2>
+<h2>📖 1. Reading NDEF Tags</h2>
 <p>Use NFCNDEFReaderSession to scan NFC tags and read NDEF messages.</p>
 
 <div class="code-block">
@@ -62,11 +62,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="type">NFCNDEFReaderSession</span>.readingAvailable
     }
 
-    <span class="comment">// 태그 읽기 시작</span>
+    <span class="comment">// Read tag 시작</span>
     <span class="kw">func</span> startScanning() {
         <span class="kw">guard</span> isNFCAvailable <span class="kw">else</span> {
             lastError = <span class="str">"이 기기는 NFC를 지원하지 않습니다"</span>
-            print(<span class="str">"❌ NFC 미지원"</span>)
+            print(<span class="str">"❌ NFC Not supported"</span>)
             <span class="kw">return</span>
         }
 
@@ -80,21 +80,21 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             invalidateAfterFirstRead: <span class="kw">false</span>
         )
 
-        <span class="comment">// 사용자에게 표시될 메시지</span>
+        <span class="comment">// User에게 표시될 메시지</span>
         session?.alertMessage = <span class="str">"NFC 태그를 iPhone 상단에 가까이 대주세요"</span>
 
-        <span class="comment">// 스캔 시작</span>
+        <span class="comment">// Start scanning</span>
         session?.begin()
         isScanning = <span class="kw">true</span>
 
-        print(<span class="str">"🔍 NFC 스캔 시작"</span>)
+        print(<span class="str">"🔍 NFC Start scanning"</span>)
     }
 
-    <span class="comment">// 스캔 중지</span>
+    <span class="comment">// Stop scanning</span>
     <span class="kw">func</span> stopScanning() {
         session?.invalidate()
         isScanning = <span class="kw">false</span>
-        print(<span class="str">"⏹️ NFC 스캔 중지"</span>)
+        print(<span class="str">"⏹️ NFC Stop scanning"</span>)
     }
 
     <span class="comment">// NDEF 레코드 파싱</span>
@@ -141,8 +141,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📡 2. NDEF Reader 델리게이트</h2>
-<p>태그 발견 및 메시지 읽기 handling.</p>
+<h2>📡 2. NDEF Reader Delegate</h2>
+<p>태그 발견 및 Read message handling.</p>
 
 <div class="code-block">
 <div class="code-header">NFCReaderManager+Delegate.swift — Reader Delegate</div>
@@ -153,10 +153,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> readerSession(<span class="kw">_</span> session: <span class="type">NFCNDEFReaderSession</span>, didDetectNDEFs messages: [<span class="type">NFCNDEFMessage</span>]) {
         print(<span class="str">"📱 태그 발견! 메시지 개수: \(messages.count)"</span>)
 
-        <span class="comment">// 메시지 저장</span>
+        <span class="comment">// Message 저장</span>
         detectedMessages.append(contentsOf: messages)
 
-        <span class="comment">// 각 메시지 처리</span>
+        <span class="comment">// each 메시지 처리</span>
         <span class="kw">for</span> (index, message) <span class="kw">in</span> messages.enumerated() {
             print(<span class="str">"  메시지 \(index + 1): \(message.records.count)개 레코드"</span>)
 
@@ -175,7 +175,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
         }
 
-        <span class="comment">// 성공 메시지</span>
+        <span class="comment">// Success 메시지</span>
         session.alertMessage = <span class="str">"✅ \(messages.count)개 메시지를 읽었습니다"</span>
     }
 
@@ -192,16 +192,16 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// 태그 연결</span>
         session.connect(to: tag) { error <span class="kw">in</span>
             <span class="kw">if</span> <span class="kw">let</span> error = error {
-                session.invalidate(errorMessage: <span class="str">"❌ 태그 연결 실패: \(error.localizedDescription)"</span>)
+                session.invalidate(errorMessage: <span class="str">"❌ 태그 Connection failed: \(error.localizedDescription)"</span>)
                 <span class="kw">return</span>
             }
 
-            print(<span class="str">"✅ 태그 연결 성공"</span>)
+            print(<span class="str">"✅ 태그 Connection successful"</span>)
 
-            <span class="comment">// NDEF 메시지 읽기</span>
+            <span class="comment">// NDEF Read message</span>
             tag.queryNDEFStatus { status, capacity, error <span class="kw">in</span>
                 <span class="kw">if</span> <span class="kw">let</span> error = error {
-                    session.invalidate(errorMessage: <span class="str">"❌ 상태 확인 실패: \(error.localizedDescription)"</span>)
+                    session.invalidate(errorMessage: <span class="str">"❌ check state 실패: \(error.localizedDescription)"</span>)
                     <span class="kw">return</span>
                 }
 
@@ -224,7 +224,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// NDEF 메시지 읽기</span>
+    <span class="comment">// NDEF Read message</span>
     <span class="kw">private</span> <span class="kw">func</span> readNDEFMessage(from tag: <span class="type">NFCNDEFTag</span>, session: <span class="type">NFCNDEFReaderSession</span>) {
         tag.readNDEF { message, error <span class="kw">in</span>
             <span class="kw">if</span> <span class="kw">let</span> error = error {
@@ -235,14 +235,14 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">if</span> <span class="kw">let</span> message = message {
                 <span class="kw">self</span>.detectedMessages.append(message)
                 session.alertMessage = <span class="str">"✅ \(message.records.count)개 레코드를 읽었습니다"</span>
-                print(<span class="str">"📖 NDEF 메시지 읽기 성공"</span>)
+                print(<span class="str">"📖 NDEF Read message 성공"</span>)
             }
 
             session.invalidate()
         }
     }
 
-    <span class="comment">// 세션 무효화</span>
+    <span class="comment">// Session 무효화</span>
     <span class="kw">func</span> readerSession(<span class="kw">_</span> session: <span class="type">NFCNDEFReaderSession</span>, didInvalidateWithError error: <span class="type">Error</span>) {
         isScanning = <span class="kw">false</span>
 
@@ -254,13 +254,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 print(<span class="str">"⏱️ 세션 시간 초과"</span>)
                 lastError = <span class="str">"스캔 시간이 초과되었습니다"</span>
             <span class="kw">case</span> .readerSessionInvalidationErrorFirstNDEFTagRead:
-                print(<span class="str">"✅ 첫 번째 태그 읽기 완료"</span>)
+                print(<span class="str">"✅ 첫 번째 Read tag 완료"</span>)
             <span class="kw">default</span>:
-                print(<span class="str">"❌ NFC 에러: \(nfcError.localizedDescription)"</span>)
+                print(<span class="str">"❌ NFC Error: \(nfcError.localizedDescription)"</span>)
                 lastError = nfcError.localizedDescription
             }
         } <span class="kw">else</span> {
-            print(<span class="str">"❌ 에러: \(error.localizedDescription)"</span>)
+            print(<span class="str">"❌ Error: \(error.localizedDescription)"</span>)
             lastError = error.localizedDescription
         }
     }
@@ -285,7 +285,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>✍️ 3. NFC 태그 쓰기</h2>
+<h2>✍️ 3. Writing NFC Tags</h2>
 <p>NDEF 메시지를 태그에 씁니다 (iOS 13+).</p>
 
 <div class="code-block">
@@ -301,7 +301,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="comment">// URL을 태그에 쓰기</span>
     <span class="kw">func</span> writeURL(<span class="kw">_</span> url: <span class="type">URL</span>) {
         <span class="kw">guard</span> <span class="type">NFCNDEFReaderSession</span>.readingAvailable <span class="kw">else</span> {
-            print(<span class="str">"❌ NFC 미지원"</span>)
+            print(<span class="str">"❌ NFC Not supported"</span>)
             <span class="kw">return</span>
         }
 
@@ -313,9 +313,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         messageToWrite = <span class="type">NFCNDEFMessage</span>(records: [payload])
 
-        <span class="comment">// 세션 시작</span>
+        <span class="comment">// Session 시작</span>
         session = <span class="type">NFCNDEFReaderSession</span>(delegate: <span class="kw">self</span>, queue: <span class="kw">nil</span>, invalidateAfterFirstRead: <span class="kw">false</span>)
-        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC 태그를 가까이 대주세요"</span>
+        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC Hold tag near 대주세요"</span>
         session?.begin()
 
         print(<span class="str">"✍️ URL 쓰기 시작: \(url.absoluteString)"</span>)
@@ -334,7 +334,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         messageToWrite = <span class="type">NFCNDEFMessage</span>(records: [payload])
 
         session = <span class="type">NFCNDEFReaderSession</span>(delegate: <span class="kw">self</span>, queue: <span class="kw">nil</span>, invalidateAfterFirstRead: <span class="kw">false</span>)
-        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC 태그를 가까이 대주세요"</span>
+        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC Hold tag near 대주세요"</span>
         session?.begin()
 
         print(<span class="str">"✍️ 텍스트 쓰기 시작: \(text)"</span>)
@@ -359,7 +359,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         messageToWrite = <span class="type">NFCNDEFMessage</span>(records: records)
 
         session = <span class="type">NFCNDEFReaderSession</span>(delegate: <span class="kw">self</span>, queue: <span class="kw">nil</span>, invalidateAfterFirstRead: <span class="kw">false</span>)
-        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC 태그를 가까이 대주세요"</span>
+        session?.alertMessage = <span class="str">"쓰기를 원하는 NFC Hold tag near 대주세요"</span>
         session?.begin()
 
         print(<span class="str">"✍️ 다중 레코드 쓰기 시작"</span>)
@@ -396,14 +396,14 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         session.connect(to: tag) { error <span class="kw">in</span>
             <span class="kw">if</span> <span class="kw">let</span> error = error {
-                session.invalidate(errorMessage: <span class="str">"❌ 연결 실패: \(error.localizedDescription)"</span>)
+                session.invalidate(errorMessage: <span class="str">"❌ Connection failed: \(error.localizedDescription)"</span>)
                 <span class="kw">return</span>
             }
 
-            <span class="comment">// 태그 상태 확인</span>
+            <span class="comment">// 태그 check state</span>
             tag.queryNDEFStatus { status, capacity, error <span class="kw">in</span>
                 <span class="kw">if</span> <span class="kw">let</span> error = error {
-                    session.invalidate(errorMessage: <span class="str">"❌ 상태 확인 실패: \(error.localizedDescription)"</span>)
+                    session.invalidate(errorMessage: <span class="str">"❌ check state 실패: \(error.localizedDescription)"</span>)
                     <span class="kw">return</span>
                 }
 
@@ -412,7 +412,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     <span class="kw">return</span>
                 }
 
-                <span class="comment">// 메시지 쓰기</span>
+                <span class="comment">// Message 쓰기</span>
                 <span class="kw">guard</span> <span class="kw">let</span> message = <span class="kw">self</span>.messageToWrite <span class="kw">else</span> {
                     session.invalidate(errorMessage: <span class="str">"❌ 쓸 메시지가 없습니다"</span>)
                     <span class="kw">return</span>
@@ -424,7 +424,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     } <span class="kw">else</span> {
                         session.alertMessage = <span class="str">"✅ 쓰기 성공!"</span>
                         <span class="kw">self</span>.writeSuccess = <span class="kw">true</span>
-                        print(<span class="str">"✅ NFC 태그 쓰기 완료"</span>)
+                        print(<span class="str">"✅ NFC Write tag 완료"</span>)
                         session.invalidate()
                     }
                 }
@@ -462,11 +462,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="type">NavigationStack</span> {
             <span class="type">Form</span> {
                 <span class="comment">// 읽기 섹션</span>
-                <span class="type">Section</span>(<span class="str">"태그 읽기"</span>) {
+                <span class="type">Section</span>(<span class="str">"Read tag"</span>) {
                     <span class="type">Button</span> {
                         readerManager.startScanning()
                     } label: {
-                        <span class="type">Label</span>(<span class="str">"NFC 태그 스캔"</span>, systemImage: <span class="str">"wave.3.right"</span>)
+                        <span class="type">Label</span>(<span class="str">"NFC Scan tag"</span>, systemImage: <span class="str">"wave.3.right"</span>)
                     }
                     .disabled(!readerManager.isNFCAvailable || readerManager.isScanning)
 
@@ -499,7 +499,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 }
 
                 <span class="comment">// 쓰기 섹션</span>
-                <span class="type">Section</span>(<span class="str">"태그 쓰기"</span>) {
+                <span class="type">Section</span>(<span class="str">"Write tag"</span>) {
                     <span class="type">TextField</span>(<span class="str">"URL"</span>, text: $urlText)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
@@ -523,13 +523,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     .disabled(!readerManager.isNFCAvailable)
                 }
 
-                <span class="comment">// 상태</span>
+                <span class="comment">// Status</span>
                 <span class="type">Section</span> {
                     <span class="type">Text</span>(<span class="str">"NFC 지원: \(readerManager.isNFCAvailable ? "✅" : "❌")"</span>)
                         .foregroundStyle(.secondary)
 
                     <span class="kw">if</span> <span class="kw">let</span> error = readerManager.lastError {
-                        <span class="type">Text</span>(<span class="str">"에러: \(error)"</span>)
+                        <span class="type">Text</span>(<span class="str">"Error: \(error)"</span>)
                             .foregroundStyle(.red)
                             .font(.caption)
                     }
@@ -564,7 +564,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/corenfc">Core NFC 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/corenfc">Core NFC Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2019/715/">WWDC: Core NFC 세션</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/nfc">HIG: NFC</a></li>
 </ul>

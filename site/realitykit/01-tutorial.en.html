@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 3-4h</span>
   <span>📂 Graphics & Media</span>
 </div>
-<p class="subtitle">사실적인 3D 렌더링과 AR 경험</p>
+<p class="subtitle">Realistic 3D rendering and AR experiences</p>
 
 <div><span class="badge ios">iOS 13+</span><span class="badge new">visionOS 최적화</span></div>
 
@@ -65,17 +65,17 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="comment">// 엔티티 생성</span>
             <span class="kw">let</span> entity = <span class="type">ModelEntity</span>(mesh: mesh, materials: [material])
 
-            <span class="comment">// 위치 설정</span>
+            <span class="comment">// Location 설정</span>
             entity.position = [<span class="str">0</span>, <span class="str">0</span>, -<span class="str">0.5</span>]
 
-            <span class="comment">// 씬에 추가</span>
+            <span class="comment">// 씬 added to</span>
             content.add(entity)
         }
     }
 }</pre>
 </div>
 
-<h2>🎨 2. 머티리얼과 텍스처</h2>
+<h2>🎨 2. Materials & Textures</h2>
 <p>다양한 머티리얼로 사실적인 표면을 만듭.</p>
 
 <div class="code-block">
@@ -87,7 +87,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> createMetalMaterial() -> <span class="type">PhysicallyBasedMaterial</span> {
         <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
 
-        <span class="comment">// 기본 색상</span>
+        <span class="comment">// Default 색상</span>
         material.baseColor = .<span class="kw">init</span>(tint: .gray)
 
         <span class="comment">// 금속성 (0.0 = 비금속, 1.0 = 완전 금속)</span>
@@ -110,7 +110,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> createTexturedMaterial() <span class="kw">async</span> <span class="kw">throws</span> -> <span class="type">PhysicallyBasedMaterial</span> {
         <span class="kw">var</span> material = <span class="type">PhysicallyBasedMaterial</span>()
 
-        <span class="comment">// 이미지에서 텍스처 로드</span>
+        <span class="comment">// Image에서 텍스처 로드</span>
         <span class="kw">if</span> <span class="kw">let</span> texture = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">TextureResource</span>(named: <span class="str">"wood.jpg"</span>) {
             material.baseColor = .<span class="kw">init</span>(texture: .<span class="kw">init</span>(texture))
         }
@@ -139,7 +139,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎬 3. 애니메이션</h2>
+<h2>🎬 3. Animations</h2>
 <p>엔티티에 움직임 is added.</p>
 
 <div class="code-block">
@@ -232,7 +232,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>⚙️ 4. 물리 엔진</h2>
+<h2>⚙️ 4. Physics Engine</h2>
 <p>현실적인 물리 시뮬레이션 is added.</p>
 
 <div class="code-block">
@@ -302,7 +302,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🔊 5. 공간 오디오</h2>
+<h2>🔊 5. Spatial Audio</h2>
 <p>3D 공간에서 사실적인 오디오를 재생.</p>
 
 <div class="code-block">
@@ -312,9 +312,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">class</span> <span class="type">SpatialAudioManager</span> {
     <span class="comment">// 공간 오디오 추가</span>
     <span class="kw">func</span> addSpatialAudio(to entity: <span class="type">Entity</span>, audioFile: <span class="type">String</span>) <span class="kw">async</span> {
-        <span class="comment">// 오디오 리소스 로드</span>
+        <span class="comment">// Audio 리소스 로드</span>
         <span class="kw">guard</span> <span class="kw">let</span> audioResource = <span class="kw">try</span>? <span class="kw">await</span> <span class="type">AudioFileResource</span>(named: audioFile) <span class="kw">else</span> {
-            print(<span class="str">"오디오 로드 실패"</span>)
+            print(<span class="str">"오디오 Load failed"</span>)
             <span class="kw">return</span>
         }
 
@@ -390,14 +390,14 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     }
 
     <span class="kw">func</span> updateShape(<span class="kw">_</span> content: <span class="type">RealityViewContent</span>, shape: <span class="type">Shape</span>) {
-        <span class="comment">// 기존 엔티티 제거</span>
+        <span class="comment">// existing 엔티티 제거</span>
         content.entities.forEach { entity <span class="kw">in</span>
             <span class="kw">if</span> entity <span class="kw">is</span> <span class="type">ModelEntity</span> {
                 content.remove(entity)
             }
         }
 
-        <span class="comment">// 새 도형 추가</span>
+        <span class="comment">// New 도형 추가</span>
         <span class="kw">let</span> entity = createShape(shape)
         content.add(entity)
     }
@@ -443,9 +443,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>🎯 Practical Usage</h2>
 
 <ul>
-<li><strong>제품 시각화:</strong> 3D 제품 뷰어</li>
+<li><strong>제품 시each화:</strong> 3D 제품 뷰어</li>
 <li><strong>AR Games:</strong> 물리 기반 게임 메커닉</li>
-<li><strong>건축 시각화:</strong> 건물 내부 탐색</li>
+<li><strong>건축 시each화:</strong> 건물 내부 탐색</li>
 <li><strong>교육:</strong> 3D 모델로 학습</li>
 <li><strong>visionOS 앱:</strong> 공간 컴퓨팅 경험</li>
 </ul>
@@ -453,7 +453,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/realitykit">RealityKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/realitykit">RealityKit Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2023/10080/">WWDC: Build spatial experiences with RealityKit</a></li>
 <li><a href="https://developer.apple.com/augmented-reality/reality-composer/">Reality Composer</a></li>
 </ul>

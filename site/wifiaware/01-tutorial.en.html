@@ -47,9 +47,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <div class="code-block">
 <div class="code-header">Info.plist — Add Permission Descriptions</div>
-<pre class="code-body"><span class="comment">// Info.plist에 추가</span>
+<pre class="code-body"><span class="comment">// Info.plist added to</span>
 <span class="type">NSLocalNetworkUsageDescription</span>
-<span class="str">"근처 기기와 Wi-Fi를 통해 연결하고 데이터를 공유합니다"</span>
+<span class="str">"근처 기기와 Wi-Fi를 through 연결하고 데이터를 공유합니다"</span>
 
 <span class="comment">// Bonjour 서비스 추가 (옵션)</span>
 <span class="type">NSBonjourServices</span>
@@ -60,7 +60,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>⚙️ Capabilities:</strong> In Xcode Project Setup, go to "Signing & Capabilities" tab and add the "Nearby Interaction" capability.
 </div>
 
-<h2>🎯 2. Wi-Fi Aware 세션 시작</h2>
+<h2>🎯 2. Starting Wi-Fi Aware Session</h2>
 <p>Use NIWiFiAwareSession to start a Wi-Fi Aware session and discover nearby devices.</p>
 
 <div class="code-block">
@@ -75,23 +75,23 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> discoveredPeers: [<span class="type">NIWiFiAwarePeerToken</span>] = []
     <span class="kw">var</span> isRunning = <span class="kw">false</span>
 
-    <span class="comment">// 세션 시작</span>
+    <span class="comment">// Session 시작</span>
     <span class="kw">func</span> startSession() {
         <span class="comment">// Wi-Fi Aware 세션 생성</span>
         session = <span class="type">NIWiFiAwareSession</span>()
         session?.delegate = <span class="kw">self</span>
 
-        <span class="comment">// 세션 시작 및 Discovery Token 생성</span>
+        <span class="comment">// Session 시작 및 Discovery Token 생성</span>
         <span class="kw">do</span> {
             discoveryToken = <span class="kw">try</span> session?.createDiscoveryToken()
             isRunning = <span class="kw">true</span>
-            print(<span class="str">"Wi-Fi Aware 세션 시작됨"</span>)
+            print(<span class="str">"Wi-Fi Aware 세션 Started"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"세션 시작 실패: \(error)"</span>)
+            print(<span class="str">"세션 Start failed: \(error)"</span>)
         }
     }
 
-    <span class="comment">// 세션 중지</span>
+    <span class="comment">// Session 중지</span>
     <span class="kw">func</span> stopSession() {
         session?.invalidate()
         session = <span class="kw">nil</span>
@@ -138,12 +138,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <span class="comment">// Delegate 구현</span>
 <span class="kw">extension</span> <span class="type">WiFiAwareManager</span>: <span class="type">NIWiFiAwareSessionDelegate</span> {
-    <span class="comment">// 세션이 시작되었을 때</span>
+    <span class="comment">// Session이 시작되었을 때</span>
     <span class="kw">func</span> wifiAwareSession(<span class="kw">_</span> session: <span class="type">NIWiFiAwareSession</span>, didStartWith configuration: <span class="type">NIWiFiAwareConfiguration</span>) {
-        print(<span class="str">"Wi-Fi Aware 세션 활성화됨"</span>)
+        print(<span class="str">"Wi-Fi Aware 세션 Activated"</span>)
     }
 
-    <span class="comment">// 세션이 중지되었을 때</span>
+    <span class="comment">// Session이 중지되었을 때</span>
     <span class="kw">func</span> wifiAwareSession(<span class="kw">_</span> session: <span class="type">NIWiFiAwareSession</span>, didInvalidateWith error: <span class="type">Error</span>) {
         print(<span class="str">"세션 무효화: \(error)"</span>)
         isRunning = <span class="kw">false</span>
@@ -160,12 +160,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="comment">// 피어 연결이 끊어졌을 때</span>
     <span class="kw">func</span> wifiAwareSession(<span class="kw">_</span> session: <span class="type">NIWiFiAwareSession</span>, didLose peerToken: <span class="type">NIWiFiAwarePeerToken</span>) {
         discoveredPeers.removeAll { $0 == peerToken }
-        print(<span class="str">"피어 연결 끊김: \(peerToken)"</span>)
+        print(<span class="str">"피어 Disconnected: \(peerToken)"</span>)
     }
 }</pre>
 </div>
 
-<h2>📡 3. 데이터 전송</h2>
+<h2>📡 3. Data Transfer</h2>
 <p>Use the Network framework to exchange data with peers discovered via Wi-Fi Aware.</p>
 
 <div class="code-block">
@@ -180,7 +180,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> receivedMessages: [<span class="type">String</span>] = []
     <span class="kw">var</span> isConnected = <span class="kw">false</span>
 
-    <span class="comment">// 데이터 리스너 시작 (서버 역할)</span>
+    <span class="comment">// Data 리스너 시작 (서버 역할)</span>
     <span class="kw">func</span> startListener(peerToken: <span class="type">NIWiFiAwarePeerToken</span>) {
         <span class="kw">let</span> parameters = <span class="type">NWParameters</span>.tcp
         parameters.requiredInterfaceType = .wifi
@@ -205,7 +205,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             listener?.start(queue: .<span class="type">main</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"리스너 시작 실패: \(error)"</span>)
+            print(<span class="str">"리스너 Start failed: \(error)"</span>)
         }
     }
 
@@ -224,7 +224,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 <span class="kw">self</span>?.receiveData()
             <span class="kw">case</span> .failed(<span class="kw">let</span> error):
                 <span class="kw">self</span>?.isConnected = <span class="kw">false</span>
-                print(<span class="str">"연결 실패: \(error)"</span>)
+                print(<span class="str">"Connection failed: \(error)"</span>)
             <span class="kw">case</span> .cancelled:
                 <span class="kw">self</span>?.isConnected = <span class="kw">false</span>
                 print(<span class="str">"연결 취소됨"</span>)
@@ -236,7 +236,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         connection?.start(queue: .<span class="type">main</span>)
     }
 
-    <span class="comment">// 새 연결 처리</span>
+    <span class="comment">// New 연결 처리</span>
     <span class="kw">private</span> <span class="kw">func</span> handleNewConnection(<span class="kw">_</span> newConnection: <span class="type">NWConnection</span>) {
         connection = newConnection
         isConnected = <span class="kw">true</span>
@@ -250,7 +250,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         connection?.start(queue: .<span class="type">main</span>)
     }
 
-    <span class="comment">// 데이터 전송</span>
+    <span class="comment">// Send data</span>
     <span class="kw">func</span> sendData(<span class="kw">_</span> message: <span class="type">String</span>) {
         <span class="kw">guard</span> <span class="kw">let</span> data = message.data(using: .utf8) <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -258,15 +258,15 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             content: data,
             completion: .contentProcessed { error <span class="kw">in</span>
                 <span class="kw">if</span> <span class="kw">let</span> error = error {
-                    print(<span class="str">"전송 실패: \(error)"</span>)
+                    print(<span class="str">"Send failed: \(error)"</span>)
                 } <span class="kw">else</span> {
-                    print(<span class="str">"메시지 전송 완료: \(message)"</span>)
+                    print(<span class="str">"메시지 Send completed: \(message)"</span>)
                 }
             }
         )
     }
 
-    <span class="comment">// 데이터 수신</span>
+    <span class="comment">// Receive data</span>
     <span class="kw">private</span> <span class="kw">func</span> receiveData() {
         connection?.receive(minimumIncompleteLength: <span class="str">1</span>, maximumLength: <span class="str">65536</span>) { [<span class="kw">weak self</span>] data, context, isComplete, error <span class="kw">in</span>
             <span class="kw">if</span> <span class="kw">let</span> data = data, !data.isEmpty {
@@ -282,7 +282,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 연결 종료</span>
+    <span class="comment">// Connect 종료</span>
     <span class="kw">func</span> disconnect() {
         connection?.cancel()
         listener?.cancel()
@@ -293,7 +293,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🔄 4. Discovery Token 교환</h2>
+<h2>🔄 4. Discovery Token Exchange</h2>
 <p>Discover peers by exchanging Discovery Tokens via QR code or other methods.</p>
 
 <div class="code-block">
@@ -352,7 +352,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">NavigationStack</span> {
             <span class="type">List</span> {
-                <span class="comment">// 세션 상태</span>
+                <span class="comment">// Session 상태</span>
                 <span class="type">Section</span>(<span class="str">"세션"</span>) {
                     <span class="type">HStack</span> {
                         <span class="type">Text</span>(<span class="str">"상태"</span>)
@@ -404,7 +404,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     }
                 }
 
-                <span class="comment">// 메시지 전송</span>
+                <span class="comment">// Message 전송</span>
                 <span class="kw">if</span> dataChannel.isConnected {
                     <span class="type">Section</span>(<span class="str">"메시지 전송"</span>) {
                         <span class="type">TextField</span>(<span class="str">"메시지 입력"</span>, text: $messageToSend)
@@ -444,7 +444,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">NavigationStack</span> {
             <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
-                <span class="type">Text</span>(<span class="str">"다른 기기에서 이 QR 코드를 스캔하세요"</span>)
+                <span class="type">Text</span>(<span class="str">"other 기기에서 이 QR 코드를 스캔하세요"</span>)
                     .font(.headline)
 
                 <span class="kw">if</span> <span class="kw">let</span> image = qrCodeImage {
@@ -467,7 +467,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
-                    <span class="type">Button</span>(<span class="str">"완료"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Done"</span>) {
                         dismiss()
                     }
                 }
@@ -568,7 +568,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     }
             )
 
-            <span class="comment">// 액션 버튼</span>
+            <span class="comment">// Action button</span>
             <span class="type">HStack</span>(spacing: <span class="str">20</span>) {
                 <span class="type">Button</span>(<span class="str">"공격"</span>) {
                     controller.sendAction(action: .attack)
@@ -603,7 +603,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <ul>
 <li><strong>권한 설명:</strong> Wi-Fi 사용 목적을 명확히 설명</li>
 <li><strong>Battery Efficiency:</strong> 필요할 때만 세션 활성화</li>
-<li><strong>연결 상태 표시:</strong> 사용자에게 연결 상태를 시각적으로 표시</li>
+<li><strong>연결 상태 표시:</strong> 사용자에게 연결 상태를 시each적으로 표시</li>
 <li><strong>Error Handling:</strong> Wi-Fi 비활성화 등 오류 상황 대비</li>
 <li><strong>백그라운드 Supported:</strong> 백그라운드 모드 설정 시 연속 발견 가능</li>
 </ul>
@@ -621,7 +621,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/nearbyinteraction">NearbyInteraction 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/nearbyinteraction">NearbyInteraction Official Documentation</a></li>
 <li><a href="https://developer.apple.com/documentation/network">Network 프레임워크</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: Wi-Fi Aware</a></li>
 </ul>

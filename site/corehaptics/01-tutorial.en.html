@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 1h</span>
   <span>📂 Graphics & Media</span>
 </div>
-<p class="subtitle">정교한 촉각 피드백 디자인 프레임워크</p>
+<p class="subtitle">Framework for designing precise haptic feedback</p>
 
 <div><span class="badge ios">iOS 13+</span><span class="badge new">Taptic Engine</span></div>
 
@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Custom Haptic Patterns · Continuous/Transient Events · Intensity Control · Sharpness Control · AHAP File Support · Audio-Haptic Sync · Dynamic Parameters
 </div>
 
-<h2>🎮 1. CHHapticEngine 초기화</h2>
+<h2>🎮 1. CHHapticEngine Initialization</h2>
 <p>CHHapticEngine을 생성하고 시작.</p>
 
 <div class="code-block">
@@ -59,11 +59,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         prepareHaptics()
     }
 
-    <span class="comment">// 햅틱 엔진 준비</span>
+    <span class="comment">// haptic engine 준비</span>
     <span class="kw">func</span> prepareHaptics() {
         <span class="comment">// 디바이스가 햅틱을 지원하는지 확인</span>
         <span class="kw">guard</span> <span class="type">CHHapticEngine</span>.capabilitiesForHardware().supportsHaptics <span class="kw">else</span> {
-            print(<span class="str">"⚠️ 햅틱 미지원 디바이스"</span>)
+            print(<span class="str">"⚠️ 햅틱 Not supported 디바이스"</span>)
             <span class="kw">return</span>
         }
 
@@ -75,24 +75,24 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="comment">// 엔진 시작</span>
             <span class="kw">try</span> engine?.start()
 
-            <span class="comment">// 엔진 정지 핸들러</span>
+            <span class="comment">// 엔진 정지 Handler</span>
             engine?.stoppedHandler = { reason <span class="kw">in</span>
                 print(<span class="str">"⚠️ 엔진 정지: \(reason)"</span>)
             }
 
-            <span class="comment">// 엔진 리셋 핸들러</span>
+            <span class="comment">// 엔진 리셋 Handler</span>
             engine?.resetHandler = { [<span class="kw">weak self</span>] <span class="kw">in</span>
                 print(<span class="str">"🔄 엔진 리셋"</span>)
                 <span class="kw">do</span> {
                     <span class="kw">try</span> <span class="kw">self</span>?.engine?.start()
                 } <span class="kw">catch</span> {
-                    print(<span class="str">"❌ 엔진 재시작 실패: \(error)"</span>)
+                    print(<span class="str">"❌ 엔진 재Start failed: \(error)"</span>)
                 }
             }
 
-            print(<span class="str">"✅ 햅틱 엔진 준비 완료"</span>)
+            print(<span class="str">"✅ haptic engine 준비 완료"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 엔진 생성 실패: \(error)"</span>)
+            print(<span class="str">"❌ haptic engine 생성 실패: \(error)"</span>)
         }
     }
 
@@ -103,7 +103,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">do</span> {
             <span class="kw">try</span> engine?.start()
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 엔진 시작 실패: \(error)"</span>)
+            print(<span class="str">"❌ 엔진 Start failed: \(error)"</span>)
         }
     }
 
@@ -114,7 +114,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>💥 2. 순간 햅틱 이벤트</h2>
+<h2>💥 2. Transient Haptic Events</h2>
 <p>Create Transient events for momentary taps or impacts.</p>
 
 <div class="code-block">
@@ -122,7 +122,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreHaptics</span>
 
 <span class="kw">extension</span> <span class="type">HapticManager</span> {
-    <span class="comment">// 기본 탭 햅틱</span>
+    <span class="comment">// Default 탭 햅틱</span>
     <span class="kw">func</span> playSimpleTap() {
         <span class="kw">guard</span> supportsHaptics, <span class="kw">let</span> engine = engine <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -142,13 +142,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> player = <span class="kw">try</span> engine.makePlayer(with: pattern)
             <span class="kw">try</span> player.start(atTime: <span class="str">0</span>)
 
-            print(<span class="str">"✅ 탭 햅틱 재생"</span>)
+            print(<span class="str">"✅ 탭 Play haptic"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 
-    <span class="comment">// 커스텀 강도의 탭</span>
+    <span class="comment">// Custom 강도의 탭</span>
     <span class="kw">func</span> playTap(intensity: <span class="type">Float</span>, sharpness: <span class="type">Float</span>) {
         <span class="kw">guard</span> supportsHaptics, <span class="kw">let</span> engine = engine <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -166,7 +166,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> player = <span class="kw">try</span> engine.makePlayer(with: pattern)
             <span class="kw">try</span> player.start(atTime: <span class="str">0</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 
@@ -198,15 +198,15 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> player = <span class="kw">try</span> engine.makePlayer(with: pattern)
             <span class="kw">try</span> player.start(atTime: <span class="str">0</span>)
 
-            print(<span class="str">"✅ 더블 탭 햅틱 재생"</span>)
+            print(<span class="str">"✅ double tap Play haptic"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 }</pre>
 </div>
 
-<h2>🌊 3. 연속 햅틱 이벤트</h2>
+<h2>🌊 3. Continuous Haptic Events</h2>
 <p>Create Continuous events for sustained vibrations.</p>
 
 <div class="code-block">
@@ -234,13 +234,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> player = <span class="kw">try</span> engine.makePlayer(with: pattern)
             <span class="kw">try</span> player.start(atTime: <span class="str">0</span>)
 
-            print(<span class="str">"✅ 연속 햅틱 재생"</span>)
+            print(<span class="str">"✅ 연속 Play haptic"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 
-    <span class="comment">// 강도가 변하는 연속 햅틱</span>
+    <span class="comment">// 강도가 변하는 Continuous haptic</span>
     <span class="kw">func</span> playFadingHaptic() {
         <span class="kw">guard</span> supportsHaptics, <span class="kw">let</span> engine = engine <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -274,9 +274,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">let</span> player = <span class="kw">try</span> engine.makePlayer(with: pattern)
             <span class="kw">try</span> player.start(atTime: <span class="str">0</span>)
 
-            print(<span class="str">"✅ 페이드 아웃 햅틱 재생"</span>)
+            print(<span class="str">"✅ 페이드 아웃 Play haptic"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 
@@ -306,13 +306,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             print(<span class="str">"✅ 펄스 패턴 재생"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 햅틱 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ 햅틱 Playback failed: \(error)"</span>)
         }
     }
 }</pre>
 </div>
 
-<h2>📄 4. AHAP 파일</h2>
+<h2>📄 4. AHAP Files</h2>
 <p>Save and load complex haptic patterns as AHAP files.</p>
 
 <div class="code-block">
@@ -320,12 +320,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreHaptics</span>
 
 <span class="kw">extension</span> <span class="type">HapticManager</span> {
-    <span class="comment">// AHAP 파일에서 패턴 로드</span>
+    <span class="comment">// AHAP From file 패턴 로드</span>
     <span class="kw">func</span> playAHAPFile(named fileName: <span class="type">String</span>) {
         <span class="kw">guard</span> supportsHaptics, <span class="kw">let</span> engine = engine <span class="kw">else</span> { <span class="kw">return</span> }
 
         <span class="kw">do</span> {
-            <span class="comment">// AHAP 파일 경로 가져오기</span>
+            <span class="comment">// AHAP 파일 경로 Fetch</span>
             <span class="kw">guard</span> <span class="kw">let</span> url = <span class="type">Bundle</span>.main.url(
                 forResource: fileName,
                 withExtension: <span class="str">"ahap"</span>
@@ -343,11 +343,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             print(<span class="str">"✅ AHAP 파일 재생: \(fileName)"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ AHAP 파일 재생 실패: \(error)"</span>)
+            print(<span class="str">"❌ AHAP 파일 Playback failed: \(error)"</span>)
         }
     }
 
-    <span class="comment">// AHAP 패턴을 파일로 저장</span>
+    <span class="comment">// AHAP 패턴을 Save to file</span>
     <span class="kw">func</span> savePattern(<span class="kw">_</span> pattern: <span class="type">CHHapticPattern</span>, to fileName: <span class="type">String</span>) {
         <span class="kw">do</span> {
             <span class="comment">// 패턴을 딕셔너리로 변환</span>
@@ -359,16 +359,16 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 options: .prettyPrinted
             )
 
-            <span class="comment">// 파일로 저장</span>
+            <span class="comment">// Save to file</span>
             <span class="kw">let</span> url = <span class="type">FileManager</span>.default
                 .urls(for: .documentDirectory, in: .userDomainMask)[<span class="str">0</span>]
                 .appendingPathComponent(<span class="str">"\(fileName).ahap"</span>)
 
             <span class="kw">try</span> jsonData.write(to: url)
 
-            print(<span class="str">"✅ AHAP 파일 저장: \(url)"</span>)
+            print(<span class="str">"✅ AHAP Save file: \(url)"</span>)
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ AHAP 파일 저장 실패: \(error)"</span>)
+            print(<span class="str">"❌ AHAP 파일 Save failed: \(error)"</span>)
         }
     }
 }
@@ -392,7 +392,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 */</span></pre>
 </div>
 
-<h2>🎨 5. 게임용 햅틱 패턴</h2>
+<h2>🎨 5. Game Haptic Patterns</h2>
 <p>Implement various haptic patterns for use in games.</p>
 
 <div class="code-block">
@@ -500,7 +500,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                         hapticManager.playSimpleTap()
                     }
 
-                    <span class="type">Button</span>(<span class="str">"더블 탭"</span>) {
+                    <span class="type">Button</span>(<span class="str">"double tap"</span>) {
                         hapticManager.playDoubleTap()
                     }
 
@@ -550,7 +550,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 }
 
                 <span class="type">Section</span> {
-                    <span class="type">Text</span>(<span class="str">"햅틱 지원: \(hapticManager.supportsHaptics ? "✅" : "❌")"</span>)
+                    <span class="type">Text</span>(<span class="str">"Haptic support: \(hapticManager.supportsHaptics ? "✅" : "❌")"</span>)
                         .foregroundStyle(.secondary)
                 }
             }
@@ -567,23 +567,23 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <li><strong>과도한 사용 금지:</strong> 너무 빈번한 햅틱은 사용자를 피로하게 함</li>
 <li><strong>디바이스 확인:</strong> 햅틱 Supported 여부 확인 필수</li>
 <li><strong>설정 존중:</strong> 시스템 햅틱 설정 존중</li>
-<li><strong>오디오와 조화:</strong> 사운드와 햅틱을 함께 사용하면 더 강력한 효과</li>
+<li><strong>오디오와 조화:</strong> 사운드와 햅틱을 함께 when using 더 강력한 효과</li>
 </ul>
 
 <h2>🎯 Practical Usage</h2>
 
 <ul>
 <li><strong>Games:</strong> 충돌, 폭발, 발사 등의 물리적 피드백</li>
-<li><strong>UI 인터랙션:</strong> 버튼 탭, 스위치 토글, 슬라이더 조작</li>
-<li><strong>알림:</strong> 중요한 이벤트에 대한 촉각 알림</li>
+<li><strong>UI 인터랙션:</strong> button tap, 스위치 토글, 슬라이더 조작</li>
+<li><strong>알림:</strong> 중요한 이벤트에 about 촉each 알림</li>
 <li><strong>Media Apps:</strong> 음악 비트에 맞춘 햅틱</li>
-<li><strong>접근성:</strong> 시각 장애인을 위한 촉각 피드백</li>
+<li><strong>accessibility:</strong> 시each 장애인을 위한 촉each 피드백</li>
 </ul>
 
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/corehaptics">Core Haptics 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/corehaptics">Core Haptics Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2019/520/">WWDC: Core Haptics 세션</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/playing-haptics">HIG: Playing Haptics</a></li>
 </ul>

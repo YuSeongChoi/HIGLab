@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 1h</span>
   <span>📂 App Services</span>
 </div>
-<p class="subtitle">iOS 연락처 데이터에 안전하게 접근하고 관리하기</p>
+<p class="subtitle">Securely access and manage iOS contact data</p>
 
 <div><span class="badge ios">iOS 9+</span></div>
 
@@ -42,12 +42,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Contact Lookup · Create/Edit/Delete Contacts · Group Management · Contact Formatting · Contact Picker UI · Change Observation · Batch Saving
 </div>
 
-<h2>🔑 1. 권한 요청</h2>
+<h2>🔑 1. Permission Request</h2>
 <p>User authorization is required for contact access. Both Info.plist settings and runtime permission requests are needed.</p>
 
 <div class="code-block">
 <div class="code-header">Info.plist — Add Permission Descriptions</div>
-<pre class="code-body"><span class="comment">// Info.plist에 추가</span>
+<pre class="code-body"><span class="comment">// Info.plist added to</span>
 <span class="type">NSContactsUsageDescription</span>
 <span class="str">"연락처에 접근하여 친구를 초대하고 정보를 공유합니다"</span></pre>
 </div>
@@ -61,12 +61,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">let</span> store = <span class="type">CNContactStore</span>()
     <span class="kw">var</span> authorizationStatus: <span class="type">CNAuthorizationStatus</span> = .notDetermined
 
-    <span class="comment">// 현재 권한 상태 확인</span>
+    <span class="comment">// 현재 Permission status 확인</span>
     <span class="kw">func</span> checkAuthorizationStatus() {
         authorizationStatus = <span class="type">CNContactStore</span>.authorizationStatus(for: .contacts)
     }
 
-    <span class="comment">// 권한 요청</span>
+    <span class="comment">// Permission Request</span>
     <span class="kw">func</span> requestAccess() <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">do</span> {
             <span class="kw">let</span> granted = <span class="kw">try</span> <span class="kw">await</span> store.requestAccess(for: .contacts)
@@ -75,12 +75,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
             <span class="kw">return</span> granted
         } <span class="kw">catch</span> {
-            print(<span class="str">"권한 요청 오류: \(error)"</span>)
+            print(<span class="str">"Permission Request Error: \(error)"</span>)
             <span class="kw">return</span> <span class="kw">false</span>
         }
     }
 
-    <span class="comment">// 권한 상태에 따른 처리</span>
+    <span class="comment">// Permission status에 따른 처리</span>
     <span class="kw">func</span> ensureAuthorization() <span class="kw">async</span> -> <span class="type">Bool</span> {
         checkAuthorizationStatus()
 
@@ -98,7 +98,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🔍 2. 연락처 조회</h2>
+<h2>🔍 2. Fetching Contacts</h2>
 <p>다양한 방법으로 연락처를 검색하고 조회.</p>
 
 <div class="code-block">
@@ -106,7 +106,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">Contacts</span>
 
 <span class="kw">extension</span> <span class="type">ContactsManager</span> {
-    <span class="comment">// 모든 연락처 가져오기</span>
+    <span class="comment">// all 연락처 Fetch</span>
     <span class="kw">func</span> fetchAllContacts() <span class="kw">throws</span> -> [<span class="type">CNContact</span>] {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactGivenNameKey</span> <span class="kw">as</span> <span class="type">CNKeyDescriptor</span>,
@@ -127,7 +127,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">return</span> contacts
     }
 
-    <span class="comment">// 이름으로 연락처 검색</span>
+    <span class="comment">// 이름으로 Search contacts</span>
     <span class="kw">func</span> searchContacts(name: <span class="type">String</span>) <span class="kw">throws</span> -> [<span class="type">CNContact</span>] {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactFormatter</span>.descriptorForRequiredKeys(for: .fullName),
@@ -139,7 +139,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">return</span> <span class="kw">try</span> store.unifiedContacts(matching: predicate, keysToFetch: keysToFetch)
     }
 
-    <span class="comment">// 식별자로 연락처 가져오기</span>
+    <span class="comment">// 식별자로 연락처 Fetch</span>
     <span class="kw">func</span> fetchContact(identifier: <span class="type">String</span>) <span class="kw">throws</span> -> <span class="type">CNContact</span> {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactFormatter</span>.descriptorForRequiredKeys(for: .fullName),
@@ -160,7 +160,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">return</span> contact
     }
 
-    <span class="comment">// 전화번호로 연락처 검색</span>
+    <span class="comment">// Phone number로 Search contacts</span>
     <span class="kw">func</span> searchByPhoneNumber(<span class="kw">_</span> phoneNumber: <span class="type">String</span>) <span class="kw">throws</span> -> [<span class="type">CNContact</span>] {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactFormatter</span>.descriptorForRequiredKeys(for: .fullName),
@@ -184,15 +184,15 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>➕ 3. 연락처 생성</h2>
-<p>새로운 연락처를 만들고 저장.</p>
+<h2>➕ 3. Creating Contacts</h2>
+<p>new 연락처를 만들고 저장.</p>
 
 <div class="code-block">
 <div class="code-header">ContactsCreator.swift — Create Contacts</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">Contacts</span>
 
 <span class="kw">extension</span> <span class="type">ContactsManager</span> {
-    <span class="comment">// 새 연락처 생성</span>
+    <span class="comment">// New 연락처 생성</span>
     <span class="kw">func</span> createContact(
         givenName: <span class="type">String</span>,
         familyName: <span class="type">String</span>,
@@ -205,7 +205,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         contact.givenName = givenName
         contact.familyName = familyName
 
-        <span class="comment">// 전화번호 추가</span>
+        <span class="comment">// Phone number 추가</span>
         contact.phoneNumbers = phoneNumbers.map { number <span class="kw">in</span>
             <span class="type">CNLabeledValue</span>(
                 label: <span class="type">CNLabelPhoneNumberMobile</span>,
@@ -221,7 +221,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             )
         }
 
-        <span class="comment">// 연락처 저장</span>
+        <span class="comment">// Contact 저장</span>
         <span class="kw">let</span> saveRequest = <span class="type">CNSaveRequest</span>()
         saveRequest.add(contact, toContainerWithIdentifier: <span class="kw">nil</span>)
 
@@ -242,13 +242,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     ) <span class="kw">throws</span> {
         <span class="kw">let</span> contact = <span class="type">CNMutableContact</span>()
 
-        <span class="comment">// 기본 정보</span>
+        <span class="comment">// Default 정보</span>
         contact.givenName = givenName
         contact.familyName = familyName
         contact.organizationName = organizationName ?? <span class="str">""</span>
         contact.jobTitle = jobTitle ?? <span class="str">""</span>
 
-        <span class="comment">// 전화번호</span>
+        <span class="comment">// Phone number</span>
         contact.phoneNumbers = phoneNumbers.map { label, number <span class="kw">in</span>
             <span class="type">CNLabeledValue</span>(
                 label: label,
@@ -277,7 +277,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// 메모</span>
         contact.note = note ?? <span class="str">""</span>
 
-        <span class="comment">// 저장</span>
+        <span class="comment">// Save</span>
         <span class="kw">let</span> saveRequest = <span class="type">CNSaveRequest</span>()
         saveRequest.add(contact, toContainerWithIdentifier: <span class="kw">nil</span>)
         <span class="kw">try</span> store.execute(saveRequest)
@@ -285,22 +285,22 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>✏️ 4. 연락처 수정 및 삭제</h2>
-<p>기존 연락처를 수정하거나 삭제.</p>
+<h2>✏️ 4. Edit & Delete Contacts</h2>
+<p>existing 연락처Edit하거나 삭제.</p>
 
 <div class="code-block">
 <div class="code-header">ContactsEditor.swift — Edit/Delete Contacts</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">Contacts</span>
 
 <span class="kw">extension</span> <span class="type">ContactsManager</span> {
-    <span class="comment">// 연락처 수정</span>
+    <span class="comment">// Contact 수정</span>
     <span class="kw">func</span> updateContact(
         identifier: <span class="type">String</span>,
         givenName: <span class="type">String</span>? = <span class="kw">nil</span>,
         familyName: <span class="type">String</span>? = <span class="kw">nil</span>,
         phoneNumbers: [<span class="type">String</span>]? = <span class="kw">nil</span>
     ) <span class="kw">throws</span> {
-        <span class="comment">// 기존 연락처 가져오기</span>
+        <span class="comment">// existing 연락처 Fetch</span>
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactGivenNameKey</span> <span class="kw">as</span> <span class="type">CNKeyDescriptor</span>,
             <span class="type">CNContactFamilyNameKey</span> <span class="kw">as</span> <span class="type">CNKeyDescriptor</span>,
@@ -317,7 +317,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// 변경 가능한 복사본 만들기</span>
         <span class="kw">let</span> mutableContact = existingContact.mutableCopy() <span class="kw">as</span>! <span class="type">CNMutableContact</span>
 
-        <span class="comment">// 수정</span>
+        <span class="comment">// Edit</span>
         <span class="kw">if</span> <span class="kw">let</span> givenName = givenName {
             mutableContact.givenName = givenName
         }
@@ -335,13 +335,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
         }
 
-        <span class="comment">// 저장</span>
+        <span class="comment">// Save</span>
         <span class="kw">let</span> saveRequest = <span class="type">CNSaveRequest</span>()
         saveRequest.update(mutableContact)
         <span class="kw">try</span> store.execute(saveRequest)
     }
 
-    <span class="comment">// 연락처 삭제</span>
+    <span class="comment">// Contact 삭제</span>
     <span class="kw">func</span> deleteContact(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactIdentifierKey</span> <span class="kw">as</span> <span class="type">CNKeyDescriptor</span>
@@ -361,7 +361,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">try</span> store.execute(saveRequest)
     }
 
-    <span class="comment">// 전화번호 추가</span>
+    <span class="comment">// Phone number 추가</span>
     <span class="kw">func</span> addPhoneNumber(to identifier: <span class="type">String</span>, phoneNumber: <span class="type">String</span>, label: <span class="type">String</span>) <span class="kw">throws</span> {
         <span class="kw">let</span> keysToFetch: [<span class="type">CNKeyDescriptor</span>] = [
             <span class="type">CNContactPhoneNumbersKey</span> <span class="kw">as</span> <span class="type">CNKeyDescriptor</span>
@@ -376,7 +376,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         <span class="kw">let</span> mutableContact = contact.mutableCopy() <span class="kw">as</span>! <span class="type">CNMutableContact</span>
 
-        <span class="comment">// 새 전화번호 추가</span>
+        <span class="comment">// New Phone number 추가</span>
         <span class="kw">let</span> newPhoneNumber = <span class="type">CNLabeledValue</span>(
             label: label,
             value: <span class="type">CNPhoneNumber</span>(stringValue: phoneNumber)
@@ -430,20 +430,20 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">self</span>.dismiss = dismiss
         }
 
-        <span class="comment">// 연락처 선택 완료</span>
+        <span class="comment">// Contact 선택 완료</span>
         <span class="kw">func</span> contactPicker(<span class="kw">_</span> picker: <span class="type">CNContactPickerViewController</span>, didSelect contact: <span class="type">CNContact</span>) {
             selectedContact = contact
             dismiss()
         }
 
-        <span class="comment">// 취소</span>
+        <span class="comment">// Cancel</span>
         <span class="kw">func</span> contactPickerDidCancel(<span class="kw">_</span> picker: <span class="type">CNContactPickerViewController</span>) {
             dismiss()
         }
     }
 }
 
-<span class="comment">// 사용 예제</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">struct</span> <span class="type">ContactSelectorView</span>: <span class="type">View</span> {
     <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedContact: <span class="type">CNContact</span>?
     <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showPicker = <span class="kw">false</span>
@@ -452,7 +452,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
             <span class="kw">if</span> <span class="kw">let</span> contact = selectedContact {
                 <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">8</span>) {
-                    <span class="type">Text</span>(<span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"알 수 없음"</span>)
+                    <span class="type">Text</span>(<span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"Unknown"</span>)
                         .font(.headline)
 
                     <span class="kw">if</span> <span class="kw">let</span> phoneNumber = contact.phoneNumbers.first?.value.stringValue {
@@ -482,7 +482,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎨 6. 연락처 포맷팅</h2>
+<h2>🎨 6. Contact Formatting</h2>
 <p>Display contact information using CNContactFormatter.</p>
 
 <div class="code-block">
@@ -492,10 +492,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">class</span> <span class="type">ContactFormatterHelper</span> {
     <span class="comment">// 전체 이름 포맷</span>
     <span class="kw">func</span> formatFullName(<span class="kw">_</span> contact: <span class="type">CNContact</span>) -> <span class="type">String</span> {
-        <span class="kw">return</span> <span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"알 수 없음"</span>
+        <span class="kw">return</span> <span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"Unknown"</span>
     }
 
-    <span class="comment">// 전화번호 포맷</span>
+    <span class="comment">// Phone number 포맷</span>
     <span class="kw">func</span> formatPhoneNumber(<span class="kw">_</span> phoneNumber: <span class="type">CNPhoneNumber</span>) -> <span class="type">String</span> {
         <span class="kw">let</span> formatter = <span class="type">CNPhoneNumberFormatter</span>()
         <span class="kw">return</span> formatter.string(from: phoneNumber)
@@ -507,7 +507,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">return</span> formatter.string(from: address)
     }
 
-    <span class="comment">// 연락처 레이블 현지화</span>
+    <span class="comment">// Contact 레이블 현지화</span>
     <span class="kw">func</span> localizedLabel(for label: <span class="type">String</span>) -> <span class="type">String</span> {
         <span class="kw">return</span> <span class="type">CNLabeledValue</span><<span class="type">NSString</span>>.localizedString(forLabel: label)
     }
@@ -552,7 +552,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 .onDelete(perform: deleteContacts)
             }
             .navigationTitle(<span class="str">"연락처"</span>)
-            .searchable(text: $searchText, prompt: <span class="str">"연락처 검색"</span>)
+            .searchable(text: $searchText, prompt: <span class="str">"Search contacts"</span>)
             .toolbar {
                 <span class="type">Button</span> {
                     showingAddContact = <span class="kw">true</span>
@@ -568,7 +568,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 }
             }
             .alert(<span class="str">"오류"</span>, isPresented: .constant(errorMessage != <span class="kw">nil</span>)) {
-                <span class="type">Button</span>(<span class="str">"확인"</span>) {
+                <span class="type">Button</span>(<span class="str">"OK"</span>) {
                     errorMessage = <span class="kw">nil</span>
                 }
             } message: {
@@ -584,7 +584,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">let</span> authorized = <span class="kw">await</span> manager.ensureAuthorization()
 
         <span class="kw">guard</span> authorized <span class="kw">else</span> {
-            errorMessage = <span class="str">"연락처 접근 권한이 필요합니다"</span>
+            errorMessage = <span class="str">"연락처 접근 Permission required"</span>
             <span class="kw">return</span>
         }
 
@@ -608,7 +608,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">do</span> {
                 <span class="kw">try</span> manager.deleteContact(identifier: contact.identifier)
             } <span class="kw">catch</span> {
-                errorMessage = <span class="str">"연락처 삭제 실패"</span>
+                errorMessage = <span class="str">"Delete contact 실패"</span>
             }
         }
 
@@ -638,7 +638,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
 
             <span class="type">VStack</span>(alignment: .leading) {
-                <span class="type">Text</span>(<span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"알 수 없음"</span>)
+                <span class="type">Text</span>(<span class="type">CNContactFormatter</span>.string(from: contact, style: .fullName) ?? <span class="str">"Unknown"</span>)
                     .font(.headline)
 
                 <span class="kw">if</span> <span class="kw">let</span> phoneNumber = contact.phoneNumbers.first?.value.stringValue {
@@ -657,7 +657,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">List</span> {
-            <span class="type">Section</span>(<span class="str">"전화번호"</span>) {
+            <span class="type">Section</span>(<span class="str">"Phone number"</span>) {
                 <span class="type">ForEach</span>(contact.phoneNumbers, id: \.identifier) { labeledValue <span class="kw">in</span>
                     <span class="type">HStack</span> {
                         <span class="type">Text</span>(<span class="type">CNLabeledValue</span><<span class="type">NSString</span>>.localizedString(forLabel: labeledValue.label ?? <span class="str">""</span>))
@@ -697,20 +697,20 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="type">Form</span> {
                 <span class="type">TextField</span>(<span class="str">"이름"</span>, text: $givenName)
                 <span class="type">TextField</span>(<span class="str">"성"</span>, text: $familyName)
-                <span class="type">TextField</span>(<span class="str">"전화번호"</span>, text: $phoneNumber)
+                <span class="type">TextField</span>(<span class="str">"Phone number"</span>, text: $phoneNumber)
                     .keyboardType(.phonePad)
             }
             .navigationTitle(<span class="str">"새 연락처"</span>)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
-                    <span class="type">Button</span>(<span class="str">"취소"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Cancel"</span>) {
                         dismiss()
                     }
                 }
 
                 <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
-                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Save"</span>) {
                         saveContact()
                     }
                     .disabled(givenName.isEmpty || familyName.isEmpty)
@@ -729,7 +729,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             onSave()
             dismiss()
         } <span class="kw">catch</span> {
-            print(<span class="str">"연락처 저장 실패: \(error)"</span>)
+            print(<span class="str">"연락처 Save failed: \(error)"</span>)
         }
     }
 }</pre>
@@ -749,7 +749,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <ul>
 <li><strong>소셜 앱:</strong> 친구 초대, 연락처 동기화</li>
-<li><strong>Messaging Apps:</strong> 빠른 연락처 검색 및 메시지 발송</li>
+<li><strong>Messaging Apps:</strong> 빠른 Search contacts 및 메시지 발송</li>
 <li><strong>이메일 클라이언트:</strong> 받는 사람 자동 완성</li>
 <li><strong>Event Apps:</strong> 참석자 추가, 초대장 발송</li>
 <li><strong>비즈니스 앱:</strong> CRM, 고객 관리, 명함 관리</li>
@@ -758,8 +758,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/contacts">Contacts 공식 문서</a></li>
-<li><a href="https://developer.apple.com/documentation/contactsui">ContactsUI 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/contacts">Contacts Official Documentation</a></li>
+<li><a href="https://developer.apple.com/documentation/contactsui">ContactsUI Official Documentation</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/privacy">HIG: Privacy</a></li>
 </ul>
 

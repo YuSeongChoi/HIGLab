@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> World Tracking · Plane Detection · Face Tracking · Image/Object Recognition · LiDAR · Spatial Audio · Multi-User AR · RealityKit Integration
 </div>
 
-<h2>🎯 1. AR 세션 설정</h2>
+<h2>🎯 1. AR Session Setup</h2>
 <p>Start an ARSession and configure the basic setup.</p>
 
 <div class="code-block">
@@ -60,7 +60,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         arView = <span class="type">ARView</span>(frame: view.bounds)
         view.addSubview(arView)
 
-        <span class="comment">// AR 세션 설정</span>
+        <span class="comment">// AR Session setup</span>
         setupARSession()
     }
 
@@ -79,7 +79,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             configuration.sceneReconstruction = .mesh
         }
 
-        <span class="comment">// 세션 실행</span>
+        <span class="comment">// Session 실행</span>
         arView.session.run(configuration)
     }
 
@@ -90,7 +90,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🪑 2. 3D 객체 배치</h2>
+<h2>🪑 2. 3D Object Placement</h2>
 <p>AR 공간에 3D 모델을 배치.</p>
 
 <div class="code-block">
@@ -116,19 +116,19 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 <span class="kw">let</span> anchor = <span class="type">AnchorEntity</span>(world: raycastResult.worldTransform)
                 anchor.addChild(entity)
 
-                <span class="comment">// 씬에 추가</span>
+                <span class="comment">// 씬 added to</span>
                 arView.scene.addAnchor(anchor)
 
                 <span class="comment">// 충돌 감지 활성화</span>
                 entity.generateCollisionShapes(recursive: <span class="kw">true</span>)
                 arView.installGestures(for: entity)
             } <span class="kw">catch</span> {
-                print(<span class="str">"모델 로드 실패: \(error)"</span>)
+                print(<span class="str">"모델 Load failed: \(error)"</span>)
             }
         }
     }
 
-    <span class="comment">// 커스텀 박스 생성</span>
+    <span class="comment">// Custom 박스 생성</span>
     <span class="kw">func</span> createBox(at position: <span class="type">SIMD3</span><<span class="type">Float</span>>) {
         <span class="comment">// 메시 생성</span>
         <span class="kw">let</span> mesh = <span class="type">MeshResource</span>.generateBox(size: <span class="str">0.1</span>)
@@ -140,7 +140,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// 엔티티 생성</span>
         <span class="kw">let</span> entity = <span class="type">ModelEntity</span>(mesh: mesh, materials: [material])
 
-        <span class="comment">// 앵커에 추가</span>
+        <span class="comment">// 앵커 added to</span>
         <span class="kw">let</span> anchor = <span class="type">AnchorEntity</span>(world: position)
         anchor.addChild(entity)
         arView.scene.addAnchor(anchor)
@@ -148,8 +148,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📐 3. 평면 감지</h2>
-<p>바닥이나 벽 같은 평면을 자동으로 감지.</p>
+<h2>📐 3. Plane Detection</h2>
+<p>바닥이나 벽 like 평면을 Automatically 감지.</p>
 
 <div class="code-block">
 <div class="code-header">ARPlaneDetection.swift — Plane Detection</div>
@@ -160,7 +160,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         arView.session.delegate = <span class="kw">self</span>
     }
 
-    <span class="comment">// 새 앵커 추가됨 (평면 감지)</span>
+    <span class="comment">// New 앵커 추가됨 (평면 감지)</span>
     <span class="kw">func</span> session(<span class="kw">_</span> session: <span class="type">ARSession</span>, didAdd anchors: [<span class="type">ARAnchor</span>]) {
         <span class="kw">for</span> anchor <span class="kw">in</span> anchors {
             <span class="kw">if</span> <span class="kw">let</span> planeAnchor = anchor <span class="kw">as</span>? <span class="type">ARPlaneAnchor</span> {
@@ -187,7 +187,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">let</span> alignment = planeAnchor.alignment
         print(<span class="str">"평면 감지: \(alignment == .horizontal ? "수평" : "수직") \(width)x\(height)m"</span>)
 
-        <span class="comment">// 평면 시각화 (선택 사항)</span>
+        <span class="comment">// 평면 시each화 (선택 사항)</span>
         <span class="kw">let</span> planeMesh = <span class="type">MeshResource</span>.generatePlane(width: width, depth: height)
         <span class="kw">var</span> material = <span class="type">SimpleMaterial</span>()
         material.color = .<span class="kw">init</span>(tint: .white.withAlphaComponent(<span class="str">0.3</span>), texture: <span class="kw">nil</span>)
@@ -204,7 +204,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>😊 4. 얼굴 추적 (Face Tracking)</h2>
+<h2>😊 4. Face Tracking</h2>
 <p>Track facial expressions and movement with the TrueDepth camera.</p>
 
 <div class="code-block">
@@ -222,7 +222,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         <span class="comment">// Face Tracking 설정</span>
         <span class="kw">guard</span> <span class="type">ARFaceTrackingConfiguration</span>.isSupported <span class="kw">else</span> {
-            print(<span class="str">"Face Tracking 미지원"</span>)
+            print(<span class="str">"Face Tracking Not supported"</span>)
             <span class="kw">return</span>
         }
 
@@ -266,7 +266,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🖼️ 5. 이미지 추적</h2>
+<h2>🖼️ 5. Image Tracking</h2>
 <p>Recognize specific images and overlay AR content.</p>
 
 <div class="code-block">
@@ -291,27 +291,27 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         arView.session.run(configuration)
     }
 
-    <span class="comment">// 이미지 감지됨</span>
+    <span class="comment">// Image 감지됨</span>
     <span class="kw">func</span> session(<span class="kw">_</span> session: <span class="type">ARSession</span>, didAdd anchors: [<span class="type">ARAnchor</span>]) {
         <span class="kw">for</span> anchor <span class="kw">in</span> anchors {
             <span class="kw">guard</span> <span class="kw">let</span> imageAnchor = anchor <span class="kw">as</span>? <span class="type">ARImageAnchor</span> <span class="kw">else</span> { <span class="kw">continue</span> }
 
             <span class="comment">// 감지된 이미지 정보</span>
             <span class="kw">let</span> referenceImage = imageAnchor.referenceImage
-            <span class="kw">let</span> imageName = referenceImage.name ?? <span class="str">"알 수 없음"</span>
+            <span class="kw">let</span> imageName = referenceImage.name ?? <span class="str">"Unknown"</span>
 
             print(<span class="str">"이미지 감지: \(imageName)"</span>)
 
-            <span class="comment">// 이미지 위에 3D 콘텐츠 배치</span>
+            <span class="comment">// Image 위에 3D 콘텐츠 배치</span>
             placeContentOnImage(imageAnchor)
         }
     }
 
     <span class="kw">func</span> placeContentOnImage(<span class="kw">_</span> imageAnchor: <span class="type">ARImageAnchor</span>) {
-        <span class="comment">// 이미지 크기</span>
+        <span class="comment">// Image 크기</span>
         <span class="kw">let</span> imageSize = imageAnchor.referenceImage.physicalSize
 
-        <span class="comment">// 이미지 위에 평면 생성</span>
+        <span class="comment">// Image 위에 평면 생성</span>
         <span class="kw">let</span> plane = <span class="type">MeshResource</span>.generatePlane(
             width: <span class="type">Float</span>(imageSize.width),
             depth: <span class="type">Float</span>(imageSize.height)
@@ -343,12 +343,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> makeUIView(context: <span class="type">Context</span>) -> <span class="type">ARView</span> {
         <span class="kw">let</span> arView = <span class="type">ARView</span>(frame: .zero)
 
-        <span class="comment">// AR 세션 설정</span>
+        <span class="comment">// AR Session setup</span>
         <span class="kw">let</span> config = <span class="type">ARWorldTrackingConfiguration</span>()
         config.planeDetection = [.horizontal]
         arView.session.run(config)
 
-        <span class="comment">// 탭 제스처 추가</span>
+        <span class="comment">// tap gesture 추가</span>
         <span class="kw">let</span> tapGesture = <span class="type">UITapGestureRecognizer</span>(
             target: context.coordinator,
             action: #selector(<span class="type">Coordinator</span>.handleTap)
@@ -428,7 +428,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <ul>
 <li><strong>안전:</strong> AR 사용 시 주변을 살펴보라는 경고 메시지 표시</li>
 <li><strong>초기화:</strong> 평면 감지 중임을 사용자에게 명확히 안내</li>
-<li><strong>피드백:</strong> 객체 배치 가능한 영역을 시각적으로 표시</li>
+<li><strong>피드백:</strong> 객체 배치 가능한 영역을 시each적으로 표시</li>
 <li><strong>조명:</strong> 충분한 조명이 필요함을 안내</li>
 <li><strong>권한:</strong> In Info.plist, <code>NSCameraUsageDescription</code> 추가</li>
 <li><strong>성능:</strong> 복잡한 3D 모델은 최적화하여 사용</li>
@@ -438,7 +438,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <ul>
 <li><strong>가구 배치 앱:</strong> 실제 공간에 가구를 미리 배치해보기</li>
-<li><strong>Education Apps:</strong> 3D 모델로 학습 콘텐츠 시각화</li>
+<li><strong>Education Apps:</strong> 3D 모델로 학습 콘텐츠 시each화</li>
 <li><strong>쇼핑 앱:</strong> 제품을 AR로 미리 체험</li>
 <li><strong>Games:</strong> 현실 공간을 게임 필드로 활용</li>
 <li><strong>내비게이션:</strong> AR로 실시간 길 안내</li>
@@ -447,7 +447,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/arkit">ARKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/arkit">ARKit Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2023/10082/">WWDC: Meet ARKit for spatial computing</a></li>
 <li><a href="https://developer.apple.com/augmented-reality/">Apple AR 개발자 페이지</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/augmented-reality">HIG: Augmented Reality</a></li>

@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Complete guide to EventKit calendar/events framework. Learn with hands-on examples at HIG Lab.">
-    <meta property="og:title" content="📅 EventKit 완전정복 — HIG Lab">
+    <meta property="og:title" content="📅 Mastering EventKit — HIG Lab">
     <meta property="og:description" content="Complete guide to EventKit calendar/events framework. Learn with hands-on examples at HIG Lab.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://m1zz.github.io/HIGLab/eventkit/01-tutorial.en.html">
     <meta property="og:site_name" content="HIG Lab">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="📅 EventKit 완전정복 — HIG Lab">
+    <meta name="twitter:title" content="📅 Mastering EventKit — HIG Lab">
     <meta name="twitter:description" content="Complete guide to EventKit calendar/events framework. Learn with hands-on examples at HIG Lab.">
     <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/eventkit/01-tutorial.html">
     <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/eventkit/01-tutorial.en.html">
-<title>📅 EventKit 완전정복 — HIG Lab</title>
+<title>📅 Mastering EventKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
@@ -35,7 +35,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
 <article>
-<h1>📅 EventKit 완전정복</h1>
+<h1>📅 Mastering EventKit</h1>
 <p>Integrate calendars and reminders! Build scheduling features with EventKit.</p>
 <!-- higlab-metadata -->
 <div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
@@ -49,12 +49,12 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
 <h2>📦 Key Features</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Feature Overview</span></div>
-<pre class="code-body"><span class="comment">✅ 캘린더 이벤트 생성/수정/삭제
-✅ 리마인더 생성/수정/삭제
-✅ 알람 설정 (시간 기반, 위치 기반)
+<pre class="code-body"><span class="comment">✅ Create/Edit/Delete calendar events
+✅ Create/Edit/Delete reminders
+✅ Alarm settings (time-based, location-based)
 ✅ 반복 일정 (매일, 매주, 매월...)
-✅ 캘린더 검색 및 필터링
-✅ 참석자 관리
+✅ Calendar search and filtering
+✅ Attendee management
 ✅ iCloud 자동 동기화</span></pre></div>
 
 <h2>🔐 Permission Request</h2>
@@ -65,7 +65,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">EventKitManager</span>()
     <span class="kw">let</span> <span class="prop">eventStore</span> = <span class="type">EKEventStore</span>()
 
-    <span class="comment">// 캘린더 권한 요청</span>
+    <span class="comment">// Calendar Permission Request</span>
     <span class="kw">func</span> <span class="func">requestCalendarAccess</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">do</span> {
             <span class="kw">return try await</span> eventStore.<span class="func">requestFullAccessToEvents</span>()
@@ -75,7 +75,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         }
     }
 
-    <span class="comment">// 리마인더 권한 요청</span>
+    <span class="comment">// 리마인더 Permission Request</span>
     <span class="kw">func</span> <span class="func">requestReminderAccess</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">do</span> {
             <span class="kw">return try await</span> eventStore.<span class="func">requestFullAccessToReminders</span>()
@@ -85,24 +85,24 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         }
     }
 
-    <span class="comment">// 권한 상태 확인</span>
+    <span class="comment">// Permission status 확인</span>
     <span class="kw">func</span> <span class="func">checkAuthorizationStatus</span>() -> <span class="type">EKAuthorizationStatus</span> {
         <span class="kw">return</span> <span class="type">EKEventStore</span>.<span class="func">authorizationStatus</span>(for: .event)
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> hasAccess = <span class="kw">await</span> <span class="type">EventKitManager</span>.shared.<span class="func">requestCalendarAccess</span>()
 <span class="kw">if</span> hasAccess {
     <span class="func">print</span>(<span class="str">"캘린더 접근 허용됨"</span>)
 }</pre></div>
 
-<h2>📆 이벤트 생성하기</h2>
+<h2>📆 Creating Events</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">CreateEvent.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 
 <span class="kw">extension</span> <span class="type">EventKitManager</span> {
-    <span class="comment">// 기본 이벤트 생성</span>
+    <span class="comment">// Default 이벤트 생성</span>
     <span class="kw">func</span> <span class="func">createEvent</span>(
         title: <span class="type">String</span>,
         startDate: <span class="type">Date</span>,
@@ -110,7 +110,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         notes: <span class="type">String</span>? = <span class="kw">nil</span>,
         location: <span class="type">String</span>? = <span class="kw">nil</span>
     ) <span class="kw">throws</span> -> <span class="type">String</span> {
-        <span class="comment">// 새 이벤트 생성</span>
+        <span class="comment">// New 이벤트 생성</span>
         <span class="kw">let</span> event = <span class="type">EKEvent</span>(eventStore: eventStore)
         event.title = title
         event.startDate = startDate
@@ -118,16 +118,16 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         event.notes = notes
         event.location = location
 
-        <span class="comment">// 기본 캘린더에 저장</span>
+        <span class="comment">// Default 캘린더에 저장</span>
         event.calendar = eventStore.defaultCalendarForNewEvents
 
-        <span class="comment">// 저장</span>
+        <span class="comment">// Save</span>
         <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
 
         <span class="kw">return</span> event.eventIdentifier
     }
 
-    <span class="comment">// 알람 포함 이벤트</span>
+    <span class="comment">// Alarm 포함 이벤트</span>
     <span class="kw">func</span> <span class="func">createEventWithAlarm</span>(
         title: <span class="type">String</span>,
         startDate: <span class="type">Date</span>,
@@ -140,7 +140,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         event.endDate = endDate
         event.calendar = eventStore.defaultCalendarForNewEvents
 
-        <span class="comment">// 알람 추가 (10분 전)</span>
+        <span class="comment">// Alarm 추가 (10분 전)</span>
         <span class="kw">let</span> alarm = <span class="type">EKAlarm</span>(relativeOffset: <span class="type">TimeInterval</span>(-alarmMinutesBefore * <span class="num">60</span>))
         event.addAlarm(alarm)
 
@@ -150,7 +150,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> tomorrow = <span class="type">Calendar</span>.current.date(byAdding: .day, value: <span class="num">1</span>, to: <span class="type">Date</span>())!
 <span class="kw">let</span> oneHourLater = <span class="type">Calendar</span>.current.date(byAdding: .hour, value: <span class="num">1</span>, to: tomorrow)!
 
@@ -162,9 +162,9 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     location: <span class="str">"회의실 A"</span>
 )
 
-<span class="func">print</span>(<span class="str">"이벤트 생성됨: \(eventID)"</span>)</pre></div>
+<span class="func">print</span>(<span class="str">"Event created: \(eventID)"</span>)</pre></div>
 
-<h2>🔁 반복 이벤트 생성</h2>
+<h2>🔁 Creating Recurring Events</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">RecurringEvent.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 
@@ -181,7 +181,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         event.endDate = endDate
         event.calendar = eventStore.defaultCalendarForNewEvents
 
-        <span class="comment">// 반복 규칙 설정 (매주 반복)</span>
+        <span class="comment">// Set recurrence rule (weekly)</span>
         <span class="kw">let</span> recurrenceRule = <span class="type">EKRecurrenceRule</span>(
             recurrenceWith: .weekly,
             interval: <span class="num">1</span>,
@@ -256,23 +256,23 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }</pre></div>
 
-<h2>🔍 이벤트 검색하기</h2>
+<h2>🔍 Searching Events</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">SearchEvents.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 
 <span class="kw">extension</span> <span class="type">EventKitManager</span> {
-    <span class="comment">// 특정 기간의 이벤트 검색</span>
+    <span class="comment">// Search events in specific period</span>
     <span class="kw">func</span> <span class="func">fetchEvents</span>(from startDate: <span class="type">Date</span>, to endDate: <span class="type">Date</span>) -> [<span class="type">EKEvent</span>] {
         <span class="kw">let</span> calendars = eventStore.calendars(for: .event)
 
-        <span class="comment">// Predicate 생성</span>
+        <span class="comment">// Create predicate</span>
         <span class="kw">let</span> predicate = eventStore.<span class="func">predicateForEvents</span>(
             withStart: startDate,
             end: endDate,
             calendars: calendars
         )
 
-        <span class="comment">// 이벤트 가져오기</span>
+        <span class="comment">// Event Fetch</span>
         <span class="kw">let</span> events = eventStore.<span class="func">events</span>(matching: predicate)
         <span class="kw">return</span> events
     }
@@ -315,23 +315,23 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> todayEvents = <span class="type">EventKitManager</span>.shared.<span class="func">fetchTodayEvents</span>()
 <span class="kw">for</span> event <span class="kw">in</span> todayEvents {
     <span class="func">print</span>(<span class="str">"\(event.title ?? "제목 없음") - \(event.startDate ?? Date())"</span>)
 }</pre></div>
 
-<h2>✏️ 이벤트 수정 및 삭제</h2>
+<h2>✏️ Edit & Delete Events</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">ModifyEvent.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 
 <span class="kw">extension</span> <span class="type">EventKitManager</span> {
-    <span class="comment">// 이벤트 가져오기</span>
+    <span class="comment">// Event Fetch</span>
     <span class="kw">func</span> <span class="func">getEvent</span>(identifier: <span class="type">String</span>) -> <span class="type">EKEvent</span>? {
         <span class="kw">return</span> eventStore.<span class="func">event</span>(withIdentifier: identifier)
     }
 
-    <span class="comment">// 이벤트 수정</span>
+    <span class="comment">// Event 수정</span>
     <span class="kw">func</span> <span class="func">updateEvent</span>(identifier: <span class="type">String</span>, newTitle: <span class="type">String</span>) <span class="kw">throws</span> {
         <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
             <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
@@ -341,7 +341,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         <span class="kw">try</span> eventStore.<span class="func">save</span>(event, span: .thisEvent)
     }
 
-    <span class="comment">// 이벤트 삭제</span>
+    <span class="comment">// Event 삭제</span>
     <span class="kw">func</span> <span class="func">deleteEvent</span>(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
         <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
             <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
@@ -350,7 +350,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         <span class="kw">try</span> eventStore.<span class="func">remove</span>(event, span: .thisEvent)
     }
 
-    <span class="comment">// 반복 이벤트 삭제 (모든 반복 포함)</span>
+    <span class="comment">// 반복 이벤트 삭제 (all 반복 포함)</span>
     <span class="kw">func</span> <span class="func">deleteRecurringEvent</span>(identifier: <span class="type">String</span>) <span class="kw">throws</span> {
         <span class="kw">guard let</span> event = <span class="func">getEvent</span>(identifier: identifier) <span class="kw">else</span> {
             <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Event not found"</span>, code: <span class="num">404</span>)
@@ -413,7 +413,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
                             .font(.title2)
                             .bold()
 
-                        <span class="type">Button</span>(<span class="str">"권한 요청"</span>) {
+                        <span class="type">Button</span>(<span class="str">"Permission Request"</span>) {
                             <span class="type">Task</span> {
                                 <span class="kw">await</span> <span class="func">requestAccess</span>()
                             }
@@ -459,7 +459,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 이벤트 추가 화면</span>
+<span class="comment">// Event 추가 화면</span>
 <span class="kw">struct</span> <span class="type">AddEventView</span>: <span class="type">View</span> {
     @<span class="type">Environment</span>(\.<span class="prop">dismiss</span>) <span class="kw">var</span> <span class="prop">dismiss</span>
 
@@ -478,7 +478,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
                 }
 
                 <span class="type">Section</span>(<span class="str">"시간"</span>) {
-                    <span class="type">DatePicker</span>(<span class="str">"시작"</span>, selection: $startDate)
+                    <span class="type">DatePicker</span>(<span class="str">"Start"</span>, selection: $startDate)
                     <span class="type">DatePicker</span>(<span class="str">"종료"</span>, selection: $endDate)
                 }
 
@@ -491,10 +491,10 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
-                    <span class="type">Button</span>(<span class="str">"취소"</span>) { dismiss() }
+                    <span class="type">Button</span>(<span class="str">"Cancel"</span>) { dismiss() }
                 }
                 <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
-                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Save"</span>) {
                         <span class="func">saveEvent</span>()
                     }
                     .disabled(title.isEmpty)
@@ -514,17 +514,17 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             )
             dismiss()
         } <span class="kw">catch</span> {
-            <span class="func">print</span>(<span class="str">"이벤트 저장 실패: \(error)"</span>)
+            <span class="func">print</span>(<span class="str">"이벤트 Save failed: \(error)"</span>)
         }
     }
 }</pre></div>
 
-<h2>✅ 리마인더 (Reminders)</h2>
+<h2>✅ Reminders</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Reminders.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 
 <span class="kw">extension</span> <span class="type">EventKitManager</span> {
-    <span class="comment">// 리마인더 생성</span>
+    <span class="comment">// Create reminder</span>
     <span class="kw">func</span> <span class="func">createReminder</span>(
         title: <span class="type">String</span>,
         dueDate: <span class="type">Date</span>? = <span class="kw">nil</span>,
@@ -550,7 +550,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         <span class="kw">return</span> reminder.calendarItemIdentifier
     }
 
-    <span class="comment">// 완료되지 않은 리마인더 가져오기</span>
+    <span class="comment">// Complete되지 않은 리마인더 Fetch</span>
     <span class="kw">func</span> <span class="func">fetchIncompleteReminders</span>() <span class="kw">async</span> -> [<span class="type">EKReminder</span>] {
         <span class="kw">let</span> predicate = eventStore.<span class="func">predicateForIncompleteReminders</span>(
             withDueDateStarting: <span class="kw">nil</span>,
@@ -578,7 +578,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> tomorrow = <span class="type">Calendar</span>.current.date(byAdding: .day, value: <span class="num">1</span>, to: <span class="type">Date</span>())!
 <span class="kw">let</span> reminderID = <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createReminder</span>(
     title: <span class="str">"우유 사기"</span>,
@@ -586,17 +586,17 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     priority: <span class="num">1</span>
 )
 
-<span class="comment">// 미완료 리마인더 가져오기</span>
+<span class="comment">// 미완료 리마인더 Fetch</span>
 <span class="kw">let</span> reminders = <span class="kw">await</span> <span class="type">EventKitManager</span>.shared.<span class="func">fetchIncompleteReminders</span>()
 <span class="func">print</span>(<span class="str">"할 일: \(reminders.count)개"</span>)</pre></div>
 
-<h2>🔔 위치 기반 알람</h2>
+<h2>🔔 Location-based Alarms</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">LocationAlarm.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">EventKit</span>
 <span class="kw">import</span> <span class="type">CoreLocation</span>
 
 <span class="kw">extension</span> <span class="type">EventKitManager</span> {
-    <span class="comment">// 위치 기반 리마인더</span>
+    <span class="comment">// Location 기반 리마인더</span>
     <span class="kw">func</span> <span class="func">createLocationBasedReminder</span>(
         title: <span class="type">String</span>,
         latitude: <span class="type">Double</span>,
@@ -607,7 +607,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         reminder.title = title
         reminder.calendar = eventStore.defaultCalendarForNewReminders()
 
-        <span class="comment">// 위치 알람 생성</span>
+        <span class="comment">// Location 알람 생성</span>
         <span class="kw">let</span> location = <span class="type">CLLocation</span>(latitude: latitude, longitude: longitude)
         <span class="kw">let</span> structuredLocation = <span class="type">EKStructuredLocation</span>(title: <span class="str">"알림 위치"</span>)
         structuredLocation.geoLocation = location
@@ -624,7 +624,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시 (집 근처 도착 시 알림)</span>
+<span class="comment">// Usage Example (집 근처 도착 시 알림)</span>
 <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.<span class="func">createLocationBasedReminder</span>(
     title: <span class="str">"현관문 열쇠 확인하기"</span>,
     latitude: <span class="num">37.5665</span>,
@@ -635,8 +635,8 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <h2>💡 HIG Guidelines</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">HIG Recommendations</span></div>
 <pre class="code-body"><span class="comment">✅ DO
-1. 권한 요청 전 이유 설명
-   - "일정을 캘린더에 저장하려면 접근 권한이 필요합니다"
+1. Permission Request 전 이유 설명
+   - "일정을 캘린더에 저장하려면 접근 Permission required"
 
 2. 기본 캘린더 사용
    - defaultCalendarForNewEvents 사용
@@ -644,7 +644,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
 3. 명확한 이벤트 정보
    - 제목, 시간, 위치를 정확하게
-   - notes에 추가 정보 제공
+   - notes added to 정보 제공
 
 4. 반복 이벤트 처리 주의
    - .thisEvent vs .futureEvents 구분
@@ -654,7 +654,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 1. 권한 없이 캘린더 접근 시도
 2. 사용자 동의 없이 이벤트 생성
 3. 기본 캘린더 무시하고 임의 캘린더에 저장
-4. 알림 없이 기존 이벤트 삭제</span></pre></div>
+4. 알림 없이 existing 이벤트 삭제</span></pre></div>
 
 <h2>🔧 Practical Tips</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Real-World Patterns</span></div>
@@ -689,12 +689,12 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     event.endDate = endDate
 
     <span class="comment">// 참석자는 iOS에서 직접 추가 불가 (읽기만 가능)</span>
-    <span class="comment">// Exchange 서버나 iCloud를 통해서만 가능</span>
+    <span class="comment">// Exchange 서버나 iCloud를 through서만 가능</span>
 
     <span class="kw">try</span> <span class="type">EventKitManager</span>.shared.eventStore.<span class="func">save</span>(event, span: .thisEvent)
 }
 
-<span class="comment">// 3. 캘린더 색상 가져오기</span>
+<span class="comment">// 3. 캘린더 색상 Fetch</span>
 <span class="kw">func</span> <span class="func">getCalendarColor</span>(event: <span class="type">EKEvent</span>) -> <span class="type">UIColor</span> {
     <span class="kw">return</span> <span class="type">UIColor</span>(cgColor: event.calendar.cgColor)
 }</pre></div>
@@ -703,18 +703,18 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <div class="code-block"><div class="code-header"><span class="code-filename">Info.plist</span></div>
 <pre class="code-body"><span class="comment">&lt;!-- 캘린더 권한 --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSCalendarsUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>앱에서 일정을 캘린더에 저장하려면 권한이 필요합니다<span class="kw">&lt;/string&gt;</span>
+<span class="kw">&lt;string&gt;</span>앱에서 일정을 캘린더에 저장하려면 Permission required<span class="kw">&lt;/string&gt;</span>
 
 <span class="comment">&lt;!-- 리마인더 권한 --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSRemindersUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>할 일을 리마인더에 추가하려면 권한이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
+<span class="kw">&lt;string&gt;</span>할 일을 리마인더 added to하려면 Permission required<span class="kw">&lt;/string&gt;</span></pre></div>
 
 <p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 EventKit 핵심</strong><br>
 ✅ 시스템 캘린더/리마인더 완벽 통합<br>
 ✅ iCloud 자동 동기화<br>
 ✅ 반복 일정 Supported<br>
 ✅ 위치 기반 알람<br>
-✅ 모든 캘린더 앱과 호환</p>
+✅ all 캘린더 앱과 호환</p>
 
 <h2>📦 Learning Resources</h2>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">

@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 3-4h</span>
   <span>📂 System & Network</span>
 </div>
-<p class="subtitle">BLE 기기 스캔, 연결, 데이터 통신 프레임워크</p>
+<p class="subtitle">BLE device scanning, connection, and data communication</p>
 
 <div><span class="badge ios">iOS 5+</span><span class="badge new">BLE 5.0</span></div>
 
@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> BLE Device Scanning · Peripheral Connection · GATT Service Discovery · Characteristic Read/Write · Notification Subscription · Battery-Efficient Communication · Background Operation
 </div>
 
-<h2>🔌 1. CBCentralManager 초기화</h2>
+<h2>🔌 1. CBCentralManager Initialization</h2>
 <p>Create a manager that scans and connects BLE devices as a Central role.</p>
 
 <div class="code-block">
@@ -64,7 +64,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         centralManager = <span class="type">CBCentralManager</span>(delegate: <span class="kw">self</span>, queue: <span class="kw">nil</span>)
     }
 
-    <span class="comment">// 스캔 시작</span>
+    <span class="comment">// Start scanning</span>
     <span class="kw">func</span> startScanning() {
         <span class="kw">guard</span> isBluetoothOn <span class="kw">else</span> {
             print(<span class="str">"⚠️ Bluetooth가 꺼져 있습니다"</span>)
@@ -74,13 +74,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         discoveredPeripherals.removeAll()
         isScanning = <span class="kw">true</span>
 
-        <span class="comment">// 모든 BLE 기기 스캔 (서비스 필터 없음)</span>
+        <span class="comment">// all BLE 기기 스캔 (서비스 필터 없음)</span>
         centralManager.scanForPeripherals(
             withServices: <span class="kw">nil</span>,
             options: [<span class="type">CBCentralManagerScanOptionAllowDuplicatesKey</span>: <span class="kw">false</span>]
         )
 
-        print(<span class="str">"🔍 BLE 기기 스캔 시작"</span>)
+        print(<span class="str">"🔍 BLE 기기 Start scanning"</span>)
     }
 
     <span class="comment">// 특정 서비스만 스캔</span>
@@ -94,11 +94,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"🔍 특정 서비스 스캔: \(serviceUUIDs)"</span>)
     }
 
-    <span class="comment">// 스캔 중지</span>
+    <span class="comment">// Stop scanning</span>
     <span class="kw">func</span> stopScanning() {
         centralManager.stopScan()
         isScanning = <span class="kw">false</span>
-        print(<span class="str">"⏹️ 스캔 중지"</span>)
+        print(<span class="str">"⏹️ Stop scanning"</span>)
     }
 
     <span class="comment">// Peripheral 연결</span>
@@ -108,7 +108,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"🔗 연결 시도: \(peripheral.name ?? "Unknown")"</span>)
     }
 
-    <span class="comment">// 연결 해제</span>
+    <span class="comment">// Connect 해제</span>
     <span class="kw">func</span> disconnect() {
         <span class="kw">guard</span> <span class="kw">let</span> peripheral = connectedPeripheral <span class="kw">else</span> { <span class="kw">return</span> }
         centralManager.cancelPeripheralConnection(peripheral)
@@ -117,7 +117,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📡 2. Central Manager 델리게이트</h2>
+<h2>📡 2. Central Manager Delegate</h2>
 <p>Handle Bluetooth state changes and device discovery.</p>
 
 <div class="code-block">
@@ -125,7 +125,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreBluetooth</span>
 
 <span class="kw">extension</span> <span class="type">BluetoothManager</span>: <span class="type">CBCentralManagerDelegate</span> {
-    <span class="comment">// Bluetooth 상태 변화</span>
+    <span class="comment">// Bluetooth state change</span>
     <span class="kw">func</span> centralManagerDidUpdateState(<span class="kw">_</span> central: <span class="type">CBCentralManager</span>) {
         <span class="kw">switch</span> central.state {
         <span class="kw">case</span> .poweredOn:
@@ -138,7 +138,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             print(<span class="str">"⚠️ Bluetooth 권한 없음"</span>)
             isBluetoothOn = <span class="kw">false</span>
         <span class="kw">case</span> .unsupported:
-            print(<span class="str">"❌ Bluetooth 미지원"</span>)
+            print(<span class="str">"❌ Bluetooth Not supported"</span>)
             isBluetoothOn = <span class="kw">false</span>
         <span class="kw">case</span> .resetting:
             print(<span class="str">"🔄 Bluetooth 재설정 중"</span>)
@@ -176,9 +176,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 연결 성공</span>
+    <span class="comment">// Connection successful</span>
     <span class="kw">func</span> centralManager(<span class="kw">_</span> central: <span class="type">CBCentralManager</span>, didConnect peripheral: <span class="type">CBPeripheral</span>) {
-        print(<span class="str">"✅ 연결 성공: \(peripheral.name ?? "Unknown")"</span>)
+        print(<span class="str">"✅ Connection successful: \(peripheral.name ?? "Unknown")"</span>)
         connectedPeripheral = peripheral
         peripheral.delegate = <span class="kw">self</span>
 
@@ -186,13 +186,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         peripheral.discoverServices(<span class="kw">nil</span>)
     }
 
-    <span class="comment">// 연결 실패</span>
+    <span class="comment">// Connection failed</span>
     <span class="kw">func</span> centralManager(<span class="kw">_</span> central: <span class="type">CBCentralManager</span>, didFailToConnect peripheral: <span class="type">CBPeripheral</span>, error: <span class="type">Error</span>?) {
-        print(<span class="str">"❌ 연결 실패: \(error?.localizedDescription ?? "Unknown error")"</span>)
+        print(<span class="str">"❌ Connection failed: \(error?.localizedDescription ?? "Unknown error")"</span>)
         connectedPeripheral = <span class="kw">nil</span>
     }
 
-    <span class="comment">// 연결 해제</span>
+    <span class="comment">// Connect 해제</span>
     <span class="kw">func</span> centralManager(<span class="kw">_</span> central: <span class="type">CBCentralManager</span>, didDisconnectPeripheral peripheral: <span class="type">CBPeripheral</span>, error: <span class="type">Error</span>?) {
         print(<span class="str">"❌ 연결 해제: \(peripheral.name ?? "Unknown")"</span>)
         connectedPeripheral = <span class="kw">nil</span>
@@ -204,7 +204,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🛠️ 3. Peripheral 델리게이트</h2>
+<h2>🛠️ 3. Peripheral Delegate</h2>
 <p>Discover services and characteristics, and read data.</p>
 
 <div class="code-block">
@@ -225,7 +225,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         <span class="kw">for</span> service <span class="kw">in</span> services {
             print(<span class="str">"  Service UUID: \(service.uuid)"</span>)
-            <span class="comment">// 각 서비스의 특성 탐색</span>
+            <span class="comment">// each 서비스의 특성 탐색</span>
             peripheral.discoverCharacteristics(<span class="kw">nil</span>, for: service)
         }
     }
@@ -270,7 +270,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">return</span>
         }
 
-        print(<span class="str">"📥 데이터 수신 (\(characteristic.uuid)): \(data.hexString)"</span>)
+        print(<span class="str">"📥 Receive data (\(characteristic.uuid)): \(data.hexString)"</span>)
 
         <span class="comment">// String으로 변환 시도</span>
         <span class="kw">if</span> <span class="kw">let</span> stringValue = <span class="type">String</span>(data: data, encoding: .utf8) {
@@ -291,7 +291,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"✅ 쓰기 성공 (\(characteristic.uuid))"</span>)
     }
 
-    <span class="comment">// Notification 상태 변경</span>
+    <span class="comment">// Notification change state</span>
     <span class="kw">func</span> peripheral(<span class="kw">_</span> peripheral: <span class="type">CBPeripheral</span>, didUpdateNotificationStateFor characteristic: <span class="type">CBCharacteristic</span>, error: <span class="type">Error</span>?) {
         <span class="kw">if</span> <span class="kw">let</span> error = error {
             print(<span class="str">"❌ Notification 설정 실패: \(error.localizedDescription)"</span>)
@@ -342,7 +342,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📤 4. 데이터 쓰기</h2>
+<h2>📤 4. Writing Data</h2>
 <p>Peripheral에 데이터를 전송.</p>
 
 <div class="code-block">
@@ -350,17 +350,17 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreBluetooth</span>
 
 <span class="kw">extension</span> <span class="type">BluetoothManager</span> {
-    <span class="comment">// 문자열 데이터 전송</span>
+    <span class="comment">// 문자열 Send data</span>
     <span class="kw">func</span> writeString(<span class="kw">_</span> string: <span class="type">String</span>, to characteristic: <span class="type">CBCharacteristic</span>) {
         <span class="kw">guard</span> <span class="kw">let</span> data = string.data(using: .utf8) <span class="kw">else</span> {
-            print(<span class="str">"❌ 문자열 변환 실패"</span>)
+            print(<span class="str">"❌ 문자열 Conversion failed"</span>)
             <span class="kw">return</span>
         }
 
         writeData(data, to: characteristic)
     }
 
-    <span class="comment">// 바이트 데이터 전송</span>
+    <span class="comment">// bytes Send data</span>
     <span class="kw">func</span> writeData(<span class="kw">_</span> data: <span class="type">Data</span>, to characteristic: <span class="type">CBCharacteristic</span>) {
         <span class="kw">guard</span> <span class="kw">let</span> peripheral = connectedPeripheral <span class="kw">else</span> {
             print(<span class="str">"❌ 연결된 기기 없음"</span>)
@@ -377,7 +377,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">let</span> writeType: <span class="type">CBCharacteristicWriteType</span> = characteristic.properties.contains(.write) ? .withResponse : .withoutResponse
 
         peripheral.writeValue(data, for: characteristic, type: writeType)
-        print(<span class="str">"📤 데이터 전송: \(data.hexString)"</span>)
+        print(<span class="str">"📤 Send data: \(data.hexString)"</span>)
     }
 
     <span class="comment">// LED 제어 예제</span>
@@ -403,7 +403,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">NavigationStack</span> {
             <span class="type">VStack</span>(spacing: <span class="str">0</span>) {
-                <span class="comment">// 상태 표시</span>
+                <span class="comment">// Status 표시</span>
                 statusHeader
 
                 <span class="comment">// 기기 목록</span>
@@ -422,7 +422,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 상태 헤더</span>
+    <span class="comment">// Status 헤더</span>
     <span class="kw">private</span> <span class="kw">var</span> statusHeader: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">VStack</span>(spacing: <span class="str">8</span>) {
             <span class="type">HStack</span> {
@@ -450,7 +450,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 <span class="type">HStack</span> {
                     <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
                         .foregroundStyle(.green)
-                    <span class="type">Text</span>(<span class="str">"연결됨: \(connected.name ?? "Unknown")"</span>)
+                    <span class="type">Text</span>(<span class="str">"Connected: \(connected.name ?? "Unknown")"</span>)
                         .font(.subheadline)
                     <span class="type">Spacer</span>()
                     <span class="type">Button</span>(<span class="str">"연결 해제"</span>) {
@@ -483,7 +483,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="comment">// 빈 상태</span>
     <span class="kw">private</span> <span class="kw">var</span> emptyState: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">ContentUnavailableView</span> {
-            <span class="type">Label</span>(<span class="str">"BLE 기기를 찾을 수 없습니다"</span>, systemImage: <span class="str">"antenna.radiowaves.left.and.right.slash"</span>)
+            <span class="type">Label</span>(<span class="str">"BLE 기기를 Not found"</span>, systemImage: <span class="str">"antenna.radiowaves.left.and.right.slash"</span>)
         } description: {
             <span class="type">Text</span>(<span class="str">"스캔 버튼을 눌러 주변 BLE 기기를 검색하세요"</span>)
         }
@@ -505,7 +505,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                             .foregroundStyle(.secondary)
 
                         <span class="kw">if</span> peripheral.state == .connected {
-                            <span class="type">Text</span>(<span class="str">"연결됨"</span>)
+                            <span class="type">Text</span>(<span class="str">"Connected"</span>)
                                 .font(.caption2)
                                 .foregroundStyle(.green)
                         }
@@ -528,7 +528,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <ul>
 <li><strong>Permission Request:</strong> Add NSBluetoothAlwaysUsageDescription to Info.plist</li>
-<li><strong>Battery Efficiency:</strong> 불필요한 스캔 중지, 연결 후 즉시 스캔 중단</li>
+<li><strong>Battery Efficiency:</strong> 불필요한 Stop scanning, 연결 후 즉시 스캔 중단</li>
 <li><strong>Background:</strong> Add bluetooth-central background mode to Info.plist</li>
 <li><strong>사용자 피드백:</strong> 스캔 상태와 연결 상태를 명확히 표시</li>
 <li><strong>Error Handling:</strong> Provide appropriate guidance for connection failures, Bluetooth off, etc.</li>
@@ -547,7 +547,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/corebluetooth">Core Bluetooth 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/corebluetooth">Core Bluetooth Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2019/901/">WWDC: Core Bluetooth 세션</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/bluetooth">HIG: Bluetooth</a></li>
 </ul>

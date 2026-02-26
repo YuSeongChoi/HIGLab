@@ -35,7 +35,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
 <article>
-<h1>🔐 Local Authentication 완전정복</h1>
+<h1>🔐 Mastering Local Authentication</h1>
 <p>Secure your app with Face ID and Touch ID! Complete guide from biometric auth to password replacement.</p>
 <!-- higlab-metadata -->
 <div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
@@ -49,14 +49,14 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
 <h2>📦 Key Features</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Feature Overview</span></div>
-<pre class="code-body"><span class="comment">✅ Face ID / Touch ID 인증
-✅ 기기 암호 인증 (비밀번호)
-✅ 생체 인증 가용성 확인
-✅ 인증 실패 처리 및 재시도
-✅ 커스텀 인증 UI
-✅ 비밀번호 대체 인증</span></pre></div>
+<pre class="code-body"><span class="comment">✅ Face ID / Touch ID authentication
+✅ Device passcode authentication
+✅ Check biometric availability
+✅ Handle authentication failure and retry
+✅ Custom authentication UI
+✅ Password fallback authentication</span></pre></div>
 
-<h2>🔍 생체 인증 가용성 확인</h2>
+<h2>🔍 Checking Biometric Availability</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">BiometryCheck.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">LocalAuthentication</span>
 
@@ -64,49 +64,49 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">let</span> context = <span class="type">LAContext</span>()
     <span class="kw">var</span> error: <span class="type">NSError</span>?
 
-    <span class="comment">// 생체 인증 가능 여부 확인</span>
+    <span class="comment">// Check if biometric authentication is available</span>
     <span class="kw">let</span> canEvaluate = context.<span class="func">canEvaluatePolicy</span>(
         .deviceOwnerAuthenticationWithBiometrics,
         error: &error
     )
 
     <span class="kw">if</span> canEvaluate {
-        <span class="comment">// 생체 인증 타입 확인</span>
+        <span class="comment">// Check biometric type</span>
         <span class="kw">switch</span> context.biometryType {
         <span class="kw">case</span> .faceID:
-            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Face ID 사용 가능"</span>)
+            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Face ID available"</span>)
         <span class="kw">case</span> .touchID:
-            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Touch ID 사용 가능"</span>)
+            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Touch ID available"</span>)
         <span class="kw">case</span> .opticID:
-            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Optic ID 사용 가능"</span>)
+            <span class="kw">return</span> (<span class="kw">true</span>, <span class="str">"Optic ID available"</span>)
         <span class="kw">case</span> .none:
-            <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"생체 인증 미지원"</span>)
+            <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Biometrics not supported"</span>)
         @unknown <span class="kw">default</span>:
-            <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"알 수 없는 타입"</span>)
+            <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Unknown type"</span>)
         }
     } <span class="kw">else</span> {
-        <span class="comment">// 오류 처리</span>
+        <span class="comment">// Error handling</span>
         <span class="kw">if let</span> error = error {
             <span class="kw">switch</span> <span class="type">LAError</span>.<span class="type">Code</span>(rawValue: error.code) {
             <span class="kw">case</span> .biometryNotEnrolled:
-                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"생체 인증 미등록"</span>)
+                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Biometrics not enrolled"</span>)
             <span class="kw">case</span> .biometryNotAvailable:
-                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"생체 인증 미지원"</span>)
+                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Biometrics not supported"</span>)
             <span class="kw">case</span> .passcodeNotSet:
-                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"기기 암호 미설정"</span>)
+                <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Device passcode not set"</span>)
             <span class="kw">default</span>:
                 <span class="kw">return</span> (<span class="kw">false</span>, error.localizedDescription)
             }
         }
-        <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"알 수 없는 오류"</span>)
+        <span class="kw">return</span> (<span class="kw">false</span>, <span class="str">"Unknown error"</span>)
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage example</span>
 <span class="kw">let</span> (available, message) = <span class="func">checkBiometryAvailability</span>()
-<span class="func">print</span>(message)  <span class="comment">// "Face ID 사용 가능"</span></pre></div>
+<span class="func">print</span>(message)  <span class="comment">// "Face ID available"</span></pre></div>
 
-<h2>🔐 기본 생체 인증</h2>
+<h2>🔐 Basic Biometric Authentication</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">BasicAuth.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">LocalAuthentication</span>
 
@@ -114,77 +114,77 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">let</span> context = <span class="type">LAContext</span>()
     <span class="kw">var</span> error: <span class="type">NSError</span>?
 
-    <span class="comment">// 생체 인증 가능 여부 확인</span>
+    <span class="comment">// Check if biometric authentication is available</span>
     <span class="kw">guard</span> context.<span class="func">canEvaluatePolicy</span>(
         .deviceOwnerAuthenticationWithBiometrics,
         error: &error
     ) <span class="kw">else</span> {
-        <span class="func">print</span>(<span class="str">"생체 인증 불가: \(error?.localizedDescription ?? "")"</span>)
+        <span class="func">print</span>(<span class="str">"biometric authentication 불가: \(error?.localizedDescription ?? "")"</span>)
         <span class="kw">return false</span>
     }
 
     <span class="kw">do</span> {
-        <span class="comment">// 인증 시도</span>
+        <span class="comment">// Authentication 시도</span>
         <span class="kw">let</span> success = <span class="kw">try await</span> context.<span class="func">evaluatePolicy</span>(
             .deviceOwnerAuthenticationWithBiometrics,
             localizedReason: <span class="str">"앱에 로그인하려면 인증이 필요합니다"</span>
         )
         <span class="kw">return</span> success
     } <span class="kw">catch let</span> error {
-        <span class="comment">// 인증 실패 처리</span>
+        <span class="comment">// Authentication failed 처리</span>
         <span class="kw">if let</span> laError = error <span class="kw">as</span>? <span class="type">LAError</span> {
             <span class="kw">switch</span> laError.code {
             <span class="kw">case</span> .authenticationFailed:
-                <span class="func">print</span>(<span class="str">"인증 실패 (얼굴/지문 불일치)"</span>)
+                <span class="func">print</span>(<span class="str">"Authentication failed (얼굴/지문 불일치)"</span>)
             <span class="kw">case</span> .userCancel:
                 <span class="func">print</span>(<span class="str">"사용자가 취소함"</span>)
             <span class="kw">case</span> .userFallback:
-                <span class="func">print</span>(<span class="str">"비밀번호 입력 선택"</span>)
+                <span class="func">print</span>(<span class="str">"enter password 선택"</span>)
             <span class="kw">case</span> .systemCancel:
                 <span class="func">print</span>(<span class="str">"시스템이 취소 (앱 전환 등)"</span>)
             <span class="kw">case</span> .biometryLockout:
                 <span class="func">print</span>(<span class="str">"너무 많은 시도로 잠김"</span>)
             <span class="kw">default</span>:
-                <span class="func">print</span>(<span class="str">"인증 오류: \(laError.localizedDescription)"</span>)
+                <span class="func">print</span>(<span class="str">"인증 Error: \(laError.localizedDescription)"</span>)
             }
         }
         <span class="kw">return false</span>
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage example</span>
 <span class="kw">let</span> authenticated = <span class="kw">await</span> <span class="func">authenticateUser</span>()
 <span class="kw">if</span> authenticated {
     <span class="func">print</span>(<span class="str">"로그인 성공!"</span>)
 }</pre></div>
 
-<h2>🔑 기기 암호 포함 인증</h2>
+<h2>🔑 Device Passcode Authentication</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">PasscodeAuth.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">LocalAuthentication</span>
 
 <span class="kw">func</span> <span class="func">authenticateWithPasscode</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
     <span class="kw">let</span> context = <span class="type">LAContext</span>()
 
-    <span class="comment">// 생체 인증 실패 시 기기 암호 입력 허용</span>
-    context.localizedFallbackTitle = <span class="str">"암호 입력"</span>
+    <span class="comment">// 생체 Authentication failed 시 기기 enter passcode 허용</span>
+    context.localizedFallbackTitle = <span class="str">"enter passcode"</span>
 
     <span class="kw">do</span> {
         <span class="kw">let</span> success = <span class="kw">try await</span> context.<span class="func">evaluatePolicy</span>(
-            .deviceOwnerAuthentication,  <span class="comment">// 생체 인증 + 기기 암호</span>
+            .deviceOwnerAuthentication,  <span class="comment">// biometric authentication + 기기 암호</span>
             localizedReason: <span class="str">"계정에 접근하려면 인증하세요"</span>
         )
         <span class="kw">return</span> success
     } <span class="kw">catch</span> {
-        <span class="func">print</span>(<span class="str">"인증 실패: \(error.localizedDescription)"</span>)
+        <span class="func">print</span>(<span class="str">"Authentication failed: \(error.localizedDescription)"</span>)
         <span class="kw">return false</span>
     }
 }
 
-<span class="comment">// 커스텀 취소 버튼 텍스트</span>
+<span class="comment">// Custom 취소 버튼 텍스트</span>
 <span class="kw">func</span> <span class="func">authenticateWithCustomButton</span>() <span class="kw">async</span> -> <span class="type">Bool</span> {
     <span class="kw">let</span> context = <span class="type">LAContext</span>()
     context.localizedCancelTitle = <span class="str">"나중에"</span>
-    context.localizedFallbackTitle = <span class="str">"비밀번호로 로그인"</span>
+    context.localizedFallbackTitle = <span class="str">"Password로 로그인"</span>
 
     <span class="kw">do</span> {
         <span class="kw">return try await</span> context.<span class="func">evaluatePolicy</span>(
@@ -209,13 +209,13 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
             <span class="kw">if</span> isAuthenticated {
-                <span class="comment">// 인증 후 화면</span>
+                <span class="comment">// Authentication 후 화면</span>
                 <span class="type">VStack</span>(spacing: <span class="num">16</span>) {
                     <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
                         .font(.system(size: <span class="num">80</span>))
                         .foregroundStyle(.green)
 
-                    <span class="type">Text</span>(<span class="str">"인증 성공"</span>)
+                    <span class="type">Text</span>(<span class="str">"Authentication successful"</span>)
                         .font(.title)
                         .bold()
 
@@ -234,7 +234,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
                         .font(.system(size: <span class="num">80</span>))
                         .foregroundStyle(.blue)
 
-                    <span class="type">Text</span>(<span class="str">"생체 인증 필요"</span>)
+                    <span class="type">Text</span>(<span class="str">"생체 Authentication required"</span>)
                         .font(.title)
                         .bold()
 
@@ -251,13 +251,13 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             }
         }
         .padding()
-        .alert(<span class="str">"인증 실패"</span>, isPresented: $showError) {
-            <span class="type">Button</span>(<span class="str">"확인"</span>, role: .cancel) { }
+        .alert(<span class="str">"Authentication failed"</span>, isPresented: $showError) {
+            <span class="type">Button</span>(<span class="str">"OK"</span>, role: .cancel) { }
         } message: {
             <span class="type">Text</span>(errorMessage)
         }
         .onAppear {
-            <span class="comment">// 앱 시작 시 자동 인증 시도</span>
+            <span class="comment">// App 시작 시 자동 인증 시도</span>
             <span class="type">Task</span> {
                 <span class="kw">await</span> <span class="func">authenticate</span>()
             }
@@ -280,7 +280,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         <span class="kw">do</span> {
             <span class="kw">let</span> success = <span class="kw">try await</span> context.<span class="func">evaluatePolicy</span>(
                 .deviceOwnerAuthentication,
-                localizedReason: <span class="str">"앱 접근을 위해 인증이 필요합니다"</span>
+                localizedReason: <span class="str">"앱 접근을 for 인증이 필요합니다"</span>
             )
 
             <span class="kw">await</span> <span class="type">MainActor</span>.<span class="func">run</span> {
@@ -353,12 +353,12 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
                 }
             }
         } <span class="kw">catch</span> {
-            <span class="func">print</span>(<span class="str">"인증 실패"</span>)
+            <span class="func">print</span>(<span class="str">"Authentication failed"</span>)
         }
     }
 }</pre></div>
 
-<h2>⏱️ 인증 컨텍스트 재사용</h2>
+<h2>⏱️ Reusing Authentication Context</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">ContextReuse.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">LocalAuthentication</span>
 
@@ -366,13 +366,13 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">private let</span> <span class="prop">context</span> = <span class="type">LAContext</span>()
 
     <span class="kw">init</span>() {
-        <span class="comment">// 인증 유효 시간 설정 (기본 10초)</span>
+        <span class="comment">// Authentication 유효 시간 설정 (기본 10초)</span>
         context.touchIDAuthenticationAllowableReuseDuration = <span class="num">30</span>  <span class="comment">// 30초</span>
     }
 
     <span class="kw">func</span> <span class="func">authenticate</span>(reason: <span class="type">String</span>) <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">do</span> {
-            <span class="comment">// 30초 내 재인증 시 생체 인증 생략</span>
+            <span class="comment">// 30초 내 재인증 시 biometric authentication 생략</span>
             <span class="kw">return try await</span> context.<span class="func">evaluatePolicy</span>(
                 .deviceOwnerAuthenticationWithBiometrics,
                 localizedReason: reason
@@ -383,24 +383,24 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 
     <span class="kw">func</span> <span class="func">invalidate</span>() {
-        <span class="comment">// 컨텍스트 무효화 (즉시 재인증 필요)</span>
+        <span class="comment">// 컨텍스트 무효화 (즉시 재Authentication required)</span>
         context.<span class="func">invalidate</span>()
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage example</span>
 <span class="kw">let</span> authManager = <span class="type">AuthenticationManager</span>()
 
-<span class="comment">// 첫 인증 (생체 인증 필요)</span>
+<span class="comment">// 첫 인증 (생체 Authentication required)</span>
 <span class="kw">let</span> success1 = <span class="kw">await</span> authManager.<span class="func">authenticate</span>(reason: <span class="str">"결제 승인"</span>)
 
-<span class="comment">// 30초 내 재인증 (생체 인증 생략)</span>
+<span class="comment">// 30초 내 재인증 (biometric authentication 생략)</span>
 <span class="kw">let</span> success2 = <span class="kw">await</span> authManager.<span class="func">authenticate</span>(reason: <span class="str">"추가 결제"</span>)
 
 <span class="comment">// 로그아웃 시 컨텍스트 무효화</span>
 authManager.<span class="func">invalidate</span>()</pre></div>
 
-<h2>🎯 Advanced Features: 도메인 상태</h2>
+<h2>🎯 Advanced Features: Domain State</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">DomainState.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">LocalAuthentication</span>
 
@@ -418,7 +418,7 @@ authManager.<span class="func">invalidate</span>()</pre></div>
             <span class="kw">return</span>
         }
 
-        <span class="comment">// 현재 생체 인증 상태 저장</span>
+        <span class="comment">// 현재 biometric authentication save state</span>
         domainState = context.evaluatedPolicyDomainState
         <span class="type">UserDefaults</span>.standard.set(domainState, forKey: <span class="str">"BiometricState"</span>)
     }
@@ -434,7 +434,7 @@ authManager.<span class="func">invalidate</span>()</pre></div>
             <span class="kw">return true</span>
         }
 
-        <span class="comment">// 저장된 상태와 비교</span>
+        <span class="comment">// Save된 상태와 비교</span>
         <span class="kw">guard let</span> savedState = <span class="type">UserDefaults</span>.standard.data(forKey: <span class="str">"BiometricState"</span>) <span class="kw">else</span> {
             <span class="kw">return true</span>
         }
@@ -445,10 +445,10 @@ authManager.<span class="func">invalidate</span>()</pre></div>
 
     <span class="kw">func</span> <span class="func">handleBiometricChange</span>() {
         <span class="kw">if</span> <span class="func">hasBiometricChanged</span>() {
-            <span class="func">print</span>(<span class="str">"⚠️ 생체 인증 정보가 변경되었습니다!"</span>)
-            <span class="func">print</span>(<span class="str">"보안을 위해 다시 로그인하세요."</span>)
+            <span class="func">print</span>(<span class="str">"⚠️ biometric authentication 정보가 변경되었습니다!"</span>)
+            <span class="func">print</span>(<span class="str">"보안을 for 다시 로그인do it."</span>)
 
-            <span class="comment">// 앱 데이터 초기화 또는 재로그인 요구</span>
+            <span class="comment">// App 데이터 초기화 or 재로그인 요구</span>
             <span class="func">logoutUser</span>()
             <span class="func">saveBiometricState</span>()
         }
@@ -460,11 +460,11 @@ authManager.<span class="func">invalidate</span>()</pre></div>
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage example</span>
 <span class="kw">let</span> monitor = <span class="type">BiometricStateMonitor</span>()
 monitor.<span class="func">saveBiometricState</span>()  <span class="comment">// 로그인 시</span>
 
-<span class="comment">// 앱 시작 시 확인</span>
+<span class="comment">// App 시작 시 확인</span>
 monitor.<span class="func">handleBiometricChange</span>()</pre></div>
 
 <h2>💡 HIG Guidelines</h2>
@@ -475,21 +475,21 @@ monitor.<span class="func">handleBiometricChange</span>()</pre></div>
    - 사용자에게 왜 인증이 필요한지 명확히 설명
 
 2. 대체 수단 제공
-   - 생체 인증 실패 시 기기 암호 허용
+   - 생체 Authentication failed 시 기기 암호 허용
    - .deviceOwnerAuthentication 정책 사용
 
 3. 적절한 타이밍
    - 민감한 작업 직전에만 요청
    - 너무 자주 요청하지 않기
 
-4. 오류 처리
-   - 인증 실패 시 명확한 피드백
-   - 재시도 옵션 제공
+4. Error handling
+   - Authentication failed 시 명확한 피드백
+   - Retry 옵션 제공
 
 ❌ DON'T
-1. 앱 시작마다 인증 요구 (불필요한 경우)
+1. 앱 시작마다 인증 요구 (불If needed)
 2. 생체 데이터를 서버로 전송
-3. 인증 없이도 기본 기능은 사용 가능하게
+3. 인증 없이도 기본 기능은 available하게
 4. "Touch ID"라고 명시 (기기별로 다름)</span></pre></div>
 
 <h2>🔧 Practical Tips</h2>
@@ -512,8 +512,8 @@ monitor.<span class="func">handleBiometricChange</span>()</pre></div>
         <span class="kw">case</span> .faceID: <span class="kw">return</span> <span class="str">"Face ID"</span>
         <span class="kw">case</span> .touchID: <span class="kw">return</span> <span class="str">"Touch ID"</span>
         <span class="kw">case</span> .opticID: <span class="kw">return</span> <span class="str">"Optic ID"</span>
-        <span class="kw">case</span> .none: <span class="kw">return</span> <span class="str">"생체 인증"</span>
-        @unknown <span class="kw">default</span>: <span class="kw">return</span> <span class="str">"생체 인증"</span>
+        <span class="kw">case</span> .none: <span class="kw">return</span> <span class="str">"biometric authentication"</span>
+        @unknown <span class="kw">default</span>: <span class="kw">return</span> <span class="str">"biometric authentication"</span>
         }
     }
 
@@ -565,17 +565,17 @@ monitor.<span class="func">handleBiometricChange</span>()</pre></div>
 <div class="code-block"><div class="code-header"><span class="code-filename">Info.plist</span></div>
 <pre class="code-body"><span class="comment">&lt;!-- Face ID 사용 시 필수 --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSFaceIDUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>안전한 로그인을 위해 Face ID를 사용합니다<span class="kw">&lt;/string&gt;</span>
+<span class="kw">&lt;string&gt;</span>안전한 로그인을 for Face ID is used<span class="kw">&lt;/string&gt;</span>
 
-<span class="comment">&lt;!-- 또는 한국어로 --&gt;</span>
+<span class="comment">&lt;!-- or 한국어로 --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSFaceIDUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>계정 보안을 위해 Face ID 인증이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
+<span class="kw">&lt;string&gt;</span>계정 보안을 for Face ID 인증이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
 
 <p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 Local Authentication 핵심</strong><br>
-✅ 모든 생체 데이터는 기기 내에서만 처리<br>
+✅ all 생체 데이터는 기기 내에서만 처리<br>
 ✅ Secure Enclave에 안전하게 저장<br>
-✅ 생체 인증 실패 시 기기 암호 대체 수단 제공<br>
-✅ 앱은 인증 성공/실패만 확인 가능<br>
+✅ 생체 Authentication failed 시 기기 암호 대체 수단 제공<br>
+✅ 앱은 Authentication successful/실패만 확인 가능<br>
 ✅ 실제 생체 데이터는 앱에서 접근 불가</p>
 
 <h2>📦 Learning Resources</h2>

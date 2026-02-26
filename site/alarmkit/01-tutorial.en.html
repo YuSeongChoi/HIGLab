@@ -56,7 +56,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> alarms: [<span class="type">Alarm</span>] = []
     <span class="kw">var</span> isAuthorized = <span class="kw">false</span>
 
-    <span class="comment">// 알림 권한 요청</span>
+    <span class="comment">// Notification Permission Request</span>
     <span class="kw">func</span> requestAuthorization() <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">do</span> {
             <span class="kw">let</span> granted = <span class="kw">try</span> <span class="kw">await</span> <span class="type">UNUserNotificationCenter</span>.current()
@@ -68,12 +68,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             <span class="kw">return</span> granted
         } <span class="kw">catch</span> {
-            print(<span class="str">"❌ 권한 요청 실패: \(error)"</span>)
+            print(<span class="str">"❌ Permission Request 실패: \(error)"</span>)
             <span class="kw">return</span> <span class="kw">false</span>
         }
     }
 
-    <span class="comment">// 알람 목록 불러오기</span>
+    <span class="comment">// Alarm 목록 불러오기</span>
     <span class="kw">func</span> loadAlarms() <span class="kw">async</span> {
         <span class="comment">// 시스템 알람과 통합된 알람 목록</span>
         <span class="comment">// 실제로는 AlarmKit API 사용</span>
@@ -88,7 +88,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     }
 }
 
-<span class="comment">// 알람 모델</span>
+<span class="comment">// Alarm 모델</span>
 <span class="kw">struct</span> <span class="type">Alarm</span>: <span class="type">Identifiable</span> {
     <span class="kw">let</span> id = <span class="type">UUID</span>()
     <span class="kw">var</span> time: <span class="type">Date</span>
@@ -184,17 +184,17 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     <span class="type">Toggle</span>(<span class="str">"스누즈"</span>, isOn: $snoozeEnabled)
                 }
             }
-            .navigationTitle(<span class="str">"알람 추가"</span>)
+            .navigationTitle(<span class="str">"Add alarm"</span>)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
-                    <span class="type">Button</span>(<span class="str">"취소"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Cancel"</span>) {
                         dismiss()
                     }
                 }
 
                 <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
-                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Save"</span>) {
                         saveAlarm()
                     }
                 }
@@ -257,7 +257,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
             <span class="kw">try</span>? <span class="kw">await</span> <span class="type">UNUserNotificationCenter</span>.current().add(request)
         } <span class="kw">else</span> {
-            <span class="comment">// 반복 알람 (각 요일마다 별도 등록)</span>
+            <span class="comment">// 반복 알람 (each 요일마다 별도 등록)</span>
             <span class="kw">for</span> day <span class="kw">in</span> alarm.repeatDays {
                 <span class="kw">var</span> components = <span class="type">Calendar</span>.current.dateComponents(
                     [.hour, .minute],
@@ -301,7 +301,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     <span class="type">ContentUnavailableView</span> {
                         <span class="type">Label</span>(<span class="str">"알람 없음"</span>, systemImage: <span class="str">"alarm"</span>)
                     } description: {
-                        <span class="type">Text</span>(<span class="str">"+ 버튼을 눌러 알람을 추가하세요"</span>)
+                        <span class="type">Text</span>(<span class="str">"+ 버튼을 눌러 알람Add하세요"</span>)
                     }
                 } <span class="kw">else</span> {
                     <span class="type">ForEach</span>(manager.alarms) { alarm <span class="kw">in</span>
@@ -364,10 +364,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     }
 
     <span class="kw">func</span> cancelAlarm(<span class="kw">_</span> alarm: <span class="type">Alarm</span>) <span class="kw">async</span> {
-        <span class="comment">// 알람 취소</span>
+        <span class="comment">// Alarm 취소</span>
         <span class="kw">var</span> identifiers = [alarm.id.uuidString]
 
-        <span class="comment">// 반복 알람인 경우 모든 요일 취소</span>
+        <span class="comment">// 반복 알람인 경우 all 요일 취소</span>
         <span class="kw">for</span> day <span class="kw">in</span> alarm.repeatDays {
             identifiers.append(<span class="str">"\(alarm.id.uuidString)-\(day)"</span>)
         }
@@ -462,16 +462,16 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="type">UNUserNotificationCenter</span>.current().delegate = <span class="kw">self</span>
     }
 
-    <span class="comment">// 알림이 화면에 표시될 때</span>
+    <span class="comment">// Notification이 화면에 표시될 때</span>
     <span class="kw">func</span> userNotificationCenter(
         <span class="kw">_</span> center: <span class="type">UNUserNotificationCenter</span>,
         willPresent notification: <span class="type">UNNotification</span>
     ) <span class="kw">async</span> -> <span class="type">UNNotificationPresentationOptions</span> {
-        <span class="comment">// 알람 화면 표시</span>
+        <span class="comment">// Alarm 화면 표시</span>
         <span class="kw">return</span> [.banner, .sound, .list]
     }
 
-    <span class="comment">// 알림 액션 처리</span>
+    <span class="comment">// Notification 액션 처리</span>
     <span class="kw">func</span> userNotificationCenter(
         <span class="kw">_</span> center: <span class="type">UNUserNotificationCenter</span>,
         didReceive response: <span class="type">UNNotificationResponse</span>
@@ -512,13 +512,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         print(<span class="str">"😴 스누즈: 9분 후 다시 알람"</span>)
     }
 
-    <span class="comment">// 알람 중지</span>
+    <span class="comment">// Alarm 중지</span>
     <span class="kw">func</span> stopAlarm(<span class="kw">_</span> notification: <span class="type">UNNotification</span>) {
         print(<span class="str">"⏹️ 알람 중지"</span>)
     }
 }
 
-<span class="comment">// 알람 액션 카테고리 등록</span>
+<span class="comment">// Alarm 액션 카테고리 등록</span>
 <span class="kw">extension</span> <span class="type">UNUserNotificationCenter</span> {
     <span class="kw">static</span> <span class="kw">func</span> registerAlarmActions() {
         <span class="kw">let</span> snoozeAction = <span class="type">UNNotificationAction</span>(
@@ -529,7 +529,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         <span class="kw">let</span> stopAction = <span class="type">UNNotificationAction</span>(
             identifier: <span class="str">"STOP_ACTION"</span>,
-            title: <span class="str">"중지"</span>,
+            title: <span class="str">"Stop"</span>,
             options: [.destructive]
         )
 
@@ -553,7 +553,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
 <span class="kw">import</span> <span class="type">ActivityKit</span>
 
-<span class="comment">// 알람 Activity 속성</span>
+<span class="comment">// Alarm Activity 속성</span>
 <span class="kw">struct</span> <span class="type">AlarmActivityAttributes</span>: <span class="type">ActivityAttributes</span> {
     <span class="kw">public</span> <span class="kw">struct</span> <span class="type">ContentState</span>: <span class="type">Codable</span>, <span class="type">Hashable</span> {
         <span class="kw">var</span> timeRemaining: <span class="type">TimeInterval</span>
@@ -673,7 +673,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 <span class="type">Button</span> {
                     importCustomSound()
                 } label: {
-                    <span class="type">Label</span>(<span class="str">"사운드 가져오기"</span>, systemImage: <span class="str">"plus.circle"</span>)
+                    <span class="type">Label</span>(<span class="str">"사운드 Fetch"</span>, systemImage: <span class="str">"plus.circle"</span>)
                 }
             }
         }
@@ -682,11 +682,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
     <span class="kw">func</span> previewSound(<span class="kw">_</span> sound: <span class="type">AlarmSound</span>) {
         <span class="comment">// 시스템 사운드 재생</span>
-        <span class="type">AudioServicesPlaySystemSound</span>(<span class="str">1005</span>) <span class="comment">// 예시</span>
+        <span class="type">AudioServicesPlaySystemSound</span>(<span class="str">1005</span>) <span class="comment">// Example</span>
     }
 
     <span class="kw">func</span> importCustomSound() {
-        print(<span class="str">"🎵 커스텀 사운드 가져오기"</span>)
+        print(<span class="str">"🎵 커스텀 사운드 Fetch"</span>)
     }
 }</pre>
 </div>
@@ -695,7 +695,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
 <ul>
 <li><strong>System Integration:</strong> 시계 앱의 알람과 완벽하게 통합되어야 함</li>
-<li><strong>명확한 정보:</strong> 알람 시간, 반복 설정을 명확히 표시</li>
+<li><strong>명확한 정보:</strong> Alarm time, 반복 설정을 명확히 표시</li>
 <li><strong>쉬운 토글:</strong> 알람 활성화/비활성화를 빠르게 전환</li>
 <li><strong>스누즈 Supported:</strong> 표준 9분 스누즈 제공</li>
 <li><strong>Critical Alert:</strong> 중요한 알람은 Critical Alert 사용 고려</li>
@@ -720,7 +720,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 </ul>
 
 <div class="info-box">
-<strong>⚡️ 팁:</strong> AlarmKit integrates seamlessly with the system Clock app. Alarms created in your app are visible in the Clock app and can be managed from anywhere. Request Critical Alert permission to sound alarms even in silent mode. Use Live Activity to show alarm status in real-time on Dynamic Island.
+<strong>⚡️ Tip:</strong> AlarmKit integrates seamlessly with the system Clock app. Alarms created in your app are visible in the Clock app and can be managed from anywhere. Request Critical Alert permission to sound alarms even in silent mode. Use Live Activity to show alarm status in real-time on Dynamic Island.
 </div>
 
 <div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">

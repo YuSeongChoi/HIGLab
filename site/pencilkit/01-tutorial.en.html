@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 1-2h</span>
   <span>📂 Graphics & Media</span>
 </div>
-<p class="subtitle">손글씨와 드로잉을 위한 강력한 캔버스</p>
+<p class="subtitle">A powerful canvas for handwriting and drawing</p>
 
 <div><span class="badge ios">iOS 13+</span><span class="badge new">Apple Pencil 최적화</span></div>
 
@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Low-Latency Drawing · Apple Pencil Support · Various Tools · Handwriting Recognition · Undo/Redo · Data Save/Share · Finger/Touch Support · Dark Mode
 </div>
 
-<h2>🎯 1. 기본 캔버스 설정</h2>
+<h2>🎯 1. Basic Canvas Setup</h2>
 <p>Create a drawing canvas using PKCanvasView.</p>
 
 <div class="code-block">
@@ -96,11 +96,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🖊️ 2. 도구 설정</h2>
+<h2>🖊️ 2. Tool Configuration</h2>
 <p>Configure various drawing tools like pen, marker, pencil.</p>
 
 <div class="code-block">
-<div class="code-header">DrawingTools.swift — 도구 설정</div>
+<div class="code-header">DrawingTools.swift — Tool Configuration</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">PencilKit</span>
 
 <span class="kw">class</span> <span class="type">DrawingToolManager</span> {
@@ -141,26 +141,26 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>💾 3. 드로잉 저장 및 불러오기</h2>
-<p>드로잉 데이터를 저장하고 불러옵.</p>
+<h2>💾 3. Save & Load Drawings</h2>
+<p>Save and load drawing data.</p>
 
 <div class="code-block">
 <div class="code-header">DrawingStorage.swift — Save/Load</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">PencilKit</span>
 
 <span class="kw">class</span> <span class="type">DrawingStorageManager</span> {
-    <span class="comment">// 드로잉 저장</span>
+    <span class="comment">// Save drawing</span>
     <span class="kw">func</span> saveDrawing(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, to url: <span class="type">URL</span>) <span class="kw">throws</span> {
         <span class="comment">// PKDrawing을 Data로 변환</span>
         <span class="kw">let</span> data = drawing.dataRepresentation()
 
-        <span class="comment">// 파일로 저장</span>
+        <span class="comment">// Save to file</span>
         <span class="kw">try</span> data.write(to: url)
     }
 
     <span class="comment">// 드로잉 불러오기</span>
     <span class="kw">func</span> loadDrawing(from url: <span class="type">URL</span>) <span class="kw">throws</span> -> <span class="type">PKDrawing</span> {
-        <span class="comment">// 파일에서 Data 읽기</span>
+        <span class="comment">// From file Read data</span>
         <span class="kw">let</span> data = <span class="kw">try</span> <span class="type">Data</span>(contentsOf: url)
 
         <span class="comment">// Data를 PKDrawing으로 변환</span>
@@ -168,13 +168,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">return</span> drawing
     }
 
-    <span class="comment">// 이미지로 변환</span>
+    <span class="comment">// Image로 변환</span>
     <span class="kw">func</span> convertToImage(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, size: <span class="type">CGSize</span>) -> <span class="type">UIImage</span> {
         <span class="kw">let</span> image = drawing.image(from: drawing.bounds, scale: <span class="type">UIScreen</span>.main.scale)
         <span class="kw">return</span> image
     }
 
-    <span class="comment">// UserDefaults에 저장</span>
+    <span class="comment">// Save to UserDefaults</span>
     <span class="kw">func</span> saveToUserDefaults(<span class="kw">_</span> drawing: <span class="type">PKDrawing</span>, key: <span class="type">String</span>) {
         <span class="kw">let</span> data = drawing.dataRepresentation()
         <span class="type">UserDefaults</span>.standard.set(data, forKey: key)
@@ -188,8 +188,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>✍️ 4. 손글씨 인식</h2>
-<p>손으로 쓴 텍스트를 인식.</p>
+<h2>✍️ 4. Handwriting Recognition</h2>
+<p>Recognize handwritten text.</p>
 
 <div class="code-block">
 <div class="code-header">HandwritingRecognition.swift — Handwriting Recognition</div>
@@ -200,14 +200,14 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">class</span> <span class="type">HandwritingRecognizer</span> {
     <span class="kw">var</span> recognizedText: <span class="type">String</span> = <span class="str">""</span>
 
-    <span class="comment">// 드로잉에서 텍스트 인식</span>
+    <span class="comment">// Recognize text from drawing</span>
     <span class="kw">func</span> recognizeText(from drawing: <span class="type">PKDrawing</span>) <span class="kw">async</span> {
         <span class="comment">// 드로잉을 이미지로 변환</span>
         <span class="kw">let</span> image = drawing.image(from: drawing.bounds, scale: <span class="str">2.0</span>)
 
         <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
 
-        <span class="comment">// Vision 텍스트 인식</span>
+        <span class="comment">// Vision text recognition</span>
         <span class="kw">let</span> request = <span class="type">VNRecognizeTextRequest</span> { [<span class="kw">weak self</span>] request, error <span class="kw">in</span>
             <span class="kw">guard</span> <span class="kw">let</span> observations = request.results <span class="kw">as</span>? [<span class="type">VNRecognizedTextObservation</span>] <span class="kw">else</span> {
                 <span class="kw">return</span>
@@ -222,7 +222,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
         }
 
-        <span class="comment">// 손글씨 인식 활성화</span>
+        <span class="comment">// Enable handwriting recognition</span>
         request.recognitionLevel = .accurate
         request.recognitionLanguages = [<span class="str">"en-US"</span>, <span class="str">"ko-KR"</span>]
 
@@ -232,7 +232,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📝 5. 서명 캡처</h2>
+<h2>📝 5. Signature Capture</h2>
 <p>전자 서명을 캡처하는 기능 implementation.</p>
 
 <div class="code-block">
@@ -299,13 +299,13 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 <span class="type">ToolbarItem</span>(placement: .cancellationAction) {
-                    <span class="type">Button</span>(<span class="str">"취소"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Cancel"</span>) {
                         dismiss()
                     }
                 }
 
                 <span class="type">ToolbarItem</span>(placement: .confirmationAction) {
-                    <span class="type">Button</span>(<span class="str">"저장"</span>) {
+                    <span class="type">Button</span>(<span class="str">"Save"</span>) {
                         onSave(canvasView.drawing)
                     }
                 }
@@ -343,7 +343,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                 .toolbar {
                     <span class="type">ToolbarItemGroup</span>(placement: .topBarTrailing) {
                         <span class="type">Button</span> {
-                            <span class="comment">// 이미지로 저장</span>
+                            <span class="comment">// Save as image</span>
                             <span class="kw">let</span> image = canvasView.drawing.image(
                                 from: canvasView.drawing.bounds,
                                 scale: <span class="type">UIScreen</span>.main.scale
@@ -379,10 +379,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                         .disabled(canvasView.undoManager?.canRedo == <span class="kw">false</span>)
                     }
                 }
-                .alert(<span class="str">"저장 완료"</span>, isPresented: $showSaveAlert) {
-                    <span class="type">Button</span>(<span class="str">"확인"</span>, role: .cancel) {}
+                .alert(<span class="str">"Save completed"</span>, isPresented: $showSaveAlert) {
+                    <span class="type">Button</span>(<span class="str">"OK"</span>, role: .cancel) {}
                 } message: {
-                    <span class="type">Text</span>(<span class="str">"드로잉이 사진첩에 저장되었습니다"</span>)
+                    <span class="type">Text</span>(<span class="str">"드로잉이 Saved to photo library되었습니다"</span>)
                 }
                 .onAppear {
                     toolPicker.setVisible(<span class="kw">true</span>, forFirstResponder: canvasView)
@@ -400,8 +400,8 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <li><strong>Apple Pencil:</strong> Apple Pencil 사용 시 최적화된 경험 제공</li>
 <li><strong>도구 선택:</strong> 명확한 도구 선택 UI 제공</li>
 <li><strong>실행 취소:</strong> 쉬운 실행 취소/재실행 버튼</li>
-<li><strong>저장:</strong> 자동 저장 또는 명확한 저장 버튼</li>
-<li><strong>권한:</strong> In Info.plist, <code>NSPhotoLibraryAddUsageDescription</code> 추가 (사진 저장 시)</li>
+<li><strong>저장:</strong> auto save or 명확한 저장 버튼</li>
+<li><strong>권한:</strong> In Info.plist, <code>NSPhotoLibraryAddUsageDescription</code> 추가 (When saving photos)</li>
 </ul>
 
 <h2>🎯 Practical Usage</h2>
@@ -417,7 +417,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/pencilkit">PencilKit 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/pencilkit">PencilKit Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2023/">WWDC: PencilKit 세션</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble">HIG: Apple Pencil</a></li>
 </ul>

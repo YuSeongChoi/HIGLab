@@ -56,9 +56,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> connectedAccessory: <span class="type">ASKAccessory</span>?
     <span class="kw">private</span> <span class="kw">var</span> session: <span class="type">ASKSession</span>?
 
-    <span class="comment">// 세션 시작</span>
+    <span class="comment">// Session 시작</span>
     <span class="kw">func</span> startSession() <span class="kw">async</span> {
-        <span class="comment">// 🆕 iOS 18+ 새로운 세션 생성 방식</span>
+        <span class="comment">// 🆕 iOS 18+ new 세션 생성 방식</span>
         <span class="kw">let</span> configuration = <span class="type">ASKSessionConfiguration</span>()
         configuration.supportedProtocols = [.bluetooth, .wifi]
         configuration.enableBackgroundRefresh = <span class="kw">true</span>
@@ -84,7 +84,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         connectedAccessory = accessory
     }
 
-    <span class="comment">// 연결 해제</span>
+    <span class="comment">// Connect 해제</span>
     <span class="kw">func</span> disconnect() <span class="kw">async</span> {
         <span class="kw">guard</span> <span class="kw">let</span> accessory = connectedAccessory,
               <span class="kw">let</span> session <span class="kw">else</span> { <span class="kw">return</span> }
@@ -93,7 +93,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         connectedAccessory = <span class="kw">nil</span>
     }
 
-    <span class="comment">// 세션 종료</span>
+    <span class="comment">// Session 종료</span>
     <span class="kw">func</span> endSession() {
         session?.invalidate()
         session = <span class="kw">nil</span>
@@ -174,7 +174,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             securityType: .wpa2
         )
 
-        provisioningStatus = <span class="str">"연결 중..."</span>
+        provisioningStatus = <span class="str">"Connecting..."</span>
 
         <span class="kw">try</span> <span class="kw">await</span> session?.provisionWiFi(
             for: accessory,
@@ -192,7 +192,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         session = <span class="type">ASKSession</span>(configuration: configuration)
 
-        <span class="comment">// 시스템이 자동으로 현재 Wi-Fi 정보 전달</span>
+        <span class="comment">// 시스템이 Automatically 현재 Wi-Fi 정보 전달</span>
         <span class="kw">try</span> <span class="kw">await</span> session?.pair(accessory)
     }
 
@@ -205,11 +205,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">for</span> <span class="kw">await</span> status <span class="kw">in</span> session.provisioningStatusUpdates(for: accessory) {
             <span class="kw">switch</span> status {
             <span class="kw">case</span> .connecting:
-                provisioningStatus = <span class="str">"네트워크 연결 중"</span>
+                provisioningStatus = <span class="str">"네트워크 Connecting"</span>
             <span class="kw">case</span> .connected:
                 provisioningStatus = <span class="str">"연결 완료"</span>
             <span class="kw">case</span> .failed(<span class="kw">let</span> error):
-                provisioningStatus = <span class="str">"연결 실패: \(error.localizedDescription)"</span>
+                provisioningStatus = <span class="str">"Connection failed: \(error.localizedDescription)"</span>
             }
         }
     }
@@ -253,7 +253,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">try</span> <span class="kw">await</span> session?.configureHomeKit(for: accessory, in: home)
     }
 
-    <span class="comment">// Matter 디바이스를 HomeKit에 추가</span>
+    <span class="comment">// Matter 디바이스를 HomeKit added to</span>
     <span class="kw">func</span> addMatterDevice(
         qrCode: <span class="type">String</span>,
         to home: <span class="type">HMHome</span>
@@ -292,7 +292,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">private</span> <span class="kw">var</span> session: <span class="type">ASKSession</span>?
     <span class="kw">var</span> authenticationStatus: <span class="type">String</span> = <span class="str">""</span>
 
-    <span class="comment">// 인증 코드 기반 페어링</span>
+    <span class="comment">// Authentication 코드 기반 페어링</span>
     <span class="kw">func</span> pairWithAuthCode(
         accessory: <span class="type">ASKAccessory</span>,
         code: <span class="type">String</span>
@@ -302,14 +302,14 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         session = <span class="type">ASKSession</span>(configuration: configuration)
 
-        <span class="comment">// 인증 코드 검증</span>
+        <span class="comment">// Authentication 코드 검증</span>
         <span class="kw">let</span> isValid = <span class="kw">try</span> <span class="kw">await</span> session?.validateAuthCode(code, for: accessory)
 
         <span class="kw">if</span> isValid == <span class="kw">true</span> {
-            authenticationStatus = <span class="str">"인증 성공"</span>
+            authenticationStatus = <span class="str">"Authentication successful"</span>
             <span class="kw">try</span> <span class="kw">await</span> session?.pair(accessory)
         } <span class="kw">else</span> {
-            authenticationStatus = <span class="str">"인증 실패"</span>
+            authenticationStatus = <span class="str">"Authentication failed"</span>
             <span class="kw">throw</span> <span class="type">PairingError</span>.authenticationFailed
         }
     }
@@ -332,7 +332,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> verifyEncryptedConnection(accessory: <span class="type">ASKAccessory</span>) <span class="kw">async</span> -> <span class="type">Bool</span> {
         <span class="kw">guard</span> <span class="kw">let</span> session <span class="kw">else</span> { <span class="kw">return</span> <span class="kw">false</span> }
 
-        <span class="comment">// 연결 보안 상태 확인</span>
+        <span class="comment">// Connect 보안 check state</span>
         <span class="kw">let</span> securityLevel = <span class="kw">await</span> session.securityLevel(for: accessory)
         <span class="kw">return</span> securityLevel == .encrypted
     }
@@ -366,7 +366,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                         <span class="type">ContentUnavailableView</span>(
                             <span class="str">"액세서리 없음"</span>,
                             systemImage: <span class="str">"antenna.radiowaves.left.and.right.slash"</span>,
-                            description: <span class="type">Text</span>(<span class="str">"검색을 시작하세요"</span>)
+                            description: <span class="type">Text</span>(<span class="str">"검색을 please start"</span>)
                         )
                     } <span class="kw">else</span> {
                         <span class="type">ForEach</span>(manager.discoveredAccessories, id: \.<span class="kw">self</span>.identifier) { accessory <span class="kw">in</span>
@@ -464,7 +464,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                         .foregroundStyle(.white)
                 }
 
-            <span class="type">Button</span>(<span class="str">"취소"</span>) {
+            <span class="type">Button</span>(<span class="str">"Cancel"</span>) {
                 dismiss()
             }
             .padding()

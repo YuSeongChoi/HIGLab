@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Video/Audio Capture · Media Playback · Real-Time Processing · Video Editing · Export · Metadata · Streaming · Session Management
 </div>
 
-<h2>📹 1. 비디오 캡처</h2>
+<h2>📹 1. Video Capture</h2>
 <p>Use AVCaptureSession to capture video from the camera.</p>
 
 <div class="code-block">
@@ -58,10 +58,10 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> isRecording = <span class="kw">false</span>
 
     <span class="kw">func</span> setupCamera() {
-        <span class="comment">// 세션 설정</span>
+        <span class="comment">// Session 설정</span>
         captureSession.beginConfiguration()
 
-        <span class="comment">// 비디오 입력 추가</span>
+        <span class="comment">// Video 입력 추가</span>
         <span class="kw">guard</span> <span class="kw">let</span> videoDevice = <span class="type">AVCaptureDevice</span>.default(.builtInWideAngleCamera, for: .video, position: .back),
               <span class="kw">let</span> videoInput = <span class="kw">try</span>? <span class="type">AVCaptureDeviceInput</span>(device: videoDevice),
               captureSession.canAddInput(videoInput)
@@ -69,19 +69,19 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
         captureSession.addInput(videoInput)
 
-        <span class="comment">// 오디오 입력 추가</span>
+        <span class="comment">// Audio 입력 추가</span>
         <span class="kw">if</span> <span class="kw">let</span> audioDevice = <span class="type">AVCaptureDevice</span>.default(for: .audio),
            <span class="kw">let</span> audioInput = <span class="kw">try</span>? <span class="type">AVCaptureDeviceInput</span>(device: audioDevice),
            captureSession.canAddInput(audioInput) {
             captureSession.addInput(audioInput)
         }
 
-        <span class="comment">// 비디오 출력 추가</span>
+        <span class="comment">// Video 출력 추가</span>
         <span class="kw">if</span> captureSession.canAddOutput(videoOutput) {
             captureSession.addOutput(videoOutput)
         }
 
-        <span class="comment">// 세션 품질 설정</span>
+        <span class="comment">// Session 품질 설정</span>
         captureSession.sessionPreset = .high
 
         captureSession.commitConfiguration()
@@ -119,7 +119,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         error: <span class="type">Error</span>?
     ) {
         <span class="kw">if</span> <span class="kw">let</span> error = error {
-            print(<span class="str">"녹화 오류: \(error.localizedDescription)"</span>)
+            print(<span class="str">"녹화 Error: \(error.localizedDescription)"</span>)
         } <span class="kw">else</span> {
             print(<span class="str">"녹화 완료: \(outputFileURL)"</span>)
         }
@@ -190,7 +190,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎵 2. 오디오 녹음</h2>
+<h2>🎵 2. Audio Recording</h2>
 <p>Record audio using AVAudioRecorder.</p>
 
 <div class="code-block">
@@ -205,7 +205,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> recordingTime: <span class="type">TimeInterval</span> = <span class="str">0</span>
 
     <span class="kw">func</span> setupRecorder() {
-        <span class="comment">// 오디오 세션 설정</span>
+        <span class="comment">// Audio Session setup</span>
         <span class="kw">let</span> audioSession = <span class="type">AVAudioSession</span>.sharedInstance()
         <span class="kw">try</span>? audioSession.setCategory(.playAndRecord, mode: .default)
         <span class="kw">try</span>? audioSession.setActive(<span class="kw">true</span>)
@@ -225,7 +225,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             audioRecorder?.delegate = <span class="kw">self</span>
             audioRecorder?.prepareToRecord()
         } <span class="kw">catch</span> {
-            print(<span class="str">"녹음 설정 오류: \(error)"</span>)
+            print(<span class="str">"녹음 설정 Error: \(error)"</span>)
         }
     }
 
@@ -248,7 +248,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">extension</span> <span class="type">AudioRecorderManager</span>: <span class="type">AVAudioRecorderDelegate</span> {
     <span class="kw">func</span> audioRecorderDidFinishRecording(<span class="kw">_</span> recorder: <span class="type">AVAudioRecorder</span>, successfully flag: <span class="type">Bool</span>) {
         <span class="kw">if</span> flag {
-            print(<span class="str">"녹음 완료: \(recorder.url)"</span>)
+            print(<span class="str">"Recording complete: \(recorder.url)"</span>)
         }
     }
 }
@@ -292,7 +292,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>▶️ 3. 미디어 재생</h2>
+<h2>▶️ 3. Media Playback</h2>
 <p>Play video/audio using AVPlayer.</p>
 
 <div class="code-block">
@@ -320,7 +320,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             <span class="kw">self</span>?.currentTime = time.seconds
         }
 
-        <span class="comment">// 영상 길이 가져오기</span>
+        <span class="comment">// 영상 길이 Fetch</span>
         <span class="type">Task</span> {
             <span class="kw">if</span> <span class="kw">let</span> duration = <span class="kw">try</span>? <span class="kw">await</span> asset.load(.duration) {
                 <span class="kw">self</span>.duration = duration.seconds
@@ -350,7 +350,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">VStack</span> {
-            <span class="comment">// 비디오 뷰</span>
+            <span class="comment">// Video 뷰</span>
             <span class="type">VideoPlayerLayer</span>(player: playerManager.player)
                 .frame(height: <span class="str">300</span>)
                 .background(<span class="type">Color</span>.black)
@@ -425,16 +425,16 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>✂️ 4. 비디오 편집</h2>
+<h2>✂️ 4. Video Editing</h2>
 <p>Edit video using AVMutableComposition.</p>
 
 <div class="code-block">
-<div class="code-header">VideoEditor.swift — 비디오 편집</div>
+<div class="code-header">VideoEditor.swift — Edit video</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">AVFoundation</span>
 <span class="kw">import</span> <span class="type">UIKit</span>
 
 <span class="kw">class</span> <span class="type">VideoEditor</span> {
-    <span class="comment">// 비디오 자르기</span>
+    <span class="comment">// Video 자르기</span>
     <span class="kw">func</span> trimVideo(
         asset: <span class="type">AVAsset</span>,
         startTime: <span class="type">CMTime</span>,
@@ -444,19 +444,19 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="comment">// Composition 생성</span>
         <span class="kw">let</span> composition = <span class="type">AVMutableComposition</span>()
 
-        <span class="comment">// 비디오 트랙 추가</span>
+        <span class="comment">// Video 트랙 추가</span>
         <span class="kw">guard</span> <span class="kw">let</span> videoTrack = composition.addMutableTrack(
             withMediaType: .video,
             preferredTrackID: kCMPersistentTrackID_Invalid
         ) <span class="kw">else</span> { <span class="kw">return</span> }
 
-        <span class="comment">// 오디오 트랙 추가</span>
+        <span class="comment">// Audio 트랙 추가</span>
         <span class="kw">guard</span> <span class="kw">let</span> audioTrack = composition.addMutableTrack(
             withMediaType: .audio,
             preferredTrackID: kCMPersistentTrackID_Invalid
         ) <span class="kw">else</span> { <span class="kw">return</span> }
 
-        <span class="comment">// 원본 트랙 가져오기</span>
+        <span class="comment">// 원본 트랙 Fetch</span>
         <span class="kw">let</span> assetVideoTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .video).first
         <span class="kw">let</span> assetAudioTrack = <span class="kw">try</span> <span class="kw">await</span> asset.loadTracks(withMediaType: .audio).first
 
@@ -513,7 +513,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">try</span> <span class="kw">await</span> exportVideo(composition: composition, to: outputURL)
     }
 
-    <span class="comment">// 비디오 내보내기</span>
+    <span class="comment">// Video 내보내기</span>
     <span class="kw">private</span> <span class="kw">func</span> exportVideo(
         composition: <span class="type">AVMutableComposition</span>,
         to url: <span class="type">URL</span>
@@ -533,7 +533,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 비디오에 워터마크 추가</span>
+    <span class="comment">// Video에 워터마크 추가</span>
     <span class="kw">func</span> addWatermark(
         to asset: <span class="type">AVAsset</span>,
         watermarkImage: <span class="type">UIImage</span>,
@@ -542,7 +542,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">let</span> composition = <span class="type">AVMutableComposition</span>()
         <span class="kw">let</span> videoComposition = <span class="type">AVMutableVideoComposition</span>()
 
-        <span class="comment">// 비디오 트랙 추가</span>
+        <span class="comment">// Video 트랙 추가</span>
         <span class="kw">guard</span> <span class="kw">let</span> videoTrack = composition.addMutableTrack(
             withMediaType: .video,
             preferredTrackID: kCMPersistentTrackID_Invalid
@@ -642,7 +642,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <li><strong>Background:</strong> Configure Capabilities for background audio playback</li>
 <li><strong>성능:</strong> 세션 프리셋으로 품질/성능 균형 조절</li>
 <li><strong>중단 처리:</strong> 전화 등으로 인한 세션 중단 처리</li>
-<li><strong>User Experience:</strong> 녹화/녹음 중 명확한 시각적 피드백 제공</li>
+<li><strong>User Experience:</strong> 녹화/녹음 중 명확한 시each적 피드백 제공</li>
 </ul>
 
 <h2>🎯 Practical Usage</h2>
@@ -658,9 +658,9 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/avfoundation">AVFoundation 공식 문서</a></li>
-<li><a href="https://developer.apple.com/documentation/avfoundation/avcapturesession">AVCaptureSession 레퍼런스</a></li>
-<li><a href="https://developer.apple.com/documentation/avfoundation/avplayer">AVPlayer 레퍼런스</a></li>
+<li><a href="https://developer.apple.com/documentation/avfoundation">AVFoundation Official Documentation</a></li>
+<li><a href="https://developer.apple.com/documentation/avfoundation/avcapturesession">AVCaptureSession Reference</a></li>
+<li><a href="https://developer.apple.com/documentation/avfoundation/avplayer">AVPlayer Reference</a></li>
 </ul>
 
 <div class="info-box">

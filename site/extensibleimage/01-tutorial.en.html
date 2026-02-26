@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 1-2h</span>
   <span>📂 iOS 26</span>
 </div>
-<p class="subtitle">레이어 기반 확장 가능한 이미지 포맷</p>
+<p class="subtitle">Layer-based extensible image format</p>
 
 <div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
 
@@ -55,7 +55,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">class</span> <span class="type">ExtensibleImageManager</span> {
     <span class="kw">var</span> currentImage: <span class="type">EIImage</span>?
 
-    <span class="comment">// 새 이미지 생성</span>
+    <span class="comment">// New 이미지 생성</span>
     <span class="kw">func</span> createNewImage(size: <span class="type">CGSize</span>) {
         <span class="comment">// 빈 캔버스 생성</span>
         currentImage = <span class="type">EIImage</span>(
@@ -70,12 +70,12 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         currentImage = <span class="type">EIImage</span>(cgImage: cgImage)
     }
 
-    <span class="comment">// 파일에서 로드</span>
+    <span class="comment">// From file 로드</span>
     <span class="kw">func</span> loadImage(from url: <span class="type">URL</span>) <span class="kw">throws</span> {
         currentImage = <span class="kw">try</span> <span class="type">EIImage</span>(contentsOf: url)
     }
 
-    <span class="comment">// 파일로 저장</span>
+    <span class="comment">// Save to file</span>
     <span class="kw">func</span> saveImage(to url: <span class="type">URL</span>) <span class="kw">throws</span> {
         <span class="kw">guard</span> <span class="kw">let</span> image = currentImage <span class="kw">else</span> { <span class="kw">return</span> }
         <span class="kw">try</span> image.write(to: url, options: [
@@ -92,7 +92,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>📐 2. 레이어 관리</h2>
+<h2>📐 2. Layer Management</h2>
 <p>여러 레이어를 생성하고 관리.</p>
 
 <div class="code-block">
@@ -110,7 +110,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         )
     }
 
-    <span class="comment">// 새 레이어 추가</span>
+    <span class="comment">// New 레이어 추가</span>
     <span class="kw">func</span> addLayer(name: <span class="type">String</span>, content: <span class="type">UIImage</span>) {
         <span class="kw">guard</span> <span class="kw">let</span> cgImage = content.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
 
@@ -178,11 +178,11 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎨 3. Core Image 필터 통합</h2>
+<h2>🎨 3. Core Image Filter Integration</h2>
 <p>Core Image 필터를 레이어에 적용.</p>
 
 <div class="code-block">
-<div class="code-header">FilterManager.swift — 필터 적용</div>
+<div class="code-header">FilterManager.swift — Apply filter</div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreImage</span>
 <span class="kw">import</span> <span class="type">ExtensibleImage</span>
 
@@ -190,7 +190,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <span class="kw">class</span> <span class="type">FilterManager</span> {
     <span class="kw">private</span> <span class="kw">let</span> context = <span class="type">CIContext</span>()
 
-    <span class="comment">// 블러 필터 적용</span>
+    <span class="comment">// 블러 Apply filter</span>
     <span class="kw">func</span> applyBlur(to layer: <span class="type">EILayer</span>, radius: <span class="type">Double</span>) -> <span class="type">EILayer</span> {
         <span class="kw">let</span> ciImage = <span class="type">CIImage</span>(cgImage: layer.content)
 
@@ -282,7 +282,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>💾 4. 메타데이터 관리</h2>
+<h2>💾 4. Metadata Management</h2>
 <p>이미지 메타데이터를 보존하고 편집.</p>
 
 <div class="code-block">
@@ -336,7 +336,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         image.metadata = metadata
     }
 
-    <span class="comment">// 커스텀 메타데이터</span>
+    <span class="comment">// Custom 메타데이터</span>
     <span class="kw">func</span> addCustomMetadata(
         to image: <span class="type">EIImage</span>,
         key: <span class="type">String</span>,
@@ -360,7 +360,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>✂️ 5. 비파괴 편집</h2>
+<h2>✂️ 5. Non-destructive Editing</h2>
 <p>A non-destructive editing system that preserves the original.</p>
 
 <div class="code-block">
@@ -408,7 +408,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         currentImage = originalImage
     }
 
-    <span class="comment">// 모든 편집 재적용</span>
+    <span class="comment">// all 편집 재적용</span>
     <span class="kw">private</span> <span class="kw">func</span> reapplyAllEdits() {
         currentImage = originalImage
 
@@ -437,21 +437,21 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         }
     }
 
-    <span class="comment">// 필터 적용 헬퍼 메서드</span>
+    <span class="comment">// Apply filter 헬퍼 메서드</span>
     <span class="kw">private</span> <span class="kw">func</span> applyBrightnessFilter(value: <span class="type">Double</span>) {
-        <span class="comment">// Core Image 필터 적용</span>
+        <span class="comment">// Core Image Apply filter</span>
     }
 
     <span class="kw">private</span> <span class="kw">func</span> applyContrastFilter(value: <span class="type">Double</span>) {
-        <span class="comment">// Core Image 필터 적용</span>
+        <span class="comment">// Core Image Apply filter</span>
     }
 
     <span class="kw">private</span> <span class="kw">func</span> applySaturationFilter(value: <span class="type">Double</span>) {
-        <span class="comment">// Core Image 필터 적용</span>
+        <span class="comment">// Core Image Apply filter</span>
     }
 
     <span class="kw">private</span> <span class="kw">func</span> applyBlurFilter(radius: <span class="type">Double</span>) {
-        <span class="comment">// Core Image 필터 적용</span>
+        <span class="comment">// Core Image Apply filter</span>
     }
 
     <span class="comment">// 편집 히스토리 내보내기</span>
@@ -487,7 +487,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
                     <span class="type">ContentUnavailableView</span>(
                         <span class="str">"이미지 없음"</span>,
                         systemImage: <span class="str">"photo"</span>,
-                        description: <span class="type">Text</span>(<span class="str">"사진을 선택하세요"</span>)
+                        description: <span class="type">Text</span>(<span class="str">"사진Select하세요"</span>)
                     )
                 }
 
@@ -520,7 +520,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             .navigationTitle(<span class="str">"ExtensibleImage"</span>)
             .toolbar {
                 <span class="type">PhotosPicker</span>(selection: $selectedPhoto, matching: .images) {
-                    <span class="type">Label</span>(<span class="str">"사진 선택"</span>, systemImage: <span class="str">"photo"</span>)
+                    <span class="type">Label</span>(<span class="str">"Select photo"</span>, systemImage: <span class="str">"photo"</span>)
                 }
             }
             .onChange(of: selectedPhoto) { oldValue, newValue <span class="kw">in</span>
@@ -588,7 +588,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/extensibleimage">ExtensibleImage 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/extensibleimage">ExtensibleImage Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: ExtensibleImage</a></li>
 <li><a href="https://developer.apple.com/documentation/coreimage">Core Image 문서</a></li>
 </ul>

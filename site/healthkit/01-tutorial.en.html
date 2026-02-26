@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
-    <meta property="og:title" content="❤️ HealthKit 완전정복 — HIG Lab">
+    <meta property="og:title" content="❤️ Mastering HealthKit — HIG Lab">
     <meta property="og:description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://m1zz.github.io/HIGLab/healthkit/01-tutorial.en.html">
     <meta property="og:site_name" content="HIG Lab">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="❤️ HealthKit 완전정복 — HIG Lab">
+    <meta name="twitter:title" content="❤️ Mastering HealthKit — HIG Lab">
     <meta name="twitter:description" content="Complete guide to HealthKit health data framework. Learn with hands-on examples at HIG Lab.">
     <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/healthkit/01-tutorial.html">
     <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/healthkit/01-tutorial.en.html">
-<title>❤️ HealthKit 완전정복 — HIG Lab</title>
+<title>❤️ Mastering HealthKit — HIG Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
@@ -35,7 +35,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
 <article>
-<h1>❤️ HealthKit 완전정복</h1>
+<h1>❤️ Mastering HealthKit</h1>
 <p>Read and write Health app data — steps, heart rate, sleep, workouts and all health data!</p>
 <!-- higlab-metadata -->
 <div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
@@ -54,12 +54,12 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <span class="kw">class</span> <span class="type">HealthKitManager</span> {
     <span class="kw">let</span> <span class="prop">healthStore</span> = <span class="type">HKHealthStore</span>()
 
-    <span class="comment">// HealthKit 사용 가능 여부</span>
+    <span class="comment">// HealthKit available 여부</span>
     <span class="kw">func</span> <span class="func">isHealthKitAvailable</span>() -> <span class="type">Bool</span> {
         <span class="kw">return</span> <span class="type">HKHealthStore</span>.<span class="func">isHealthDataAvailable</span>()
     }
 
-    <span class="comment">// 권한 요청</span>
+    <span class="comment">// Permission Request</span>
     <span class="kw">func</span> <span class="func">requestAuthorization</span>() <span class="kw">async throws</span> {
         <span class="comment">// 읽을 데이터 타입</span>
         <span class="kw">let</span> typesToRead: <span class="type">Set</span>&lt;<span class="type">HKObjectType</span>&gt; = [
@@ -82,7 +82,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }</pre></div>
 
-<h2>📊 걸음수 읽기</h2>
+<h2>📊 Reading Step Count</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">StepCount.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">HealthKit</span>
 
@@ -135,7 +135,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }</pre></div>
 
-<h2>💓 심박수 읽기</h2>
+<h2>💓 Reading Heart Rate</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">HeartRate.swift</span></div>
 <pre class="code-body"><span class="kw">func</span> <span class="func">fetchLatestHeartRate</span>() <span class="kw">async throws</span> -> <span class="type">Double</span>? {
     <span class="kw">let</span> heartRateType = <span class="type">HKQuantityType</span>.<span class="func">quantityType</span>(forIdentifier: .<span class="prop">heartRate</span>)!
@@ -163,14 +163,14 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="type">Task</span> {
     <span class="kw">if let</span> heartRate = <span class="kw">try await</span> <span class="func">fetchLatestHeartRate</span>() {
         <span class="func">print</span>(<span class="str">"현재 심박수: \(heartRate) BPM"</span>)
     }
 }</pre></div>
 
-<h2>✍️ 데이터 쓰기</h2>
+<h2>✍️ Writing Data</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">WriteData.swift</span></div>
 <pre class="code-body"><span class="comment">// 걸음수 추가</span>
 <span class="kw">func</span> <span class="func">saveSteps</span>(_ steps: <span class="type">Double</span>, date: <span class="type">Date</span>) <span class="kw">async throws</span> {
@@ -203,7 +203,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">try await</span> healthStore.<span class="func">save</span>(sample)
 }</pre></div>
 
-<h2>🏃 운동 기록 (Workout)</h2>
+<h2>🏃 Workout Recording</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Workout.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">HealthKit</span>
 
@@ -311,7 +311,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }</pre></div>
 
-<h2>🔔 실시간 업데이트 (Observer Query)</h2>
+<h2>🔔 Real-time Updates (Observer Query)</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">ObserverQuery.swift</span></div>
 <pre class="code-body"><span class="kw">class</span> <span class="type">HealthObserver</span> {
     <span class="kw">let</span> <span class="prop">healthStore</span> = <span class="type">HKHealthStore</span>()
@@ -322,12 +322,12 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
         query = <span class="type">HKObserverQuery</span>(sampleType: stepType, predicate: <span class="kw">nil</span>) { _, completionHandler, error <span class="kw">in</span>
             <span class="kw">if let</span> error = error {
-                <span class="func">print</span>(<span class="str">"에러: \(error)"</span>)
+                <span class="func">print</span>(<span class="str">"Error: \(error)"</span>)
                 <span class="kw">return</span>
             }
 
             <span class="comment">// 걸음수 변경 감지</span>
-            <span class="func">print</span>(<span class="str">"걸음수가 업데이트되었습니다!"</span>)
+            <span class="func">print</span>(<span class="str">"걸음수가 Updated!"</span>)
             <span class="type">Task</span> {
                 <span class="kw">let</span> steps = <span class="kw">try await</span> <span class="func">fetchTodaySteps</span>()
                 <span class="func">print</span>(<span class="str">"현재 걸음수: \(steps)"</span>)
@@ -370,7 +370,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             isAuthorized = <span class="kw">true</span>
             <span class="kw">await</span> <span class="func">loadData</span>()
         } <span class="kw">catch</span> {
-            <span class="func">print</span>(<span class="str">"권한 요청 실패: \(error)"</span>)
+            <span class="func">print</span>(<span class="str">"Permission Request 실패: \(error)"</span>)
         }
     }
 
@@ -379,7 +379,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             steps = <span class="kw">try await</span> <span class="func">fetchTodaySteps</span>()
             heartRate = <span class="kw">try await</span> <span class="func">fetchLatestHeartRate</span>()
         } <span class="kw">catch</span> {
-            <span class="func">print</span>(<span class="str">"데이터 로드 실패: \(error)"</span>)
+            <span class="func">print</span>(<span class="str">"데이터 Load failed: \(error)"</span>)
         }
     }
 }
@@ -406,7 +406,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
                     }
                 }
             } <span class="kw">else</span> {
-                <span class="type">Button</span>(<span class="str">"건강 데이터 접근 권한 요청"</span>) {
+                <span class="type">Button</span>(<span class="str">"건강 데이터 접근 Permission Request"</span>) {
                     <span class="type">Task</span> {
                         <span class="kw">await</span> viewModel.<span class="func">requestPermission</span>()
                     }
@@ -429,7 +429,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <span class="kw">&lt;string&gt;</span>건강 데이터를 읽어 운동 기록을 보여줍니다<span class="kw">&lt;/string&gt;</span>
 
 <span class="kw">&lt;key&gt;</span>NSHealthUpdateUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>운동 기록을 건강 앱에 저장합니다<span class="kw">&lt;/string&gt;</span>
+<span class="kw">&lt;string&gt;</span>운동 기록을 건강 앱에 saves<span class="kw">&lt;/string&gt;</span>
 
 <span class="comment">&lt;!-- Xcode Capabilities에서 "HealthKit" 추가 필수 --&gt;</span></pre></div>
 

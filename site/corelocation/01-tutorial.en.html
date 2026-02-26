@@ -35,7 +35,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <body>
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
 <article>
-<h1>📍 Core Location 완전정복</h1>
+<h1>📍 Mastering Core Location</h1>
 <p>From GPS location tracking to geofencing — everything about location services!</p>
 <!-- higlab-metadata -->
 <div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
@@ -53,13 +53,13 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
 <span class="comment">&lt;!-- 앱 사용 중에만 위치 --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSLocationWhenInUseUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>현재 위치를 지도에 표시하기 위해 필요합니다<span class="kw">&lt;/string&gt;</span>
+<span class="kw">&lt;string&gt;</span>Current location를 지도에 표시하기 for 필요합니다<span class="kw">&lt;/string&gt;</span>
 
 <span class="comment">&lt;!-- 항상 위치 (백그라운드) --&gt;</span>
 <span class="kw">&lt;key&gt;</span>NSLocationAlwaysAndWhenInUseUsageDescription<span class="kw">&lt;/key&gt;</span>
-<span class="kw">&lt;string&gt;</span>지오펜싱 알림을 위해 백그라운드 위치 접근이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
+<span class="kw">&lt;string&gt;</span>지오펜싱 알림을 for 백그라운드 위치 접근이 필요합니다<span class="kw">&lt;/string&gt;</span></pre></div>
 
-<h2>📍 현재 위치 가져오기</h2>
+<h2>📍 Getting Current Location</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">LocationManager.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreLocation</span>
 
@@ -75,28 +75,28 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         manager.desiredAccuracy = <span class="type">kCLLocationAccuracyBest</span>
     }
 
-    <span class="comment">// 권한 요청</span>
+    <span class="comment">// Permission Request</span>
     <span class="kw">func</span> <span class="func">requestPermission</span>() {
         manager.<span class="func">requestWhenInUseAuthorization</span>()
-        <span class="comment">// 또는 manager.requestAlwaysAuthorization()</span>
+        <span class="comment">// or manager.requestAlwaysAuthorization()</span>
     }
 
-    <span class="comment">// 위치 추적 시작</span>
+    <span class="comment">// Location tracking 시작</span>
     <span class="kw">func</span> <span class="func">startUpdating</span>() {
         manager.<span class="func">startUpdatingLocation</span>()
     }
 
-    <span class="comment">// 위치 추적 중지</span>
+    <span class="comment">// Location tracking 중지</span>
     <span class="kw">func</span> <span class="func">stopUpdating</span>() {
         manager.<span class="func">stopUpdatingLocation</span>()
     }
 
-    <span class="comment">// 한 번만 위치 가져오기 (iOS 14+)</span>
+    <span class="comment">// 한 번만 위치 Fetch (iOS 14+)</span>
     <span class="kw">func</span> <span class="func">requestLocation</span>() {
         manager.<span class="func">requestLocation</span>()
     }
 
-    <span class="comment">// Delegate - 위치 업데이트</span>
+    <span class="comment">// Delegate - Location update</span>
     <span class="kw">func</span> <span class="func">locationManager</span>(_ manager: <span class="type">CLLocationManager</span>, didUpdateLocations locations: [<span class="type">CLLocation</span>]) {
         location = locations.last
         <span class="func">print</span>(<span class="str">"위치: \(location!.coordinate.latitude), \(location!.coordinate.longitude)"</span>)
@@ -110,7 +110,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         <span class="kw">case</span> .authorizedWhenInUse, .authorizedAlways:
             <span class="func">startUpdating</span>()
         <span class="kw">case</span> .denied, .restricted:
-            <span class="func">print</span>(<span class="str">"위치 권한 거부"</span>)
+            <span class="func">print</span>(<span class="str">"Location permission 거부"</span>)
         <span class="kw">case</span> .notDetermined:
             <span class="func">requestPermission</span>()
         @unknown <span class="kw">default</span>:
@@ -120,7 +120,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 
     <span class="comment">// Delegate - 에러</span>
     <span class="kw">func</span> <span class="func">locationManager</span>(_ manager: <span class="type">CLLocationManager</span>, didFailWithError error: <span class="type">Error</span>) {
-        <span class="func">print</span>(<span class="str">"위치 오류: \(error.localizedDescription)"</span>)
+        <span class="func">print</span>(<span class="str">"위치 Error: \(error.localizedDescription)"</span>)
     }
 }</pre></div>
 
@@ -134,7 +134,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
             <span class="kw">if let</span> location = locationManager.location {
-                <span class="type">Text</span>(<span class="str">"📍 현재 위치"</span>)
+                <span class="type">Text</span>(<span class="str">"📍 Current location"</span>)
                     .font(.headline)
 
                 <span class="type">Text</span>(<span class="str">"위도: \(location.coordinate.latitude)"</span>)
@@ -144,7 +144,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
             } <span class="kw">else</span> {
                 <span class="type">Text</span>(<span class="str">"위치 정보 없음"</span>)
 
-                <span class="type">Button</span>(<span class="str">"위치 권한 요청"</span>) {
+                <span class="type">Button</span>(<span class="str">"위치 Permission Request"</span>) {
                     locationManager.<span class="func">requestPermission</span>()
                 }
                 .buttonStyle(.borderedProminent)
@@ -154,7 +154,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }</pre></div>
 
-<h2>🎯 지오펜싱 (Geofencing)</h2>
+<h2>🎯 Geofencing</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Geofencing.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreLocation</span>
 
@@ -172,7 +172,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
         center: <span class="type">CLLocationCoordinate2D</span>,
         radius: <span class="type">CLLocationDistance</span>
     ) {
-        <span class="comment">// 권한 체크</span>
+        <span class="comment">// Permission 체크</span>
         <span class="kw">guard</span> manager.authorizationStatus == .authorizedAlways <span class="kw">else</span> {
             manager.<span class="func">requestAlwaysAuthorization</span>()
             <span class="kw">return</span>
@@ -203,7 +203,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     <span class="comment">// Delegate - 지역 진입</span>
     <span class="kw">func</span> <span class="func">locationManager</span>(_ manager: <span class="type">CLLocationManager</span>, didEnterRegion region: <span class="type">CLRegion</span>) {
         <span class="func">print</span>(<span class="str">"✅ \(region.identifier) 지역에 진입했습니다"</span>)
-        <span class="comment">// 로컬 알림 표시</span>
+        <span class="comment">// 로컬 Show notification</span>
         <span class="func">sendNotification</span>(title: <span class="str">"지역 진입"</span>, body: <span class="str">"\(region.identifier)에 도착했습니다"</span>)
     }
 
@@ -218,7 +218,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
     }
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> geofence = <span class="type">GeofenceManager</span>()
 geofence.<span class="func">startMonitoring</span>(
     identifier: <span class="str">"집"</span>,
@@ -226,7 +226,7 @@ geofence.<span class="func">startMonitoring</span>(
     radius: <span class="num">100</span>  <span class="comment">// 100미터</span>
 )</pre></div>
 
-<h2>🧭 나침반 (Heading)</h2>
+<h2>🧭 Compass (Heading)</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Compass.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreLocation</span>
 
@@ -274,7 +274,7 @@ geofence.<span class="func">startMonitoring</span>(
     }
 }</pre></div>
 
-<h2>📏 거리 계산</h2>
+<h2>📏 Distance Calculation</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Distance.swift</span></div>
 <pre class="code-body"><span class="kw">import</span> <span class="type">CoreLocation</span>
 
@@ -283,14 +283,14 @@ geofence.<span class="func">startMonitoring</span>(
     <span class="kw">return</span> from.<span class="func">distance</span>(from: to)
 }
 
-<span class="comment">// 사용 예시</span>
+<span class="comment">// Usage Example</span>
 <span class="kw">let</span> seoul = <span class="type">CLLocation</span>(latitude: <span class="num">37.5665</span>, longitude: <span class="num">126.9780</span>)
 <span class="kw">let</span> busan = <span class="type">CLLocation</span>(latitude: <span class="num">35.1796</span>, longitude: <span class="num">129.0756</span>)
 
 <span class="kw">let</span> distance = <span class="func">calculateDistance</span>(from: seoul, to: busan)
 <span class="func">print</span>(<span class="str">"거리: \(distance / 1000)km"</span>)  <span class="comment">// 약 325km</span></pre></div>
 
-<h2>⚙️ 정확도 설정</h2>
+<h2>⚙️ Accuracy Settings</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">Accuracy.swift</span></div>
 <pre class="code-body"><span class="kw">let</span> manager = <span class="type">CLLocationManager</span>()
 
@@ -307,9 +307,9 @@ manager.distanceFilter = <span class="num">10</span>  <span class="comment">// 1
 <span class="comment">// 배터리 절약 모드 (iOS 9+)</span>
 manager.allowsBackgroundLocationUpdates = <span class="kw">false</span>  <span class="comment">// 백그라운드 업데이트 끄기</span></pre></div>
 
-<h2>🔋 백그라운드 위치 추적</h2>
+<h2>🔋 Background Location Tracking</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">BackgroundLocation.swift</span></div>
-<pre class="code-body"><span class="comment">// 1. Info.plist에 추가</span>
+<pre class="code-body"><span class="comment">// 1. Info.plist added to</span>
 <span class="comment">// NSLocationAlwaysAndWhenInUseUsageDescription</span>
 
 <span class="comment">// 2. Capabilities 설정
@@ -321,13 +321,13 @@ manager.allowsBackgroundLocationUpdates = <span class="kw">false</span>  <span c
 manager.allowsBackgroundLocationUpdates = <span class="kw">true</span>
 manager.pausesLocationUpdatesAutomatically = <span class="kw">false</span>
 
-<span class="comment">// Always 권한 요청</span>
+<span class="comment">// Always Permission Request</span>
 manager.<span class="func">requestAlwaysAuthorization</span>()
 
-<span class="comment">// ⚠️ 주의: 백그라운드 위치는 배터리를 많이 소모합니다!</span>
-<span class="comment">// 꼭 필요한 경우에만 사용하세요.</span></pre></div>
+<span class="comment">// ⚠️ Warning: 백그라운드 위치는 배터리를 많이 소모합니다!</span>
+<span class="comment">// 꼭 If needed에만 사용do it.</span></pre></div>
 
-<h2>📊 위치 정확도 확인</h2>
+<h2>📊 Location Accuracy Check</h2>
 <div class="code-block"><div class="code-header"><span class="code-filename">AccuracyCheck.swift</span></div>
 <pre class="code-body"><span class="kw">func</span> <span class="func">locationManager</span>(_ manager: <span class="type">CLLocationManager</span>, didUpdateLocations locations: [<span class="type">CLLocation</span>]) {
     <span class="kw">guard let</span> location = locations.last <span class="kw">else</span> { <span class="kw">return</span> }
@@ -355,7 +355,7 @@ manager.<span class="func">requestAlwaysAuthorization</span>()
 }</pre></div>
 
 <p style="background:#ff384210;border:1px solid #ff384240;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#ff3842">⚠️ 배터리 주의!</strong><br>
-- 위치 추적은 배터리를 많이 소모합니다<br>
+- Location tracking은 배터리를 많이 소모합니다<br>
 - 적절한 정확도와 distanceFilter 설정<br>
 - Call stopUpdatingLocation() when not needed<br>
 - 백그라운드 위치는 꼭 필요할 때만</p>

@@ -31,7 +31,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
   <span>⏱️ Est. Time: 3-4h</span>
   <span>📂 App Services</span>
 </div>
-<p class="subtitle">FaceTime으로 함께 즐기는 공유 경험</p>
+<p class="subtitle">Shared experiences together via FaceTime</p>
 
 <div><span class="badge ios">iOS 15+</span><span class="badge new">tvOS/macOS Supported</span></div>
 
@@ -42,7 +42,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <strong>💡 Key Features:</strong> Media Sync · Screen Sharing · Group Sessions · Real-Time Sync · Smart Volume · Shared Playback Controls · Cross-Platform (iOS/tvOS/macOS)
 </div>
 
-<h2>🎯 1. Group Activity 정의</h2>
+<h2>🎯 1. Defining Group Activity</h2>
 <p>Define activities to share in a SharePlay session.</p>
 
 <div class="code-block">
@@ -76,7 +76,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🚀 2. SharePlay 세션 시작</h2>
+<h2>🚀 2. Starting SharePlay Session</h2>
 <p>Activate a GroupActivity and manage sessions.</p>
 
 <div class="code-block">
@@ -111,18 +111,18 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">func</span> startSharePlay(movie: <span class="type">Movie</span>) <span class="kw">async</span> <span class="kw">throws</span> {
         <span class="kw">let</span> activity = <span class="type">WatchingMovie</span>(movie: movie)
 
-        <span class="comment">// 세션 활성화 시도</span>
+        <span class="comment">// Session 활성화 시도</span>
         <span class="kw">switch</span> <span class="kw">await</span> activity.prepareForActivation() {
         <span class="kw">case</span> .activationPreferred:
-            <span class="comment">// 사용자가 SharePlay 선택 → 세션 활성화</span>
+            <span class="comment">// User가 SharePlay 선택 → 세션 활성화</span>
             <span class="kw">try</span> <span class="kw">await</span> activity.activate()
 
         <span class="kw">case</span> .activationDisabled:
             <span class="comment">// SharePlay 비활성화 → 로컬에서만 재생</span>
-            print(<span class="str">"SharePlay 비활성화됨"</span>)
+            print(<span class="str">"SharePlay 비Activated"</span>)
 
         <span class="kw">case</span> .cancelled:
-            <span class="comment">// 사용자가 취소</span>
+            <span class="comment">// User가 취소</span>
             print(<span class="str">"SharePlay 취소됨"</span>)
 
         <span class="kw">@unknown</span> <span class="kw">default</span>:
@@ -142,7 +142,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
             .store(in: &cancellables)
 
-        <span class="comment">// 세션 상태 변화 관찰</span>
+        <span class="comment">// Session state change 관찰</span>
         session.$state
             .sink { [<span class="kw">weak self</span>] state <span class="kw">in</span>
                 <span class="kw">if</span> state == .invalidated {
@@ -152,7 +152,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             }
             .store(in: &cancellables)
 
-        <span class="comment">// 세션 조인</span>
+        <span class="comment">// Session 조인</span>
         session.join()
     }
 
@@ -169,7 +169,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎥 3. 비디오 동기화</h2>
+<h2>🎥 3. Video Synchronization</h2>
 <p>Integrate AVPlayer with SharePlay to synchronize playback.</p>
 
 <div class="code-block">
@@ -184,7 +184,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 
     <span class="kw">private</span> <span class="kw">var</span> playbackCoordinator: <span class="type">AVPlayerPlaybackCoordinator</span>?
 
-    <span class="comment">// SharePlay로 비디오 재생</span>
+    <span class="comment">// SharePlay로 Play video</span>
     <span class="kw">func</span> playVideo(url: <span class="type">URL</span>, session: <span class="type">GroupSession</span><<span class="type">WatchingMovie</span>>?) {
         <span class="comment">// AVPlayer 생성</span>
         <span class="kw">let</span> playerItem = <span class="type">AVPlayerItem</span>(url: url)
@@ -197,7 +197,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
             playbackCoordinator?.coordinateWithSession(session)
         }
 
-        <span class="comment">// 재생 시작</span>
+        <span class="comment">// Start playback</span>
         player.play()
     }
 
@@ -219,7 +219,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>🎵 4. 음악 동기화</h2>
+<h2>🎵 4. Music Synchronization</h2>
 <p>Music playback can also be synced via SharePlay.</p>
 
 <div class="code-block">
@@ -262,7 +262,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 }</pre>
 </div>
 
-<h2>💬 5. 커스텀 메시지 전송</h2>
+<h2>💬 5. Custom Message Sending</h2>
 <p>Exchange custom data through GroupSession.</p>
 
 <div class="code-block">
@@ -324,7 +324,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
         <span class="kw">do</span> {
             <span class="kw">try</span> <span class="kw">await</span> messenger.send(message)
         } <span class="kw">catch</span> {
-            print(<span class="str">"메시지 전송 실패: \(error)"</span>)
+            print(<span class="str">"메시지 Send failed: \(error)"</span>)
         }
     }
 
@@ -381,7 +381,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
         <span class="type">NavigationStack</span> {
             <span class="type">VStack</span> {
-                <span class="comment">// 비디오 플레이어</span>
+                <span class="comment">// Video 플레이어</span>
                 <span class="kw">if</span> <span class="kw">let</span> player = videoManager.player {
                     <span class="type">VideoPlayer</span>(player: player)
                         .frame(height: <span class="str">250</span>)
@@ -468,7 +468,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <li><strong>자동 감지:</strong> Automatically offer SharePlay options during FaceTime calls.</li>
 <li><strong>시작 방법:</strong> 명확한 SharePlay 시작 버튼 제공</li>
 <li><strong>상태 표시:</strong> SharePlay 활성 여부를 명확히 표시</li>
-<li><strong>컨트롤 공유:</strong> 모든 참가자가 재생을 제어할 수 있어야 함</li>
+<li><strong>컨트롤 공유:</strong> all 참가자가 재생을 제어할 수 있어야 함</li>
 <li><strong>스마트 볼륨:</strong> The system automatically balances FaceTime and media audio.</li>
 <li><strong>개별 선택:</strong> Participants can freely join/leave SharePlay</li>
 <li><strong>권한:</strong> In Info.plist, <code>NSLocalNetworkUsageDescription</code> 추가</li>
@@ -479,7 +479,7 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <ul>
 <li><strong>Streaming Apps:</strong> 영화/드라마를 친구와 함께 시청</li>
 <li><strong>Music Apps:</strong> 플레이리스트를 실시간으로 공유</li>
-<li><strong>운동 앱:</strong> 같은 운동 영상을 함께 따라하기</li>
+<li><strong>운동 앱:</strong> like 운동 영상을 함께 따라하기</li>
 <li><strong>게임 앱:</strong> 화면 공유로 함께 게임 플레이</li>
 <li><strong>Education Apps:</strong> 강의나 Tutorial을 함께 시청</li>
 </ul>
@@ -487,17 +487,17 @@ ul{margin:16px 0 16px 24px}li{margin:8px 0}
 <h2>📚 Learn More</h2>
 
 <ul>
-<li><a href="https://developer.apple.com/documentation/groupactivities">GroupActivities 공식 문서</a></li>
+<li><a href="https://developer.apple.com/documentation/groupactivities">GroupActivities Official Documentation</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2021/10087/">WWDC 2021: Coordinate media experiences with Group Activities</a></li>
 <li><a href="https://developer.apple.com/videos/play/wwdc2022/10140/">WWDC 2022: What's new in SharePlay</a></li>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/shareplay">HIG: SharePlay</a></li>
 </ul>
 
 <div class="info-box">
-<strong>⚡️ 팁:</strong> SharePlay has been fully available since iOS 15.1. Testing is limited in the simulator, so testing on 2 physical devices is recommended.
+<strong>⚡️ Tip:</strong> SharePlay has been fully available since iOS 15.1. Testing is limited in the simulator, so testing on 2 physical devices is recommended.
 </div>
 
-<h2>🔧 Entitlements 설정</h2>
+<h2>🔧 Entitlements Setup</h2>
 
 <p>To use SharePlay, add the Group Activities entitlement to your app.</p>
 

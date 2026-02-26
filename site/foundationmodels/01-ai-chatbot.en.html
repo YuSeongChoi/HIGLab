@@ -19,7 +19,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-ai-chatbot.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
 <article>
 <span class="badge">🆕 iOS 26</span>
-<h1>🤖 온디바이스 AI 챗봇 만들기</h1>
+<h1>🤖 Build an On-Device AI Chatbot</h1>
 <p>Build privacy-preserving AI apps with Foundation Models. All processing happens on-device.</p>
 <!-- higlab-metadata -->
 <div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
@@ -28,7 +28,7 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
   <span>📂 App Frameworks</span>
 </div>
 
-<h2>✨ Foundation Models 특징</h2>
+<h2>✨ Foundation Models Features</h2>
 <p>• 프라이버시 보호 (데이터가 기기를 떠나지 않음)<br>
 • 오프라인 Supported (네트워크 불필요)<br>
 • Swift 네이티브 async/await API</p>
@@ -36,16 +36,16 @@ pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-
 <h2>💬 Basic Usage (LanguageModelSession)</h2>
 <div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">FoundationModels</span>
 
-<span class="comment">// 세션 생성 (시스템 프롬프트 설정)</span>
+<span class="comment">// Session 생성 (시스템 프롬프트 설정)</span>
 <span class="kw">let</span> session = <span class="type">LanguageModelSession</span>(
     instructions: <span class="str">"친절한 AI 어시스턴트입니다"</span>
 )
 
-<span class="comment">// 응답 요청</span>
+<span class="comment">// Response 요청</span>
 <span class="kw">let</span> response = <span class="kw">try await</span> session.<span class="func">respond</span>(to: <span class="str">"안녕하세요"</span>)
 print(response.content)</pre></div>
 
-<h2>🔄 스트리밍 응답</h2>
+<h2>🔄 Streaming Response</h2>
 <div class="code-block"><pre class="code-body"><span class="comment">// 스트리밍으로 실시간 응답 받기</span>
 <span class="kw">let</span> stream = session.<span class="func">streamResponse</span>(to: prompt)
 <span class="kw">for try await</span> partial <span class="kw">in</span> stream {
@@ -65,7 +65,7 @@ print(response.content)</pre></div>
     }
 }</pre></div>
 
-<h2>💬 SwiftUI 챗봇 구현</h2>
+<h2>💬 SwiftUI Chatbot Implementation</h2>
 <div class="code-block"><pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
 <span class="kw">import</span> <span class="type">FoundationModels</span>
 
@@ -77,7 +77,7 @@ print(response.content)</pre></div>
 
     <span class="comment">// LanguageModelSession 사용</span>
     @<span class="type">State</span> <span class="kw">private var</span> session = <span class="type">LanguageModelSession</span>(
-        instructions: <span class="str">"친절한 AI 어시스턴트입니다. 한국어로 답변하세요."</span>
+        instructions: <span class="str">"친절한 AI 어시스턴트 is. 한국어로 답변do it."</span>
     )
 
     <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
@@ -120,11 +120,11 @@ print(response.content)</pre></div>
                 <span class="kw">for try await</span> partial <span class="kw">in</span> stream {
                     streamingText = partial.outputSoFar
                 }
-                <span class="comment">// 완료 후 메시지 배열에 추가</span>
+                <span class="comment">// Complete 후 메시지 배열 added to</span>
                 messages.append(<span class="type">Message</span>(role: .assistant, content: streamingText))
                 streamingText = <span class="str">""</span>
             } <span class="kw">catch</span> {
-                print(<span class="str">"오류: \(error)"</span>)
+                print(<span class="str">"Error: \(error)"</span>)
             }
             isGenerating = <span class="kw">false</span>
         }
@@ -141,7 +141,7 @@ print(response.content)</pre></div>
     <span class="kw">case</span> <span class="prop">user</span>, <span class="prop">assistant</span>
 }</pre></div>
 
-<h2>⚙️ 모델 설정 & Error Handling</h2>
+<h2>⚙️ Model Configuration & Error Handling</h2>
 <div class="code-block"><pre class="code-body"><span class="kw">do</span> {
     <span class="comment">// Temperature 조정 (0.0 = 일관성, 1.0 = 창의성)</span>
     <span class="kw">let</span> result = <span class="kw">try await</span> model.<span class="func">generate</span>(
@@ -156,7 +156,7 @@ print(response.content)</pre></div>
     <span class="kw">case</span> .insufficientMemory:
         print(<span class="str">"메모리가 부족합니다"</span>)
     <span class="kw">default</span>:
-        print(<span class="str">"오류 발생: \(error)"</span>)
+        print(<span class="str">"Error occurred: \(error)"</span>)
     }
 }</pre></div>
 
