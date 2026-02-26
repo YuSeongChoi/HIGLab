@@ -98,21 +98,3 @@ struct WeatherDetail: View {
     }
 }
 
-#Preview("Celsius") {
-    PersonalizedWeatherWidget(
-        selectedCity: "서울",
-        temperatureUnit: "°C",
-        showFeelsLike: true
-    )
-    .previewContext(WidgetPreviewContext(family: .systemMedium))
-}
-
-
-#Preview("Fahrenheit") {
-    PersonalizedWeatherWidget(
-        selectedCity: "New York",
-        temperatureUnit: "°F",
-        showFeelsLike: false
-    )
-    .previewContext(WidgetPreviewContext(family: .systemMedium))
-}

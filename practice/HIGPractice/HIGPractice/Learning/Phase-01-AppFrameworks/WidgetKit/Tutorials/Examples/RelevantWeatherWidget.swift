@@ -78,7 +78,3 @@ struct RelevantWeatherWidget: View {
     }
 }
 
-#Preview {
-    RelevantWeatherWidget(currentHour: 14)
-        .previewContext(WidgetPreviewContext(family: .systemMedium))
-}

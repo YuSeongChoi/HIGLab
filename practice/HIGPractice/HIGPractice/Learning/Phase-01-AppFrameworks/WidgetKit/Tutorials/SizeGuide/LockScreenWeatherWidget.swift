@@ -67,19 +67,3 @@ struct LockScreenWeatherInline: View {
 // 4. widgetAccentable() 필수 - 액센트 컬러 적용
 
 
-#Preview("Circular") {
-    LockScreenWeatherWidget()
-        .previewContext(WidgetPreviewContext(family: .accessoryCircular))
-}
-
-
-#Preview("Rectangular") {
-    LockScreenWeatherRectangular()
-        .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
-}
-
-
-#Preview("Inline") {
-    LockScreenWeatherInline()
-        .previewContext(WidgetPreviewContext(family: .accessoryInline))
-}

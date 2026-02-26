@@ -106,7 +106,3 @@ struct HourlyForecast: Identifiable {
 }
 
 
-#Preview {
-    MediumWeatherWidget()
-        .previewContext(WidgetPreviewContext(family: .systemMedium))
-}

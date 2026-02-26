@@ -38,7 +38,3 @@ struct GlanceableWeatherWidget: View {
     }
 }
 
-#Preview {
-    GlanceableWeatherWidget()
-        .previewContext(WidgetPreviewContext(family: .systemSmall))
-}

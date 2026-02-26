@@ -54,7 +54,3 @@ struct SmallWeatherWidget: View {
     }
 }
 
-#Preview {
-    SmallWeatherWidget()
-        .previewContext(WidgetPreviewContext(family: .systemSmall))
-}

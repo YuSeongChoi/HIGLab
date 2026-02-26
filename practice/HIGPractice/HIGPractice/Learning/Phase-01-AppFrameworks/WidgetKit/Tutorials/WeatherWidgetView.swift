@@ -24,6 +24,3 @@ struct WeatherWidgetView: View {
     }
 }
 
-#Preview {
-    WeatherWidgetView()
-}

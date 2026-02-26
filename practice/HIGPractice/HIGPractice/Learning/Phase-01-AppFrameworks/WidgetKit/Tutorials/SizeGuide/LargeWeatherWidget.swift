@@ -181,7 +181,3 @@ struct WeeklyForecast: Identifiable {
 }
 
 
-#Preview {
-    LargeWeatherWidget()
-        .previewContext(WidgetPreviewContext(family: .systemLarge))
-}
