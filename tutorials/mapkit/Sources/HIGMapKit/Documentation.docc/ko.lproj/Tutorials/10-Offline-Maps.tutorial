@@ -1,0 +1,170 @@
+@Tutorial(time: 15) {
+    @Intro(title: "오프라인 지도") {
+        iOS 17+의 오프라인 지도 기능을 활용합니다.
+        인터넷 없이도 맛집 지도를 사용할 수 있게 합니다.
+    }
+    
+    @Section(title: "오프라인 지도 소개") {
+        @ContentAndMedia {
+            iOS 17부터 사용자가 설정 > 지도에서 
+            오프라인 지도를 다운로드할 수 있습니다.
+            앱에서 이 기능을 안내하고 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **오프라인 지도 동작 방식**
+                
+                사용자가 미리 다운로드한 지역은 
+                인터넷 없이도 지도 타일과 검색이 가능합니다.
+                MapKit이 자동으로 오프라인 데이터를 사용합니다.
+                
+                @Code(name: "OfflineGuide.swift", file: "10-offline-intro.swift")
+            }
+            
+            @Step {
+                **설정 앱으로 안내**
+                
+                오프라인 지도 다운로드 화면으로 이동하는 링크를 제공합니다.
+                UIApplication.openSettingsURLString을 활용합니다.
+                
+                @Code(name: "OfflineGuide.swift", file: "10-settings-link.swift")
+            }
+        }
+    }
+    
+    @Section(title: "오프라인 대응 전략") {
+        @ContentAndMedia {
+            네트워크 상태를 감지하고 
+            오프라인 시 적절한 UX를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **네트워크 상태 모니터링**
+                
+                NWPathMonitor로 실시간 네트워크 상태를 감지합니다.
+                오프라인 전환 시 사용자에게 알립니다.
+                
+                @Code(name: "NetworkMonitor.swift", file: "10-network-monitor.swift")
+            }
+            
+            @Step {
+                **로컬 캐싱 전략**
+                
+                자주 방문하는 맛집 데이터를 로컬에 저장합니다.
+                Core Data나 SwiftData로 오프라인 접근을 지원합니다.
+                
+                @Code(name: "LocalCache.swift", file: "10-local-cache.swift")
+            }
+            
+            @Step {
+                **오프라인 UI 표시**
+                
+                오프라인 상태임을 배너로 알리고
+                사용 가능한 기능을 안내합니다.
+                
+                @Code(name: "OfflineBanner.swift", file: "10-offline-banner.swift")
+            }
+        }
+    }
+    
+    @Section(title: "즐겨찾기 오프라인 지원") {
+        @ContentAndMedia {
+            사용자가 즐겨찾기한 맛집은 
+            오프라인에서도 볼 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **즐겨찾기 모델**
+                
+                SwiftData로 즐겨찾기 맛집을 저장합니다.
+                좌표, 이름, 카테고리 등 필수 정보를 포함합니다.
+                
+                @Code(name: "FavoriteRestaurant.swift", file: "10-favorite-model.swift")
+            }
+            
+            @Step {
+                **오프라인 맛집 표시**
+                
+                오프라인 시 즐겨찾기 맛집만 지도에 표시합니다.
+                검색 기능은 로컬 데이터로 제한됩니다.
+                
+                @Code(name: "ContentView.swift", file: "10-offline-favorites.swift")
+            }
+            
+            @Step {
+                **앱 완성**
+                
+                모든 기능을 통합하여 맛집 지도 앱을 완성합니다.
+                온/오프라인 모두에서 사용 가능한 앱입니다.
+                
+                @Code(name: "ContentView.swift", file: "10-final-app.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iOS 17 오프라인 지도 기능의 특징은?
+            
+            @Choice(isCorrect: true) {
+                사용자가 설정 앱에서 직접 지역을 다운로드해야 함
+                
+                @Justification(reaction: "정답!") {
+                    앱에서 자동 다운로드는 불가능합니다.
+                    사용자가 설정 > 지도에서 원하는 지역을 선택합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱에서 직접 지역을 다운로드할 수 있음
+                
+                @Justification(reaction: "아쉽네요") {
+                    현재 API로는 앱에서 직접 다운로드를 트리거할 수 없습니다.
+                    설정 앱으로 안내하는 것이 최선입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                모든 지역이 자동으로 캐싱됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    저장 공간 문제로 자동 캐싱은 제한적입니다.
+                    사용자가 명시적으로 다운로드해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            오프라인 시 MKLocalSearch의 동작은?
+            
+            @Choice(isCorrect: true) {
+                오프라인 지도가 다운로드된 지역에서는 제한적으로 동작
+                
+                @Justification(reaction: "정확합니다!") {
+                    다운로드된 지역의 POI 데이터도 함께 저장되어
+                    기본적인 검색이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                항상 실패 (인터넷 필수)
+                
+                @Justification(reaction: "아쉽네요") {
+                    오프라인 지도가 있는 지역에서는 로컬 검색이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                오프라인에서 더 정확한 결과 반환
+                
+                @Justification(reaction: "아쉽네요") {
+                    온라인이 더 최신이고 포괄적인 데이터를 제공합니다.
+                    오프라인은 다운로드 시점의 스냅샷입니다.
+                }
+            }
+        }
+    }
+}

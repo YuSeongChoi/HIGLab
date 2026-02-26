@@ -1,0 +1,210 @@
+@Tutorial(time: 20) {
+    @Intro(title: "AirPlay 지원") {
+        AirPlay를 통해 Apple TV나 AirPlay 호환 기기로 
+        비디오를 스트리밍합니다.
+        
+        @Image(source: "airplay-overview.png", alt: "AirPlay")
+    }
+    
+    @Section(title: "AirPlay 기본 설정") {
+        @ContentAndMedia {
+            AirPlay는 로컬 네트워크의 호환 기기로 
+            미디어를 무선 스트리밍하는 기술입니다.
+            
+            - Apple TV
+            - AirPlay 호환 스마트 TV
+            - HomePod (오디오)
+            - Mac (디스플레이)
+            
+            @Image(source: "airplay-devices.png", alt: "AirPlay 기기")
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayerViewController는 기본적으로 
+                AirPlay를 지원합니다.
+                컨트롤에 AirPlay 버튼이 자동으로 표시됩니다.
+                
+                @Code(name: "DefaultAirPlay.swift", file: "05-01-default-airplay.swift")
+            }
+            
+            @Step {
+                AVPlayer의 allowsExternalPlayback 속성으로
+                AirPlay 지원을 제어할 수 있습니다.
+                
+                @Code(name: "AllowExternal.swift", file: "05-02-allow-external.swift")
+            }
+            
+            @Step {
+                DRM이 적용된 콘텐츠는 externalProtectionEnabled를 사용해
+                보안을 유지하면서 AirPlay를 지원할 수 있습니다.
+                
+                @Code(name: "ExternalProtection.swift", file: "05-03-protection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVRoutePickerView") {
+        @ContentAndMedia {
+            커스텀 플레이어에서 AirPlay 기기 선택 UI를
+            직접 추가하려면 AVRoutePickerView를 사용합니다.
+            
+            - 시스템 스타일의 AirPlay 버튼
+            - 기기 선택 팝업 자동 표시
+            - 활성 상태 표시
+        }
+        
+        @Steps {
+            @Step {
+                AVRoutePickerView를 UI에 추가합니다.
+                탭하면 AirPlay 기기 선택 메뉴가 나타납니다.
+                
+                @Code(name: "RoutePickerView.swift", file: "05-04-route-picker.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 AVRoutePickerView를 사용하려면
+                UIViewRepresentable로 래핑합니다.
+                
+                @Code(name: "SwiftUIRoutePicker.swift", file: "05-05-swiftui-picker.swift")
+            }
+            
+            @Step {
+                AVRoutePickerViewDelegate로 기기 선택 UI의
+                표시/해제 이벤트를 감지합니다.
+                
+                @Code(name: "RoutePickerDelegate.swift", file: "05-06-picker-delegate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "외부 재생 감지") {
+        @ContentAndMedia {
+            AirPlay로 재생 중인지 감지하여
+            앱 UI를 적절히 조정합니다.
+            
+            - 로컬 화면에 플레이스홀더 표시
+            - 배터리 절약 모드 활성화
+            - 추가 정보 표시
+        }
+        
+        @Steps {
+            @Step {
+                isExternalPlaybackActive 속성을 관찰하여
+                AirPlay 재생 상태를 감지합니다.
+                
+                @Code(name: "DetectExternal.swift", file: "05-07-detect-external.swift")
+            }
+            
+            @Step {
+                AirPlay 중일 때 로컬 화면에
+                "TV에서 재생 중" 같은 메시지를 표시합니다.
+                
+                @Code(name: "AirPlayMessage.swift", file: "05-08-airplay-message.swift")
+            }
+            
+            @Step {
+                Combine을 사용해 외부 재생 상태 변화를 
+                반응형으로 처리합니다.
+                
+                @Code(name: "CombineExternal.swift", file: "05-09-combine-external.swift")
+            }
+        }
+    }
+    
+    @Section(title: "오디오 라우팅") {
+        @ContentAndMedia {
+            비디오 없이 오디오만 AirPlay로 스트리밍할 수도 있습니다.
+            AVAudioSession의 라우팅 기능을 활용합니다.
+            
+            - Bluetooth 스피커
+            - HomePod
+            - 유선 오디오 출력
+        }
+        
+        @Steps {
+            @Step {
+                현재 오디오 출력 라우트를 확인합니다.
+                
+                @Code(name: "AudioRoute.swift", file: "05-10-audio-route.swift")
+            }
+            
+            @Step {
+                오디오 라우트 변경 노티피케이션을 관찰합니다.
+                이어폰 연결/해제, AirPlay 전환 등을 감지합니다.
+                
+                @Code(name: "RouteChange.swift", file: "05-11-route-change.swift")
+            }
+            
+            @Step {
+                usesExternalPlaybackWhileExternalScreenIsActive로
+                미러링 대신 외부 재생을 선호하도록 설정합니다.
+                
+                @Code(name: "PreferExternal.swift", file: "05-12-prefer-external.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVRoutePickerView의 역할은 무엇인가요?
+            
+            @Choice(isCorrect: true) {
+                AirPlay 기기 선택 UI를 제공하는 버튼
+                
+                @Justification(reaction: "정확합니다! 📺") {
+                    AVRoutePickerView는 시스템 스타일의 AirPlay 버튼을 제공하고,
+                    탭하면 기기 선택 메뉴가 나타납니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                비디오를 AirPlay로 전송하는 엔진
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    실제 전송은 AVPlayer가 담당합니다.
+                    AVRoutePickerView는 UI만 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크에서 AirPlay 기기를 검색하는 클래스
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    기기 검색은 시스템에서 자동으로 처리합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            isExternalPlaybackActive가 true일 때 무엇을 해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                재생을 일시정지한다
+                
+                @Justification(reaction: "불필요합니다.") {
+                    AirPlay 중에도 재생은 계속됩니다.
+                    일시정지할 필요가 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                로컬 화면에 적절한 플레이스홀더를 표시한다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    사용자에게 "TV에서 재생 중"과 같은 
+                    피드백을 제공하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AirPlay 연결을 끊는다
+                
+                @Justification(reaction: "사용자 경험을 해칩니다.") {
+                    사용자가 원해서 AirPlay를 시작한 것이므로
+                    임의로 끊으면 안 됩니다.
+                }
+            }
+        }
+    }
+}

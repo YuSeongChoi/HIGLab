@@ -1,0 +1,194 @@
+@Tutorial(time: 20) {
+    @Intro(title: "ARView 설정") {
+        ARView는 RealityKit에서 AR 콘텐츠를 렌더링하는 핵심 뷰입니다.
+        이 튜토리얼에서는 ARView를 생성하고 다양한 옵션으로 구성하는 방법을 배웁니다.
+        
+        @Image(source: "chapter2-arview.png", alt: "ARView 설정")
+    }
+    
+    @Section(title: "ARView 기본 설정") {
+        @ContentAndMedia {
+            ARView는 UIView의 서브클래스로, AR 콘텐츠를 표시하고 
+            카메라 피드 위에 3D 객체를 렌더링합니다.
+            
+            @Image(source: "arview-basics.png", alt: "ARView 기본 구조")
+        }
+        
+        @Steps {
+            @Step {
+                SwiftUI에서 ARView를 사용하기 위해 UIViewRepresentable을 구현합니다.
+                
+                @Code(name: "ARViewContainer.swift", file: "02-arview-01.swift")
+            }
+            
+            @Step {
+                ARView를 다양한 프레임 옵션으로 초기화할 수 있습니다.
+                
+                @Code(name: "ARViewInit.swift", file: "02-arview-02.swift")
+            }
+            
+            @Step {
+                ARView의 주요 프로퍼티를 살펴봅니다.
+                
+                - `scene`: 렌더링할 RealityKit Scene
+                - `cameraMode`: AR 또는 non-AR 모드
+                - `renderOptions`: 렌더링 옵션
+                
+                @Code(name: "ARViewProperties.swift", file: "02-arview-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AR 세션 구성") {
+        @ContentAndMedia {
+            ARView는 내부적으로 ARSession을 관리합니다.
+            다양한 AR 구성을 통해 트래킹 모드를 설정할 수 있습니다.
+            
+            @Image(source: "ar-session.png", alt: "AR 세션 구성")
+        }
+        
+        @Steps {
+            @Step {
+                ARWorldTrackingConfiguration으로 월드 트래킹을 설정합니다.
+                
+                @Code(name: "WorldTracking.swift", file: "02-arview-04.swift")
+            }
+            
+            @Step {
+                평면 감지를 활성화합니다.
+                수평면, 수직면, 또는 둘 다 감지할 수 있습니다.
+                
+                @Code(name: "PlaneDetection.swift", file: "02-arview-05.swift")
+            }
+            
+            @Step {
+                환경 텍스처링을 설정하여 현실감 있는 반사를 구현합니다.
+                
+                @Code(name: "EnvironmentTexturing.swift", file: "02-arview-06.swift")
+            }
+            
+            @Step {
+                사람 오클루전을 활성화합니다.
+                이를 통해 가상 객체가 사람 뒤에 가려지는 효과를 낼 수 있습니다.
+                
+                @Code(name: "PeopleOcclusion.swift", file: "02-arview-07.swift")
+            }
+        }
+    }
+    
+    @Section(title: "디버그 옵션") {
+        @ContentAndMedia {
+            개발 중에 유용한 다양한 디버그 옵션을 활성화할 수 있습니다.
+            
+            @Image(source: "debug-options.png", alt: "디버그 옵션")
+        }
+        
+        @Steps {
+            @Step {
+                debugOptions를 사용하여 다양한 시각화를 활성화합니다.
+                
+                @Code(name: "DebugOptions.swift", file: "02-arview-08.swift")
+            }
+            
+            @Step {
+                통계 정보를 화면에 표시합니다.
+                
+                @Code(name: "Statistics.swift", file: "02-arview-09.swift")
+            }
+            
+            @Step {
+                완성된 ARView 설정 코드입니다.
+                
+                @Code(name: "CompleteARView.swift", file: "02-arview-10.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ARView의 cameraMode에서 AR 카메라 피드 없이 3D 콘텐츠만 렌더링하려면 어떤 모드를 사용해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                .ar
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .ar 모드는 카메라 피드를 배경으로 사용하는 AR 모드입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .nonAR
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    .nonAR 모드는 카메라 피드 없이 순수 3D 렌더링만 수행합니다.
+                    게임이나 3D 뷰어에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .automatic
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .automatic은 디바이스 기능에 따라 자동으로 모드를 선택합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            평면 감지에서 수평면과 수직면 모두를 감지하려면 어떻게 설정해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                planeDetection = .horizontal
+                
+                @Justification(reaction: "아쉽네요.") {
+                    .horizontal은 수평면만 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                planeDetection = .vertical
+                
+                @Justification(reaction: "아쉽네요.") {
+                    .vertical은 수직면만 감지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                planeDetection = [.horizontal, .vertical]
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    배열로 여러 옵션을 조합하여 수평면과 수직면 모두를 감지할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사람 오클루전을 활성화하려면 어떤 프레임 시멘틱이 필요한가요?
+            
+            @Choice(isCorrect: true) {
+                .personSegmentationWithDepth
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    personSegmentationWithDepth를 사용하면 깊이 정보와 함께
+                    사람을 세그먼테이션하여 자연스러운 오클루전이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .bodyDetection
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    bodyDetection은 신체 트래킹을 위한 것이지 오클루전용이 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .faceTracking
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    faceTracking은 얼굴 인식을 위한 것입니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,175 @@
+@Tutorial(time: 15) {
+    @Intro(title: "AVKit 소개") {
+        AVKit 프레임워크의 핵심 개념과 
+        AVFoundation과의 관계를 이해합니다.
+        
+        @Image(source: "avkit-intro.png", alt: "AVKit 개요")
+    }
+    
+    @Section(title: "AVKit이란?") {
+        @ContentAndMedia {
+            AVKit은 Apple 플랫폼에서 미디어 재생을 위한 
+            고수준 UI 프레임워크입니다.
+            
+            - **시스템 일관성**: 네이티브 플레이어 UI 제공
+            - **자동 기능**: PiP, AirPlay 자동 지원
+            - **접근성**: VoiceOver, 동적 텍스트 기본 지원
+            
+            @Image(source: "avkit-architecture.png", alt: "AVKit 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                프로젝트에 AVKit을 import합니다.
+                AVKit은 내부적으로 AVFoundation을 사용하므로 
+                두 프레임워크 모두 필요합니다.
+                
+                @Code(name: "AVKitImport.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                AVKit의 주요 구성요소를 살펴봅니다.
+                
+                - `AVPlayerViewController`: iOS/tvOS 비디오 플레이어
+                - `AVPlayerView`: macOS 비디오 플레이어
+                - `AVRoutePickerView`: AirPlay 기기 선택
+                - `AVPictureInPictureController`: PiP 제어
+                
+                @Code(name: "AVKitComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVFoundation과의 관계") {
+        @ContentAndMedia {
+            AVFoundation은 미디어 처리의 핵심 엔진이고,
+            AVKit은 이를 감싸는 UI 레이어입니다.
+            
+            | 프레임워크 | 역할 | 사용 예시 |
+            |-----------|-----|---------|
+            | AVFoundation | 미디어 로딩, 디코딩, 재생 | AVPlayer, AVAsset |
+            | AVKit | UI 및 사용자 인터랙션 | AVPlayerViewController |
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayer는 AVFoundation의 핵심 재생 엔진입니다.
+                미디어 파일을 로드하고 재생 상태를 관리합니다.
+                
+                @Code(name: "AVPlayer.swift", file: "01-03-avplayer.swift")
+            }
+            
+            @Step {
+                AVPlayerItem은 재생할 미디어 아이템을 나타냅니다.
+                하나의 AVPlayer에 여러 AVPlayerItem을 교체할 수 있습니다.
+                
+                @Code(name: "AVPlayerItem.swift", file: "01-04-playeritem.swift")
+            }
+            
+            @Step {
+                AVAsset은 미디어 파일의 메타데이터와 트랙 정보를 포함합니다.
+                비디오 길이, 해상도, 자막 등의 정보를 가져올 수 있습니다.
+                
+                @Code(name: "AVAsset.swift", file: "01-05-avasset.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지원 미디어 포맷") {
+        @ContentAndMedia {
+            AVKit은 Apple 플랫폼에서 지원하는 
+            다양한 비디오 및 오디오 포맷을 재생할 수 있습니다.
+            
+            - **비디오**: H.264, HEVC(H.265), ProRes
+            - **오디오**: AAC, MP3, ALAC, FLAC
+            - **컨테이너**: MP4, MOV, M4V, HLS
+        }
+        
+        @Steps {
+            @Step {
+                로컬 파일을 재생하는 가장 기본적인 방법입니다.
+                Bundle에 포함된 비디오 파일을 로드합니다.
+                
+                @Code(name: "LocalPlayback.swift", file: "01-06-local.swift")
+            }
+            
+            @Step {
+                원격 URL에서 스트리밍 재생도 가능합니다.
+                HTTP Live Streaming(HLS)은 적응형 스트리밍을 제공합니다.
+                
+                @Code(name: "RemotePlayback.swift", file: "01-07-remote.swift")
+            }
+            
+            @Step {
+                지원되지 않는 포맷을 확인하고 
+                적절한 에러 처리를 구현합니다.
+                
+                @Code(name: "FormatCheck.swift", file: "01-08-format-check.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVKit과 AVFoundation의 관계를 가장 잘 설명한 것은?
+            
+            @Choice(isCorrect: false) {
+                AVKit은 오디오 전용, AVFoundation은 비디오 전용이다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    두 프레임워크 모두 오디오와 비디오를 처리합니다.
+                    AVFoundation은 저수준 처리, AVKit은 UI를 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                AVFoundation은 미디어 엔진, AVKit은 UI 레이어다.
+                
+                @Justification(reaction: "정확합니다! 🎬") {
+                    AVFoundation이 미디어를 로드하고 디코딩하면,
+                    AVKit이 이를 사용자에게 보여주는 UI를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                둘은 완전히 독립적인 프레임워크다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVKit은 내부적으로 AVFoundation의 AVPlayer를 사용합니다.
+                    둘은 밀접하게 연관되어 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            AVPlayerViewController를 사용하는 가장 큰 장점은?
+            
+            @Choice(isCorrect: false) {
+                더 빠른 비디오 디코딩 성능을 제공한다.
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    디코딩 성능은 AVFoundation이 담당합니다.
+                    AVPlayerViewController는 UI만 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                시스템 일관성 있는 UI와 자동 기능(PiP, AirPlay)을 제공한다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    AVPlayerViewController는 OS 전체와 일관된 UI를 제공하며,
+                    PiP, AirPlay 등의 기능을 자동으로 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                커스텀 UI를 만들기 더 쉽다.
+                
+                @Justification(reaction: "오히려 반대입니다.") {
+                    커스텀 UI가 필요하면 AVPlayerLayer를 직접 사용해야 합니다.
+                    AVPlayerViewController는 표준 UI를 제공합니다.
+                }
+            }
+        }
+    }
+}

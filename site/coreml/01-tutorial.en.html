@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to CoreML machine learning framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="🧠 Mastering Core ML — HIG Lab">
+    <meta property="og:description" content="Complete guide to CoreML machine learning framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/coreml/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🧠 Mastering Core ML — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to CoreML machine learning framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/coreml/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/coreml/01-tutorial.en.html">
+<title>🧠 Mastering Core ML — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🧠 Mastering Core ML</h1>
+<p>On-device ML for image classification, object detection, and text analysis! All processed on-device.</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 3-4h</span>
+  <span>📂 App Services</span>
+</div>
+
+<h2>✨ Core ML is?</h2>
+<p>Core ML is Apple's machine learning framework. Convert TensorFlow and PyTorch models to run on iPhone. All processing happens on-device, ensuring privacy.</p>
+
+<h2>📦 Adding Models</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">모델 Fetch</span></div>
+<pre class="code-body"><span class="comment">1. Core ML 모델 다운로드
+   - Apple 제공 모델: https://developer.apple.com/machine-learning/models/
+   - MobileNet, ResNet, SqueezeNet 등
+
+2. Xcode 프로젝트에 .mlmodel 파일 드래그
+
+3. Automatically Swift 코드 생성됨
+   - MyModel.swift (자동 생성, 수정 금지)</span></pre></div>
+
+<h2>🖼️ Image Classification</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ImageClassifier.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreML</span>
+<span class="kw">import</span> <span class="type">Vision</span>
+<span class="kw">import</span> <span class="type">UIKit</span>
+
+<span class="kw">class</span> <span class="type">ImageClassifier</span> {
+    <span class="comment">// MobileNet 모델 로드 (Apple 제공)</span>
+    <span class="kw">func</span> <span class="func">classifyImage</span>(_ image: <span class="type">UIImage</span>) <span class="kw">async throws</span> -> <span class="type">String</span> {
+        <span class="comment">// 1. 모델 로드</span>
+        <span class="kw">let</span> model = <span class="kw">try</span> <span class="type">VNCoreMLModel</span>(for: <span class="type">MobileNet</span>().<span class="prop">model</span>)
+
+        <span class="comment">// 2. 요청 생성</span>
+        <span class="kw">let</span> request = <span class="type">VNCoreMLRequest</span>(model: model)
+
+        <span class="comment">// 3. 이미지 처리</span>
+        <span class="kw">guard let</span> cgImage = image.cgImage <span class="kw">else</span> {
+            <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Image Error"</span>, code: <span class="num">0</span>)
+        }
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+        <span class="kw">try</span> handler.<span class="func">perform</span>([request])
+
+        <span class="comment">// 4. 결과 처리</span>
+        <span class="kw">guard let</span> results = request.results <span class="kw">as</span>? [<span class="type">VNClassificationObservation</span>],
+              <span class="kw">let</span> topResult = results.first <span class="kw">else</span> {
+            <span class="kw">return</span> <span class="str">"분류 실패"</span>
+        }
+
+        <span class="kw">return</span> <span class="str">"\(topResult.identifier) (\(Int(topResult.confidence * 100))%)"</span>
+    }
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> classifier = <span class="type">ImageClassifier</span>()
+<span class="kw">let</span> image = <span class="type">UIImage</span>(named: <span class="str">"dog.jpg"</span>)!
+<span class="kw">let</span> result = <span class="kw">try await</span> classifier.<span class="func">classifyImage</span>(image)
+<span class="func">print</span>(result)  <span class="comment">// "golden retriever (92%)"</span></pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ClassifierView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">PhotosUI</span>
+
+<span class="kw">struct</span> <span class="type">ImageClassifierView</span>: <span class="type">View</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> selectedItem: <span class="type">PhotosPickerItem</span>?
+    @<span class="type">State</span> <span class="kw">private var</span> selectedImage: <span class="type">UIImage</span>?
+    @<span class="type">State</span> <span class="kw">private var</span> result: <span class="type">String</span> = <span class="str">""</span>
+    @<span class="type">State</span> <span class="kw">private var</span> isProcessing = <span class="kw">false</span>
+
+    <span class="kw">let</span> <span class="prop">classifier</span> = <span class="type">ImageClassifier</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="num">20</span>) {
+            <span class="kw">if let</span> image = selectedImage {
+                <span class="type">Image</span>(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: <span class="num">300</span>)
+                    .cornerRadius(<span class="num">12</span>)
+            }
+
+            <span class="kw">if</span> isProcessing {
+                <span class="type">ProgressView</span>(<span class="str">"분석 중..."</span>)
+            } <span class="kw">else if</span> !result.isEmpty {
+                <span class="type">Text</span>(result)
+                    .font(.title2)
+                    .bold()
+            }
+
+            <span class="type">PhotosPicker</span>(selection: $selectedItem, matching: .images) {
+                <span class="type">Label</span>(<span class="str">"Select photo"</span>, systemImage: <span class="str">"photo"</span>)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+        .onChange(of: selectedItem) {
+            <span class="type">Task</span> {
+                <span class="kw">if let</span> data = <span class="kw">try</span>? <span class="kw">await</span> selectedItem?.loadTransferable(type: <span class="type">Data</span>.<span class="kw">self</span>),
+                   <span class="kw">let</span> image = <span class="type">UIImage</span>(data: data) {
+                    selectedImage = image
+                    <span class="kw">await</span> <span class="func">classify</span>(image)
+                }
+            }
+        }
+    }
+
+    <span class="kw">func</span> <span class="func">classify</span>(_ image: <span class="type">UIImage</span>) <span class="kw">async</span> {
+        isProcessing = <span class="kw">true</span>
+        <span class="kw">defer</span> { isProcessing = <span class="kw">false</span> }
+
+        result = (<span class="kw">try</span>? <span class="kw">await</span> classifier.<span class="func">classifyImage</span>(image)) ?? <span class="str">"오류"</span>
+    }
+}</pre></div>
+
+<h2>🎯 Object Detection</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ObjectDetector.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">func</span> <span class="func">detectObjects</span>(_ image: <span class="type">UIImage</span>) <span class="kw">async throws</span> -> [<span class="type">VNRecognizedObjectObservation</span>] {
+    <span class="comment">// YOLO 모델 사용 (프로젝트 added to 필요)</span>
+    <span class="kw">let</span> model = <span class="kw">try</span> <span class="type">VNCoreMLModel</span>(for: <span class="type">YOLOv3</span>().<span class="prop">model</span>)
+
+    <span class="kw">let</span> request = <span class="type">VNCoreMLRequest</span>(model: model)
+
+    <span class="kw">guard let</span> cgImage = image.cgImage <span class="kw">else</span> {
+        <span class="kw">throw</span> <span class="type">NSError</span>(domain: <span class="str">"Image Error"</span>, code: <span class="num">0</span>)
+    }
+
+    <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage)
+    <span class="kw">try</span> handler.<span class="func">perform</span>([request])
+
+    <span class="kw">guard let</span> results = request.results <span class="kw">as</span>? [<span class="type">VNRecognizedObjectObservation</span>] <span class="kw">else</span> {
+        <span class="kw">return</span> []
+    }
+
+    <span class="kw">return</span> results
+}
+
+<span class="comment">// Result 그리기</span>
+<span class="kw">func</span> <span class="func">drawBoxes</span>(on image: <span class="type">UIImage</span>, results: [<span class="type">VNRecognizedObjectObservation</span>]) -> <span class="type">UIImage</span> {
+    <span class="kw">let</span> renderer = <span class="type">UIGraphicsImageRenderer</span>(size: image.size)
+
+    <span class="kw">return</span> renderer.<span class="func">image</span> { context <span class="kw">in</span>
+        image.<span class="func">draw</span>(at: .<span class="prop">zero</span>)
+
+        <span class="type">UIColor</span>.red.setStroke()
+        context.cgContext.setLineWidth(<span class="num">3</span>)
+
+        <span class="kw">for</span> observation <span class="kw">in</span> results {
+            <span class="comment">// Vision 좌표계 변환 (왼쪽 하단 = 0,0)</span>
+            <span class="kw">let</span> boundingBox = observation.boundingBox
+            <span class="kw">let</span> rect = <span class="type">CGRect</span>(
+                x: boundingBox.origin.x * image.size.width,
+                y: (<span class="num">1</span> - boundingBox.origin.y - boundingBox.height) * image.size.height,
+                width: boundingBox.width * image.size.width,
+                height: boundingBox.height * image.size.height
+            )
+
+            context.cgContext.<span class="func">stroke</span>(rect)
+
+            <span class="comment">// 라벨 표시</span>
+            <span class="kw">if let</span> label = observation.labels.first {
+                <span class="kw">let</span> text = <span class="str">"\(label.identifier) \(Int(label.confidence * 100))%"</span>
+                <span class="kw">let</span> attributes: [<span class="type">NSAttributedString</span>.<span class="type">Key</span>: <span class="type">Any</span>] = [
+                    .font: <span class="type">UIFont</span>.boldSystemFont(ofSize: <span class="num">16</span>),
+                    .foregroundColor: <span class="type">UIColor</span>.red
+                ]
+                text.<span class="func">draw</span>(at: rect.origin, withAttributes: attributes)
+            }
+        }
+    }
+}</pre></div>
+
+<h2>📝 Text Analysis (Sentiment Analysis)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SentimentAnalysis.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">NaturalLanguage</span>
+
+<span class="kw">func</span> <span class="func">analyzeSentiment</span>(_ text: <span class="type">String</span>) -> <span class="type">String</span> {
+    <span class="kw">let</span> tagger = <span class="type">NLTagger</span>(tagSchemes: [.sentimentScore])
+    tagger.string = text
+
+    <span class="kw">let</span> (sentiment, _) = tagger.<span class="func">tag</span>(
+        at: text.startIndex,
+        unit: .paragraph,
+        scheme: .sentimentScore
+    )
+
+    <span class="kw">guard let</span> sentimentValue = sentiment,
+          <span class="kw">let</span> score = <span class="type">Double</span>(sentimentValue.rawValue) <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="str">"중립"</span>
+    }
+
+    <span class="kw">if</span> score > <span class="num">0.3</span> {
+        <span class="kw">return</span> <span class="str">"😊 긍정적 (\(Int(score * 100))%)"</span>
+    } <span class="kw">else if</span> score < <span class="num">-0.3</span> {
+        <span class="kw">return</span> <span class="str">"😢 부정적 (\(Int(abs(score) * 100))%)"</span>
+    } <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="str">"😐 중립적"</span>
+    }
+}
+
+<span class="comment">// Usage Example</span>
+<span class="kw">let</span> text1 = <span class="str">"이 영화 정말 재미있었어요!"</span>
+<span class="func">print</span>(<span class="func">analyzeSentiment</span>(text1))  <span class="comment">// "😊 긍정적"</span>
+
+<span class="kw">let</span> text2 = <span class="str">"최악의 서비스였습니다."</span>
+<span class="func">print</span>(<span class="func">analyzeSentiment</span>(text2))  <span class="comment">// "😢 부정적"</span></pre></div>
+
+<h2>🎤 Speech Recognition Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">SpeechToML.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Speech</span>
+
+<span class="kw">func</span> <span class="func">transcribeAndClassify</span>(audioURL: <span class="type">URL</span>) <span class="kw">async throws</span> -> (<span class="type">String</span>, <span class="type">String</span>) {
+    <span class="comment">// 1. Speech recognition</span>
+    <span class="kw">let</span> recognizer = <span class="type">SFSpeechRecognizer</span>(locale: <span class="type">Locale</span>(identifier: <span class="str">"ko-KR"</span>))!
+    <span class="kw">let</span> request = <span class="type">SFSpeechURLRecognitionRequest</span>(url: audioURL)
+
+    <span class="kw">let</span> result = <span class="kw">try await</span> recognizer.<span class="func">recognitionTask</span>(with: request).<span class="prop">bestTranscription</span>
+    <span class="kw">let</span> text = result.formattedString
+
+    <span class="comment">// 2. 감정 분석</span>
+    <span class="kw">let</span> sentiment = <span class="func">analyzeSentiment</span>(text)
+
+    <span class="kw">return</span> (text, sentiment)
+}</pre></div>
+
+<h2>🔄 Model Updates (On-Device Training)</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">OnDeviceTraining.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreML</span>
+<span class="kw">import</span> <span class="type">CreateML</span>
+
+<span class="comment">// Updatable 모델만 가능 (Create ML로 생성 시 활성화)</span>
+<span class="kw">func</span> <span class="func">updateModel</span>(with newData: [<span class="type">MLDataTable</span>]) <span class="kw">throws</span> {
+    <span class="comment">// 1. existing 모델 로드</span>
+    <span class="kw">let</span> modelURL = <span class="type">Bundle</span>.main.url(forResource: <span class="str">"MyModel"</span>, withExtension: <span class="str">"mlmodelc"</span>)!
+    <span class="kw">let</span> model = <span class="kw">try</span> <span class="type">MLModel</span>(contentsOf: modelURL)
+
+    <span class="comment">// 2. 업데이트 설정</span>
+    <span class="kw">let</span> configuration = <span class="type">MLModelConfiguration</span>()
+    configuration.computeUnits = .all
+
+    <span class="comment">// 3. 학습 (온디바이스)</span>
+    <span class="kw">let</span> updateTask = <span class="kw">try</span> <span class="type">MLUpdateTask</span>(
+        forModelAt: modelURL,
+        trainingData: newData,
+        configuration: configuration
+    )
+
+    updateTask.resume()
+
+    <span class="comment">// 4. 완료 Handler</span>
+    <span class="comment">// updateTask.completionHandler = { context in ... }</span>
+}</pre></div>
+
+<h2>⚡ Performance Optimization</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Performance.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">CoreML</span>
+
+<span class="comment">// 1. Compute Unit 설정</span>
+<span class="kw">let</span> config = <span class="type">MLModelConfiguration</span>()
+config.computeUnits = .all  <span class="comment">// CPU + GPU + Neural Engine</span>
+config.computeUnits = .cpuAndGPU  <span class="comment">// Neural Engine 제외</span>
+config.computeUnits = .cpuAndNeuralEngine  <span class="comment">// GPU 제외</span>
+config.computeUnits = .cpuOnly  <span class="comment">// CPU만</span>
+
+<span class="kw">let</span> model = <span class="kw">try</span> <span class="type">MobileNet</span>(configuration: config)
+
+<span class="comment">// 2. 배치 처리 (여러 이미지 동시 처리)</span>
+<span class="kw">let</span> images: [<span class="type">CVPixelBuffer</span>] = <span class="comment">/* ... */</span>
+<span class="kw">let</span> batch = <span class="type">MLArrayBatchProvider</span>(array: images.map { image <span class="kw">in</span>
+    <span class="kw">try</span>! <span class="type">MLFeatureProvider</span>(image: image)
+})
+<span class="kw">let</span> results = <span class="kw">try</span> model.<span class="func">predictions</span>(from: batch)
+
+<span class="comment">// 3. 모델 재사용 (인스턴스 캐싱)</span>
+<span class="kw">class</span> <span class="type">ModelManager</span> {
+    <span class="kw">static let</span> <span class="prop">shared</span> = <span class="type">ModelManager</span>()
+    <span class="kw">let</span> <span class="prop">model</span>: <span class="type">MobileNet</span>
+
+    <span class="kw">private</span> <span class="kw">init</span>() {
+        model = <span class="kw">try</span>! <span class="type">MobileNet</span>(configuration: <span class="type">MLModelConfiguration</span>())
+    }
+}</pre></div>
+
+<h2>🔧 Creating Models with Create ML</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Training.swift</span></div>
+<pre class="code-body"><span class="comment">// Create ML 앱 사용 (GUI)
+1. Xcode > Open Developer Tool > Create ML
+2. 새 프로젝트 생성
+3. 학습 데이터 추가
+4. Train 클릭
+5. .mlmodel 파일 export
+
+// 코드로 학습 (Swift Playgrounds)</span>
+<span class="kw">import</span> <span class="type">CreateML</span>
+
+<span class="kw">let</span> trainingData = <span class="kw">try</span> <span class="type">MLImageClassifier</span>.<span class="type">DataSource</span>.<span class="func">labeledDirectories</span>(at: trainingDataURL)
+<span class="kw">let</span> testData = <span class="kw">try</span> <span class="type">MLImageClassifier</span>.<span class="type">DataSource</span>.<span class="func">labeledDirectories</span>(at: testDataURL)
+
+<span class="kw">let</span> model = <span class="kw">try</span> <span class="type">MLImageClassifier</span>(
+    trainingData: trainingData,
+    validationData: testData
+)
+
+<span class="kw">try</span> model.<span class="func">write</span>(to: <span class="type">URL</span>(fileURLWithPath: <span class="str">"/tmp/MyModel.mlmodel"</span>))</pre></div>
+
+<h2>🐍 Python Model Conversion</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">convert.py</span></div>
+<pre class="code-body"><span class="comment"># TensorFlow/PyTorch → Core ML 변환</span>
+<span class="kw">import</span> <span class="type">coremltools</span> <span class="kw">as</span> <span class="type">ct</span>
+
+<span class="comment"># TensorFlow 모델 변환</span>
+<span class="kw">import</span> <span class="type">tensorflow</span> <span class="kw">as</span> <span class="type">tf</span>
+model = tf.keras.models.load_model(<span class="str">'model.h5'</span>)
+coreml_model = ct.convert(model)
+coreml_model.save(<span class="str">'MyModel.mlmodel'</span>)
+
+<span class="comment"># PyTorch 모델 변환</span>
+<span class="kw">import</span> <span class="type">torch</span>
+model = torch.load(<span class="str">'model.pth'</span>)
+traced_model = torch.jit.trace(model, example_input)
+coreml_model = ct.convert(traced_model)
+coreml_model.save(<span class="str">'MyModel.mlmodel'</span>)</pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 Core ML 장점</strong><br>
+✅ 프라이버시 보장 (all 처리가 기기 내)<br>
+✅ 오프라인 작동<br>
+✅ 낮은 지연시간<br>
+✅ Neural Engine 활용 (A11 이상)<br>
+✅ 배터리 효율적</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/machine-learning/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple ML 페이지</div>
+</a>
+<a href="https://developer.apple.com/documentation/coreml" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">📖</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/coreml" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/coreml/integrating-a-core-ml-model-into-your-app" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=Core+ML" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

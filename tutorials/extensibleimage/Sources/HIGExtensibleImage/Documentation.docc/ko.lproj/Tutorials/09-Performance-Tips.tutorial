@@ -1,0 +1,163 @@
+@Tutorial(time: 25) {
+    @Intro(title: "성능 최적화") {
+        ExtensibleImage를 사용할 때 최적의 성능을 얻기 위한 모범 사례와 팁을 학습합니다.
+        
+        메모리 관리, Neural Engine 활용, 캐싱 전략 등 실전 최적화 기법을 다룹니다.
+        
+        @Image(source: "performance-hero.png", alt: "성능 최적화")
+    }
+    
+    @Section(title: "메모리 최적화") {
+        @ContentAndMedia {
+            이미지 처리는 메모리를 많이 사용합니다. 효율적인 메모리 관리로 앱 안정성을 높입니다.
+        }
+        
+        @Steps {
+            @Step {
+                이미지 크기를 처리 전에 적절히 조정합니다.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-01.swift")
+            }
+            
+            @Step {
+                자동 해제 풀을 사용하여 중간 결과물의 메모리를 즉시 회수합니다.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-02.swift")
+            }
+            
+            @Step {
+                메모리 경고에 대응하는 핸들러를 구현합니다.
+                
+                @Code(name: "MemoryOpt.swift", file: "09-perf-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Neural Engine 활용") {
+        @ContentAndMedia {
+            Neural Engine을 최대한 활용하면 처리 속도가 크게 향상되고 배터리 소모가 줄어듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                Neural Engine 우선 모드를 활성화합니다.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-04.swift")
+            }
+            
+            @Step {
+                모델 웜업으로 첫 실행 지연을 줄입니다.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-05.swift")
+            }
+            
+            @Step {
+                기기별 Neural Engine 가용성을 확인하고 폴백을 구현합니다.
+                
+                @Code(name: "NeuralEngine.swift", file: "09-perf-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "결과 캐싱") {
+        @ContentAndMedia {
+            동일한 이미지의 반복 처리를 피하기 위해 결과를 캐싱합니다.
+        }
+        
+        @Steps {
+            @Step {
+                메모리 캐시를 구성합니다.
+                
+                @Code(name: "Caching.swift", file: "09-perf-07.swift")
+            }
+            
+            @Step {
+                디스크 캐시로 앱 재시작 후에도 결과를 재사용합니다.
+                
+                @Code(name: "Caching.swift", file: "09-perf-08.swift")
+            }
+            
+            @Step {
+                캐시 키 생성 전략을 최적화합니다.
+                
+                @Code(name: "Caching.swift", file: "09-perf-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비동기 처리 패턴") {
+        @ContentAndMedia {
+            UI 반응성을 유지하면서 무거운 이미지 처리를 수행하는 패턴을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                백그라운드 처리와 메인 스레드 업데이트를 분리합니다.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-10.swift")
+            }
+            
+            @Step {
+                TaskGroup을 활용한 병렬 처리를 구현합니다.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-11.swift")
+            }
+            
+            @Step {
+                우선순위 기반 작업 스케줄링을 적용합니다.
+                
+                @Code(name: "AsyncPatterns.swift", file: "09-perf-12.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로파일링과 디버깅") {
+        @ContentAndMedia {
+            Instruments를 사용하여 ExtensibleImage 성능을 측정하고 병목을 찾습니다.
+        }
+        
+        @Steps {
+            @Step {
+                성능 로깅을 활성화합니다.
+                
+                @Code(name: "Profiling.swift", file: "09-perf-13.swift")
+            }
+            
+            @Step {
+                Instruments Core ML 템플릿으로 Neural Engine 사용량을 분석합니다.
+                
+                @Code(name: "Profiling.swift", file: "09-perf-14.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ExtensibleImage 작업의 첫 실행이 느린 이유는?
+            
+            @Choice(isCorrect: true) {
+                Neural Engine 모델의 웜업(컴파일) 시간이 필요하기 때문
+                
+                @Justification(reaction: "정답입니다!") {
+                    Core ML 모델이 Neural Engine에서 실행되려면 최초 한 번 컴파일이 필요합니다. preload()로 미리 웜업할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지를 디스크에서 읽는 시간 때문
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    디스크 I/O도 영향이 있지만, 주된 원인은 모델 웜업입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Swift 컴파일러의 최적화가 적용되기 전이라서
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Swift 코드는 빌드 시점에 이미 컴파일됩니다.
+                }
+            }
+        }
+    }
+}

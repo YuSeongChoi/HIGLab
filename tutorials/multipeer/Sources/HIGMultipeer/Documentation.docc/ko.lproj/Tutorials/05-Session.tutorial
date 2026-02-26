@@ -1,0 +1,168 @@
+@Tutorial(time: 12) {
+    @Intro(title: "MCSession 연결") {
+        MCSession을 사용하여 피어 간 연결을 관리하고
+        통신 채널을 설정합니다.
+    }
+    
+    @Section(title: "MCSession 이해하기") {
+        @ContentAndMedia {
+            MCSession은 연결된 피어들 간의 통신 세션입니다.
+            
+            하나의 세션에 최대 8개의 피어가 연결될 수 있으며,
+            데이터, 스트림, 리소스를 주고받을 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCSession의 기본 구조를 살펴봅니다.
+                
+                PeerID로 세션을 초기화합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-01-session-basic.swift")
+            }
+            
+            @Step {
+                보안 식별자와 암호화 기본 설정을 알아봅니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-02-security.swift")
+            }
+        }
+    }
+    
+    @Section(title: "세션 델리게이트 구현") {
+        @ContentAndMedia {
+            MCSessionDelegate는 세션 상태 변화, 
+            데이터 수신, 스트림 수신 등의 이벤트를 처리합니다.
+            
+            모든 콜백은 백그라운드 스레드에서 호출됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCSessionDelegate의 필수 메서드들을 구현합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-03-delegate.swift")
+            }
+            
+            @Step {
+                피어 연결 상태 변화를 처리합니다.
+                
+                connected, connecting, notConnected 상태가 있습니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-04-state-changed.swift")
+            }
+            
+            @Step {
+                데이터 수신 콜백을 구현합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-05-receive-data.swift")
+            }
+            
+            @Step {
+                스트림 수신 콜백을 구현합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-06-receive-stream.swift")
+            }
+            
+            @Step {
+                리소스 수신 콜백을 구현합니다.
+                
+                파일 전송 시작과 완료를 처리합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-07-receive-resource.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연결 관리") {
+        @ContentAndMedia {
+            세션의 연결된 피어들을 관리하고,
+            연결 해제를 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                연결된 피어 목록을 추적합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-08-connected-peers.swift")
+            }
+            
+            @Step {
+                특정 피어와의 연결을 해제합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-09-disconnect.swift")
+            }
+            
+            @Step {
+                전체 세션을 종료합니다.
+                
+                @Code(name: "SessionManager.swift", file: "05-10-disconnect-all.swift")
+            }
+            
+            @Step {
+                연결 상태를 UI에 표시합니다.
+                
+                @Code(name: "ConnectionStatusView.swift", file: "05-11-status-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MCSession에 최대 몇 개의 피어가 연결될 수 있나요?
+            
+            @Choice(isCorrect: false) {
+                4개
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MCSession은 더 많은 피어를 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                8개
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    MCSession은 최대 8개의 피어를 연결할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                무제한
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MCSession에는 연결 제한이 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MCSessionDelegate 메서드들은 어느 스레드에서 호출되나요?
+            
+            @Choice(isCorrect: false) {
+                메인 스레드
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    UI 업데이트 시 DispatchQueue.main으로 전환해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                백그라운드 스레드
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    모든 델리게이트 콜백은 백그라운드 스레드에서 호출되므로,
+                    UI 업데이트 시 메인 스레드로 전환해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                랜덤 스레드
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    콜백은 항상 백그라운드 스레드에서 호출됩니다.
+                }
+            }
+        }
+    }
+}

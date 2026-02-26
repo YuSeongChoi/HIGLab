@@ -1,0 +1,177 @@
+@Tutorial(time: 20) {
+    @Intro(title: "MapKit JS 연동") {
+        웹에서 Apple Maps를 사용할 수 있는 MapKit JS를 소개합니다.
+        iOS 앱과 웹사이트 간 맛집 데이터를 공유합니다.
+    }
+    
+    @Section(title: "MapKit JS 소개") {
+        @ContentAndMedia {
+            MapKit JS는 웹 브라우저에서 Apple Maps를 사용할 수 있게 해줍니다.
+            iOS 앱과 동일한 지도 데이터와 스타일을 웹에서도 제공할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MapKit JS 토큰 발급**
+                
+                Apple Developer에서 Maps ID와 Private Key를 발급받습니다.
+                JWT 토큰을 생성하여 인증에 사용합니다.
+                
+                @Code(name: "mapkit-setup.js", file: "09-token-setup.js")
+            }
+            
+            @Step {
+                **HTML에 MapKit JS 추가**
+                
+                CDN에서 MapKit JS를 로드하고 초기화합니다.
+                토큰으로 인증을 완료합니다.
+                
+                @Code(name: "index.html", file: "09-html-setup.html")
+            }
+            
+            @Step {
+                **기본 지도 표시**
+                
+                JavaScript로 지도를 생성하고 화면에 표시합니다.
+                iOS 앱과 동일한 위치를 기본값으로 설정합니다.
+                
+                @Code(name: "map.js", file: "09-basic-map.js")
+            }
+        }
+    }
+    
+    @Section(title: "웹 지도에 마커 표시") {
+        @ContentAndMedia {
+            iOS 앱의 맛집 데이터를 웹 지도에도 표시합니다.
+            동일한 JSON API를 공유합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **마커 추가**
+                
+                mapkit.MarkerAnnotation으로 맛집 위치를 표시합니다.
+                iOS의 Marker와 유사한 API입니다.
+                
+                @Code(name: "markers.js", file: "09-add-markers.js")
+            }
+            
+            @Step {
+                **커스텀 콜아웃**
+                
+                마커 클릭 시 맛집 정보를 팝업으로 표시합니다.
+                calloutElement로 HTML 콘텐츠를 제공합니다.
+                
+                @Code(name: "markers.js", file: "09-callout.js")
+            }
+            
+            @Step {
+                **API에서 데이터 로드**
+                
+                REST API에서 맛집 목록을 받아 마커로 표시합니다.
+                iOS 앱과 동일한 엔드포인트를 사용합니다.
+                
+                @Code(name: "api.js", file: "09-fetch-data.js")
+            }
+        }
+    }
+    
+    @Section(title: "딥링크 연동") {
+        @ContentAndMedia {
+            웹에서 iOS 앱으로 딥링크를 제공합니다.
+            앱이 설치되어 있으면 바로 열립니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Universal Links 설정**
+                
+                apple-app-site-association 파일을 설정합니다.
+                웹 URL과 앱 화면을 연결합니다.
+                
+                @Code(name: "apple-app-site-association", file: "09-aasa.json")
+            }
+            
+            @Step {
+                **iOS 앱에서 딥링크 처리**
+                
+                .onOpenURL로 웹에서 전달된 맛집 ID를 처리합니다.
+                해당 맛집 상세 화면을 표시합니다.
+                
+                @Code(name: "ContentView.swift", file: "09-deeplink-handler.swift")
+            }
+            
+            @Step {
+                **"앱에서 열기" 버튼**
+                
+                웹 페이지에 앱 설치/열기 배너를 추가합니다.
+                Smart App Banner를 활용합니다.
+                
+                @Code(name: "index.html", file: "09-smart-banner.html")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MapKit JS 사용에 필요한 인증 방식은?
+            
+            @Choice(isCorrect: true) {
+                Apple Developer에서 발급한 JWT 토큰
+                
+                @Justification(reaction: "정답!") {
+                    Maps ID와 Private Key로 JWT를 생성하여 
+                    mapkit.init()에 전달합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                API Key (Google Maps 방식)
+                
+                @Justification(reaction: "아쉽네요") {
+                    MapKit JS는 JWT 기반 인증을 사용합니다.
+                    단순 API Key 방식이 아닙니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                인증 없이 무료 사용 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    Apple Developer 계정과 토큰이 필요합니다.
+                    일정 사용량까지 무료이지만 인증은 필수입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iOS 앱과 웹 간 딥링크를 연결하는 기술은?
+            
+            @Choice(isCorrect: true) {
+                Universal Links (apple-app-site-association)
+                
+                @Justification(reaction: "정확합니다!") {
+                    AASA 파일을 웹서버에 배포하면 
+                    해당 URL을 앱에서 처리할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                URL Schemes만으로 충분
+                
+                @Justification(reaction: "아쉽네요") {
+                    URL Schemes는 앱 설치 여부를 확인하지 못합니다.
+                    Universal Links가 더 안정적입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MapKit JS 내장 기능
+                
+                @Justification(reaction: "아쉽네요") {
+                    딥링크는 MapKit과 별개의 iOS/웹 연동 기술입니다.
+                }
+            }
+        }
+    }
+}

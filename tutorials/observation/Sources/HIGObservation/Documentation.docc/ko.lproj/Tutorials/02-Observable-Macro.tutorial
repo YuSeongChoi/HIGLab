@@ -1,0 +1,172 @@
+@Tutorial(time: 15) {
+    @Intro(title: "@Observable 매크로 이해하기") {
+        @Observable 매크로가 실제로 어떤 코드를 생성하는지 살펴봅니다.
+        매크로 확장을 통해 내부 동작 원리를 완벽히 이해합니다.
+    }
+    
+    @Section(title: "매크로 확장 살펴보기") {
+        @ContentAndMedia {
+            Swift 매크로는 컴파일 타임에 코드를 생성합니다.
+            @Observable이 실제로 어떤 코드로 확장되는지 
+            Xcode의 "Expand Macro" 기능으로 확인해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                간단한 @Observable 클래스를 만듭니다.
+                Xcode에서 `@Observable`을 우클릭하고 
+                "Expand Macro"를 선택해보세요.
+                
+                @Code(name: "SimpleMacro.swift", file: "02-simple-macro.swift")
+            }
+            
+            @Step {
+                매크로가 확장된 모습입니다.
+                @Observable은 각 저장 프로퍼티를 
+                `@ObservationTracked`로 감싸고,
+                관찰 인프라 코드를 자동 생성합니다.
+                
+                @Code(name: "ExpandedMacro.swift", file: "02-expanded-macro.swift")
+            }
+            
+            @Step {
+                핵심은 `_$observationRegistrar`입니다.
+                이 객체가 어떤 프로퍼티가 읽히고 변경되는지 추적합니다.
+                
+                `access()`: 프로퍼티 읽기 추적
+                `withMutation()`: 프로퍼티 변경 추적
+                
+                @Code(name: "ObservationRegistrar.swift", file: "02-observation-registrar.swift")
+            }
+        }
+    }
+    
+    @Section(title: "저장 프로퍼티 vs 계산 프로퍼티") {
+        @ContentAndMedia {
+            @Observable에서 저장 프로퍼티와 계산 프로퍼티는 
+            다르게 동작합니다. 이 차이를 이해하는 것이 중요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **저장 프로퍼티**는 자동으로 관찰됩니다.
+                매크로가 getter/setter를 추적 코드로 감쌉니다.
+                
+                @Code(name: "StoredProperties.swift", file: "02-stored-properties.swift")
+            }
+            
+            @Step {
+                **계산 프로퍼티**는 의존하는 저장 프로퍼티를 통해 관찰됩니다.
+                `subtotal`은 `price`와 `quantity`에 의존하므로,
+                둘 중 하나가 바뀌면 `subtotal`을 읽는 뷰도 업데이트됩니다.
+                
+                @Code(name: "ComputedProperties.swift", file: "02-computed-properties.swift")
+            }
+            
+            @Step {
+                주의: 계산 프로퍼티가 **외부 데이터**에 의존하면 
+                자동 추적이 안 됩니다.
+                
+                예: `Date()`는 @Observable 프로퍼티가 아니라서 
+                시간이 지나도 뷰가 업데이트되지 않습니다.
+                
+                @Code(name: "ExternalDependency.swift", file: "02-external-dependency.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 상품 목록 뷰 만들기") {
+        @ContentAndMedia {
+            배운 내용을 바탕으로 CartFlow 앱에 
+            상품 목록 뷰를 추가해봅시다.
+            @Observable의 자동 추적 덕분에 코드가 매우 깔끔합니다.
+        }
+        
+        @Steps {
+            @Step {
+                상품 카드 뷰를 만듭니다.
+                Product 객체를 직접 받아서 표시합니다.
+                특별한 property wrapper 없이 그냥 프로퍼티로!
+                
+                @Code(name: "ProductCard.swift", file: "02-product-card.swift")
+            }
+            
+            @Step {
+                상품 목록 뷰를 만듭니다.
+                CartStore에서 상품 목록을 가져와 표시합니다.
+                
+                @Code(name: "ProductListView.swift", file: "02-product-list.swift")
+            }
+            
+            @Step {
+                앱의 메인 뷰를 업데이트합니다.
+                CartStore를 @State로 생성하고 하위 뷰에 전달합니다.
+                
+                @Code(name: "CartFlowApp.swift", file: "02-main-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            @Observable 매크로가 생성하는 핵심 객체는?
+            
+            @Choice(isCorrect: true) {
+                ObservationRegistrar - 프로퍼티 접근과 변경을 추적
+                
+                @Justification(reaction: "정답!") {
+                    ObservationRegistrar는 access()와 withMutation()을 통해 
+                    어떤 프로퍼티가 읽히고 변경되는지 추적합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ObjectWillChangePublisher - 변경 전 알림 발행
+                
+                @Justification(reaction: "아쉽네요") {
+                    ObjectWillChangePublisher는 ObservableObject에서 사용됩니다.
+                    @Observable은 ObservationRegistrar를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                StateObject - 상태 객체 관리
+                
+                @Justification(reaction: "아쉽네요") {
+                    @StateObject는 SwiftUI의 property wrapper입니다.
+                    @Observable 내부 구현과는 무관합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            계산 프로퍼티의 관찰에 대해 올바른 설명은?
+            
+            @Choice(isCorrect: true) {
+                의존하는 저장 프로퍼티가 변하면 자동으로 추적된다
+                
+                @Justification(reaction: "완벽합니다!") {
+                    계산 프로퍼티는 내부에서 읽는 저장 프로퍼티를 통해 
+                    간접적으로 관찰됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도로 @Published를 붙여야 관찰된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Published는 ObservableObject용입니다.
+                    @Observable에서는 자동으로 추적됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                계산 프로퍼티는 관찰할 수 없다
+                
+                @Justification(reaction: "아쉽네요") {
+                    의존하는 저장 프로퍼티를 통해 간접적으로 관찰됩니다.
+                }
+            }
+        }
+    }
+}

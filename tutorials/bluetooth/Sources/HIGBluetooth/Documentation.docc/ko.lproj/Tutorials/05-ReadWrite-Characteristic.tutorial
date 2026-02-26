@@ -1,0 +1,193 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Characteristic 읽기/쓰기") {
+        BLE 기기의 Characteristic에서 데이터를 읽고
+        새로운 값을 쓰는 방법을 배웁니다.
+    }
+    
+    @Section(title: "Characteristic 읽기") {
+        @ContentAndMedia {
+            `readValue(for:)` 메서드로 Characteristic의 현재 값을 읽습니다.
+            결과는 `didUpdateValue` 콜백에서 받습니다.
+            
+            **읽기 가능 조건:**
+            - Characteristic의 properties에 `.read` 포함
+            - 기기가 연결된 상태
+        }
+        
+        @Steps {
+            @Step {
+                Characteristic 값 읽기를 요청합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-01-read-value.swift")
+            }
+            
+            @Step {
+                didUpdateValue 콜백에서 읽은 값을 처리합니다.
+                Data 타입을 적절한 형식으로 변환합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-02-update-callback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Characteristic 쓰기") {
+        @ContentAndMedia {
+            `writeValue(_:for:type:)` 메서드로 값을 씁니다.
+            쓰기 타입에 따라 응답 여부가 달라집니다.
+            
+            | 타입 | 설명 |
+            |-----|------|
+            | .withResponse | 쓰기 확인 응답 받음 |
+            | .withoutResponse | 응답 없이 빠르게 전송 |
+        }
+        
+        @Steps {
+            @Step {
+                응답을 받는 쓰기를 구현합니다.
+                신뢰성이 중요한 명령에 사용합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-03-write-with-response.swift")
+            }
+            
+            @Step {
+                응답 없는 쓰기를 구현합니다.
+                실시간 제어 등 속도가 중요할 때 사용합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-04-write-without-response.swift")
+            }
+            
+            @Step {
+                쓰기 완료 콜백을 처리합니다.
+                에러 발생 시 재시도 로직을 구현합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "05-05-write-callback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "데이터 변환") {
+        @ContentAndMedia {
+            BLE 데이터는 바이트 배열(Data)로 전송됩니다.
+            앱에서 사용할 타입으로 변환이 필요합니다.
+            
+            **일반적인 변환:**
+            - UInt8, UInt16, Int16 등 정수
+            - Float, Double 등 부동소수점
+            - String (UTF-8)
+        }
+        
+        @Steps {
+            @Step {
+                정수 타입 변환 유틸리티를 만듭니다.
+                리틀 엔디안/빅 엔디안을 고려합니다.
+                
+                @Code(name: "DataConversion.swift", file: "05-06-data-conversion.swift")
+            }
+            
+            @Step {
+                심박수 데이터 파싱 예제를 구현합니다.
+                Bluetooth SIG 표준 형식을 따릅니다.
+                
+                @Code(name: "HeartRateParser.swift", file: "05-07-heart-rate-parser.swift")
+            }
+            
+            @Step {
+                커맨드 전송을 위한 Data 생성 예제입니다.
+                LED 조명 제어 명령을 만듭니다.
+                
+                @Code(name: "CommandBuilder.swift", file: "05-08-command-builder.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            writeValue의 type 파라미터에서 .withResponse와 .withoutResponse의 차이는?
+            
+            @Choice(isCorrect: true) {
+                withResponse는 쓰기 확인을 받고, withoutResponse는 확인 없이 전송
+                
+                @Justification(reaction: "정확합니다! ✅") {
+                    withResponse는 신뢰성이 높지만 느리고,
+                    withoutResponse는 빠르지만 전송 보장이 없습니다.
+                    용도에 맞게 선택하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                차이 없다
+                
+                @Justification(reaction: "차이가 있습니다.") {
+                    응답 여부에 따라 신뢰성과 속도가 달라집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                withoutResponse는 사용할 수 없다
+                
+                @Justification(reaction: "사용 가능합니다.") {
+                    Characteristic의 properties에 .writeWithoutResponse가 있으면 사용 가능합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            BLE에서 16비트 정수를 전송할 때 일반적으로 사용하는 바이트 순서는?
+            
+            @Choice(isCorrect: true) {
+                리틀 엔디안 (Little Endian)
+                
+                @Justification(reaction: "맞습니다! 💾") {
+                    BLE 표준은 리틀 엔디안을 사용합니다.
+                    0x1234는 [0x34, 0x12] 순서로 전송됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                빅 엔디안 (Big Endian)
+                
+                @Justification(reaction: "BLE는 리틀 엔디안입니다.") {
+                    빅 엔디안은 네트워크 바이트 순서에서 주로 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기기마다 다르다
+                
+                @Justification(reaction: "BLE 표준이 있습니다.") {
+                    BLE 표준에서 리틀 엔디안을 정의하고 있습니다.
+                    다만 커스텀 프로토콜은 다를 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            readValue(for:) 호출 후 값을 받는 콜백은?
+            
+            @Choice(isCorrect: false) {
+                peripheral(_:didWriteValueFor:error:)
+                
+                @Justification(reaction: "이건 쓰기 콜백입니다.") {
+                    didWriteValueFor는 writeValue 완료 시 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                peripheral(_:didUpdateValueFor:error:)
+                
+                @Justification(reaction: "정확합니다! 📖") {
+                    didUpdateValueFor에서 characteristic.value로
+                    읽은 데이터에 접근할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                centralManager(_:didConnect:)
+                
+                @Justification(reaction: "이건 연결 콜백입니다.") {
+                    didConnect는 Peripheral 연결 성공 시 호출됩니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,213 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Picture in Picture") {
+        PiP 모드를 지원하여 멀티태스킹 중에도 
+        비디오를 시청할 수 있게 합니다.
+        
+        @Image(source: "pip-overview.png", alt: "Picture in Picture")
+    }
+    
+    @Section(title: "PiP 기본 설정") {
+        @ContentAndMedia {
+            Picture in Picture(PiP)는 비디오를 
+            작은 플로팅 윈도우에서 재생하는 기능입니다.
+            
+            - iOS 14+ iPad 및 iPhone 지원
+            - 홈 화면이나 다른 앱에서도 계속 시청
+            - AVPlayerViewController는 기본 지원
+            
+            @Image(source: "pip-modes.png", alt: "PiP 모드")
+        }
+        
+        @Steps {
+            @Step {
+                Info.plist에 Background Modes를 추가합니다.
+                "Audio, AirPlay, and Picture in Picture"를 활성화합니다.
+                
+                @Code(name: "InfoPlist.swift", file: "04-01-info-plist.swift")
+            }
+            
+            @Step {
+                오디오 세션을 적절히 설정합니다.
+                playback 카테고리로 설정해야 백그라운드 재생이 가능합니다.
+                
+                @Code(name: "AudioSession.swift", file: "04-02-audio-session.swift")
+            }
+            
+            @Step {
+                AVPlayerViewController의 allowsPictureInPicturePlayback이
+                기본적으로 true입니다. 필요시 비활성화할 수 있습니다.
+                
+                @Code(name: "EnablePiP.swift", file: "04-03-enable-pip.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AVPictureInPictureController") {
+        @ContentAndMedia {
+            커스텀 플레이어에서 PiP를 지원하려면
+            AVPictureInPictureController를 직접 사용합니다.
+            
+            - AVPlayerLayer 기반 커스텀 플레이어용
+            - 프로그래밍 방식 PiP 제어
+            - 델리게이트를 통한 상태 관리
+        }
+        
+        @Steps {
+            @Step {
+                AVPictureInPictureController.isPictureInPictureSupported()로
+                현재 기기에서 PiP 지원 여부를 확인합니다.
+                
+                @Code(name: "CheckPiPSupport.swift", file: "04-04-check-support.swift")
+            }
+            
+            @Step {
+                AVPictureInPictureController 인스턴스를 생성하고
+                AVPlayerLayer와 연결합니다.
+                
+                @Code(name: "CreatePiPController.swift", file: "04-05-create-controller.swift")
+            }
+            
+            @Step {
+                startPictureInPicture()과 stopPictureInPicture()으로
+                프로그래밍 방식으로 PiP를 제어합니다.
+                
+                @Code(name: "StartStopPiP.swift", file: "04-06-start-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PiP 델리게이트") {
+        @ContentAndMedia {
+            AVPictureInPictureControllerDelegate를 구현하여
+            PiP 상태 변화에 대응합니다.
+            
+            - PiP 시작/종료 감지
+            - 복원 처리
+            - 에러 처리
+        }
+        
+        @Steps {
+            @Step {
+                AVPictureInPictureControllerDelegate를 채택하고
+                델리게이트를 설정합니다.
+                
+                @Code(name: "PiPDelegate.swift", file: "04-07-pip-delegate.swift")
+            }
+            
+            @Step {
+                pictureInPictureControllerWillStartPictureInPicture와
+                didStartPictureInPicture로 시작 시점을 감지합니다.
+                
+                @Code(name: "PiPStart.swift", file: "04-08-pip-start.swift")
+            }
+            
+            @Step {
+                사용자가 PiP 창의 복원 버튼을 탭하면
+                restoreUserInterfaceForPictureInPicture가 호출됩니다.
+                
+                @Code(name: "PiPRestore.swift", file: "04-09-pip-restore.swift")
+            }
+            
+            @Step {
+                PiP 종료 시 UI를 적절히 업데이트합니다.
+                
+                @Code(name: "PiPStop.swift", file: "04-10-pip-stop.swift")
+            }
+        }
+    }
+    
+    @Section(title: "자동 PiP 전환") {
+        @ContentAndMedia {
+            앱이 백그라운드로 전환될 때 
+            자동으로 PiP 모드를 시작할 수 있습니다.
+            
+            - canStartPictureInPictureAutomaticallyFromInline
+            - iOS 14.2+ 지원
+        }
+        
+        @Steps {
+            @Step {
+                canStartPictureInPictureAutomaticallyFromInline을 true로 설정하면
+                홈으로 나갈 때 자동으로 PiP가 시작됩니다.
+                
+                @Code(name: "AutoPiP.swift", file: "04-11-auto-pip.swift")
+            }
+            
+            @Step {
+                비디오가 전체화면이 아닌 인라인 상태에서도
+                자동 PiP가 동작합니다.
+                
+                @Code(name: "InlinePiP.swift", file: "04-12-inline-pip.swift")
+            }
+            
+            @Step {
+                자동 PiP 동작을 비활성화해야 하는 경우도 있습니다.
+                라이브 스트리밍이나 광고 재생 시 고려하세요.
+                
+                @Code(name: "DisableAutoPiP.swift", file: "04-13-disable-auto.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PiP가 동작하려면 어떤 Background Mode가 필요한가요?
+            
+            @Choice(isCorrect: false) {
+                Background fetch
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Background fetch는 주기적 데이터 가져오기를 위한 것입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Audio, AirPlay, and Picture in Picture
+                
+                @Justification(reaction: "정확합니다! 🎬") {
+                    이 모드를 활성화해야 백그라운드에서 
+                    오디오와 PiP가 동작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Location updates
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    Location updates는 위치 추적을 위한 것입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            restoreUserInterfaceForPictureInPicture는 언제 호출되나요?
+            
+            @Choice(isCorrect: true) {
+                사용자가 PiP 창의 복원 버튼을 탭할 때
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    이 메서드에서 앱의 전체화면 플레이어 UI를 
+                    복원하고 completion handler를 호출해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PiP가 시작될 때
+                
+                @Justification(reaction: "다시 확인해보세요.") {
+                    PiP 시작 시에는 pictureInPictureControllerWillStartPictureInPicture가 
+                    호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PiP 창을 닫을 때
+                
+                @Justification(reaction: "구분이 필요합니다.") {
+                    PiP를 닫는 것과 앱으로 복원하는 것은 다릅니다.
+                    복원은 다시 앱의 플레이어로 돌아가는 것입니다.
+                }
+            }
+        }
+    }
+}

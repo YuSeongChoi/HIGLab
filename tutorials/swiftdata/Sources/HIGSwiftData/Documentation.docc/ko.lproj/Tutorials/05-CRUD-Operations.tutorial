@@ -1,0 +1,186 @@
+@Tutorial(time: 18) {
+    @Intro(title: "CRUD 마스터: 생성, 읽기, 수정, 삭제") {
+        데이터 조작의 4대 연산을 완벽히 마스터합니다.
+        ModelContext의 insert, delete와 @Bindable을 활용한 
+        직관적인 수정 패턴을 배웁니다.
+    }
+    
+    @Section(title: "Create: 데이터 생성") {
+        @ContentAndMedia {
+            새 객체를 생성하고 context에 삽입합니다.
+            SwiftData는 autosave가 기본이므로 별도 저장 호출이 필요 없습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 생성 패턴**
+                
+                객체를 생성하고 context.insert()로 삽입합니다.
+                이것만으로 데이터베이스에 저장됩니다.
+                
+                @Code(name: "CreateTask.swift", file: "05-create-basic.swift")
+            }
+            
+            @Step {
+                **새 할 일 추가 시트**
+                
+                사용자 입력을 받아 새 TaskItem을 생성하는 시트를 만듭니다.
+                우선순위와 마감일도 설정할 수 있습니다.
+                
+                @Code(name: "AddTaskSheet.swift", file: "05-create-sheet.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Read: 데이터 조회") {
+        @ContentAndMedia {
+            @Query는 선언적 조회를 제공합니다.
+            특정 조건의 단일 객체 조회에는 FetchDescriptor를 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **FetchDescriptor로 조회**
+                
+                @Query 외에도 context.fetch()로 직접 조회할 수 있습니다.
+                특정 ID의 객체를 찾거나, 조건부 조회에 유용합니다.
+                
+                @Code(name: "FetchExamples.swift", file: "05-read-fetch.swift")
+            }
+            
+            @Step {
+                **상세 뷰 구현**
+                
+                선택한 할 일의 상세 정보를 표시하는 뷰를 만듭니다.
+                네비게이션과 연동하여 drill-down UI를 구성합니다.
+                
+                @Code(name: "TaskDetailView.swift", file: "05-read-detail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Update: 데이터 수정") {
+        @ContentAndMedia {
+            SwiftData에서 수정은 놀랍도록 간단합니다.
+            @Bindable로 객체를 바인딩하면 프로퍼티 변경이 자동으로 저장됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **@Bindable로 직접 수정**
+                
+                @Bindable을 사용하면 TextField 등에 직접 바인딩할 수 있습니다.
+                변경사항은 자동으로 추적되고 저장됩니다.
+                
+                @Code(name: "EditTask.swift", file: "05-update-bindable.swift")
+            }
+            
+            @Step {
+                **편집 시트 구현**
+                
+                기존 할 일을 수정하는 편집 시트를 만듭니다.
+                취소 시 변경사항을 롤백하는 패턴도 배웁니다.
+                
+                @Code(name: "EditTaskSheet.swift", file: "05-update-sheet.swift")
+            }
+            
+            @Step {
+                **완료 토글 구현**
+                
+                스와이프 액션으로 완료 상태를 토글합니다.
+                완료 시간도 함께 기록합니다.
+                
+                @Code(name: "ToggleComplete.swift", file: "05-update-toggle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Delete: 데이터 삭제") {
+        @ContentAndMedia {
+            context.delete()로 객체를 삭제합니다.
+            스와이프 삭제, 일괄 삭제 등 다양한 패턴을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 삭제**
+                
+                context.delete()로 객체를 삭제합니다.
+                SwiftUI의 onDelete와 연동하면 스와이프 삭제가 가능합니다.
+                
+                @Code(name: "DeleteTask.swift", file: "05-delete-basic.swift")
+            }
+            
+            @Step {
+                **일괄 삭제**
+                
+                완료된 모든 항목을 삭제하는 기능을 구현합니다.
+                확인 대화상자로 실수를 방지합니다.
+                
+                @Code(name: "BatchDelete.swift", file: "05-delete-batch.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            SwiftData에서 객체의 프로퍼티를 SwiftUI에 바인딩하려면?
+            
+            @Choice(isCorrect: true) {
+                @Bindable 프로퍼티 래퍼 사용
+                
+                @Justification(reaction: "정답!") {
+                    @Bindable은 SwiftData 객체의 프로퍼티를
+                    SwiftUI 컨트롤에 직접 바인딩할 수 있게 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @State로 복사 후 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    @State로 복사하면 원본 객체가 수정되지 않습니다.
+                    @Bindable을 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Binding으로 전달
+                
+                @Justification(reaction: "아쉽네요") {
+                    SwiftData 객체 자체는 @Bindable로 선언하고,
+                    프로퍼티 접근 시 $를 붙여 바인딩합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            context.insert() 후 별도로 save()를 호출해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                보통은 필요 없음 — autosave가 처리
+                
+                @Justification(reaction: "정확합니다!") {
+                    SwiftData는 기본적으로 autosave가 활성화되어 있어
+                    적절한 시점에 자동으로 저장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                항상 필요함
+                
+                @Justification(reaction: "아쉽네요") {
+                    autosave가 기본 활성화되어 있어 대부분 불필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                5초마다 자동 저장됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    autosave는 시간 기반이 아닌 런루프 기반으로 동작합니다.
+                }
+            }
+        }
+    }
+}

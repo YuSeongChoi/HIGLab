@@ -1,0 +1,136 @@
+@Tutorial(time: 15) {
+    @Intro(title: "AVFoundation 소개 & 아키텍처") {
+        AVFoundation은 Apple 플랫폼에서 미디어 작업을 위한 핵심 프레임워크입니다.
+        카메라 캡처, 오디오 녹음, 비디오 편집까지 다양한 미디어 기능을 제공합니다.
+    }
+    
+    @Section(title: "AVFoundation이란?") {
+        @ContentAndMedia {
+            AVFoundation은 시간 기반 시청각 미디어를 다루는 프레임워크입니다.
+            
+            **주요 기능:**
+            - 미디어 캡처 (사진, 비디오, 오디오)
+            - 미디어 재생
+            - 미디어 편집 및 합성
+            - 미디어 분석 (바코드, 얼굴 인식)
+        }
+        
+        @Steps {
+            @Step {
+                AVFoundation은 여러 레이어로 구성됩니다.
+                가장 상위에 AVKit이 있고, 그 아래 AVFoundation이 위치합니다.
+                
+                @Code(name: "Architecture.swift", file: "01-architecture-overview.swift")
+            }
+            
+            @Step {
+                새 프로젝트를 생성하고 AVFoundation을 import합니다.
+                Xcode에서 **App** 템플릿으로 `CameraApp` 프로젝트를 만듭니다.
+                
+                @Code(name: "CameraApp.swift", file: "01-app-entry.swift")
+            }
+            
+            @Step {
+                카메라와 마이크 접근을 위해 Info.plist에 권한을 추가합니다.
+                
+                - `NSCameraUsageDescription`: 카메라 사용 이유
+                - `NSMicrophoneUsageDescription`: 마이크 사용 이유
+                
+                @Code(name: "Info.plist", file: "01-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "캡처 파이프라인 구조") {
+        @ContentAndMedia {
+            AVFoundation의 캡처 시스템은 파이프라인 구조로 이루어져 있습니다.
+            
+            **핵심 컴포넌트:**
+            - `AVCaptureDevice`: 카메라, 마이크 등 물리적 장치
+            - `AVCaptureInput`: 장치로부터 데이터 입력
+            - `AVCaptureSession`: 입력과 출력을 연결하는 세션
+            - `AVCaptureOutput`: 캡처된 데이터 출력
+        }
+        
+        @Steps {
+            @Step {
+                캡처 파이프라인의 데이터 흐름을 이해합니다.
+                Device → Input → Session → Output 순서로 데이터가 흐릅니다.
+                
+                @Code(name: "CapturePipeline.swift", file: "01-pipeline-concept.swift")
+            }
+            
+            @Step {
+                CameraManager 클래스의 기본 구조를 정의합니다.
+                ObservableObject를 채택하여 SwiftUI와 쉽게 연동할 수 있습니다.
+                
+                @Code(name: "CameraManager.swift", file: "01-camera-manager-skeleton.swift")
+            }
+            
+            @Step {
+                권한 요청 메서드를 구현합니다.
+                카메라와 마이크 권한은 사용자 동의가 필요합니다.
+                
+                @Code(name: "CameraManager.swift", file: "01-camera-manager-permission.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVFoundation 캡처 파이프라인에서 카메라 장치를 나타내는 클래스는?
+            
+            @Choice(isCorrect: false) {
+                `AVCaptureSession`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVCaptureSession은 입력과 출력을 연결하는 세션입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `AVCaptureDevice`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AVCaptureDevice는 카메라, 마이크 등 물리적 장치를 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVCaptureOutput`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVCaptureOutput은 캡처된 데이터의 출력을 담당합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            카메라 사용을 위해 Info.plist에 추가해야 하는 키는?
+            
+            @Choice(isCorrect: false) {
+                `NSPhotoLibraryUsageDescription`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 키는 사진 라이브러리 접근 권한을 위한 것입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `NSCameraUsageDescription`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    카메라 접근을 위해 NSCameraUsageDescription 키가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `NSLocationUsageDescription`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 키는 위치 서비스 접근 권한을 위한 것입니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,247 @@
+@Tutorial(time: 15) {
+    @Intro(title: "라이브 포토 처리") {
+        라이브 포토를 선택하고 재생하는 방법을 학습합니다.
+        PHLivePhotoView를 SwiftUI에서 활용합니다.
+    }
+    
+    @Section(title: "라이브 포토 이해하기") {
+        @ContentAndMedia {
+            라이브 포토는 사진 촬영 전후 1.5초의 영상과 음성이 포함된 
+            특별한 미디어 형식입니다.
+            
+            iOS 9부터 도입되었으며, 3D Touch나 롱프레스로 재생됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **라이브 포토 구성 요소**
+                
+                라이브 포토는 세 가지 파일로 구성됩니다:
+                - HEIC/JPEG: 스틸 이미지
+                - MOV: 짧은 비디오
+                - 메타데이터: 두 파일을 연결
+                
+                @Code(name: "LivePhotoComponents.swift", file: "07-live-photo-components.swift")
+            }
+            
+            @Step {
+                **라이브 포토 필터**
+                
+                PhotosPicker에서 라이브 포토만 선택하려면 
+                .livePhotos 필터를 사용합니다.
+                
+                @Code(name: "LivePhotoFilter.swift", file: "07-live-photo-filter.swift")
+            }
+            
+            @Step {
+                **PHLivePhoto 클래스**
+                
+                라이브 포토 데이터는 PHLivePhoto 객체로 표현됩니다.
+                Photos 프레임워크의 핵심 타입입니다.
+                
+                @Code(name: "PHLivePhotoClass.swift", file: "07-phlive-photo-class.swift")
+            }
+        }
+    }
+    
+    @Section(title: "라이브 포토 로딩") {
+        @ContentAndMedia {
+            PhotosPickerItem에서 PHLivePhoto를 로딩합니다.
+            Transferable을 구현해 SwiftUI에서 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **LivePhotoTransferable 정의**
+                
+                PHLivePhoto를 감싸는 Transferable 타입을 만듭니다.
+                DataRepresentation으로 라이브 포토 데이터를 처리합니다.
+                
+                @Code(name: "LivePhotoTransferable.swift", file: "07-live-photo-transferable.swift")
+            }
+            
+            @Step {
+                **라이브 포토 로딩 구현**
+                
+                loadTransferable(type: LivePhotoTransferable.self)로 로딩합니다.
+                로딩에는 시간이 걸릴 수 있으므로 로딩 상태를 표시합니다.
+                
+                @Code(name: "LoadLivePhoto.swift", file: "07-load-live-photo.swift")
+            }
+            
+            @Step {
+                **대체 방법: PHLivePhoto.request**
+                
+                PhotosPickerItem 대신 PHAsset에서 직접 로딩할 수도 있습니다.
+                더 많은 제어가 필요할 때 사용합니다.
+                
+                @Code(name: "PHLivePhotoRequest.swift", file: "07-phlive-photo-request.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PHLivePhotoView 구현") {
+        @ContentAndMedia {
+            UIKit의 PHLivePhotoView를 SwiftUI에서 사용합니다.
+            UIViewRepresentable로 래핑합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **SwiftUI 래퍼 만들기**
+                
+                UIViewRepresentable을 구현해 
+                PHLivePhotoView를 SwiftUI에서 사용합니다.
+                
+                @Code(name: "LivePhotoViewWrapper.swift", file: "07-live-photo-view-wrapper.swift")
+            }
+            
+            @Step {
+                **재생 제어**
+                
+                startPlayback(with:)으로 재생을 시작합니다.
+                .full은 전체 재생, .hint는 짧은 힌트 애니메이션입니다.
+                
+                @Code(name: "PlaybackControl.swift", file: "07-playback-control.swift")
+            }
+            
+            @Step {
+                **사용자 인터랙션**
+                
+                롱프레스 제스처로 라이브 포토를 재생하는 
+                인터랙션을 구현합니다.
+                
+                @Code(name: "UserInteraction.swift", file: "07-user-interaction.swift")
+            }
+        }
+    }
+    
+    @Section(title: "라이브 포토 갤러리") {
+        @ContentAndMedia {
+            라이브 포토 전용 갤러리 화면을 구현합니다.
+            선택, 로딩, 재생을 통합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **LivePhotoGalleryView 구현**
+                
+                라이브 포토를 그리드로 표시하고 
+                탭하면 전체 화면으로 재생합니다.
+                
+                @Code(name: "LivePhotoGalleryView.swift", file: "07-live-photo-gallery-view.swift")
+            }
+            
+            @Step {
+                **라이브 포토 인디케이터**
+                
+                라이브 포토임을 나타내는 배지를 표시합니다.
+                Apple의 Live Photo 아이콘을 사용합니다.
+                
+                @Code(name: "LivePhotoBadge.swift", file: "07-live-photo-badge.swift")
+            }
+            
+            @Step {
+                **전체 화면 뷰어**
+                
+                라이브 포토를 전체 화면으로 보여주고 
+                자동 재생 또는 터치 재생을 지원합니다.
+                
+                @Code(name: "FullScreenViewer.swift", file: "07-full-screen-viewer.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            라이브 포토를 재생하는 데 사용하는 UIKit 클래스는?
+            
+            @Choice(isCorrect: true) {
+                PHLivePhotoView
+                
+                @Justification(reaction: "정답!") {
+                    PHLivePhotoView는 라이브 포토를 표시하고 재생하는 
+                    전용 UIKit 뷰입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayerView
+                
+                @Justification(reaction: "아쉽네요") {
+                    AVPlayerView는 일반 비디오 재생용입니다.
+                    라이브 포토는 PHLivePhotoView를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UIImageView
+                
+                @Justification(reaction: "아쉽네요") {
+                    UIImageView는 정지 이미지만 표시합니다.
+                    라이브 포토 재생에는 PHLivePhotoView가 필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            라이브 포토의 재생 스타일 중 짧은 힌트 애니메이션은?
+            
+            @Choice(isCorrect: true) {
+                .hint
+                
+                @Justification(reaction: "맞습니다!") {
+                    .hint는 1-2초의 짧은 힌트 애니메이션을 재생합니다.
+                    .full은 전체 라이브 포토를 재생합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .preview
+                
+                @Justification(reaction: "아쉽네요") {
+                    올바른 옵션은 .hint입니다.
+                    PHLivePhotoViewPlaybackStyle에는 .hint와 .full이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .short
+                
+                @Justification(reaction: "아쉽네요") {
+                    올바른 옵션은 .hint입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            PhotosPicker에서 라이브 포토만 선택하려면?
+            
+            @Choice(isCorrect: true) {
+                matching: .livePhotos
+                
+                @Justification(reaction: "정확합니다!") {
+                    .livePhotos 필터를 사용하면 
+                    라이브 포토만 선택 가능하게 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .live
+                
+                @Justification(reaction: "아쉽네요") {
+                    올바른 필터 이름은 .livePhotos입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                matching: .images(live: true)
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 API는 없습니다.
+                    .livePhotos 필터를 사용하세요.
+                }
+            }
+        }
+    }
+}

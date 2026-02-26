@@ -1,0 +1,218 @@
+@Tutorial(time: 15) {
+    @Intro(title: "버튼 UI (ASAuthorizationAppleIDButton)") {
+        Apple의 Human Interface Guidelines를 준수하는
+        Sign in with Apple 버튼을 구현합니다.
+        
+        @Image(source: "apple-button.png", alt: "Sign in with Apple 버튼")
+    }
+    
+    @Section(title: "ASAuthorizationAppleIDButton 소개") {
+        @ContentAndMedia {
+            ASAuthorizationAppleIDButton은 Apple이 제공하는 
+            공식 로그인 버튼입니다.
+            
+            - **HIG 준수**: Apple 가이드라인에 맞는 디자인
+            - **자동 현지화**: 시스템 언어에 맞게 텍스트 변경
+            - **다양한 스타일**: 밝은/어두운 테마, 여러 버튼 타입
+            - **접근성 지원**: VoiceOver, Dynamic Type 자동 지원
+        }
+        
+        @Steps {
+            @Step {
+                기본 버튼을 생성합니다.
+                타입과 스타일을 지정하여 초기화합니다.
+                
+                @Code(name: "BasicButton.swift", file: "03-01-basic-button.swift")
+            }
+            
+            @Step {
+                버튼에 액션을 연결합니다.
+                탭 시 인증 흐름을 시작하도록 설정합니다.
+                
+                @Code(name: "ButtonAction.swift", file: "03-02-button-action.swift")
+            }
+        }
+    }
+    
+    @Section(title: "버튼 타입 선택") {
+        @ContentAndMedia {
+            상황에 맞는 버튼 타입을 선택합니다.
+            
+            | 타입 | 용도 |
+            |-----|------|
+            | `.signIn` | 일반 로그인 |
+            | `.continue` | 기존 계정 계속 |
+            | `.signUp` | 회원가입 |
+            | `.default` | 기본 (Sign in) |
+        }
+        
+        @Steps {
+            @Step {
+                신규 사용자 유치 화면에서는 
+                .signUp 타입을 사용합니다.
+                
+                @Code(name: "SignUpButton.swift", file: "03-03-signup-button.swift")
+            }
+            
+            @Step {
+                재방문 사용자에게는 .continue 타입으로
+                자연스러운 UX를 제공합니다.
+                
+                @Code(name: "ContinueButton.swift", file: "03-04-continue-button.swift")
+            }
+        }
+    }
+    
+    @Section(title: "버튼 스타일 커스터마이징") {
+        @ContentAndMedia {
+            앱의 디자인 테마에 맞는 스타일을 선택합니다.
+            
+            - `.black`: 검은색 배경, 흰색 텍스트
+            - `.white`: 흰색 배경, 검은색 텍스트  
+            - `.whiteOutline`: 흰색 배경, 검은 테두리
+        }
+        
+        @Steps {
+            @Step {
+                어두운 배경에서는 .white 스타일이 적합합니다.
+                버튼이 눈에 잘 띄도록 합니다.
+                
+                @Code(name: "WhiteStyle.swift", file: "03-05-white-style.swift")
+            }
+            
+            @Step {
+                밝은 배경에서는 .black 또는 
+                .whiteOutline 스타일을 사용합니다.
+                
+                @Code(name: "DarkBackgroundStyle.swift", file: "03-06-dark-style.swift")
+            }
+            
+            @Step {
+                cornerRadius를 조절하여 
+                앱 디자인과 조화롭게 만듭니다.
+                
+                @Code(name: "CornerRadius.swift", file: "03-07-corner-radius.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI에서 사용하기") {
+        @ContentAndMedia {
+            SwiftUI에서는 SignInWithAppleButton을 사용합니다.
+            UIViewRepresentable 없이 네이티브하게 구현 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SignInWithAppleButton은 SwiftUI 전용 버튼입니다.
+                onRequest와 onCompletion 클로저를 제공합니다.
+                
+                @Code(name: "SwiftUIButton.swift", file: "03-08-swiftui-button.swift")
+            }
+            
+            @Step {
+                label 파라미터로 버튼 타입을 지정합니다.
+                .signIn, .continue, .signUp 중 선택합니다.
+                
+                @Code(name: "SwiftUILabel.swift", file: "03-09-swiftui-label.swift")
+            }
+            
+            @Step {
+                signInWithAppleButtonStyle modifier로
+                스타일을 변경합니다.
+                
+                @Code(name: "SwiftUIStyle.swift", file: "03-10-swiftui-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "HIG 가이드라인 준수") {
+        @ContentAndMedia {
+            Apple Human Interface Guidelines에서 
+            Sign in with Apple 버튼에 대한 요구사항:
+            
+            - 최소 너비 140pt 이상
+            - 다른 로그인 버튼과 동일하거나 더 큰 크기
+            - 화면 상단 또는 눈에 띄는 위치에 배치
+            - 커스텀 버튼 사용 금지 (공식 버튼만 사용)
+        }
+        
+        @Steps {
+            @Step {
+                다른 로그인 버튼들과 동일한 크기로 배치합니다.
+                Sign in with Apple을 맨 위에 배치하는 것이 좋습니다.
+                
+                @Code(name: "ButtonPlacement.swift", file: "03-11-button-placement.swift")
+            }
+            
+            @Step {
+                Auto Layout 제약조건으로 
+                반응형 크기를 설정합니다.
+                
+                @Code(name: "ResponsiveSize.swift", file: "03-12-responsive-size.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            재방문 사용자에게 적합한 버튼 타입은?
+            
+            @Choice(isCorrect: false) {
+                .signUp
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .signUp은 신규 사용자 가입에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .continue
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    "Continue with Apple"로 표시되어
+                    기존 사용자에게 자연스럽습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .signIn
+                
+                @Justification(reaction: "사용 가능하지만 최적은 아닙니다.") {
+                    .continue가 재방문 사용자 UX에 더 적합합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftUI에서 Sign in with Apple 버튼을 구현할 때 
+            사용하는 뷰는?
+            
+            @Choice(isCorrect: true) {
+                SignInWithAppleButton
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    SwiftUI 전용 네이티브 버튼으로
+                    UIViewRepresentable이 필요 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ASAuthorizationAppleIDButton을 UIViewRepresentable로 래핑
+                
+                @Justification(reaction: "가능하지만 불필요합니다.") {
+                    SwiftUI에서는 SignInWithAppleButton을 
+                    직접 사용하는 것이 좋습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Button with Apple logo
+                
+                @Justification(reaction: "HIG 위반입니다.") {
+                    커스텀 버튼은 Apple 가이드라인에 위배됩니다.
+                }
+            }
+        }
+    }
+}

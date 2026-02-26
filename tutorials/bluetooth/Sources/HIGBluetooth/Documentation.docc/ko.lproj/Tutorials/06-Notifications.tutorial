@@ -1,0 +1,174 @@
+@Tutorial(time: 15) {
+    @Intro(title: "알림 구독") {
+        Characteristic 값 변경을 실시간으로
+        알림받는 Notify/Indicate를 구현합니다.
+    }
+    
+    @Section(title: "Notify vs Indicate") {
+        @ContentAndMedia {
+            BLE에서 실시간 데이터를 받는 두 가지 방식이 있습니다.
+            
+            | 방식 | 설명 | 신뢰성 |
+            |-----|------|--------|
+            | Notify | 알림만 전송 | 낮음 |
+            | Indicate | 수신 확인 필요 | 높음 |
+            
+            iOS에서는 두 방식 모두 동일한 API를 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Characteristic이 알림을 지원하는지 확인합니다.
+                
+                @Code(name: "NotificationSupport.swift", file: "06-01-check-notify.swift")
+            }
+        }
+    }
+    
+    @Section(title: "알림 구독 구현") {
+        @ContentAndMedia {
+            `setNotifyValue(true, for:)`로 알림을 구독합니다.
+            값이 변경될 때마다 `didUpdateValue` 콜백이 호출됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                알림 구독을 시작합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-02-subscribe.swift")
+            }
+            
+            @Step {
+                구독 상태 변경 콜백을 처리합니다.
+                에러 발생 시 재구독을 시도합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-03-notify-callback.swift")
+            }
+            
+            @Step {
+                알림으로 받은 데이터를 실시간 처리합니다.
+                UI 업데이트와 데이터 저장을 수행합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-04-handle-notification.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실시간 데이터 UI") {
+        @ContentAndMedia {
+            심박수 모니터 예제로 실시간 데이터 표시를 구현합니다.
+            Combine이나 AsyncStream으로 데이터를 스트리밍합니다.
+        }
+        
+        @Steps {
+            @Step {
+                AsyncStream으로 심박수 데이터를 스트리밍합니다.
+                
+                @Code(name: "HeartRateStream.swift", file: "06-05-async-stream.swift")
+            }
+            
+            @Step {
+                실시간 심박수 모니터 UI를 구현합니다.
+                
+                @Code(name: "HeartRateView.swift", file: "06-06-heart-rate-view.swift")
+            }
+            
+            @Step {
+                알림 구독 해제를 구현합니다.
+                화면 이탈 시 구독을 정리합니다.
+                
+                @Code(name: "BluetoothManager.swift", file: "06-07-unsubscribe.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Notify와 Indicate의 주요 차이점은?
+            
+            @Choice(isCorrect: true) {
+                Indicate는 수신 확인(ACK)이 필요하다
+                
+                @Justification(reaction: "정확합니다! 📨") {
+                    Indicate는 클라이언트의 수신 확인을 기다리므로
+                    더 신뢰성 있지만 약간 느릴 수 있습니다.
+                    Notify는 확인 없이 바로 다음 전송이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Notify는 iOS에서 지원하지 않는다
+                
+                @Justification(reaction: "지원합니다.") {
+                    iOS는 Notify와 Indicate 모두 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                차이 없다
+                
+                @Justification(reaction: "차이가 있습니다.") {
+                    수신 확인 여부가 다릅니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            setNotifyValue(true) 호출 후 성공 여부를 확인하는 콜백은?
+            
+            @Choice(isCorrect: true) {
+                peripheral(_:didUpdateNotificationStateFor:error:)
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    이 콜백에서 isNotifying 상태를 확인할 수 있습니다.
+                    error가 nil이면 성공입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                peripheral(_:didUpdateValueFor:error:)
+                
+                @Justification(reaction: "이건 값 업데이트 콜백입니다.") {
+                    didUpdateValueFor는 실제 값이 변경될 때 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도 콜백 없이 즉시 확인 가능
+                
+                @Justification(reaction: "비동기 콜백이 필요합니다.") {
+                    BLE 작업은 모두 비동기적입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            알림 구독을 해제하려면?
+            
+            @Choice(isCorrect: false) {
+                unsubscribe(for:) 호출
+                
+                @Justification(reaction: "그런 메서드는 없습니다.") {
+                    setNotifyValue를 false로 호출합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                setNotifyValue(false, for:) 호출
+                
+                @Justification(reaction: "정확합니다! 🔕") {
+                    동일한 메서드에 false를 전달하여 구독을 해제합니다.
+                    연결 해제 시에는 자동으로 해제됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Peripheral 연결 해제만 하면 된다
+                
+                @Justification(reaction: "명시적 해제를 권장합니다.") {
+                    연결 유지 중에 알림만 끄려면 setNotifyValue(false)가 필요합니다.
+                }
+            }
+        }
+    }
+}

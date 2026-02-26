@@ -34,10 +34,18 @@ jobs:
           xcode-version: '16.2'
 
       # ========================================
+      # 🌐 언어 설정 (한국어 기본)
+      # ========================================
+      - name: Set Korean as default language
+        run: |
+          chmod +x scripts/docc-set-lang.sh
+          ./scripts/docc-set-lang.sh ko
+
+      # ========================================
       # 📦 배포 폴더 초기화
       # ========================================
       - name: Prepare output
-        run: mkdir -p deploy/tutorials
+        run: mkdir -p deploy/tutorials deploy/tutorials/en
 
       # ========================================
       # 📝 블로그 사이트 복사 (전체)
@@ -733,6 +741,15 @@ jobs:
             /tmp/docbuild-relevancekit/Build/Products/Debug/HIGRelevanceKit.doccarchive \
             --output-path ../../deploy/tutorials/relevancekit \
             --hosting-base-path HIGLab/tutorials/relevancekit
+
+      # ========================================
+      # 🌐 영어 버전 빌드
+      # ========================================
+      - name: Build English DocC tutorials
+        run: |
+          chmod +x scripts/build-docc-all.sh
+          ./scripts/build-docc-all.sh en deploy/tutorials/en
+        continue-on-error: true
 
       # ========================================
       # 🚀 배포

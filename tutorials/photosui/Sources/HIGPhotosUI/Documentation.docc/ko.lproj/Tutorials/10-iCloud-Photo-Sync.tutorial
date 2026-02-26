@@ -1,0 +1,248 @@
+@Tutorial(time: 15) {
+    @Intro(title: "iCloud 사진 동기화") {
+        iCloud 사진 라이브러리와 동기화하고 
+        다운로드 상태를 관리하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "iCloud 사진 이해하기") {
+        @ContentAndMedia {
+            iCloud 사진 라이브러리가 활성화되면 
+            사진이 클라우드에 저장되고 기기 간 동기화됩니다.
+            
+            "저장 공간 최적화"가 켜지면 
+            원본 대신 썸네일만 기기에 남을 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **iCloud 상태 확인**
+                
+                PHAsset의 sourceType으로 사진의 출처를 확인합니다.
+                .typeCloudShared, .typeUserLibrary 등이 있습니다.
+                
+                @Code(name: "iCloudStatus.swift", file: "10-icloud-status.swift")
+            }
+            
+            @Step {
+                **로컬 가용성 확인**
+                
+                PHAssetResource로 사진이 로컬에 있는지 확인합니다.
+                클라우드에만 있으면 다운로드가 필요합니다.
+                
+                @Code(name: "LocalAvailability.swift", file: "10-local-availability.swift")
+            }
+            
+            @Step {
+                **PHImageRequestOptions 설정**
+                
+                isNetworkAccessAllowed로 네트워크 다운로드를 허용합니다.
+                false면 로컬에 있는 데이터만 반환됩니다.
+                
+                @Code(name: "NetworkAccessOptions.swift", file: "10-network-access-options.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 다운로드 관리") {
+        @ContentAndMedia {
+            iCloud에서 이미지를 다운로드할 때 
+            진행률을 표시하고 에러를 처리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **다운로드 진행률 표시**
+                
+                progressHandler 클로저로 다운로드 진행률을 받습니다.
+                ProgressView로 사용자에게 표시합니다.
+                
+                @Code(name: "DownloadProgress.swift", file: "10-download-progress.swift")
+            }
+            
+            @Step {
+                **다운로드 취소**
+                
+                PHImageManager.cancelImageRequest로 
+                진행 중인 다운로드를 취소합니다.
+                
+                @Code(name: "CancelDownload.swift", file: "10-cancel-download.swift")
+            }
+            
+            @Step {
+                **오프라인 모드 처리**
+                
+                네트워크가 없으면 로컬 버전을 표시합니다.
+                저해상도 이미지라도 보여주는 것이 좋습니다.
+                
+                @Code(name: "OfflineMode.swift", file: "10-offline-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "동기화 상태 UI") {
+        @ContentAndMedia {
+            사진의 동기화 상태를 사용자에게 명확히 표시합니다.
+            다운로드 필요, 진행 중, 완료 상태를 구분합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **동기화 상태 모델**
+                
+                사진의 동기화 상태를 표현하는 enum을 정의합니다.
+                각 상태에 맞는 UI를 표시합니다.
+                
+                @Code(name: "SyncStatus.swift", file: "10-sync-status.swift")
+            }
+            
+            @Step {
+                **상태 인디케이터 뷰**
+                
+                클라우드 아이콘으로 동기화 상태를 표시합니다.
+                SF Symbols의 cloud 아이콘을 활용합니다.
+                
+                @Code(name: "SyncIndicator.swift", file: "10-sync-indicator.swift")
+            }
+            
+            @Step {
+                **배치 다운로드**
+                
+                여러 사진을 한 번에 다운로드합니다.
+                전체 진행률을 계산해 표시합니다.
+                
+                @Code(name: "BatchDownload.swift", file: "10-batch-download.swift")
+            }
+        }
+    }
+    
+    @Section(title: "완성된 iCloud 갤러리") {
+        @ContentAndMedia {
+            iCloud 동기화를 완벽히 지원하는 갤러리를 구현합니다.
+            오프라인에서도 최적의 경험을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CloudGalleryViewModel 구현**
+                
+                iCloud 상태 관리와 다운로드 로직을 ViewModel로 분리합니다.
+                네트워크 상태 변화도 감지합니다.
+                
+                @Code(name: "CloudGalleryViewModel.swift", file: "10-cloud-gallery-view-model.swift")
+            }
+            
+            @Step {
+                **스마트 로딩 전략**
+                
+                빠른 썸네일 → 고품질 이미지 순으로 로딩합니다.
+                .deliveryMode = .opportunistic을 사용합니다.
+                
+                @Code(name: "SmartLoading.swift", file: "10-smart-loading.swift")
+            }
+            
+            @Step {
+                **완성된 CloudGalleryView**
+                
+                모든 기능을 통합한 갤러리 화면입니다.
+                iCloud 상태, 다운로드, 오프라인을 완벽히 지원합니다.
+                
+                @Code(name: "CloudGalleryView.swift", file: "10-cloud-gallery-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iCloud 사진을 다운로드하려면 어떤 옵션이 필요한가요?
+            
+            @Choice(isCorrect: true) {
+                isNetworkAccessAllowed = true
+                
+                @Justification(reaction: "정답!") {
+                    PHImageRequestOptions의 isNetworkAccessAllowed를 
+                    true로 설정해야 iCloud에서 다운로드합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iCloudEnabled = true
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 옵션은 없습니다.
+                    isNetworkAccessAllowed를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기본적으로 항상 다운로드됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    기본값은 false입니다.
+                    명시적으로 네트워크 접근을 허용해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            다운로드 진행률을 받으려면?
+            
+            @Choice(isCorrect: true) {
+                PHImageRequestOptions의 progressHandler 설정
+                
+                @Justification(reaction: "맞습니다!") {
+                    progressHandler 클로저에서 
+                    0.0~1.0 범위의 진행률을 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PHImageManager의 delegate 설정
+                
+                @Justification(reaction: "아쉽네요") {
+                    PHImageManager에는 delegate가 없습니다.
+                    requestOptions의 progressHandler를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                completion 핸들러의 info 딕셔너리 확인
+                
+                @Justification(reaction: "아쉽네요") {
+                    info 딕셔너리는 진행률이 아닌 
+                    결과 정보를 담고 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            빠른 썸네일 후 고품질 이미지를 로딩하는 옵션은?
+            
+            @Choice(isCorrect: true) {
+                deliveryMode = .opportunistic
+                
+                @Justification(reaction: "정확합니다!") {
+                    .opportunistic은 가능한 빨리 저품질 버전을 전달하고,
+                    고품질 버전이 준비되면 다시 전달합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                deliveryMode = .progressive
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 옵션은 없습니다.
+                    .opportunistic이 비슷한 동작을 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                resizeMode = .fast
+                
+                @Justification(reaction: "아쉽네요") {
+                    resizeMode는 리사이징 방식을 설정합니다.
+                    로딩 전략은 deliveryMode로 설정합니다.
+                }
+            }
+        }
+    }
+}

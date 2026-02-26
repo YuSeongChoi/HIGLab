@@ -1,0 +1,94 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CoreNFC 소개") {
+        Apple CoreNFC 프레임워크의 기본 개념과 NFC 기술의 핵심 원리를 학습합니다.
+        iPhone에서 NFC 태그를 읽고 쓰는 앱을 만들기 위한 기초를 다집니다.
+    }
+    
+    @Section(title: "NFC 기술 이해하기") {
+        @ContentAndMedia {
+            NFC(Near Field Communication)는 약 4cm 이내의 근거리에서 
+            무선 통신을 가능하게 하는 기술입니다.
+            교통카드, 출입증, 결제 시스템 등에서 널리 사용됩니다.
+        }
+        @Steps {
+            @Step {
+                CoreNFC를 import합니다. iPhone 7 이상, iOS 11+에서 사용 가능합니다.
+                @Code(name: "NFCReader.swift", file: "01-01-import.swift")
+            }
+            @Step {
+                NFC의 세 가지 동작 모드를 이해합니다.
+                Reader/Writer, Peer-to-Peer, Card Emulation 모드가 있습니다.
+                @Code(name: "NFCReader.swift", file: "01-02-modes.swift")
+            }
+            @Step {
+                CoreNFC가 지원하는 태그 타입을 확인합니다.
+                NDEF, ISO 7816, ISO 15693, FeliCa, MIFARE를 지원합니다.
+                @Code(name: "NFCReader.swift", file: "01-03-tagtypes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로젝트 설정") {
+        @ContentAndMedia {
+            CoreNFC를 사용하려면 프로젝트에 권한 설정이 필요합니다.
+            Info.plist와 Entitlements 파일을 구성합니다.
+        }
+        @Steps {
+            @Step {
+                Info.plist에 NFC 사용 설명을 추가합니다.
+                사용자에게 NFC 접근 목적을 설명하는 문구입니다.
+                @Code(name: "Info.plist", file: "01-04-infoplist.swift")
+            }
+            @Step {
+                Entitlements에서 NFC 태그 읽기 기능을 활성화합니다.
+                NDEF 및 네이티브 태그 읽기 모드를 설정합니다.
+                @Code(name: "App.entitlements", file: "01-05-entitlements.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            NFC 통신의 일반적인 유효 거리는?
+            @Choice(isCorrect: false) {
+                약 10미터
+                @Justification(reaction: "다시 생각해보세요.") {
+                    10미터는 Bluetooth의 유효 거리입니다. NFC는 훨씬 짧습니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                약 4cm
+                @Justification(reaction: "정답입니다!") {
+                    NFC는 Near Field Communication으로 약 4cm 이내의 근거리 통신입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                약 1미터
+                @Justification(reaction: "다시 생각해보세요.") {
+                    NFC는 훨씬 짧은 거리에서만 작동합니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CoreNFC가 지원하지 않는 태그 타입은?
+            @Choice(isCorrect: false) {
+                NDEF
+                @Justification(reaction: "다시 생각해보세요.") {
+                    NDEF는 CoreNFC의 핵심 지원 포맷입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                FeliCa
+                @Justification(reaction: "다시 생각해보세요.") {
+                    FeliCa는 일본에서 주로 사용되며 CoreNFC가 지원합니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                Bluetooth LE
+                @Justification(reaction: "정답입니다!") {
+                    Bluetooth LE는 NFC가 아닌 별도의 통신 기술입니다.
+                }
+            }
+        }
+    }
+}

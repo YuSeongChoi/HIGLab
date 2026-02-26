@@ -1,0 +1,242 @@
+@Tutorial(time: 18) {
+    @Intro(title: "모델 최적화 & 압축") {
+        CoreML 모델의 크기를 줄이고 추론 속도를 
+        개선하는 최적화 기법을 학습합니다.
+    }
+    
+    @Section(title: "왜 최적화가 필요한가") {
+        @ContentAndMedia {
+            큰 모델은 앱 크기, 메모리, 배터리에 부담을 줍니다.
+            최적화를 통해 성능을 유지하면서 
+            리소스 사용을 줄일 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **모델 크기가 미치는 영향**
+                
+                - 앱 다운로드 크기 증가
+                - 첫 실행 시 로딩 시간
+                - 메모리 사용량
+                - 배터리 소모
+                
+                @Code(name: "ModelSizeImpact.swift", file: "08-size-impact.swift")
+            }
+            
+            @Step {
+                **최적화 기법 개요**
+                
+                1. 양자화 (Quantization)
+                2. 가지치기 (Pruning)
+                3. 팔레트화 (Palettization)
+                4. 지식 증류 (Knowledge Distillation)
+                
+                @Code(name: "OptimizationTechniques.swift", file: "08-techniques.swift")
+            }
+        }
+    }
+    
+    @Section(title: "양자화 (Quantization)") {
+        @ContentAndMedia {
+            Float32 가중치를 Int8이나 Int4로 변환하여
+            모델 크기를 1/4~1/8로 줄입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **양자화 종류**
+                
+                - **선형 양자화**: 가장 일반적. Float → Int8
+                - **Weight-only**: 가중치만 양자화, 활성화는 유지
+                - **Post-training**: 학습 후 적용
+                
+                @Code(name: "QuantizationTypes.swift", file: "08-quant-types.swift")
+            }
+            
+            @Step {
+                **coremltools로 양자화 적용**
+                
+                Python coremltools의 quantization API를
+                사용하여 모델을 양자화합니다.
+                
+                @Code(name: "ApplyQuantization.swift", file: "08-apply-quant.swift")
+            }
+            
+            @Step {
+                **양자화 정확도 검증**
+                
+                양자화 후 정확도가 크게 떨어지지 않는지
+                검증 데이터셋으로 테스트합니다.
+                
+                @Code(name: "QuantizationValidation.swift", file: "08-quant-validation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "팔레트화 (Palettization)") {
+        @ContentAndMedia {
+            비슷한 가중치를 그룹화(클러스터링)하여
+            룩업 테이블로 압축합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **팔레트화 원리**
+                
+                k-means 클러스터링으로 가중치를 
+                n개의 대표값으로 줄입니다.
+                16색 팔레트 → 4비트로 표현 가능
+                
+                @Code(name: "PalettizationConcept.swift", file: "08-palette-concept.swift")
+            }
+            
+            @Step {
+                **팔레트화 적용**
+                
+                coremltools의 palettization API로
+                모델을 압축합니다.
+                
+                @Code(name: "ApplyPalettization.swift", file: "08-apply-palette.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Neural Engine 최적화") {
+        @ContentAndMedia {
+            Apple Neural Engine에서 최적으로 실행되도록
+            모델을 튜닝합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Neural Engine 호환 확인**
+                
+                모든 연산이 Neural Engine에서 지원되는지 확인합니다.
+                지원되지 않는 연산은 CPU로 폴백됩니다.
+                
+                @Code(name: "NeuralEngineCompat.swift", file: "08-neural-compat.swift")
+            }
+            
+            @Step {
+                **MLModelConfiguration.computeUnits**
+                
+                모델이 어떤 하드웨어에서 실행될지 지정합니다.
+                - .all: 자동 선택 (기본값)
+                - .cpuAndNeuralEngine: GPU 제외
+                - .cpuOnly: CPU만 사용
+                
+                @Code(name: "ComputeUnitsConfig.swift", file: "08-compute-units.swift")
+            }
+            
+            @Step {
+                **배치 크기 최적화**
+                
+                Neural Engine은 특정 배치 크기에서 
+                더 효율적으로 동작합니다.
+                
+                @Code(name: "BatchSizeOptimization.swift", file: "08-batch-size.swift")
+            }
+        }
+    }
+    
+    @Section(title: "성능 측정") {
+        @ContentAndMedia {
+            최적화 전후 성능을 측정하여
+            개선 효과를 확인합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Xcode에서 모델 프로파일링**
+                
+                Xcode의 Model Preview에서 
+                Predictions 탭으로 추론 시간을 측정합니다.
+                
+                @Code(name: "XcodeProfileling.swift", file: "08-xcode-profile.swift")
+            }
+            
+            @Step {
+                **코드로 성능 측정**
+                
+                실제 앱에서 추론 시간을 측정하고
+                로그로 기록합니다.
+                
+                @Code(name: "PerformanceMeasurement.swift", file: "08-perf-measure.swift")
+            }
+            
+            @Step {
+                **최적화 결과 비교표**
+                
+                원본 vs 양자화 vs 팔레트화 결과를
+                표로 정리하여 비교합니다.
+                
+                @Code(name: "ComparisonTable.swift", file: "08-comparison.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Float32 가중치를 Int8로 양자화하면 모델 크기가 약 얼마나 줄어드나요?
+            
+            @Choice(isCorrect: true) {
+                약 1/4 (25%)
+                
+                @Justification(reaction: "정답!") {
+                    32비트 → 8비트로 줄어들므로 
+                    크기가 약 1/4로 감소합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                약 1/2 (50%)
+                
+                @Justification(reaction: "아쉽네요") {
+                    32비트 → 8비트 = 4배 감소이므로
+                    크기는 1/4이 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                크기 변화 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    양자화는 비트 수를 줄이므로 
+                    크기가 크게 감소합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MLModelConfiguration.computeUnits의 기본값은?
+            
+            @Choice(isCorrect: true) {
+                .all — 자동으로 최적의 하드웨어 선택
+                
+                @Justification(reaction: "정확합니다!") {
+                    기본값은 .all로, CoreML이 
+                    Neural Engine, GPU, CPU 중 
+                    최적의 조합을 자동 선택합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .cpuOnly — CPU만 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    기본값은 .all입니다.
+                    .cpuOnly는 특수한 경우에만 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .neuralEngineOnly — Neural Engine만 사용
+                
+                @Justification(reaction: "아쉽네요") {
+                    이런 옵션은 없습니다.
+                    기본값 .all이 자동으로 Neural Engine을 우선 사용합니다.
+                }
+            }
+        }
+    }
+}

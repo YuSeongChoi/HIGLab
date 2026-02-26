@@ -1,0 +1,139 @@
+@Tutorial(time: 25) {
+    @Intro(title: "단축어 앱 통합") {
+        앱의 Intent를 단축어 앱에 최적화하고 풍부한 사용자 경험을 제공합니다.
+        
+        @Image(source: "placeholder.png", alt: "Shortcuts App 통합")
+    }
+    
+    @Section(title: "AppShortcutsProvider 확장") {
+        @ContentAndMedia {
+            `AppShortcutsProvider`로 앱의 주요 기능을 단축어에 미리 등록합니다.
+            
+            - 앱 설치 시 자동으로 단축어 갤러리에 표시
+            - 사용자가 별도 설정 없이 바로 사용 가능
+            - Siri 음성 명령과 자동 연결
+        }
+        
+        @Steps {
+            @Step {
+                `AppShortcutsProvider`를 구현합니다.
+                
+                `appShortcuts` 배열에 노출할 단축어를 정의합니다.
+                
+                @Code(name: "MyAppShortcuts.swift", file: "09-shortcuts-provider.swift")
+            }
+            
+            @Step {
+                `AppShortcut`에 음성 명령 문구를 추가합니다.
+                
+                다양한 표현을 지원해 자연스러운 음성 제어가 가능합니다.
+                
+                @Code(name: "MyAppShortcuts.swift", file: "09-shortcuts-phrases.swift")
+            }
+        }
+    }
+    
+    @Section(title: "파라미터화된 단축어") {
+        @ContentAndMedia {
+            단축어 문구에 파라미터를 포함해 더 유연한 음성 명령을 지원합니다.
+            
+            "오늘 할 일 추가해줘" → "**회의 준비** 할 일 추가해줘"
+        }
+        
+        @Steps {
+            @Step {
+                `AppShortcut`의 phrases에 파라미터 플레이스홀더를 추가합니다.
+                
+                @Code(name: "MyAppShortcuts.swift", file: "09-shortcuts-params.swift")
+            }
+            
+            @Step {
+                파라미터 요약(Parameter Summary)으로 단축어 UI를 커스터마이즈합니다.
+                
+                @Code(name: "MyAppShortcuts.swift", file: "09-shortcuts-summary.swift")
+            }
+        }
+    }
+    
+    @Section(title: "단축어 결과 표시") {
+        @ContentAndMedia {
+            Intent 실행 결과를 단축어 앱에서 시각적으로 표시합니다.
+            
+            - 텍스트 결과
+            - 커스텀 뷰 (SwiftUI)
+            - 스니펫
+        }
+        
+        @Steps {
+            @Step {
+                `IntentResult`에 다양한 결과 타입을 반환합니다.
+                
+                @Code(name: "ResultIntent.swift", file: "09-shortcuts-result.swift")
+            }
+            
+            @Step {
+                SwiftUI 뷰로 커스텀 결과를 표시합니다.
+                
+                @Code(name: "ResultIntent.swift", file: "09-shortcuts-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            앱 설치 시 자동으로 단축어 갤러리에 표시되게 하려면 무엇을 구현해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                `AppShortcutsProvider`
+                
+                @Justification(reaction: "정답! 🚀") {
+                    AppShortcutsProvider를 구현하면 앱 단축어가 자동으로 노출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `ShortcutsBuilder`
+                
+                @Justification(reaction: "아니에요!") {
+                    이런 프로토콜은 App Intents에 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `INShortcutProvider`
+                
+                @Justification(reaction: "가까웠어요!") {
+                    이것은 레거시 SiriKit의 방식입니다. App Intents에서는 AppShortcutsProvider를 사용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            음성 명령 "**책 제목** 검색해줘"처럼 파라미터를 포함하려면 어떻게 하나요?
+            
+            @Choice(isCorrect: false) {
+                문구에 `{parameter}`를 사용
+                
+                @Justification(reaction: "아쉽네요!") {
+                    중괄호 문법은 사용하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `\(.parameterName)` 보간법 사용
+                
+                @Justification(reaction: "맞습니다! 💬") {
+                    Swift 문자열 보간법으로 파라미터를 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `$parameter` 문법 사용
+                
+                @Justification(reaction: "틀렸습니다!") {
+                    달러 기호 문법은 SwiftUI 바인딩용입니다.
+                }
+            }
+        }
+    }
+}

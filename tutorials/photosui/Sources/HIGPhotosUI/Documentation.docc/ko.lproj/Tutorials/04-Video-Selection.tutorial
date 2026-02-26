@@ -1,0 +1,244 @@
+@Tutorial(time: 12) {
+    @Intro(title: "비디오 선택") {
+        PhotosPicker로 비디오를 선택하고 
+        VideoPlayer를 사용해 재생하는 방법을 학습합니다.
+    }
+    
+    @Section(title: "비디오 전용 PhotosPicker") {
+        @ContentAndMedia {
+            matching: .videos 필터로 비디오만 선택 가능한 
+            PhotosPicker를 구성합니다.
+            
+            비디오는 이미지보다 로딩 시간이 길 수 있으므로 
+            적절한 로딩 UI가 중요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **비디오 필터 적용**
+                
+                matching: .videos로 비디오만 표시되는 Picker를 만듭니다.
+                사진 라이브러리에서 비디오만 필터링되어 나타납니다.
+                
+                @Code(name: "VideoFilter.swift", file: "04-video-filter.swift")
+            }
+            
+            @Step {
+                **비디오 항목 식별**
+                
+                supportedContentTypes로 선택된 항목이 
+                실제로 비디오인지 확인할 수 있습니다.
+                
+                @Code(name: "VideoIdentification.swift", file: "04-video-identification.swift")
+            }
+            
+            @Step {
+                **비디오와 이미지 혼합 선택**
+                
+                .any(of: [.images, .videos])로 둘 다 선택 가능하게 하고,
+                선택된 항목의 타입을 구분해 처리합니다.
+                
+                @Code(name: "MixedMediaSelection.swift", file: "04-mixed-media-selection.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비디오 데이터 로딩") {
+        @ContentAndMedia {
+            비디오 데이터는 이미지와 다르게 처리해야 합니다.
+            
+            Movie 타입의 Transferable을 사용하거나,
+            임시 파일로 저장 후 URL을 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Movie Transferable 정의**
+                
+                비디오 파일을 담을 수 있는 Movie 구조체를 정의합니다.
+                Transferable 프로토콜을 구현해 PhotosPicker와 호환되게 합니다.
+                
+                @Code(name: "MovieTransferable.swift", file: "04-movie-transferable.swift")
+            }
+            
+            @Step {
+                **비디오 URL 로딩**
+                
+                loadTransferable(type: Movie.self)로 비디오를 로딩합니다.
+                반환된 URL을 VideoPlayer에 사용합니다.
+                
+                @Code(name: "LoadVideoURL.swift", file: "04-load-video-url.swift")
+            }
+            
+            @Step {
+                **로딩 진행률 표시**
+                
+                비디오는 용량이 크므로 로딩 진행률을 표시하면 좋습니다.
+                ProgressView로 사용자에게 피드백을 제공합니다.
+                
+                @Code(name: "VideoLoadingProgress.swift", file: "04-video-loading-progress.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비디오 재생기 구현") {
+        @ContentAndMedia {
+            AVKit의 VideoPlayer를 사용해 선택된 비디오를 재생합니다.
+            
+            재생 컨트롤, 전체 화면, Picture-in-Picture 등 
+            다양한 기능을 활용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 VideoPlayer 구현**
+                
+                AVPlayer와 VideoPlayer를 사용해 비디오를 재생합니다.
+                URL을 받아 AVPlayer 인스턴스를 생성합니다.
+                
+                @Code(name: "BasicVideoPlayer.swift", file: "04-basic-video-player.swift")
+            }
+            
+            @Step {
+                **재생 상태 관리**
+                
+                AVPlayer의 상태를 관찰해 재생/일시정지 버튼을 구현합니다.
+                @State로 재생 상태를 관리합니다.
+                
+                @Code(name: "PlaybackState.swift", file: "04-playback-state.swift")
+            }
+            
+            @Step {
+                **비디오 썸네일 생성**
+                
+                AVAssetImageGenerator로 비디오 썸네일을 추출합니다.
+                목록에서 비디오 미리보기를 표시할 때 유용합니다.
+                
+                @Code(name: "VideoThumbnail.swift", file: "04-video-thumbnail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "완성된 비디오 갤러리") {
+        @ContentAndMedia {
+            비디오 선택, 로딩, 재생을 통합한 
+            완성된 비디오 갤러리 화면을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **VideoGalleryView 구현**
+                
+                비디오 목록과 재생 화면을 결합합니다.
+                선택된 비디오를 탭하면 전체 화면으로 재생됩니다.
+                
+                @Code(name: "VideoGalleryView.swift", file: "04-video-gallery-view.swift")
+            }
+            
+            @Step {
+                **비디오 상세 뷰**
+                
+                비디오 재생, 정보 표시, 공유 기능을 포함한 
+                상세 뷰를 구현합니다.
+                
+                @Code(name: "VideoDetailView.swift", file: "04-video-detail-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PhotosPickerItem에서 비디오 URL을 얻으려면?
+            
+            @Choice(isCorrect: true) {
+                Transferable을 구현한 커스텀 타입으로 로딩
+                
+                @Justification(reaction: "정답!") {
+                    Movie 같은 Transferable 타입을 정의하고
+                    loadTransferable(type: Movie.self)로 로딩합니다.
+                    FileRepresentation을 사용해 URL을 받습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .videoURL 프로퍼티 접근
+                
+                @Justification(reaction: "아쉽네요") {
+                    PhotosPickerItem에는 videoURL 프로퍼티가 없습니다.
+                    Transferable 프로토콜을 통해 로딩해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Data로 로딩 후 임시 파일로 저장
+                
+                @Justification(reaction: "부분적으로 맞습니다") {
+                    가능하지만, FileRepresentation을 사용하면 
+                    자동으로 임시 파일이 생성됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비디오 썸네일을 생성하는 데 사용하는 클래스는?
+            
+            @Choice(isCorrect: true) {
+                AVAssetImageGenerator
+                
+                @Justification(reaction: "맞습니다!") {
+                    AVAssetImageGenerator로 비디오의 특정 시점에서 
+                    프레임을 추출해 이미지로 만들 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                VideoThumbnailGenerator
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 클래스는 없습니다.
+                    AVAssetImageGenerator를 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AVPlayer.thumbnailImage
+                
+                @Justification(reaction: "아쉽네요") {
+                    AVPlayer에는 thumbnailImage 프로퍼티가 없습니다.
+                    AVAssetImageGenerator를 별도로 사용해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            선택된 PhotosPickerItem이 비디오인지 확인하려면?
+            
+            @Choice(isCorrect: true) {
+                supportedContentTypes에서 UTType.movie 확인
+                
+                @Justification(reaction: "정확합니다!") {
+                    PhotosPickerItem의 supportedContentTypes 배열에
+                    UTType.movie가 포함되어 있으면 비디오입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                isVideo 프로퍼티 확인
+                
+                @Justification(reaction: "아쉽네요") {
+                    그런 프로퍼티는 없습니다.
+                    supportedContentTypes를 확인하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                itemIdentifier 접두사 확인
+                
+                @Justification(reaction: "아쉽네요") {
+                    itemIdentifier는 미디어 타입을 나타내지 않습니다.
+                    supportedContentTypes를 사용하세요.
+                }
+            }
+        }
+    }
+}

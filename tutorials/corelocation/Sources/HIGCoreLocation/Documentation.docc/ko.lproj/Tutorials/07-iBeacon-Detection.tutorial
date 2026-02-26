@@ -1,0 +1,212 @@
+@Tutorial(time: 12) {
+    @Intro(title: "비콘 감지 (iBeacon)") {
+        iBeacon 기술을 활용하여 실내에서도 정밀한 위치를 감지합니다.
+        러닝 트래커에서 실내 트랙 구간 인식에 활용할 수 있습니다.
+    }
+    
+    @Section(title: "iBeacon 개요") {
+        @ContentAndMedia {
+            iBeacon은 Apple이 개발한 Bluetooth Low Energy(BLE) 기반 
+            근접 감지 기술입니다.
+            
+            GPS가 작동하지 않는 실내에서 위치 기반 서비스를 제공할 수 있습니다.
+            체육관 러닝 트랙이나 실내 코스에서 활용 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **iBeacon 구성 요소**
+                
+                iBeacon은 세 가지 값으로 식별됩니다:
+                - **UUID**: 조직/앱 고유 식별자
+                - **Major**: 그룹/건물 식별 (0-65535)
+                - **Minor**: 개별 비콘 식별 (0-65535)
+                
+                @Code(name: "BeaconIdentifier.swift", file: "07-beacon-id.swift")
+            }
+            
+            @Step {
+                **CLBeaconRegion 생성**
+                
+                감지할 비콘 영역을 정의합니다.
+                UUID만 지정하거나, Major/Minor까지 세분화할 수 있습니다.
+                
+                @Code(name: "BeaconManager.swift", file: "07-beacon-region.swift")
+            }
+            
+            @Step {
+                **Bluetooth 권한 설정**
+                
+                iOS 13+에서는 Bluetooth 사용 권한이 필요합니다.
+                Info.plist에 `NSBluetoothAlwaysUsageDescription`을 추가합니다.
+                
+                @Code(name: "Info.plist", file: "07-bluetooth-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비콘 모니터링 vs 레인징") {
+        @ContentAndMedia {
+            비콘 감지에는 두 가지 모드가 있습니다:
+            - **모니터링**: 영역 진입/이탈만 감지 (배터리 효율적)
+            - **레인징**: 실시간 거리 측정 (정밀하지만 배터리 소모 큼)
+        }
+        
+        @Steps {
+            @Step {
+                **비콘 모니터링 시작**
+                
+                지오펜싱과 유사하게 영역 진입/이탈 이벤트를 받습니다.
+                앱이 백그라운드에 있어도 동작합니다.
+                
+                @Code(name: "BeaconManager.swift", file: "07-monitoring.swift")
+            }
+            
+            @Step {
+                **비콘 레인징 시작**
+                
+                레인징은 근처 비콘까지의 거리를 실시간으로 측정합니다.
+                proximity 속성으로 대략적인 거리를 알 수 있습니다.
+                
+                @Code(name: "BeaconManager.swift", file: "07-ranging.swift")
+            }
+            
+            @Step {
+                **거리 측정 결과 처리**
+                
+                `locationManager(_:didRange:satisfying:)`에서
+                감지된 비콘들의 정보를 받습니다.
+                
+                @Code(name: "BeaconManager.swift", file: "07-did-range.swift")
+            }
+        }
+    }
+    
+    @Section(title: "실내 트랙 구간 인식") {
+        @ContentAndMedia {
+            체육관 러닝 트랙에 비콘을 설치하면
+            실내에서도 구간별 랩 타임을 측정할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **트랙 비콘 배치 계획**
+                
+                트랙 시작점과 각 구간에 비콘을 배치합니다.
+                각 비콘에 고유한 Minor 값을 할당합니다.
+                
+                @Code(name: "IndoorTrack.swift", file: "07-track-layout.swift")
+            }
+            
+            @Step {
+                **구간 통과 감지**
+                
+                비콘 proximity가 .immediate 또는 .near가 되면
+                해당 구간을 통과한 것으로 판정합니다.
+                
+                @Code(name: "IndoorTrack.swift", file: "07-segment-detect.swift")
+            }
+            
+            @Step {
+                **실내 대시보드 UI**
+                
+                현재 구간, 랩 수, 구간별 시간을 표시하는 UI를 만듭니다.
+                
+                @Code(name: "IndoorDashboardView.swift", file: "07-indoor-dashboard.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            iBeacon의 세 가지 식별자는?
+            
+            @Choice(isCorrect: true) {
+                UUID, Major, Minor
+                
+                @Justification(reaction: "정답!") {
+                    UUID는 조직을, Major는 그룹을, Minor는 개별 비콘을 식별합니다.
+                    이 계층 구조로 수천 개의 비콘을 체계적으로 관리할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                UUID, Name, Location
+                
+                @Justification(reaction: "아쉽네요") {
+                    iBeacon은 UUID, Major, Minor 숫자 값으로 식별됩니다.
+                    이름이나 위치는 앱에서 별도로 매핑합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MAC Address, RSSI, TxPower
+                
+                @Justification(reaction: "아쉽네요") {
+                    이것들은 BLE 기술 파라미터입니다.
+                    iBeacon 식별자는 UUID, Major, Minor입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비콘 모니터링과 레인징의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                모니터링은 진입/이탈만, 레인징은 실시간 거리 측정
+                
+                @Justification(reaction: "정확합니다!") {
+                    모니터링은 배터리 효율적이고 백그라운드에서 동작합니다.
+                    레인징은 정밀하지만 포그라운드에서만 동작합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                동일한 기능
+                
+                @Justification(reaction: "아쉽네요") {
+                    두 기능은 목적과 동작 방식이 다릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                레인징은 GPS를 사용함
+                
+                @Justification(reaction: "아쉽네요") {
+                    레인징도 Bluetooth를 사용합니다.
+                    GPS와는 별개의 기술입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CLProximity의 네 가지 값은?
+            
+            @Choice(isCorrect: true) {
+                unknown, immediate, near, far
+                
+                @Justification(reaction: "정답!") {
+                    immediate는 수 센티미터, near는 수 미터,
+                    far는 그 이상, unknown은 측정 불가를 의미합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                close, medium, far, lost
+                
+                @Justification(reaction: "아쉽네요") {
+                    정확한 값은 unknown, immediate, near, far입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1m, 5m, 10m, 50m
+                
+                @Justification(reaction: "아쉽네요") {
+                    CLProximity는 정확한 미터 값이 아니라
+                    대략적인 거리 범주를 나타냅니다.
+                }
+            }
+        }
+    }
+}

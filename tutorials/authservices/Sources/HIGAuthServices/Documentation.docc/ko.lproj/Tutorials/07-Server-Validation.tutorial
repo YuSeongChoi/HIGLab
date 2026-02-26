@@ -1,0 +1,206 @@
+@Tutorial(time: 20) {
+    @Intro(title: "서버 검증") {
+        Identity Token을 서버에서 검증하고
+        안전한 세션을 생성하는 방법을 구현합니다.
+        
+        @Image(source: "server-validation.png", alt: "서버 검증 흐름")
+    }
+    
+    @Section(title: "Identity Token 이해") {
+        @ContentAndMedia {
+            Identity Token은 JWT(JSON Web Token) 형식입니다.
+            
+            JWT 구조:
+            - **Header**: 알고리즘 정보 (RS256)
+            - **Payload**: 사용자 정보, 앱 정보, 만료 시간
+            - **Signature**: Apple 개인키로 서명됨
+            
+            서버에서 Apple의 공개키로 서명을 검증합니다.
+        }
+        
+        @Steps {
+            @Step {
+                클라이언트에서 Identity Token을 
+                Base64 문자열로 변환합니다.
+                
+                @Code(name: "EncodeToken.swift", file: "07-01-encode-token.swift")
+            }
+            
+            @Step {
+                서버로 토큰을 전송합니다.
+                HTTPS를 반드시 사용해야 합니다.
+                
+                @Code(name: "SendToken.swift", file: "07-02-send-token.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Apple 공개키 가져오기") {
+        @ContentAndMedia {
+            Apple의 JWT 검증용 공개키는 
+            JWKS(JSON Web Key Set) 엔드포인트에서 제공됩니다.
+            
+            URL: `https://appleid.apple.com/auth/keys`
+            
+            키는 주기적으로 로테이션되므로 
+            캐싱 시 TTL을 설정해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Apple JWKS 엔드포인트에서 공개키를 가져옵니다.
+                Node.js/Python 서버 예시입니다.
+                
+                @Code(name: "FetchJWKS.swift", file: "07-03-fetch-jwks.swift")
+            }
+            
+            @Step {
+                토큰 헤더의 kid(Key ID)와 일치하는 
+                공개키를 선택합니다.
+                
+                @Code(name: "SelectKey.swift", file: "07-04-select-key.swift")
+            }
+        }
+    }
+    
+    @Section(title: "토큰 검증 단계") {
+        @ContentAndMedia {
+            Identity Token 검증 시 확인해야 할 사항:
+            
+            1. **서명 검증**: Apple 공개키로 서명 확인
+            2. **iss 확인**: "https://appleid.apple.com" 인지
+            3. **aud 확인**: 앱의 Bundle ID와 일치하는지
+            4. **exp 확인**: 토큰이 만료되지 않았는지
+            5. **nonce 확인**: 요청 시 보낸 nonce와 일치하는지
+        }
+        
+        @Steps {
+            @Step {
+                JWT 라이브러리로 토큰을 디코딩하고 
+                서명을 검증합니다.
+                
+                @Code(name: "VerifySignature.swift", file: "07-05-verify-signature.swift")
+            }
+            
+            @Step {
+                issuer(iss) 클레임을 확인합니다.
+                반드시 Apple 도메인이어야 합니다.
+                
+                @Code(name: "VerifyIssuer.swift", file: "07-06-verify-issuer.swift")
+            }
+            
+            @Step {
+                audience(aud) 클레임이 
+                앱의 Bundle ID와 일치하는지 확인합니다.
+                
+                @Code(name: "VerifyAudience.swift", file: "07-07-verify-audience.swift")
+            }
+            
+            @Step {
+                nonce 클레임이 요청 시 설정한 값과 
+                일치하는지 확인합니다.
+                
+                @Code(name: "VerifyNonce.swift", file: "07-08-verify-nonce.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Authorization Code로 토큰 교환") {
+        @ContentAndMedia {
+            Authorization Code를 Apple 서버와 교환하여
+            Refresh Token과 Access Token을 받을 수 있습니다.
+            
+            Token Endpoint: `https://appleid.apple.com/auth/token`
+            
+            Refresh Token으로 세션을 갱신할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                Client Secret JWT를 생성합니다.
+                Apple Developer 포털의 키로 서명합니다.
+                
+                @Code(name: "ClientSecret.swift", file: "07-09-client-secret.swift")
+            }
+            
+            @Step {
+                Token 엔드포인트로 요청을 보냅니다.
+                Authorization Code와 Client Secret을 포함합니다.
+                
+                @Code(name: "TokenExchange.swift", file: "07-10-token-exchange.swift")
+            }
+            
+            @Step {
+                응답에서 Refresh Token을 안전하게 저장합니다.
+                세션 갱신에 사용됩니다.
+                
+                @Code(name: "StoreRefreshToken.swift", file: "07-11-store-refresh.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Identity Token 검증 시 반드시 확인해야 하는 
+            클레임(claim)은?
+            
+            @Choice(isCorrect: false) {
+                name과 email만 확인하면 된다.
+                
+                @Justification(reaction: "보안에 취약합니다.") {
+                    iss, aud, exp, nonce 등 
+                    보안 관련 클레임도 검증해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                iss, aud, exp, nonce를 모두 검증해야 한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    발급자, 대상, 만료, nonce를 모두 확인해야
+                    위조 토큰을 방지할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                sub(사용자 ID)만 확인하면 된다.
+                
+                @Justification(reaction: "불충분합니다.") {
+                    sub 확인만으로는 토큰 위조를 
+                    방지할 수 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Apple의 JWT 검증용 공개키는 어디서 가져오나요?
+            
+            @Choice(isCorrect: true) {
+                https://appleid.apple.com/auth/keys (JWKS 엔드포인트)
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Apple의 공식 JWKS 엔드포인트에서
+                    공개키 세트를 가져옵니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Developer 포털에서 다운로드.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    포털에서는 Client Secret 생성용 키를 
+                    다운로드하며, 검증 공개키는 JWKS로 제공됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Identity Token 내에 포함되어 있다.
+                
+                @Justification(reaction: "보안상 불가능합니다.") {
+                    공개키는 외부에서 가져와야
+                    토큰 위조를 방지할 수 있습니다.
+                }
+            }
+        }
+    }
+}

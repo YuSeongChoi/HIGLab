@@ -1,0 +1,190 @@
+@Tutorial(time: 15) {
+    @Intro(title: "ObservableObject에서 마이그레이션") {
+        기존 ObservableObject 기반 코드를 @Observable로 
+        안전하게 마이그레이션하는 방법을 배웁니다.
+        단계별 전환 전략과 주의사항을 다룹니다.
+    }
+    
+    @Section(title: "마이그레이션 기본 단계") {
+        @ContentAndMedia {
+            ObservableObject에서 @Observable로의 전환은
+            몇 가지 간단한 단계를 따릅니다.
+            기계적으로 변환할 수 있는 부분을 먼저 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Before**: 기존 ObservableObject 코드입니다.
+                @Published, ObservableObject 프로토콜을 사용합니다.
+                
+                @Code(name: "BeforeMigration.swift", file: "09-before-migration.swift")
+            }
+            
+            @Step {
+                **Step 1**: 프로토콜과 매크로 교체
+                ObservableObject를 제거하고 @Observable을 추가합니다.
+                
+                @Code(name: "Step1Protocol.swift", file: "09-step1-protocol.swift")
+            }
+            
+            @Step {
+                **Step 2**: @Published 제거
+                @Observable에서는 저장 프로퍼티가 자동 추적됩니다.
+                
+                @Code(name: "Step2Published.swift", file: "09-step2-published.swift")
+            }
+        }
+    }
+    
+    @Section(title: "뷰 코드 업데이트") {
+        @ContentAndMedia {
+            모델 변경에 맞춰 뷰 코드도 업데이트합니다.
+            @StateObject, @ObservedObject의 대체재를 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **@StateObject → @State**
+                뷰가 소유하는 객체는 @State로 변경합니다.
+                
+                @Code(name: "StateObjectMigration.swift", file: "09-state-object.swift")
+            }
+            
+            @Step {
+                **@ObservedObject → 제거 또는 유지**
+                외부에서 주입받는 객체는 래퍼 없이 사용 가능합니다.
+                
+                @Code(name: "ObservedObjectMigration.swift", file: "09-observed-object.swift")
+            }
+            
+            @Step {
+                **@EnvironmentObject → @Environment**
+                환경 객체는 @Environment로 교체합니다.
+                
+                @Code(name: "EnvironmentMigration.swift", file: "09-environment.swift")
+            }
+        }
+    }
+    
+    @Section(title: "마이그레이션 주의사항") {
+        @ContentAndMedia {
+            마이그레이션 과정에서 발생할 수 있는 
+            문제점과 해결책을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **iOS 17 미만 지원 필요 시**
+                조건부 컴파일로 두 방식을 병행할 수 있습니다.
+                
+                @Code(name: "BackwardCompatibility.swift", file: "09-backward-compat.swift")
+            }
+            
+            @Step {
+                **objectWillChange 직접 사용 시**
+                수동 트리거가 필요하면 ObservationRegistrar를 활용합니다.
+                
+                @Code(name: "ManualTrigger.swift", file: "09-manual-trigger.swift")
+            }
+            
+            @Step {
+                **체크리스트**: 마이그레이션 완료 확인
+                모든 항목을 점검하여 누락 없이 전환합니다.
+                
+                @Code(name: "MigrationChecklist.swift", file: "09-checklist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CartFlow: 점진적 마이그레이션") {
+        @ContentAndMedia {
+            실제 앱에서 점진적으로 마이그레이션하는 
+            방법을 CartFlow 예제로 살펴봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                기존 Legacy 코드: ObservableObject 기반 CartStore
+                
+                @Code(name: "LegacyCartStore.swift", file: "09-legacy-cart.swift")
+            }
+            
+            @Step {
+                새로운 @Observable 기반 CartStore로 변환합니다.
+                기존 기능을 유지하면서 현대화합니다.
+                
+                @Code(name: "ModernCartStore.swift", file: "09-modern-cart.swift")
+            }
+            
+            @Step {
+                뷰 코드를 업데이트하여 마이그레이션을 완료합니다.
+                
+                @Code(name: "UpdatedViews.swift", file: "09-updated-views.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ObservableObject에서 @Observable로 마이그레이션할 때 @Published는?
+            
+            @Choice(isCorrect: true) {
+                제거 - @Observable에서는 자동 추적됨
+                
+                @Justification(reaction: "정답!") {
+                    @Observable 매크로가 저장 프로퍼티에 대해
+                    자동으로 관찰 코드를 생성하므로 @Published가 필요 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                그대로 유지
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Published는 ObservableObject 전용입니다.
+                    @Observable에서는 의미가 없고 오히려 방해가 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Observed로 교체
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Observed라는 매크로는 없습니다.
+                    @Observable에서는 저장 프로퍼티가 자동 추적됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            @StateObject를 @Observable로 마이그레이션할 때의 대체재는?
+            
+            @Choice(isCorrect: true) {
+                @State
+                
+                @Justification(reaction: "완벽합니다!") {
+                    iOS 17+에서 @State는 Observable 객체의 
+                    라이프사이클을 올바르게 관리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                @Bindable
+                
+                @Justification(reaction: "아쉽네요") {
+                    @Bindable은 양방향 바인딩을 위한 것이며,
+                    객체 소유권 관리와는 다른 역할입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                래퍼 없이 일반 프로퍼티
+                
+                @Justification(reaction: "아쉽네요") {
+                    뷰가 객체를 소유하고 생성해야 하는 경우
+                    라이프사이클 관리를 위해 @State가 필요합니다.
+                }
+            }
+        }
+    }
+}

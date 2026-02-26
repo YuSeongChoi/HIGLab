@@ -1,0 +1,189 @@
+@Tutorial(time: 25) {
+    @Intro(title: "사진 촬영 (AVCapturePhotoOutput)") {
+        AVCapturePhotoOutput을 사용하여 고품질 사진을 촬영합니다.
+        플래시, HDR, Live Photo 등 다양한 촬영 옵션을 구현합니다.
+    }
+    
+    @Section(title: "Photo Output 설정") {
+        @ContentAndMedia {
+            AVCapturePhotoOutput은 정지 이미지 캡처를 담당합니다.
+            HEIF, JPEG, RAW 등 다양한 포맷을 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CameraManager에 photoOutput 프로퍼티를 추가합니다.
+                
+                @Code(name: "CameraManager.swift", file: "03-photo-output-property.swift")
+            }
+            
+            @Step {
+                세션에 photoOutput을 추가합니다.
+                canAddOutput()으로 추가 가능 여부를 확인합니다.
+                
+                @Code(name: "CameraManager.swift", file: "03-add-photo-output.swift")
+            }
+            
+            @Step {
+                지원되는 기능을 확인합니다.
+                기기마다 지원 기능이 다를 수 있습니다.
+                
+                @Code(name: "CameraManager.swift", file: "03-check-capabilities.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사진 촬영 구현") {
+        @ContentAndMedia {
+            AVCapturePhotoSettings로 촬영 옵션을 설정하고
+            capturePhoto() 메서드로 사진을 촬영합니다.
+        }
+        
+        @Steps {
+            @Step {
+                PhotoCaptureDelegate를 구현합니다.
+                촬영 완료 시 콜백을 받기 위해 AVCapturePhotoCaptureDelegate를 채택합니다.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-photo-delegate.swift")
+            }
+            
+            @Step {
+                촬영 설정을 구성합니다.
+                AVCapturePhotoSettings로 플래시, HDR 등을 설정합니다.
+                
+                @Code(name: "CameraManager.swift", file: "03-photo-settings.swift")
+            }
+            
+            @Step {
+                capturePhoto() 메서드를 구현합니다.
+                촬영 요청 시 델리게이트를 함께 전달합니다.
+                
+                @Code(name: "CameraManager.swift", file: "03-capture-photo.swift")
+            }
+            
+            @Step {
+                촬영 완료 처리를 구현합니다.
+                didFinishProcessingPhoto에서 이미지 데이터를 추출합니다.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-process-photo.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사진 저장") {
+        @ContentAndMedia {
+            촬영한 사진을 사진 라이브러리에 저장합니다.
+            PHPhotoLibrary를 사용하여 앨범에 저장합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Info.plist에 사진 라이브러리 권한을 추가합니다.
+                `NSPhotoLibraryAddUsageDescription` 키가 필요합니다.
+                
+                @Code(name: "Info.plist", file: "03-photo-library-plist.swift")
+            }
+            
+            @Step {
+                PhotoLibraryService를 구현합니다.
+                PHPhotoLibrary로 사진을 저장합니다.
+                
+                @Code(name: "PhotoLibraryService.swift", file: "03-photo-library-service.swift")
+            }
+            
+            @Step {
+                촬영 완료 후 자동 저장을 연결합니다.
+                델리게이트에서 PhotoLibraryService를 호출합니다.
+                
+                @Code(name: "PhotoCaptureDelegate.swift", file: "03-auto-save.swift")
+            }
+        }
+    }
+    
+    @Section(title: "SwiftUI 카메라 뷰") {
+        @ContentAndMedia {
+            SwiftUI로 카메라 인터페이스를 구성합니다.
+            촬영 버튼과 미리보기를 배치합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CameraView의 기본 구조를 만듭니다.
+                
+                @Code(name: "CameraView.swift", file: "03-camera-view.swift")
+            }
+            
+            @Step {
+                촬영 버튼을 추가합니다.
+                탭 시 capturePhoto()를 호출합니다.
+                
+                @Code(name: "CameraView.swift", file: "03-capture-button.swift")
+            }
+            
+            @Step {
+                촬영된 이미지 미리보기를 표시합니다.
+                @Published 프로퍼티로 UI와 바인딩합니다.
+                
+                @Code(name: "CameraView.swift", file: "03-photo-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            사진 촬영 완료 시 이미지 데이터를 받는 델리게이트 메서드는?
+            
+            @Choice(isCorrect: false) {
+                `photoOutput(_:willBeginCaptureFor:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 메서드는 촬영 시작 전에 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `photoOutput(_:didFinishProcessingPhoto:error:)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이 메서드에서 AVCapturePhoto 객체를 통해 이미지 데이터에 접근할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `photoOutput(_:didCapturePhotoFor:)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이 메서드는 촬영 직후 호출되지만 이미지 처리 전입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            AVCapturePhotoSettings에서 플래시 모드를 설정하는 프로퍼티는?
+            
+            @Choice(isCorrect: true) {
+                `flashMode`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    flashMode를 .auto, .on, .off로 설정할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `torchMode`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    torchMode는 AVCaptureDevice의 프로퍼티입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `lightMode`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVCapturePhotoSettings에 lightMode는 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

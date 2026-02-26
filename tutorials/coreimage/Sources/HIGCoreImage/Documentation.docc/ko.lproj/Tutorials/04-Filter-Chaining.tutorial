@@ -1,0 +1,254 @@
+@Tutorial(time: 20) {
+    @Intro(title: "필터 체이닝") {
+        여러 필터를 연결하여 복잡한 효과를 만드는 
+        필터 체이닝 기법을 학습합니다.
+        
+        @Image(source: "filter-chaining.png", alt: "필터 체이닝")
+    }
+    
+    @Section(title: "필터 체이닝의 원리") {
+        @ContentAndMedia {
+            CoreImage의 지연 평가 덕분에 여러 필터를 효율적으로 연결할 수 있습니다.
+            중간 이미지를 생성하지 않고 최종 렌더링 시 한번에 처리됩니다.
+            
+            ```
+            CIImage → Filter A → Filter B → Filter C → CIContext → 결과
+                      (체인)     (체인)     (체인)     (렌더링)
+            ```
+            
+            @Image(source: "chaining-pipeline.png", alt: "체이닝 파이프라인")
+        }
+        
+        @Steps {
+            @Step {
+                가장 기본적인 필터 체이닝 방법입니다.
+                이전 필터의 출력을 다음 필터의 입력으로 연결합니다.
+                
+                @Code(name: "BasicChaining.swift", file: "04-01-basic-chaining.swift")
+            }
+            
+            @Step {
+                applyingFilter 메서드로 더 간결하게 체이닝합니다.
+                CIImage의 확장 메서드를 활용합니다.
+                
+                @Code(name: "ApplyingFilter.swift", file: "04-02-applying-filter.swift")
+            }
+            
+            @Step {
+                커스텀 연산자를 정의해 가독성을 높입니다.
+                함수형 프로그래밍 스타일로 체이닝할 수 있습니다.
+                
+                @Code(name: "CustomOperator.swift", file: "04-03-custom-operator.swift")
+            }
+        }
+    }
+    
+    @Section(title: "블렌딩과 합성") {
+        @ContentAndMedia {
+            두 이미지를 합성하는 것도 필터 체이닝의 일종입니다.
+            다양한 블렌드 모드로 창의적인 효과를 만들 수 있습니다.
+            
+            주요 블렌드 필터:
+            - CISourceOverCompositing: 기본 합성
+            - CIMultiplyBlendMode: 어두운 곱하기
+            - CIScreenBlendMode: 밝은 스크린
+            - CIOverlayBlendMode: 오버레이 (대비 강화)
+            - CIBlendWithMask: 마스크 기반 블렌딩
+        }
+        
+        @Steps {
+            @Step {
+                CISourceOverCompositing으로 두 이미지를 합성합니다.
+                위에 놓을 이미지와 배경 이미지를 지정합니다.
+                
+                @Code(name: "SourceOverCompositing.swift", file: "04-04-source-over.swift")
+            }
+            
+            @Step {
+                다양한 블렌드 모드를 적용해봅니다.
+                Multiply, Screen, Overlay 등의 효과를 비교합니다.
+                
+                @Code(name: "BlendModes.swift", file: "04-05-blend-modes.swift")
+            }
+            
+            @Step {
+                CIBlendWithMask로 마스크를 사용한 합성을 수행합니다.
+                선택적인 영역만 블렌딩할 수 있습니다.
+                
+                @Code(name: "BlendWithMask.swift", file: "04-06-blend-mask.swift")
+            }
+            
+            @Step {
+                그라디언트 마스크를 생성해 자연스러운 전환을 만듭니다.
+                CILinearGradient와 CIRadialGradient를 활용합니다.
+                
+                @Code(name: "GradientMask.swift", file: "04-07-gradient-mask.swift")
+            }
+        }
+    }
+    
+    @Section(title: "복잡한 필터 조합") {
+        @ContentAndMedia {
+            실제 앱에서 사용하는 수준의 복잡한 필터 조합을 구현합니다.
+            여러 기법을 조합해 전문적인 효과를 만들어봅니다.
+            
+            구현할 효과:
+            1. 드라마틱 흑백 (높은 대비 + 비네트)
+            2. 빈티지 필름 룩 (색상 조정 + 그레인 + 비네트)
+            3. 글로우 효과 (블러 + 스크린 블렌드)
+        }
+        
+        @Steps {
+            @Step {
+                드라마틱한 흑백 효과를 구현합니다.
+                단순 흑백이 아닌 대비 강화와 비네트를 추가합니다.
+                
+                @Code(name: "DramaticBW.swift", file: "04-08-dramatic-bw.swift")
+            }
+            
+            @Step {
+                빈티지 필름 룩을 구현합니다.
+                색상 이동, 바랜 느낌, 그레인을 조합합니다.
+                
+                @Code(name: "VintageFilm.swift", file: "04-09-vintage-film.swift")
+            }
+            
+            @Step {
+                글로우(발광) 효과를 구현합니다.
+                블러된 이미지를 원본과 스크린 블렌딩합니다.
+                
+                @Code(name: "GlowEffect.swift", file: "04-10-glow-effect.swift")
+            }
+        }
+    }
+    
+    @Section(title: "재사용 가능한 필터 클래스") {
+        @ContentAndMedia {
+            복잡한 필터 체인을 재사용 가능한 클래스로 캡슐화합니다.
+            CIFilter를 상속하거나 커스텀 프로토콜을 사용할 수 있습니다.
+            
+            캡슐화의 장점:
+            - 코드 재사용성 향상
+            - 파라미터 유효성 검사
+            - 필터 조합을 단일 단위로 관리
+        }
+        
+        @Steps {
+            @Step {
+                커스텀 필터 프로토콜을 정의합니다.
+                입력, 파라미터, 출력을 명확히 분리합니다.
+                
+                @Code(name: "FilterProtocol.swift", file: "04-11-filter-protocol.swift")
+            }
+            
+            @Step {
+                빈티지 필터를 재사용 가능한 클래스로 구현합니다.
+                파라미터 조절과 미리보기 기능을 제공합니다.
+                
+                @Code(name: "VintageFilterClass.swift", file: "04-12-vintage-class.swift")
+            }
+            
+            @Step {
+                필터 팩토리 패턴으로 여러 프리셋을 관리합니다.
+                사용자 선택에 따라 적절한 필터를 반환합니다.
+                
+                @Code(name: "FilterFactory.swift", file: "04-13-filter-factory.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 필터 프리뷰를 구현합니다.
+                실시간으로 파라미터 변경을 확인할 수 있습니다.
+                
+                @Code(name: "FilterPreview.swift", file: "04-14-filter-preview.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            필터 체이닝 시 중간 이미지가 생성되지 않는 이유는?
+            
+            @Choice(isCorrect: true) {
+                CoreImage의 지연 평가로 최종 렌더링 시 모든 필터가 합쳐지기 때문
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    지연 평가 덕분에 여러 필터가 하나의 최적화된 
+                    GPU 연산으로 처리됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                필터가 이미지를 수정하지 않고 복사하기 때문
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    CIImage는 불변이지만, 지연 평가가 핵심입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                CPU에서 모든 처리가 이루어지기 때문
+                
+                @Justification(reaction: "오히려 반대입니다.") {
+                    CoreImage는 GPU 가속을 적극 활용합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CIBlendWithMask 필터에서 마스크 이미지의 역할은?
+            
+            @Choice(isCorrect: true) {
+                흰색 부분은 전경 이미지, 검은색 부분은 배경 이미지를 표시
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    마스크의 밝기 값이 두 이미지의 혼합 비율을 결정합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                마스크는 최종 이미지의 밝기만 조절한다
+                
+                @Justification(reaction: "그렇지 않습니다.") {
+                    마스크는 두 이미지의 블렌딩 비율을 제어합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                마스크는 필터 적용 속도만 조절한다
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    마스크는 시각적 효과를 제어합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            글로우 효과를 만들 때 사용하는 블렌드 모드는?
+            
+            @Choice(isCorrect: false) {
+                Multiply - 이미지를 어둡게 만든다
+                
+                @Justification(reaction: "반대 효과입니다.") {
+                    Multiply는 어두운 효과를 만들어 글로우에 적합하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Screen - 밝은 부분을 더 밝게 만든다
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Screen 블렌드는 빛이 중첩되는 효과를 내어 
+                    글로우/발광 효과에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Difference - 두 이미지의 차이를 보여준다
+                
+                @Justification(reaction: "다른 용도입니다.") {
+                    Difference는 특수 효과나 이미지 비교에 사용됩니다.
+                }
+            }
+        }
+    }
+}

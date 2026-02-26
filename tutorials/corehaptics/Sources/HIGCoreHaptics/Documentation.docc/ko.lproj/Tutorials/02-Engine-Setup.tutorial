@@ -1,0 +1,177 @@
+@Tutorial(time: 20) {
+    @Intro(title: "CHHapticEngine 설정") {
+        햅틱 엔진을 초기화하고 앱의 생명주기에 맞게 
+        올바르게 관리하는 방법을 학습합니다.
+        
+        @Image(source: "engine-setup.png", alt: "CHHapticEngine 설정")
+    }
+    
+    @Section(title: "엔진 초기화") {
+        @ContentAndMedia {
+            CHHapticEngine은 햅틱 재생의 핵심입니다.
+            앱 시작 시 한 번 생성하고 재사용하는 것이 효율적입니다.
+            
+            엔진 생성은 실패할 수 있으므로 
+            반드시 에러 처리를 포함해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                HapticManager 클래스를 만들어 엔진을 관리합니다.
+                싱글톤 패턴으로 앱 전체에서 하나의 엔진을 공유합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-01-manager-init.swift")
+            }
+            
+            @Step {
+                디바이스가 햅틱을 지원하는지 먼저 확인합니다.
+                지원하지 않는 기기에서는 우아하게 실패해야 합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-02-capability-check.swift")
+            }
+            
+            @Step {
+                엔진을 생성하고 시작합니다.
+                start() 메서드 호출 후에야 햅틱을 재생할 수 있습니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-03-engine-start.swift")
+            }
+        }
+    }
+    
+    @Section(title: "엔진 상태 관리") {
+        @ContentAndMedia {
+            CHHapticEngine은 시스템 상황에 따라 
+            자동으로 중지될 수 있습니다.
+            
+            - 앱이 백그라운드로 전환될 때
+            - 시스템 리소스가 부족할 때
+            - 오디오 세션 인터럽트 시
+            
+            이러한 상황을 적절히 처리해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                stoppedHandler를 설정해 엔진 중지를 감지합니다.
+                중지 이유에 따라 적절한 복구 전략을 선택합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-04-stopped-handler.swift")
+            }
+            
+            @Step {
+                resetHandler로 엔진 리셋 상황을 처리합니다.
+                리셋 후에는 엔진을 다시 시작해야 합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-05-reset-handler.swift")
+            }
+            
+            @Step {
+                앱 생명주기와 연동합니다.
+                백그라운드에서는 엔진을 중지하고, 
+                포그라운드 복귀 시 재시작합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-06-lifecycle.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Auto-shutdown 설정") {
+        @ContentAndMedia {
+            기본적으로 엔진은 일정 시간 사용하지 않으면 
+            자동으로 종료됩니다 (Auto-shutdown).
+            
+            이 동작을 제어하여 배터리 효율과 
+            응답 속도 사이의 균형을 맞출 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                isAutoShutdownEnabled 속성으로 
+                자동 종료 동작을 제어합니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-07-auto-shutdown.swift")
+            }
+            
+            @Step {
+                게임처럼 즉각적인 응답이 중요한 앱에서는 
+                auto-shutdown을 비활성화하는 것이 좋습니다.
+                
+                단, 배터리 소모가 증가할 수 있습니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-08-game-setup.swift")
+            }
+            
+            @Step {
+                완성된 HapticManager를 확인합니다.
+                이제 앱 어디서든 햅틱을 재생할 준비가 되었습니다.
+                
+                @Code(name: "HapticManager.swift", file: "02-09-complete.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CHHapticEngine의 stoppedHandler는 언제 호출되나요?
+            
+            @Choice(isCorrect: false) {
+                개발자가 stop()을 호출했을 때만
+                
+                @Justification(reaction: "부분적으로만 맞습니다.") {
+                    stoppedHandler는 시스템에 의해 자동으로 
+                    중지될 때도 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                시스템이나 개발자에 의해 엔진이 중지될 때
+                
+                @Justification(reaction: "정확합니다! 🎉") {
+                    앱 백그라운드 전환, 시스템 리소스 부족, 
+                    명시적 stop() 호출 등 다양한 상황에서 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                햅틱 재생이 완료되었을 때
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    개별 햅틱 재생 완료와 엔진 중지는 다른 이벤트입니다.
+                    Player의 completionHandler를 사용하세요.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            isAutoShutdownEnabled를 false로 설정하면 어떤 효과가 있나요?
+            
+            @Choice(isCorrect: false) {
+                배터리 수명이 늘어난다.
+                
+                @Justification(reaction: "반대입니다.") {
+                    auto-shutdown을 비활성화하면 엔진이 계속 실행되어 
+                    오히려 배터리 소모가 증가합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                햅틱 응답 속도가 빨라지지만 배터리 소모가 증가한다.
+                
+                @Justification(reaction: "맞습니다! 🔋") {
+                    엔진이 항상 준비 상태이므로 즉각적인 응답이 가능하지만,
+                    게임 등 필요한 경우에만 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                햅틱 강도가 강해진다.
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    auto-shutdown 설정은 엔진의 대기 상태만 제어하며,
+                    햅틱의 강도와는 무관합니다.
+                }
+            }
+        }
+    }
+}

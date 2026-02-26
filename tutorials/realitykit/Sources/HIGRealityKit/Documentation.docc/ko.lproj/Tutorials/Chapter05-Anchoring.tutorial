@@ -1,0 +1,239 @@
+@Tutorial(time: 20) {
+    @Intro(title: "앵커링 (AnchorEntity)") {
+        AnchorEntity를 사용하여 가상 콘텐츠를 현실 세계에 고정하는 방법을 배웁니다.
+        다양한 앵커 타입과 사용 사례를 알아봅니다.
+        
+        @Image(source: "chapter5-anchor.png", alt: "AnchorEntity 앵커링")
+    }
+    
+    @Section(title: "AnchorEntity 이해하기") {
+        @ContentAndMedia {
+            AnchorEntity는 AR 콘텐츠를 현실 세계의 특정 위치나 표면에 고정합니다.
+            ARKit의 앵커와 자동으로 연동됩니다.
+            
+            @Image(source: "anchor-basics.png", alt: "앵커 기본 개념")
+        }
+        
+        @Steps {
+            @Step {
+                AnchorEntity는 장면 계층의 루트 역할을 합니다.
+                
+                @Code(name: "AnchorBasics.swift", file: "05-anchor-01.swift")
+            }
+            
+            @Step {
+                여러 AnchorEntity를 하나의 장면에 추가할 수 있습니다.
+                
+                @Code(name: "MultipleAnchors.swift", file: "05-anchor-02.swift")
+            }
+        }
+    }
+    
+    @Section(title: "평면 앵커") {
+        @ContentAndMedia {
+            수평면(바닥, 테이블)이나 수직면(벽)에 콘텐츠를 고정합니다.
+            
+            @Image(source: "plane-anchor.png", alt: "평면 앵커")
+        }
+        
+        @Steps {
+            @Step {
+                수평면에 앵커를 생성합니다.
+                
+                @Code(name: "HorizontalPlane.swift", file: "05-anchor-03.swift")
+            }
+            
+            @Step {
+                수직면(벽)에 앵커를 생성합니다.
+                
+                @Code(name: "VerticalPlane.swift", file: "05-anchor-04.swift")
+            }
+            
+            @Step {
+                평면 분류로 더 정확한 앵커링을 합니다.
+                (테이블, 바닥, 천장 등)
+                
+                @Code(name: "PlaneClassification.swift", file: "05-anchor-05.swift")
+            }
+            
+            @Step {
+                최소 평면 크기를 지정합니다.
+                
+                @Code(name: "MinimumPlaneSize.swift", file: "05-anchor-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 앵커") {
+        @ContentAndMedia {
+            특정 이미지(포스터, 책 표지 등)를 인식하여 그 위에 콘텐츠를 표시합니다.
+            
+            @Image(source: "image-anchor.png", alt: "이미지 앵커")
+        }
+        
+        @Steps {
+            @Step {
+                AR 리소스 그룹에 참조 이미지를 추가합니다.
+                
+                @Image(source: "add-reference-image.png", alt: "참조 이미지 추가")
+            }
+            
+            @Step {
+                이미지 앵커를 생성합니다.
+                
+                @Code(name: "ImageAnchor.swift", file: "05-anchor-07.swift")
+            }
+            
+            @Step {
+                여러 이미지를 동시에 트래킹합니다.
+                
+                @Code(name: "MultipleImages.swift", file: "05-anchor-08.swift")
+            }
+        }
+    }
+    
+    @Section(title: "얼굴과 신체 앵커") {
+        @ContentAndMedia {
+            사용자의 얼굴이나 신체에 콘텐츠를 부착합니다.
+            
+            @Image(source: "face-body-anchor.png", alt: "얼굴과 신체 앵커")
+        }
+        
+        @Steps {
+            @Step {
+                얼굴 앵커를 사용하여 AR 마스크나 필터를 만듭니다.
+                (전면 카메라 필요)
+                
+                @Code(name: "FaceAnchor.swift", file: "05-anchor-09.swift")
+            }
+            
+            @Step {
+                신체 앵커로 전신 AR 효과를 적용합니다.
+                
+                @Code(name: "BodyAnchor.swift", file: "05-anchor-10.swift")
+            }
+        }
+    }
+    
+    @Section(title: "월드 앵커") {
+        @ContentAndMedia {
+            특정 좌표에 직접 앵커를 배치합니다.
+            Raycast를 사용하여 정확한 위치를 결정할 수 있습니다.
+            
+            @Image(source: "world-anchor.png", alt: "월드 앵커")
+        }
+        
+        @Steps {
+            @Step {
+                특정 좌표에 월드 앵커를 생성합니다.
+                
+                @Code(name: "WorldAnchor.swift", file: "05-anchor-11.swift")
+            }
+            
+            @Step {
+                Raycast로 탭한 위치에 앵커를 배치합니다.
+                
+                @Code(name: "RaycastAnchor.swift", file: "05-anchor-12.swift")
+            }
+            
+            @Step {
+                앵커 지속성으로 세션 간 콘텐츠를 유지합니다.
+                
+                @Code(name: "PersistentAnchor.swift", file: "05-anchor-13.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            테이블 위에만 AR 콘텐츠를 배치하려면 어떤 앵커 타입을 사용해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                AnchorEntity(.plane(.horizontal, classification: .floor))
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .floor는 바닥을 의미합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                AnchorEntity(.plane(.horizontal, classification: .table))
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    .table classification을 사용하면 
+                    테이블로 분류된 수평면에만 앵커가 배치됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AnchorEntity(.plane(.vertical, classification: .wall))
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .vertical은 수직면(벽)을 의미합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            이미지 인식 앵커를 사용하려면 먼저 무엇을 해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                AR Resource Group에 참조 이미지 추가
+                
+                @Justification(reaction: "맞습니다! ✅") {
+                    Xcode의 Assets에 AR Resource Group을 만들고
+                    인식할 이미지를 참조 이미지로 추가해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이미지를 USDZ로 변환
+                
+                @Justification(reaction: "아쉽네요.") {
+                    이미지 앵커는 2D 이미지를 인식하며,
+                    USDZ 변환은 필요하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                ARWorldTrackingConfiguration 비활성화
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이미지 트래킹에도 ARWorldTrackingConfiguration이
+                    필요합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            사용자가 화면을 탭한 위치에 콘텐츠를 배치하려면 어떤 기술을 사용해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                Hit Testing (deprecated)
+                
+                @Justification(reaction: "아쉽네요.") {
+                    Hit Testing은 deprecated되었으며, 
+                    현재는 Raycast를 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Raycast
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    ARView의 raycast 메서드를 사용하여 
+                    화면 좌표를 3D 세계 좌표로 변환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Face Detection
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    Face Detection은 얼굴 인식용이며,
+                    화면 탭 위치와는 관련이 없습니다.
+                }
+            }
+        }
+    }
+}

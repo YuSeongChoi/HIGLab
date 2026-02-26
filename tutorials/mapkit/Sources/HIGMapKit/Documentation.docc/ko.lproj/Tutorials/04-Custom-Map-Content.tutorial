@@ -1,0 +1,185 @@
+@Tutorial(time: 20) {
+    @Intro(title: "커스텀 MapContent") {
+        MapCircle, MapPolygon, MapPolyline 등 다양한 MapContent를 활용하여
+        맛집 주변 반경, 배달 가능 구역 등을 시각화합니다.
+    }
+    
+    @Section(title: "MapCircle로 반경 표시") {
+        @ContentAndMedia {
+            MapCircle은 특정 좌표를 중심으로 원형 영역을 그립니다.
+            맛집 주변 도보 거리나 배달 반경을 표시하기에 적합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 MapCircle**
+                
+                중심 좌표와 반경(미터)을 지정하여 원을 그립니다.
+                500m 도보 거리 반경을 시각화합니다.
+                
+                @Code(name: "MapCircleView.swift", file: "04-basic-circle.swift")
+            }
+            
+            @Step {
+                **스타일 커스터마이징**
+                
+                .foregroundStyle로 채우기 색상과 투명도를 설정합니다.
+                .stroke로 테두리를 추가합니다.
+                
+                @Code(name: "MapCircleView.swift", file: "04-circle-style.swift")
+            }
+            
+            @Step {
+                **여러 반경 동시 표시**
+                
+                도보 5분(400m), 10분(800m) 반경을 
+                다른 색상으로 동시에 표시합니다.
+                
+                @Code(name: "MapCircleView.swift", file: "04-multiple-circles.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MapPolygon으로 구역 표시") {
+        @ContentAndMedia {
+            MapPolygon은 다각형 영역을 그립니다.
+            배달 가능 구역이나 특정 동네 범위를 표시할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **배달 가능 구역 다각형**
+                
+                좌표 배열로 다각형 영역을 정의합니다.
+                강남구 일부 지역을 배달 구역으로 표시합니다.
+                
+                @Code(name: "MapPolygonView.swift", file: "04-basic-polygon.swift")
+            }
+            
+            @Step {
+                **다각형 스타일링**
+                
+                반투명 채우기와 점선 테두리를 적용합니다.
+                구역별로 다른 색상 테마를 사용합니다.
+                
+                @Code(name: "MapPolygonView.swift", file: "04-polygon-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MapPolyline으로 경로 표시") {
+        @ContentAndMedia {
+            MapPolyline은 여러 좌표를 잇는 선을 그립니다.
+            맛집까지의 도보 경로를 미리 표시할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 Polyline**
+                
+                좌표 배열을 연결하는 선을 그립니다.
+                현재 위치에서 맛집까지의 경로를 표시합니다.
+                
+                @Code(name: "MapPolylineView.swift", file: "04-basic-polyline.swift")
+            }
+            
+            @Step {
+                **선 스타일 설정**
+                
+                선 두께, 색상, 점선 패턴을 커스터마이징합니다.
+                그라데이션 선으로 방향을 표시할 수도 있습니다.
+                
+                @Code(name: "MapPolylineView.swift", file: "04-polyline-style.swift")
+            }
+        }
+    }
+    
+    @Section(title: "맛집 지도에 통합") {
+        @ContentAndMedia {
+            MapContent들을 조합하여 
+            풍부한 정보를 제공하는 지도를 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **선택한 맛집 강조**
+                
+                맛집 선택 시 주변 반경과 함께 강조 표시합니다.
+                다른 맛집들은 투명도를 낮춥니다.
+                
+                @Code(name: "ContentView.swift", file: "04-highlight-selected.swift")
+            }
+            
+            @Step {
+                **필터별 구역 표시**
+                
+                "도보 10분 이내" 필터 시 해당 구역만 강조합니다.
+                MapCircle의 가시성을 조건부로 제어합니다.
+                
+                @Code(name: "ContentView.swift", file: "04-filter-zone.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MapCircle의 radius 파라미터 단위는?
+            
+            @Choice(isCorrect: true) {
+                미터(m)
+                
+                @Justification(reaction: "정답!") {
+                    MapCircle(center:radius:)의 radius는 미터 단위입니다.
+                    500을 넣으면 500m 반경의 원이 그려집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                킬로미터(km)
+                
+                @Justification(reaction: "아쉽네요") {
+                    미터 단위입니다. 1km 반경을 원하면 1000을 입력하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                포인트(pt)
+                
+                @Justification(reaction: "아쉽네요") {
+                    MapCircle의 반경은 실제 거리인 미터 단위입니다.
+                    화면 크기와 무관하게 실제 거리로 표시됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MapPolyline과 MKRoute의 차이는?
+            
+            @Choice(isCorrect: true) {
+                MapPolyline은 단순 선, MKRoute는 실제 길찾기 결과
+                
+                @Justification(reaction: "정확합니다!") {
+                    MapPolyline은 주어진 좌표들을 단순히 연결합니다.
+                    MKRoute는 도로를 따라 계산된 실제 경로입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                같은 기능이지만 이름만 다름
+                
+                @Justification(reaction: "아쉽네요") {
+                    MapPolyline은 좌표 연결, MKRoute는 경로 탐색 결과입니다.
+                    용도가 다릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                MapPolyline이 더 정확함
+                
+                @Justification(reaction: "아쉽네요") {
+                    MKRoute가 실제 도로와 교통 정보를 반영한 정확한 경로입니다.
+                }
+            }
+        }
+    }
+}

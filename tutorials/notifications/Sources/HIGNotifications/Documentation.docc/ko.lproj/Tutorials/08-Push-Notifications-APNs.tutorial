@@ -1,0 +1,287 @@
+@Tutorial(time: 25) {
+    @Intro(title: "푸시 알림 기초 (APNs)") {
+        Apple Push Notification service를 이해하고 설정합니다.
+        
+        서버에서 사용자 디바이스로 알림을 전송하는 방법을 배우고,
+        디바이스 토큰 관리와 기본적인 푸시 인프라를 구축합니다.
+    }
+    
+    @Section(title: "APNs 아키텍처 이해하기") {
+        @ContentAndMedia {
+            APNs(Apple Push Notification service)는 Apple이 운영하는 푸시 서비스입니다.
+            
+            **흐름:**
+            1. 앱이 APNs에 등록하고 디바이스 토큰을 받음
+            2. 토큰을 앱 서버로 전송
+            3. 서버가 APNs에 푸시 요청
+            4. APNs가 디바이스로 알림 전달
+        }
+        
+        @Steps {
+            @Step {
+                **APNs 통신 흐름**
+                
+                푸시 알림의 전체 아키텍처를 이해합니다.
+                앱, 서버, APNs 간의 관계를 파악합니다.
+                
+                @Code(name: "APNsArchitecture.swift", file: "08-apns-architecture.swift")
+            }
+            
+            @Step {
+                **로컬 vs 푸시 알림**
+                
+                두 알림 방식의 차이점과 사용 사례를 비교합니다.
+                
+                @Code(name: "LocalVsPush.swift", file: "08-local-vs-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Push Notification 권한 및 등록") {
+        @ContentAndMedia {
+            푸시 알림을 받으려면 APNs에 등록해야 합니다.
+            
+            등록에 성공하면 디바이스 토큰을 받고,
+            이 토큰을 서버에 저장하여 나중에 푸시를 보낼 때 사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **푸시 알림 등록 요청**
+                
+                UIApplication.shared.registerForRemoteNotifications()를 호출합니다.
+                권한 요청 후에 호출하는 것이 좋습니다.
+                
+                @Code(name: "RegisterForPush.swift", file: "08-register-for-push.swift")
+            }
+            
+            @Step {
+                **디바이스 토큰 수신**
+                
+                등록 성공 시 didRegisterForRemoteNotificationsWithDeviceToken이 호출됩니다.
+                Data 타입의 토큰을 문자열로 변환합니다.
+                
+                @Code(name: "ReceiveToken.swift", file: "08-receive-token.swift")
+            }
+            
+            @Step {
+                **등록 실패 처리**
+                
+                didFailToRegisterForRemoteNotificationsWithError로 실패를 처리합니다.
+                시뮬레이터에서는 푸시 등록이 실패합니다.
+                
+                @Code(name: "RegistrationFailed.swift", file: "08-registration-failed.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Xcode 및 Apple Developer 설정") {
+        @ContentAndMedia {
+            푸시 알림을 사용하려면 프로젝트 설정과 Apple Developer 설정이 필요합니다.
+            
+            - Xcode에서 Push Notifications capability 추가
+            - Apple Developer에서 App ID 설정
+            - 인증서 또는 키 생성
+        }
+        
+        @Steps {
+            @Step {
+                **Xcode Capability 추가**
+                
+                프로젝트 설정 > Signing & Capabilities에서
+                Push Notifications를 추가합니다.
+                
+                @Code(name: "XcodeCapability.swift", file: "08-xcode-capability.swift")
+            }
+            
+            @Step {
+                **APNs 인증 키 생성**
+                
+                Apple Developer에서 APNs 인증 키(.p8)를 생성합니다.
+                키는 한 번만 다운로드 가능하므로 안전하게 보관하세요.
+                
+                @Code(name: "AuthKey.swift", file: "08-auth-key.swift")
+            }
+            
+            @Step {
+                **키 정보 기록**
+                
+                서버 설정에 필요한 정보를 기록합니다.
+                - Key ID
+                - Team ID
+                - Bundle ID
+                - .p8 파일
+                
+                @Code(name: "KeyInfo.swift", file: "08-key-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "서버에서 푸시 보내기") {
+        @ContentAndMedia {
+            APNs HTTP/2 API를 사용하여 푸시를 전송합니다.
+            
+            JWT 인증과 페이로드 형식을 이해합니다.
+            실제 서버 구현은 별도의 백엔드 지식이 필요합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **APNs 페이로드 구조**
+                
+                JSON 형식의 페이로드를 이해합니다.
+                aps 딕셔너리가 핵심입니다.
+                
+                @Code(name: "APNsPayload.swift", file: "08-apns-payload.swift")
+            }
+            
+            @Step {
+                **페이로드 예시**
+                
+                다양한 유형의 푸시 페이로드 예시를 살펴봅니다.
+                alert, badge, sound, category 등
+                
+                @Code(name: "PayloadExamples.swift", file: "08-payload-examples.swift")
+            }
+            
+            @Step {
+                **Silent Push (백그라운드 알림)**
+                
+                content-available: 1로 백그라운드에서 앱을 깨웁니다.
+                UI 표시 없이 데이터 동기화에 사용합니다.
+                
+                @Code(name: "SilentPush.swift", file: "08-silent-push.swift")
+            }
+        }
+    }
+    
+    @Section(title: "푸시 테스트하기") {
+        @ContentAndMedia {
+            실제 푸시를 테스트하는 방법을 알아봅니다.
+            
+            Xcode의 시뮬레이터 푸시 기능, 
+            터미널 curl, 서드파티 도구 등을 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **시뮬레이터에서 테스트**
+                
+                .apns 파일을 드래그하거나 simctl로 테스트합니다.
+                Xcode 11.4+에서 지원됩니다.
+                
+                @Code(name: "SimulatorTest.swift", file: "08-simulator-test.swift")
+            }
+            
+            @Step {
+                **APNS 파일 형식**
+                
+                시뮬레이터 테스트용 .apns 파일을 만듭니다.
+                
+                @Code(name: "APNSFile.swift", file: "08-apns-file.swift")
+            }
+            
+            @Step {
+                **curl로 직접 전송**
+                
+                터미널에서 APNs에 직접 푸시를 전송합니다.
+                개발 및 디버깅에 유용합니다.
+                
+                @Code(name: "CurlTest.swift", file: "08-curl-test.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            APNs 디바이스 토큰은 언제 변경될 수 있을까요?
+            
+            @Choice(isCorrect: true) {
+                앱 재설치, 기기 복원, iOS 업데이트 시 등
+                
+                @Justification(reaction: "정답!") {
+                    디바이스 토큰은 영구적이지 않습니다.
+                    앱 실행 시 항상 새로 등록하고 서버에 업데이트해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                절대 변경되지 않음
+                
+                @Justification(reaction: "아쉽네요") {
+                    토큰은 여러 상황에서 변경될 수 있습니다.
+                    항상 최신 토큰을 서버에 저장해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                매일 자정에 자동 갱신
+                
+                @Justification(reaction: "아쉽네요") {
+                    정해진 시간에 갱신되지 않습니다.
+                    시스템 이벤트에 의해 변경될 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            시뮬레이터에서 푸시 알림을 테스트할 수 있을까요?
+            
+            @Choice(isCorrect: true) {
+                예, Xcode 11.4+에서 .apns 파일이나 simctl 명령으로 가능
+                
+                @Justification(reaction: "정답!") {
+                    시뮬레이터에서 실제 APNs 등록은 불가능하지만,
+                    로컬 테스트를 위한 시뮬레이션 기능이 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아니요, 실제 기기에서만 가능
+                
+                @Justification(reaction: "예전에는 그랬지만...") {
+                    Xcode 11.4부터 시뮬레이터 푸시 테스트가 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                개발 인증서가 있으면 가능
+                
+                @Justification(reaction: "아쉽네요") {
+                    인증서와 관계없이 시뮬레이터용 테스트 기능이 별도로 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Silent Push(content-available: 1)의 주요 용도는?
+            
+            @Choice(isCorrect: true) {
+                UI 표시 없이 백그라운드에서 앱을 깨워 데이터 동기화
+                
+                @Justification(reaction: "정확합니다!") {
+                    Silent Push는 사용자에게 보이지 않으면서
+                    앱이 백그라운드에서 작업을 수행하게 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                방해금지 모드에서 소리 없이 알림 표시
+                
+                @Justification(reaction: "혼동하지 마세요") {
+                    그것은 interruption level 설정입니다.
+                    Silent Push는 아예 UI가 표시되지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                알림 내용을 암호화
+                
+                @Justification(reaction: "아쉽네요") {
+                    암호화와는 관련 없습니다.
+                    백그라운드 작업 트리거 용도입니다.
+                }
+            }
+        }
+    }
+}

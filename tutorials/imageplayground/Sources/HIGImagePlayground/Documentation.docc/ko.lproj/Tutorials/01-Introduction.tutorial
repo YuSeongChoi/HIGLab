@@ -1,0 +1,175 @@
+@Tutorial(time: 15) {
+    @Intro(title: "ImagePlayground 소개 및 Apple Intelligence") {
+        ImagePlayground 프레임워크의 핵심 개념과 
+        Apple Intelligence 기반 이미지 생성의 원리를 이해합니다.
+        
+        @Image(source: "imageplayground-intro.png", alt: "ImagePlayground 개요")
+    }
+    
+    @Section(title: "Apple Intelligence란?") {
+        @ContentAndMedia {
+            Apple Intelligence는 iOS 18에 도입된 
+            Apple의 온디바이스 AI 시스템입니다.
+            
+            - **개인정보 중심**: 대부분의 처리가 기기에서 직접 수행
+            - **통합된 경험**: 시스템 전반에 걸친 일관된 AI 기능
+            - **개인화**: 사용자 컨텍스트를 이해하는 지능형 기능
+            
+            ImagePlayground는 Apple Intelligence의 이미지 생성 기능을 
+            앱에서 직접 활용할 수 있게 해주는 프레임워크입니다.
+            
+            @Image(source: "apple-intelligence.png", alt: "Apple Intelligence 아키텍처")
+        }
+        
+        @Steps {
+            @Step {
+                ImagePlayground를 사용하려면 먼저 프레임워크를 import합니다.
+                iOS 18 이상에서만 사용 가능합니다.
+                
+                @Code(name: "ImagePlaygroundSetup.swift", file: "01-01-import.swift")
+            }
+            
+            @Step {
+                ImagePlayground의 핵심 구성요소를 살펴봅니다.
+                
+                - `imagePlaygroundSheet`: 이미지 생성 UI를 표시하는 수정자
+                - `ImagePlaygroundConcept`: 생성할 이미지의 개념 정의
+                - `ImagePlaygroundStyle`: 이미지 스타일 (애니메이션, 스케치 등)
+                
+                @Code(name: "CoreComponents.swift", file: "01-02-components.swift")
+            }
+        }
+    }
+    
+    @Section(title: "ImagePlayground 작동 방식") {
+        @ContentAndMedia {
+            ImagePlayground는 사용자 주도의 이미지 생성 경험을 제공합니다.
+            
+            앱은 개념과 프롬프트를 제안할 수 있지만,
+            최종 이미지 생성은 항상 사용자가 명시적으로 확인합니다.
+            
+            이로써 의도치 않은 이미지 생성을 방지하고 
+            사용자에게 완전한 제어권을 부여합니다.
+        }
+        
+        @Steps {
+            @Step {
+                ImagePlayground 시트를 표시하는 기본 구조입니다.
+                사용자가 버튼을 탭하면 이미지 생성 UI가 나타납니다.
+                
+                @Code(name: "BasicFlow.swift", file: "01-03-basic-flow.swift")
+            }
+            
+            @Step {
+                생성 과정은 다음과 같이 진행됩니다:
+                
+                1. 앱이 시트를 표시하고 초기 개념을 제안
+                2. 사용자가 프롬프트를 수정하거나 추가
+                3. Apple Intelligence가 이미지 옵션을 생성
+                4. 사용자가 원하는 이미지를 선택
+                5. 선택된 이미지가 앱으로 반환
+                
+                @Code(name: "GenerationProcess.swift", file: "01-04-process.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지원 기기 및 요구사항") {
+        @ContentAndMedia {
+            ImagePlayground는 Apple Intelligence를 지원하는 
+            기기에서만 사용할 수 있습니다.
+            
+            **지원 기기:**
+            - iPhone 15 Pro 이상 (A17 Pro 칩)
+            - M1 칩 이상 탑재 iPad
+            - M1 칩 이상 탑재 Mac
+            
+            **추가 요구사항:**
+            - iOS 18.0 이상
+            - Apple Intelligence 활성화 (설정에서 사용자가 직접 활성화)
+            - 지원되는 언어 및 지역 설정
+        }
+        
+        @Steps {
+            @Step {
+                런타임에 ImagePlayground 가용성을 확인하는 것이 중요합니다.
+                `isAvailable` 속성을 사용하여 현재 기기에서 사용 가능한지 확인합니다.
+                
+                @Code(name: "AvailabilityCheck.swift", file: "01-05-availability.swift")
+            }
+            
+            @Step {
+                가용성에 따라 조건부로 UI를 표시합니다.
+                사용 불가능한 경우 적절한 안내를 제공합니다.
+                
+                @Code(name: "ConditionalUI.swift", file: "01-06-conditional-ui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ImagePlayground가 Apple Intelligence의 일부로서 
+            가장 중시하는 가치는?
+            
+            @Choice(isCorrect: false) {
+                최대한 빠른 이미지 생성 속도
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    속도도 중요하지만, Apple Intelligence의 
+                    핵심 가치는 개인정보 보호 중심 설계입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                개인정보 보호와 온디바이스 처리
+                
+                @Justification(reaction: "정답입니다! 🎯") {
+                    Apple Intelligence는 대부분의 처리를 기기에서 직접 수행하여,
+                    사용자 데이터 보호를 최우선으로 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                클라우드 기반 무제한 이미지 생성
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Apple Intelligence는 온디바이스 처리를 중시하며,
+                    클라우드는 Private Cloud Compute를 통해 제한적으로만 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            ImagePlayground에서 이미지 생성의 최종 결정권은 
+            누구에게 있나요?
+            
+            @Choice(isCorrect: false) {
+                앱 개발자가 프로그래밍 방식으로 제어한다.
+                
+                @Justification(reaction: "아닙니다.") {
+                    개발자는 개념을 제안할 수 있지만, 
+                    최종 생성은 사용자가 명시적으로 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                사용자가 항상 명시적으로 확인하고 선택한다.
+                
+                @Justification(reaction: "정답입니다! ✨") {
+                    ImagePlayground는 사용자 주도 경험을 제공하며,
+                    의도치 않은 이미지 생성을 방지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Intelligence가 자동으로 최적의 이미지를 선택한다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    AI가 옵션을 생성하지만,
+                    최종 선택은 항상 사용자의 몫입니다.
+                }
+            }
+        }
+    }
+}

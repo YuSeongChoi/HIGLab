@@ -1,0 +1,220 @@
+@Tutorial(time: 25) {
+    @Intro(title: "tvOS 최적화") {
+        tvOS에 최적화된 비디오 플레이어 경험을 만들어
+        거실 환경에 적합한 앱을 구현합니다.
+        
+        @Image(source: "tvos-optimization.png", alt: "tvOS 최적화")
+    }
+    
+    @Section(title: "tvOS 플레이어 기본") {
+        @ContentAndMedia {
+            tvOS의 AVPlayerViewController는 
+            거실 환경에 최적화된 UI를 제공합니다.
+            
+            - Siri Remote 기반 탐색
+            - Info 패널 자동 지원
+            - 스와이프 탐색
+            
+            @Image(source: "tvos-player.png", alt: "tvOS 플레이어")
+        }
+        
+        @Steps {
+            @Step {
+                tvOS에서 기본 AVPlayerViewController를 설정합니다.
+                iOS와 동일한 코드로 시작할 수 있습니다.
+                
+                @Code(name: "TVOSBasicPlayer.swift", file: "10-01-tvos-basic.swift")
+            }
+            
+            @Step {
+                #if os(tvOS) 컴파일 지시문으로 
+                tvOS 전용 코드를 분리합니다.
+                
+                @Code(name: "PlatformSpecific.swift", file: "10-02-platform-specific.swift")
+            }
+            
+            @Step {
+                tvOS의 플레이어 UI는 자동으로 
+                포커스 시스템과 통합됩니다.
+                
+                @Code(name: "TVOSFocus.swift", file: "10-03-focus.swift")
+            }
+        }
+    }
+    
+    @Section(title: "정보 패널(Info Panel)") {
+        @ContentAndMedia {
+            Info 탭으로 표시되는 정보 패널에
+            추가 메타데이터를 제공합니다.
+            
+            - 제목, 설명
+            - 썸네일 이미지
+            - 추가 정보 탭
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayerItem의 externalMetadata로 
+                기본 정보를 설정합니다.
+                
+                @Code(name: "ExternalMetadata.swift", file: "10-04-external-metadata.swift")
+            }
+            
+            @Step {
+                AVMetadataItem을 생성하여 
+                제목, 설명, 아트워크를 추가합니다.
+                
+                @Code(name: "MetadataItems.swift", file: "10-05-metadata-items.swift")
+            }
+            
+            @Step {
+                contentProposalViewController로 
+                다음 콘텐츠 제안 UI를 커스터마이징합니다.
+                
+                @Code(name: "ContentProposal.swift", file: "10-06-content-proposal.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Siri Remote 지원") {
+        @ContentAndMedia {
+            Siri Remote의 제스처와 버튼을 활용하여
+            직관적인 제어를 구현합니다.
+            
+            - 터치 표면 스와이프
+            - 클릭 제스처
+            - 메뉴 버튼 처리
+        }
+        
+        @Steps {
+            @Step {
+                터치 표면 스와이프로 빠른 탐색을 지원합니다.
+                AVPlayerViewController가 기본 제공합니다.
+                
+                @Code(name: "SwipeSeek.swift", file: "10-07-swipe-seek.swift")
+            }
+            
+            @Step {
+                skipForwardInterval과 skipBackwardInterval로
+                건너뛰기 간격을 설정합니다.
+                
+                @Code(name: "SkipIntervals.swift", file: "10-08-skip-intervals.swift")
+            }
+            
+            @Step {
+                pressesHandler로 리모컨 버튼 이벤트를 처리합니다.
+                
+                @Code(name: "RemotePress.swift", file: "10-09-remote-press.swift")
+            }
+            
+            @Step {
+                Play/Pause 버튼은 자동으로 처리되지만,
+                커스텀 동작을 추가할 수 있습니다.
+                
+                @Code(name: "PlayPauseButton.swift", file: "10-10-play-pause.swift")
+            }
+        }
+    }
+    
+    @Section(title: "연속 재생과 Top Shelf") {
+        @ContentAndMedia {
+            tvOS의 특화 기능인 연속 재생(Up Next)과
+            Top Shelf를 활용합니다.
+            
+            - 에피소드 자동 재생
+            - 다음 콘텐츠 제안
+            - Top Shelf 콘텐츠 제공
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayerViewControllerDelegate의 
+                willTransition(to:) 메서드로 다음 콘텐츠를 처리합니다.
+                
+                @Code(name: "UpNext.swift", file: "10-11-up-next.swift")
+            }
+            
+            @Step {
+                AVContentProposal로 다음 콘텐츠를 제안합니다.
+                사용자에게 자동 재생 여부를 묻습니다.
+                
+                @Code(name: "ContentProposalSetup.swift", file: "10-12-proposal-setup.swift")
+            }
+            
+            @Step {
+                TVTopShelfContentProvider로 
+                홈 화면 Top Shelf에 콘텐츠를 표시합니다.
+                
+                @Code(name: "TopShelf.swift", file: "10-13-top-shelf.swift")
+            }
+            
+            @Step {
+                Top Shelf에서 콘텐츠를 선택하면 
+                바로 재생을 시작하도록 deep link를 처리합니다.
+                
+                @Code(name: "DeepLink.swift", file: "10-14-deep-link.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            tvOS에서 정보 패널에 메타데이터를 표시하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                별도의 뷰 컨트롤러를 추가한다
+                
+                @Justification(reaction: "불필요합니다.") {
+                    AVPlayerViewController가 내장 정보 패널을 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                AVPlayerItem의 externalMetadata에 AVMetadataItem을 추가한다
+                
+                @Justification(reaction: "정확합니다! 📺") {
+                    externalMetadata 배열에 메타데이터 아이템을 추가하면
+                    시스템이 자동으로 정보 패널에 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Info.plist에 메타데이터를 정의한다
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Info.plist는 앱 설정용이고,
+                    동적 미디어 메타데이터는 코드로 설정합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            tvOS에서 Siri Remote 스와이프 탐색의 기본 동작은?
+            
+            @Choice(isCorrect: true) {
+                AVPlayerViewController가 자동으로 스와이프 탐색을 지원한다
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    tvOS의 AVPlayerViewController는 
+                    터치 표면 스와이프를 기본 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                개발자가 직접 제스처 인식기를 추가해야 한다
+                
+                @Justification(reaction: "필요 없습니다.") {
+                    기본 플레이어에서 자동 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                tvOS에서는 스와이프 탐색을 지원하지 않는다
+                
+                @Justification(reaction: "지원합니다.") {
+                    스와이프 탐색은 tvOS 플레이어의 핵심 기능입니다.
+                }
+            }
+        }
+    }
+}

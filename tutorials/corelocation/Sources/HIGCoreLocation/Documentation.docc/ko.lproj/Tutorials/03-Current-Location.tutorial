@@ -1,0 +1,214 @@
+@Tutorial(time: 12) {
+    @Intro(title: "현재 위치 가져오기") {
+        사용자의 현재 위치를 한 번 조회하는 방법을 배웁니다.
+        러닝 시작 전 출발 위치를 기록하는 데 활용합니다.
+    }
+    
+    @Section(title: "One-Shot 위치 요청") {
+        @ContentAndMedia {
+            지속적인 추적이 필요 없는 경우,
+            현재 위치를 한 번만 가져오는 것이 효율적입니다.
+            
+            iOS 17부터 새로운 async/await API를 사용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **requestLocation() 사용하기**
+                
+                `requestLocation()`은 현재 위치를 한 번 요청합니다.
+                위치를 받으면 delegate 메서드가 호출됩니다.
+                
+                @Code(name: "LocationManager.swift", file: "03-request-location.swift")
+            }
+            
+            @Step {
+                **위치 업데이트 수신**
+                
+                `locationManager(_:didUpdateLocations:)` 메서드에서
+                위치 배열의 마지막 요소가 가장 최신 위치입니다.
+                
+                @Code(name: "LocationManager.swift", file: "03-did-update.swift")
+            }
+            
+            @Step {
+                **에러 처리**
+                
+                위치를 가져올 수 없는 경우
+                `locationManager(_:didFailWithError:)`가 호출됩니다.
+                GPS 신호 없음, 권한 거부 등의 상황을 처리합니다.
+                
+                @Code(name: "LocationManager.swift", file: "03-error-handling.swift")
+            }
+        }
+    }
+    
+    @Section(title: "CLLocation 데이터 활용") {
+        @ContentAndMedia {
+            CLLocation 객체에는 위도/경도뿐 아니라
+            정확도, 고도, 속도, 타임스탬프 등 다양한 정보가 포함됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                **좌표 정보 추출**
+                
+                `coordinate` 프로퍼티에서 위도(`latitude`)와
+                경도(`longitude`)를 가져옵니다.
+                
+                @Code(name: "LocationData.swift", file: "03-coordinate.swift")
+            }
+            
+            @Step {
+                **정확도 확인**
+                
+                `horizontalAccuracy`는 미터 단위의 위치 오차 범위입니다.
+                값이 작을수록 정확한 위치입니다.
+                
+                음수 값은 위치가 유효하지 않음을 의미합니다.
+                
+                @Code(name: "LocationData.swift", file: "03-accuracy-check.swift")
+            }
+            
+            @Step {
+                **거리 계산**
+                
+                두 CLLocation 사이의 거리는 
+                `distance(from:)` 메서드로 계산합니다.
+                지구 곡률을 고려한 정확한 거리를 반환합니다.
+                
+                @Code(name: "LocationData.swift", file: "03-distance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "러닝 시작점 표시") {
+        @ContentAndMedia {
+            현재 위치를 가져와 러닝 시작점으로 저장하고,
+            MapKit을 사용해 지도에 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **RunSession 모델 생성**
+                
+                러닝 세션 데이터를 저장할 모델을 만듭니다.
+                시작 위치, 종료 위치, 경로 좌표들을 저장합니다.
+                
+                @Code(name: "RunSession.swift", file: "03-run-session.swift")
+            }
+            
+            @Step {
+                **MapKit으로 지도 표시**
+                
+                SwiftUI의 Map 뷰를 사용해 
+                현재 위치를 지도에 표시합니다.
+                
+                @Code(name: "MapView.swift", file: "03-map-view.swift")
+            }
+            
+            @Step {
+                **러닝 시작 화면 완성**
+                
+                현재 위치를 표시하고 "러닝 시작" 버튼을 배치합니다.
+                버튼을 누르면 시작 위치가 기록됩니다.
+                
+                @Code(name: "StartRunView.swift", file: "03-start-run-view.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            requestLocation()과 startUpdatingLocation()의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                requestLocation()은 한 번만, startUpdatingLocation()은 지속적으로 위치를 받음
+                
+                @Justification(reaction: "정답!") {
+                    requestLocation()은 위치를 한 번 받으면 자동으로 중단됩니다.
+                    지속적 추적이 필요 없을 때 배터리 효율적입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                requestLocation()이 더 정확함
+                
+                @Justification(reaction: "아쉽네요") {
+                    두 메서드의 정확도는 desiredAccuracy 설정에 의해 결정됩니다.
+                    메서드 자체의 정확도 차이는 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                차이 없음
+                
+                @Justification(reaction: "아쉽네요") {
+                    두 메서드는 동작 방식이 다릅니다.
+                    하나는 one-shot, 하나는 continuous 업데이트입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            CLLocation의 horizontalAccuracy가 음수일 때의 의미는?
+            
+            @Choice(isCorrect: true) {
+                위치 데이터가 유효하지 않음
+                
+                @Justification(reaction: "정확합니다!") {
+                    음수 accuracy는 위치를 결정할 수 없었음을 의미합니다.
+                    이 경우 해당 위치 데이터를 사용하면 안 됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                매우 정확한 위치
+                
+                @Justification(reaction: "아쉽네요") {
+                    음수는 오류를 의미합니다.
+                    정확도가 높을수록 값이 작은 양수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                지하에서 측정됨
+                
+                @Justification(reaction: "아쉽네요") {
+                    지하 여부와 관계없이, 음수는 위치를 결정하지 못했음을 의미합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            두 CLLocation 사이의 거리를 계산하는 메서드는?
+            
+            @Choice(isCorrect: true) {
+                distance(from:)
+                
+                @Justification(reaction: "정답!") {
+                    distance(from:)은 지구 곡률을 고려한 
+                    정확한 거리(미터)를 반환합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                distanceBetween(_:_:)
+                
+                @Justification(reaction: "아쉽네요") {
+                    이런 이름의 메서드는 CLLocation에 없습니다.
+                    distance(from:) 인스턴스 메서드를 사용하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                좌표 차이를 직접 계산
+                
+                @Justification(reaction: "아쉽네요") {
+                    직접 계산하면 지구 곡률을 고려하지 않아 부정확합니다.
+                    distance(from:) 메서드를 사용하세요.
+                }
+            }
+        }
+    }
+}

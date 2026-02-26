@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🔍 Visual Intelligence — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--code-bg:#1e1e2e;--border:#d2d2d7}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;margin-bottom:16px;letter-spacing:-1px}
+h2{font-size:24px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.subtitle{font-size:18px;color:var(--text-2);margin-bottom:32px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:12px;color:#6e6e73;font-weight:600}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.kw{color:#cba6f7}.type{color:#89b4fa}.str{color:#a6e3a1}.comment{color:#6c7086}
+.badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;margin:0 4px 8px 0}
+.badge.ios{background:#0071e3;color:#fff}.badge.new{background:#34c759;color:#fff}
+ul{margin:16px 0 16px 24px}li{margin:8px 0}
+.info-box{background:#f5f5f7;border-left:4px solid var(--accent);padding:16px;margin:24px 0;border-radius:8px}
+</style></head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>🔍 Visual Intelligence</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 2h</span>
+  <span>📂 iOS 26</span>
+</div>
+<p class="subtitle">카메라 버튼으로 세상을 이해하는 AI 시각 분석</p>
+
+<div><span class="badge ios">iOS 18+</span><span class="badge new">🆕 2024</span></div>
+
+<h2>✨ Visual Intelligence?</h2>
+<p>Visual Intelligence is a groundbreaking visual AI framework introduced in iOS 18. Long-press the Camera Control button to analyze your surroundings in real-time — object recognition, text extraction, place info, product search and more. Integrated with Apple Intelligence, it processes quickly and accurately on-device while fully protecting user privacy.</p>
+
+<div class="info-box">
+<strong>💡 Key Features:</strong> Real-time Object Recognition · Text Extraction (OCR) · Place/Landmark Recognition · Product Search · QR/Barcode Scanning · Translation · On-Device Processing · Camera Control Integration
+</div>
+
+<h2>📸 1. Basic Setup</h2>
+<p>Initialize the Visual Intelligence service and request permissions.</p>
+
+<div class="code-block">
+<div class="code-header">VisualIntelligenceManager.swift — Basic Setup</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AVFoundation</span>
+
+<span class="comment">// Visual Intelligence 서비스 관리자</span>
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">VisualIntelligenceManager</span> {
+    <span class="kw">var</span> isAuthorized = <span class="kw">false</span>
+    <span class="kw">var</span> isAnalyzing = <span class="kw">false</span>
+    <span class="kw">var</span> currentResult: <span class="type">AnalysisResult</span>?
+
+    <span class="comment">// 카메라 권한 요청</span>
+    <span class="kw">func</span> requestAuthorization() <span class="kw">async</span> -> <span class="type">Bool</span> {
+        <span class="kw">let</span> status = <span class="kw">await</span> <span class="type">AVCaptureDevice</span>.requestAccess(for: .video)
+        <span class="kw">await</span> <span class="type">MainActor</span>.run {
+            isAuthorized = status
+        }
+        <span class="kw">return</span> status
+    }
+
+    <span class="comment">// Visual Intelligence 지원 확인</span>
+    <span class="kw">func</span> isSupported() -> <span class="type">Bool</span> {
+        <span class="comment">// iOS 18+ 및 Camera Control 지원 기기</span>
+        <span class="kw">if</span> #available(iOS <span class="str">18.0</span>, *) {
+            <span class="kw">return</span> <span class="kw">true</span>
+        }
+        <span class="kw">return</span> <span class="kw">false</span>
+    }
+}
+
+<span class="comment">// 분석 결과 타입</span>
+<span class="kw">struct</span> <span class="type">AnalysisResult</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> type: <span class="type">AnalysisType</span>
+    <span class="kw">let</span> data: <span class="type">Any</span>
+    <span class="kw">let</span> timestamp = <span class="type">Date</span>()
+}
+
+<span class="kw">enum</span> <span class="type">AnalysisType</span> {
+    <span class="kw">case</span> objectDetection
+    <span class="kw">case</span> textExtraction
+    <span class="kw">case</span> placeRecognition
+    <span class="kw">case</span> productSearch
+    <span class="kw">case</span> barcodeScanning
+}</pre>
+</div>
+
+<h2>👁️ 2. 실시간 객체 인식</h2>
+<p>Detect and classify objects in real-time through the camera.</p>
+
+<div class="code-block">
+<div class="code-header">ObjectDetectionView.swift — Object Detection</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">struct</span> <span class="type">ObjectDetectionView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">VisualIntelligenceManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> detectedObjects: [<span class="type">DetectedObject</span>] = []
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showCamera = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="comment">// 카메라 프리뷰</span>
+            <span class="type">ZStack</span> {
+                <span class="type">Rectangle</span>()
+                    .fill(<span class="type">Color</span>.black)
+                    .aspectRatio(<span class="str">3</span>/<span class="str">4</span>, contentMode: .fit)
+                    .cornerRadius(<span class="str">12</span>)
+
+                <span class="kw">if</span> manager.isAnalyzing {
+                    <span class="type">ProgressView</span>(<span class="str">"분석 중..."</span>)
+                        .tint(.white)
+                }
+
+                <span class="comment">// 감지된 객체 오버레이</span>
+                <span class="type">ForEach</span>(detectedObjects) { obj <span class="kw">in</span>
+                    <span class="type">Rectangle</span>()
+                        .stroke(<span class="type">Color</span>.green, lineWidth: <span class="str">2</span>)
+                        .frame(width: obj.bounds.width, height: obj.bounds.height)
+                        .position(x: obj.bounds.midX, y: obj.bounds.midY)
+                        .overlay(alignment: .topLeading) {
+                            <span class="type">Text</span>(obj.label)
+                                .font(.caption)
+                                .padding(<span class="str">4</span>)
+                                .background(<span class="type">Color</span>.green)
+                                .foregroundStyle(.white)
+                                .cornerRadius(<span class="str">4</span>)
+                                .offset(x: obj.bounds.minX, y: obj.bounds.minY)
+                        }
+                }
+            }
+
+            <span class="comment">// 감지된 객체 리스트</span>
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                <span class="type">Text</span>(<span class="str">"감지된 객체"</span>)
+                    .font(.headline)
+
+                <span class="kw">if</span> detectedObjects.isEmpty {
+                    <span class="type">Text</span>(<span class="str">"카메라 버튼을 길게 눌러 스캔을 시작하세요"</span>)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } <span class="kw">else</span> {
+                    <span class="type">ForEach</span>(detectedObjects) { obj <span class="kw">in</span>
+                        <span class="type">HStack</span> {
+                            <span class="type">Image</span>(systemName: obj.icon)
+                                .foregroundStyle(.blue)
+                            <span class="type">VStack</span>(alignment: .leading) {
+                                <span class="type">Text</span>(obj.label)
+                                    .font(.subheadline)
+                                <span class="type">Text</span>(<span class="str">"\(Int(obj.confidence * 100))% 신뢰도"</span>)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            <span class="type">Spacer</span>()
+                            <span class="type">Button</span>(<span class="str">"검색"</span>) {
+                                searchObject(obj)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .padding()
+                        .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+                        .cornerRadius(<span class="str">8</span>)
+                    }
+                }
+            }
+            .padding()
+        }
+        .task {
+            <span class="kw">await</span> manager.requestAuthorization()
+        }
+    }
+
+    <span class="kw">func</span> searchObject(<span class="kw">_</span> object: <span class="type">DetectedObject</span>) {
+        print(<span class="str">"🔍 검색: \(object.label)"</span>)
+    }
+}
+
+<span class="comment">// 감지된 객체 모델</span>
+<span class="kw">struct</span> <span class="type">DetectedObject</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> label: <span class="type">String</span>
+    <span class="kw">let</span> confidence: <span class="type">Double</span>
+    <span class="kw">let</span> bounds: <span class="type">CGRect</span>
+
+    <span class="kw">var</span> icon: <span class="type">String</span> {
+        <span class="comment">// 객체 타입에 따라 아이콘 반환</span>
+        <span class="kw">switch</span> label.lowercased() {
+        <span class="kw">case</span> <span class="kw">let</span> l <span class="kw">where</span> l.contains(<span class="str">"person"</span>): <span class="kw">return</span> <span class="str">"person.fill"</span>
+        <span class="kw">case</span> <span class="kw">let</span> l <span class="kw">where</span> l.contains(<span class="str">"car"</span>): <span class="kw">return</span> <span class="str">"car.fill"</span>
+        <span class="kw">case</span> <span class="kw">let</span> l <span class="kw">where</span> l.contains(<span class="str">"dog"</span>): <span class="kw">return</span> <span class="str">"pawprint.fill"</span>
+        <span class="kw">case</span> <span class="kw">let</span> l <span class="kw">where</span> l.contains(<span class="str">"cat"</span>): <span class="kw">return</span> <span class="str">"cat.fill"</span>
+        <span class="kw">default</span>: <span class="kw">return</span> <span class="str">"cube.fill"</span>
+        }
+    }
+}</pre>
+</div>
+
+<h2>📝 3. 텍스트 추출 (OCR)</h2>
+<p>Recognize and extract text in images — copy, translate, and search.</p>
+
+<div class="code-block">
+<div class="code-header">TextExtractionView.swift — Text Extraction</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">Vision</span>
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">TextExtractionManager</span> {
+    <span class="kw">var</span> extractedText: [<span class="type">RecognizedText</span>] = []
+    <span class="kw">var</span> isProcessing = <span class="kw">false</span>
+
+    <span class="comment">// 텍스트 추출 (Live Text)</span>
+    <span class="kw">func</span> extractText(from image: <span class="type">UIImage</span>) <span class="kw">async</span> {
+        <span class="kw">await</span> <span class="type">MainActor</span>.run { isProcessing = <span class="kw">true</span> }
+
+        <span class="kw">guard</span> <span class="kw">let</span> cgImage = image.cgImage <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> request = <span class="type">VNRecognizeTextRequest</span> { request, error <span class="kw">in</span>
+            <span class="kw">guard</span> error == <span class="kw">nil</span>,
+                  <span class="kw">let</span> observations = request.results <span class="kw">as</span>? [<span class="type">VNRecognizedTextObservation</span>]
+            <span class="kw">else</span> { <span class="kw">return</span> }
+
+            <span class="kw">let</span> recognizedTexts = observations.compactMap { observation <span class="kw">in</span>
+                <span class="kw">guard</span> <span class="kw">let</span> topCandidate = observation.topCandidates(<span class="str">1</span>).first <span class="kw">else</span> {
+                    <span class="kw">return</span> <span class="kw">nil</span>
+                }
+
+                <span class="kw">return</span> <span class="type">RecognizedText</span>(
+                    text: topCandidate.string,
+                    confidence: topCandidate.confidence,
+                    bounds: observation.boundingBox
+                )
+            }
+
+            <span class="type">Task</span> { <span class="kw">@MainActor</span> <span class="kw">in</span>
+                <span class="kw">self</span>.extractedText = recognizedTexts
+                <span class="kw">self</span>.isProcessing = <span class="kw">false</span>
+            }
+        }
+
+        <span class="comment">// 정확도 설정</span>
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = <span class="kw">true</span>
+
+        <span class="kw">let</span> handler = <span class="type">VNImageRequestHandler</span>(cgImage: cgImage, options: [:])
+        <span class="kw">try</span>? handler.perform([request])
+    }
+}
+
+<span class="kw">struct</span> <span class="type">RecognizedText</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> text: <span class="type">String</span>
+    <span class="kw">let</span> confidence: <span class="type">Float</span>
+    <span class="kw">let</span> bounds: <span class="type">CGRect</span>
+}
+
+<span class="kw">struct</span> <span class="type">TextExtractionView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">TextExtractionManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">UIImage</span>?
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> showImagePicker = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+                <span class="comment">// 이미지 선택</span>
+                <span class="kw">if</span> <span class="kw">let</span> selectedImage {
+                    <span class="type">Image</span>(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .cornerRadius(<span class="str">12</span>)
+                } <span class="kw">else</span> {
+                    <span class="type">Button</span> {
+                        showImagePicker = <span class="kw">true</span>
+                    } label: {
+                        <span class="type">VStack</span> {
+                            <span class="type">Image</span>(systemName: <span class="str">"photo.badge.plus"</span>)
+                                .font(.system(size: <span class="str">50</span>))
+                            <span class="type">Text</span>(<span class="str">"이미지 선택"</span>)
+                        }
+                        .frame(height: <span class="str">200</span>)
+                        .frame(maxWidth: .infinity)
+                        .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+                        .cornerRadius(<span class="str">12</span>)
+                    }
+                }
+
+                <span class="comment">// 추출된 텍스트</span>
+                <span class="kw">if</span> manager.isProcessing {
+                    <span class="type">ProgressView</span>(<span class="str">"텍스트 추출 중..."</span>)
+                        .padding()
+                } <span class="kw">else</span> <span class="kw">if</span> !manager.extractedText.isEmpty {
+                    <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">12</span>) {
+                        <span class="type">Text</span>(<span class="str">"추출된 텍스트"</span>)
+                            .font(.headline)
+
+                        <span class="type">ForEach</span>(manager.extractedText) { item <span class="kw">in</span>
+                            <span class="type">HStack</span> {
+                                <span class="type">Text</span>(item.text)
+                                    .textSelection(.enabled)
+
+                                <span class="type">Spacer</span>()
+
+                                <span class="type">Menu</span> {
+                                    <span class="type">Button</span> {
+                                        copyText(item.text)
+                                    } label: {
+                                        <span class="type">Label</span>(<span class="str">"복사"</span>, systemImage: <span class="str">"doc.on.doc"</span>)
+                                    }
+
+                                    <span class="type">Button</span> {
+                                        translateText(item.text)
+                                    } label: {
+                                        <span class="type">Label</span>(<span class="str">"번역"</span>, systemImage: <span class="str">"translate"</span>)
+                                    }
+
+                                    <span class="type">Button</span> {
+                                        searchText(item.text)
+                                    } label: {
+                                        <span class="type">Label</span>(<span class="str">"검색"</span>, systemImage: <span class="str">"magnifyingglass"</span>)
+                                    }
+                                } label: {
+                                    <span class="type">Image</span>(systemName: <span class="str">"ellipsis.circle"</span>)
+                                }
+                            }
+                            .padding()
+                            .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+                            .cornerRadius(<span class="str">8</span>)
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .onChange(of: selectedImage) { _, newImage <span class="kw">in</span>
+            <span class="kw">if</span> <span class="kw">let</span> newImage {
+                <span class="type">Task</span> {
+                    <span class="kw">await</span> manager.extractText(from: newImage)
+                }
+            }
+        }
+    }
+
+    <span class="kw">func</span> copyText(<span class="kw">_</span> text: <span class="type">String</span>) {
+        <span class="type">UIPasteboard</span>.general.string = text
+    }
+
+    <span class="kw">func</span> translateText(<span class="kw">_</span> text: <span class="type">String</span>) {
+        print(<span class="str">"🌐 번역: \(text)"</span>)
+    }
+
+    <span class="kw">func</span> searchText(<span class="kw">_</span> text: <span class="type">String</span>) {
+        print(<span class="str">"🔍 검색: \(text)"</span>)
+    }
+}</pre>
+</div>
+
+<h2>📍 4. 장소 인식</h2>
+<p>Recognize landmarks, buildings, and places with relevant information.</p>
+
+<div class="code-block">
+<div class="code-header">PlaceRecognitionView.swift — Place Recognition</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">CoreLocation</span>
+<span class="kw">import</span> <span class="type">MapKit</span>
+
+<span class="kw">struct</span> <span class="type">RecognizedPlace</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> name: <span class="type">String</span>
+    <span class="kw">let</span> category: <span class="type">String</span>
+    <span class="kw">let</span> address: <span class="type">String</span>
+    <span class="kw">let</span> coordinate: <span class="type">CLLocationCoordinate2D</span>
+    <span class="kw">let</span> rating: <span class="type">Double</span>?
+    <span class="kw">let</span> photoURL: <span class="type">URL</span>?
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">PlaceRecognitionManager</span> {
+    <span class="kw">var</span> recognizedPlace: <span class="type">RecognizedPlace</span>?
+    <span class="kw">var</span> isRecognizing = <span class="kw">false</span>
+
+    <span class="comment">// 장소 인식</span>
+    <span class="kw">func</span> recognizePlace(from image: <span class="type">UIImage</span>, location: <span class="type">CLLocation</span>?) <span class="kw">async</span> {
+        isRecognizing = <span class="kw">true</span>
+
+        <span class="comment">// 실제로는 Vision + Maps API 사용</span>
+        <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="str">1</span>))
+
+        <span class="comment">// 예시 데이터</span>
+        recognizedPlace = <span class="type">RecognizedPlace</span>(
+            name: <span class="str">"애플 파크"</span>,
+            category: <span class="str">"랜드마크"</span>,
+            address: <span class="str">"One Apple Park Way, Cupertino, CA"</span>,
+            coordinate: <span class="type">CLLocationCoordinate2D</span>(latitude: <span class="str">37.3349</span>, longitude: -<span class="str">122.0090</span>),
+            rating: <span class="str">4.8</span>,
+            photoURL: <span class="kw">nil</span>
+        )
+
+        isRecognizing = <span class="kw">false</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">PlaceRecognitionView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">PlaceRecognitionManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> cameraPosition: <span class="type">MapCameraPosition</span> = .automatic
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+            <span class="comment">// 카메라 뷰 (실제로는 AVCaptureSession)</span>
+            <span class="type">Rectangle</span>()
+                .fill(<span class="type">Color</span>.black)
+                .aspectRatio(<span class="str">3</span>/<span class="str">4</span>, contentMode: .fit)
+                .cornerRadius(<span class="str">12</span>)
+                .overlay {
+                    <span class="kw">if</span> manager.isRecognizing {
+                        <span class="type">ProgressView</span>(<span class="str">"장소 인식 중..."</span>)
+                            .tint(.white)
+                    }
+                }
+
+            <span class="comment">// 인식된 장소 정보</span>
+            <span class="kw">if</span> <span class="kw">let</span> place = manager.recognizedPlace {
+                <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">16</span>) {
+                    <span class="comment">// 장소 정보</span>
+                    <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">8</span>) {
+                        <span class="type">HStack</span> {
+                            <span class="type">Text</span>(place.name)
+                                .font(.title2)
+                                .fontWeight(.bold)
+
+                            <span class="type">Spacer</span>()
+
+                            <span class="kw">if</span> <span class="kw">let</span> rating = place.rating {
+                                <span class="type">HStack</span>(spacing: <span class="str">4</span>) {
+                                    <span class="type">Image</span>(systemName: <span class="str">"star.fill"</span>)
+                                        .foregroundStyle(.yellow)
+                                    <span class="type">Text</span>(<span class="str">"\(rating, specifier: "%.1f")"</span>)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                        }
+
+                        <span class="type">Text</span>(place.category)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        <span class="type">Label</span>(place.address, systemImage: <span class="str">"mappin.circle"</span>)
+                            .font(.footnote)
+                    }
+                    .padding()
+                    .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.1</span>))
+                    .cornerRadius(<span class="str">12</span>)
+
+                    <span class="comment">// 지도</span>
+                    <span class="type">Map</span>(position: $cameraPosition) {
+                        <span class="type">Marker</span>(place.name, coordinate: place.coordinate)
+                    }
+                    .frame(height: <span class="str">200</span>)
+                    .cornerRadius(<span class="str">12</span>)
+
+                    <span class="comment">// 액션 버튼</span>
+                    <span class="type">HStack</span>(spacing: <span class="str">12</span>) {
+                        <span class="type">Button</span> {
+                            openInMaps(place)
+                        } label: {
+                            <span class="type">Label</span>(<span class="str">"지도에서 보기"</span>, systemImage: <span class="str">"map"</span>)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+
+                        <span class="type">Button</span> {
+                            sharePlace(place)
+                        } label: {
+                            <span class="type">Label</span>(<span class="str">"공유"</span>, systemImage: <span class="str">"square.and.arrow.up"</span>)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                .padding(.horizontal)
+            }
+
+            <span class="type">Spacer</span>()
+        }
+        .padding(.vertical)
+    }
+
+    <span class="kw">func</span> openInMaps(<span class="kw">_</span> place: <span class="type">RecognizedPlace</span>) {
+        <span class="kw">let</span> mapItem = <span class="type">MKMapItem</span>(
+            placemark: <span class="type">MKPlacemark</span>(coordinate: place.coordinate)
+        )
+        mapItem.name = place.name
+        mapItem.openInMaps()
+    }
+
+    <span class="kw">func</span> sharePlace(<span class="kw">_</span> place: <span class="type">RecognizedPlace</span>) {
+        print(<span class="str">"📤 \(place.name) 공유"</span>)
+    }
+}</pre>
+</div>
+
+<h2>🛍️ 5. 제품 검색</h2>
+<p>상품을 인식하고 온라인에서 유사한 제품을 찾.</p>
+
+<div class="code-block">
+<div class="code-header">ProductSearchView.swift — Product Search</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">Product</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> id = <span class="type">UUID</span>()
+    <span class="kw">let</span> name: <span class="type">String</span>
+    <span class="kw">let</span> price: <span class="type">Decimal</span>
+    <span class="kw">let</span> brand: <span class="type">String</span>
+    <span class="kw">let</span> imageURL: <span class="type">URL</span>?
+    <span class="kw">let</span> productURL: <span class="type">URL</span>
+    <span class="kw">let</span> similarity: <span class="type">Double</span> <span class="comment">// 유사도 0-1</span>
+}
+
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">ProductSearchManager</span> {
+    <span class="kw">var</span> searchResults: [<span class="type">Product</span>] = []
+    <span class="kw">var</span> isSearching = <span class="kw">false</span>
+
+    <span class="comment">// 시각적 유사 제품 검색</span>
+    <span class="kw">func</span> searchSimilarProducts(from image: <span class="type">UIImage</span>) <span class="kw">async</span> {
+        isSearching = <span class="kw">true</span>
+
+        <span class="comment">// 실제로는 Vision + 쇼핑 API 연동</span>
+        <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="str">1.5</span>))
+
+        <span class="comment">// 예시 결과</span>
+        searchResults = [
+            <span class="type">Product</span>(
+                name: <span class="str">"나이키 에어 맥스"</span>,
+                price: <span class="str">189000</span>,
+                brand: <span class="str">"Nike"</span>,
+                imageURL: <span class="kw">nil</span>,
+                productURL: <span class="type">URL</span>(string: <span class="str">"https://nike.com"</span>)!,
+                similarity: <span class="str">0.95</span>
+            ),
+            <span class="type">Product</span>(
+                name: <span class="str">"아디다스 울트라부스트"</span>,
+                price: <span class="str">219000</span>,
+                brand: <span class="str">"Adidas"</span>,
+                imageURL: <span class="kw">nil</span>,
+                productURL: <span class="type">URL</span>(string: <span class="str">"https://adidas.com"</span>)!,
+                similarity: <span class="str">0.87</span>
+            )
+        ]
+
+        isSearching = <span class="kw">false</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ProductSearchView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">ProductSearchManager</span>()
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> selectedImage: <span class="type">UIImage</span>?
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">ScrollView</span> {
+            <span class="type">VStack</span>(spacing: <span class="str">20</span>) {
+                <span class="comment">// 스캔한 제품 이미지</span>
+                <span class="kw">if</span> <span class="kw">let</span> selectedImage {
+                    <span class="type">Image</span>(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: <span class="str">200</span>)
+                        .cornerRadius(<span class="str">12</span>)
+                }
+
+                <span class="comment">// 검색 중</span>
+                <span class="kw">if</span> manager.isSearching {
+                    <span class="type">VStack</span>(spacing: <span class="str">12</span>) {
+                        <span class="type">ProgressView</span>()
+                        <span class="type">Text</span>(<span class="str">"유사 제품 검색 중..."</span>)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
+                }
+
+                <span class="comment">// 검색 결과</span>
+                <span class="kw">if</span> !manager.searchResults.isEmpty {
+                    <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">16</span>) {
+                        <span class="type">Text</span>(<span class="str">"유사 제품 \(manager.searchResults.count)개"</span>)
+                            .font(.headline)
+
+                        <span class="type">ForEach</span>(manager.searchResults) { product <span class="kw">in</span>
+                            <span class="type">ProductRow</span>(product: product)
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ProductRow</span>: <span class="type">View</span> {
+    <span class="kw">let</span> product: <span class="type">Product</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">HStack</span>(spacing: <span class="str">12</span>) {
+            <span class="comment">// 제품 이미지</span>
+            <span class="type">RoundedRectangle</span>(cornerRadius: <span class="str">8</span>)
+                .fill(<span class="type">Color</span>.gray.opacity(<span class="str">0.2</span>))
+                .frame(width: <span class="str">80</span>, height: <span class="str">80</span>)
+                .overlay {
+                    <span class="type">Image</span>(systemName: <span class="str">"shoeprint.fill"</span>)
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                }
+
+            <span class="comment">// 제품 정보</span>
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="str">4</span>) {
+                <span class="type">Text</span>(product.brand)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                <span class="type">Text</span>(product.name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                <span class="type">Text</span>(<span class="str">"\(product.price as NSDecimalNumber)원"</span>)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+
+                <span class="comment">// 유사도</span>
+                <span class="type">HStack</span>(spacing: <span class="str">4</span>) {
+                    <span class="type">Image</span>(systemName: <span class="str">"checkmark.circle.fill"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.green)
+                    <span class="type">Text</span>(<span class="str">"\(Int(product.similarity * 100))% 일치"</span>)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            <span class="type">Spacer</span>()
+
+            <span class="comment">// 바로가기</span>
+            <span class="type">Button</span> {
+                <span class="type">UIApplication</span>.shared.open(product.productURL)
+            } label: {
+                <span class="type">Image</span>(systemName: <span class="str">"arrow.right.circle.fill"</span>)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding()
+        .background(<span class="type">Color</span>.gray.opacity(<span class="str">0.05</span>))
+        .cornerRadius(<span class="str">12</span>)
+    }
+}</pre>
+</div>
+
+<h2>🎯 6. Camera Control 통합</h2>
+<p>Integrates with iPhone 16's Camera Control button for quick access.</p>
+
+<div class="code-block">
+<div class="code-header">CameraControlIntegration.swift — Camera Control</div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="comment">// Camera Control 제스처 핸들링</span>
+<span class="kw">@Observable</span>
+<span class="kw">class</span> <span class="type">CameraControlManager</span> {
+    <span class="kw">var</span> isPressed = <span class="kw">false</span>
+    <span class="kw">var</span> pressStartTime: <span class="type">Date</span>?
+
+    <span class="comment">// 길게 누르기 감지</span>
+    <span class="kw">func</span> handleLongPress() {
+        isPressed = <span class="kw">true</span>
+        pressStartTime = <span class="type">Date</span>()
+
+        <span class="comment">// Visual Intelligence 활성화</span>
+        activateVisualIntelligence()
+    }
+
+    <span class="comment">// 버튼 놓기</span>
+    <span class="kw">func</span> handleRelease() {
+        <span class="kw">guard</span> <span class="kw">let</span> startTime = pressStartTime <span class="kw">else</span> { <span class="kw">return</span> }
+
+        <span class="kw">let</span> duration = <span class="type">Date</span>().timeIntervalSince(startTime)
+
+        <span class="kw">if</span> duration > <span class="str">0.5</span> {
+            <span class="comment">// 긴 누르기: 화면 캡처 및 분석</span>
+            captureAndAnalyze()
+        }
+
+        isPressed = <span class="kw">false</span>
+        pressStartTime = <span class="kw">nil</span>
+    }
+
+    <span class="kw">func</span> activateVisualIntelligence() {
+        print(<span class="str">"📸 Visual Intelligence 활성화"</span>)
+    }
+
+    <span class="kw">func</span> captureAndAnalyze() {
+        print(<span class="str">"🔍 화면 캡처 및 분석 시작"</span>)
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CameraControlDemoView</span>: <span class="type">View</span> {
+    <span class="kw">@State</span> <span class="kw">private</span> <span class="kw">var</span> manager = <span class="type">CameraControlManager</span>()
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"Camera Control 버튼을 길게 누르세요"</span>)
+                .font(.headline)
+                .padding()
+
+            <span class="comment">// 시뮬레이션용 버튼</span>
+            <span class="type">Button</span> {
+                manager.handleLongPress()
+
+                <span class="type">Task</span> {
+                    <span class="kw">try</span>? <span class="kw">await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="str">1</span>))
+                    manager.handleRelease()
+                }
+            } label: {
+                <span class="type">Circle</span>()
+                    .fill(manager.isPressed ? <span class="type">Color</span>.blue : <span class="type">Color</span>.gray)
+                    .frame(width: <span class="str">80</span>, height: <span class="str">80</span>)
+                    .overlay {
+                        <span class="type">Image</span>(systemName: <span class="str">"camera.fill"</span>)
+                            .font(.title)
+                            .foregroundStyle(.white)
+                    }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<h2>💡 HIG Guidelines</h2>
+
+<ul>
+<li><strong>프라이버시 우선:</strong> All processing is performed on-device; user data is never sent to a server.</li>
+<li><strong>즉각적인 피드백:</strong> 분석 시작 시 시각적 피드백 제공</li>
+<li><strong>맥락 인식:</strong> 현재 상황에 맞는 정보만 표시</li>
+<li><strong>명확한 액션:</strong> 인식된 정보로 무엇을 할 수 있는지 명확히 제시</li>
+<li><strong>Camera Control 통합:</strong> 길게 누르기로 빠르게 접근 가능</li>
+</ul>
+
+<h2>🎯 Practical Usage</h2>
+
+<ul>
+<li><strong>쇼핑 앱:</strong> 제품 스캔 후 가격 비교 및 구매</li>
+<li><strong>번역 앱:</strong> 표지판, 메뉴판 실시간 번역</li>
+<li><strong>Education Apps:</strong> 숙제 문제 스캔 및 해설 제공</li>
+<li><strong>Travel Apps:</strong> 랜드마크 인식 후 관광 정보 표시</li>
+<li><strong>식물 인식:</strong> 식물 종류 및 관리 방법 안내</li>
+</ul>
+
+<h2>📚 Learn More</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/vision">Vision Framework</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2024/">WWDC 2024: Visual Intelligence</a></li>
+<li><a href="https://developer.apple.com/design/human-interface-guidelines/camera">HIG: Camera</a></li>
+</ul>
+
+<div class="info-box">
+<strong>⚡️ Performance Tips:</strong> Visual Intelligence leverages the Neural Engine for real-time analysis. Keep camera preview at 30fps and perform analysis only when the user presses the button to save battery. Network lookups, if needed, are performed selectively after on-device analysis.
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/visualintelligence" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=Visual+Intelligence" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body></html>

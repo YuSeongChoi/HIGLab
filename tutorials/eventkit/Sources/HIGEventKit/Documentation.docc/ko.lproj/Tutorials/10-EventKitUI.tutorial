@@ -1,0 +1,174 @@
+@Tutorial(time: 15) {
+    @Intro(title: "EventKitUI 통합") {
+        Apple이 제공하는 EventKitUI 프레임워크로 
+        표준 캘린더 UI를 앱에 통합합니다.
+    }
+    
+    @Section(title: "EventKitUI 소개") {
+        @ContentAndMedia {
+            EventKitUI는 이벤트 생성, 수정, 상세보기를 위한 
+            표준 뷰 컨트롤러를 제공합니다.
+            
+            - `EKEventViewController`: 이벤트 상세 보기
+            - `EKEventEditViewController`: 이벤트 생성/수정
+            - `EKCalendarChooser`: 캘린더 선택
+        }
+        
+        @Steps {
+            @Step {
+                EventKitUI를 import합니다.
+                
+                @Code(name: "EventKitUIWrapper.swift", file: "10-01-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 상세 보기") {
+        @ContentAndMedia {
+            `EKEventViewController`를 SwiftUI에서 
+            사용할 수 있도록 래핑합니다.
+        }
+        
+        @Steps {
+            @Step {
+                `UIViewControllerRepresentable`로 래핑합니다.
+                
+                @Code(name: "EventDetailView.swift", file: "10-02-detail.swift")
+            }
+            
+            @Step {
+                편집 허용 여부를 설정합니다.
+                
+                @Code(name: "EventDetailView.swift", file: "10-03-edit-allow.swift")
+            }
+            
+            @Step {
+                SwiftUI View에서 사용합니다.
+                
+                @Code(name: "ContentView.swift", file: "10-04-use-detail.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트 생성/수정 에디터") {
+        @ContentAndMedia {
+            `EKEventEditViewController`로 
+            표준 이벤트 편집 UI를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                이벤트 에디터 래퍼를 만듭니다.
+                
+                @Code(name: "EventEditorView.swift", file: "10-05-editor.swift")
+            }
+            
+            @Step {
+                Coordinator로 delegate를 처리합니다.
+                
+                @Code(name: "EventEditorView.swift", file: "10-06-coordinator.swift")
+            }
+            
+            @Step {
+                기존 이벤트 수정 모드를 지원합니다.
+                
+                @Code(name: "EventEditorView.swift", file: "10-07-edit-mode.swift")
+            }
+            
+            @Step {
+                새 이벤트 생성 화면을 표시합니다.
+                
+                @Code(name: "ContentView.swift", file: "10-08-present.swift")
+            }
+        }
+    }
+    
+    @Section(title: "캘린더 선택기") {
+        @ContentAndMedia {
+            `EKCalendarChooser`로 사용자가 
+            캘린더를 선택하도록 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                캘린더 선택기 래퍼를 만듭니다.
+                
+                @Code(name: "CalendarChooserView.swift", file: "10-09-chooser.swift")
+            }
+            
+            @Step {
+                선택 모드(단일/다중)를 설정합니다.
+                
+                @Code(name: "CalendarChooserView.swift", file: "10-10-selection.swift")
+            }
+            
+            @Step {
+                선택 결과를 처리합니다.
+                
+                @Code(name: "CalendarChooserView.swift", file: "10-11-result.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            EventKitUI에서 이벤트를 편집하는 뷰 컨트롤러는?
+            
+            @Choice(isCorrect: false) {
+                `EKEventViewController`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    `EKEventViewController`는 이벤트를 
+                    보여주기만 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `EKEventEditViewController`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `EKEventEditViewController`는 
+                    이벤트 생성과 수정을 위한 표준 UI입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `EKEventEditorViewController`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 클래스는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            SwiftUI에서 UIKit 뷰 컨트롤러를 사용하려면?
+            
+            @Choice(isCorrect: true) {
+                `UIViewControllerRepresentable` 프로토콜 채택
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    `UIViewControllerRepresentable`을 사용하여 
+                    UIKit 뷰 컨트롤러를 SwiftUI View로 래핑합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                직접 View body에서 사용
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    UIKit 뷰 컨트롤러는 직접 SwiftUI에서 
+                    사용할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `@UIViewControllerBuilder` 사용
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 매크로/속성은 존재하지 않습니다.
+                }
+            }
+        }
+    }
+}

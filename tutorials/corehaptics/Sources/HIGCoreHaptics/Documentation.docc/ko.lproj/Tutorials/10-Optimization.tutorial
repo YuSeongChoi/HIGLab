@@ -1,0 +1,229 @@
+@Tutorial(time: 25) {
+    @Intro(title: "배터리 & 성능 최적화") {
+        효율적인 햅틱 구현으로 배터리 소모를 최소화하고
+        앱 성능을 유지하는 전략을 배웁니다.
+        
+        @Image(source: "optimization.png", alt: "배터리 & 성능 최적화")
+    }
+    
+    @Section(title: "배터리 영향 이해하기") {
+        @ContentAndMedia {
+            Taptic Engine은 물리적으로 움직이는 부품이므로 
+            전력을 소비합니다.
+            
+            **배터리 소모 요인:**
+            - 재생 빈도 (자주 호출할수록 증가)
+            - 재생 시간 (Continuous가 Transient보다 소모 큼)
+            - 강도 (높을수록 더 많은 전력)
+            - 엔진 상태 (idle 유지도 소량 소비)
+            
+            하지만 적절히 사용하면 영향은 미미합니다.
+        }
+        
+        @Steps {
+            @Step {
+                배터리 상태에 따른 적응형 햅틱을 구현합니다.
+                배터리가 부족하면 자동으로 강도를 낮춥니다.
+                
+                @Code(name: "BatteryAwareHaptics.swift", file: "10-01-battery-check.swift")
+            }
+            
+            @Step {
+                저전력 모드를 감지하고 대응합니다.
+                시스템이 저전력 모드일 때는 햅틱을 최소화합니다.
+                
+                @Code(name: "LowPowerMode.swift", file: "10-02-low-power-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "엔진 수명 관리") {
+        @ContentAndMedia {
+            CHHapticEngine 인스턴스를 효율적으로 관리하면 
+            성능과 배터리 모두 개선됩니다.
+            
+            - 하나의 공유 엔진 사용
+            - 불필요할 때 중지
+            - 앱 생명주기와 연동
+        }
+        
+        @Steps {
+            @Step {
+                앱 상태에 따라 엔진을 시작/중지합니다.
+                백그라운드에서는 엔진이 필요 없습니다.
+                
+                @Code(name: "EngineLifecycle.swift", file: "10-03-app-lifecycle.swift")
+            }
+            
+            @Step {
+                auto-shutdown을 상황에 맞게 설정합니다.
+                일반 앱은 true, 게임은 플레이 중에만 false로 설정합니다.
+                
+                @Code(name: "AutoShutdownStrategy.swift", file: "10-04-auto-shutdown.swift")
+            }
+            
+            @Step {
+                엔진 상태 변화를 모니터링하고 로깅합니다.
+                문제 발생 시 디버깅에 활용합니다.
+                
+                @Code(name: "EngineMonitoring.swift", file: "10-05-monitoring.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Player 재사용") {
+        @ContentAndMedia {
+            매번 새 Player를 생성하는 것은 비효율적입니다.
+            자주 사용하는 패턴의 Player를 캐싱하고 재사용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Player 캐시 시스템을 구현합니다.
+                패턴별로 Player를 미리 생성해둡니다.
+                
+                @Code(name: "PlayerCache.swift", file: "10-06-player-cache.swift")
+            }
+            
+            @Step {
+                앱 시작 시 주요 패턴을 프리로드합니다.
+                첫 재생의 지연을 방지합니다.
+                
+                @Code(name: "Preloading.swift", file: "10-07-preloading.swift")
+            }
+            
+            @Step {
+                메모리 경고 시 캐시를 정리합니다.
+                시스템 리소스 요청에 적절히 대응합니다.
+                
+                @Code(name: "MemoryManagement.swift", file: "10-08-memory-warning.swift")
+            }
+        }
+    }
+    
+    @Section(title: "호출 최적화") {
+        @ContentAndMedia {
+            불필요하거나 과도한 햅틱 호출을 줄이면 
+            성능과 사용자 경험 모두 개선됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                쓰로틀링으로 연속 호출을 제한합니다.
+                너무 빠른 연속 재생은 의미가 없습니다.
+                
+                @Code(name: "Throttling.swift", file: "10-09-throttling.swift")
+            }
+            
+            @Step {
+                디바운싱으로 중복 호출을 방지합니다.
+                동일한 이벤트가 짧은 시간에 여러 번 발생할 때 유용합니다.
+                
+                @Code(name: "Debouncing.swift", file: "10-10-debouncing.swift")
+            }
+            
+            @Step {
+                코어레싱으로 유사한 햅틱을 합칩니다.
+                여러 개의 약한 햅틱을 하나의 강한 햅틱으로 대체합니다.
+                
+                @Code(name: "Coalescing.swift", file: "10-11-coalescing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로파일링과 측정") {
+        @ContentAndMedia {
+            Instruments를 사용해 햅틱의 실제 영향을 측정하고
+            최적화 효과를 검증합니다.
+        }
+        
+        @Steps {
+            @Step {
+                Energy Log로 배터리 영향을 측정합니다.
+                햅틱 호출 전후의 에너지 소비를 비교합니다.
+                
+                @Code(name: "EnergyProfiling.swift", file: "10-12-energy-profiling.swift")
+            }
+            
+            @Step {
+                자체 분석 로그를 구현합니다.
+                햅틱 사용 패턴을 추적하고 분석합니다.
+                
+                @Code(name: "HapticAnalytics.swift", file: "10-13-analytics.swift")
+            }
+            
+            @Step {
+                최적화된 최종 HapticManager입니다.
+                모든 최적화 기법이 적용된 프로덕션 레디 코드입니다.
+                
+                @Code(name: "OptimizedHapticManager.swift", file: "10-14-final.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            배터리 소모를 줄이기 위해 가장 효과적인 전략은?
+            
+            @Choice(isCorrect: false) {
+                모든 햅틱의 강도를 최소로 설정한다
+                
+                @Justification(reaction: "사용자 경험이 저하됩니다.") {
+                    약한 햅틱은 느끼기 어려워 
+                    피드백의 의미가 사라집니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                필요한 곳에만 햅틱을 사용하고,
+                배터리 상태에 따라 적응적으로 조절한다
+                
+                @Justification(reaction: "균형 잡힌 접근입니다! 🔋") {
+                    의미 있는 햅틱만 유지하면서
+                    상황에 맞게 조절하는 것이 최선입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                auto-shutdown을 항상 비활성화한다
+                
+                @Justification(reaction: "오히려 역효과입니다.") {
+                    auto-shutdown을 끄면 엔진이 계속 실행되어
+                    배터리 소모가 증가합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Player 캐싱의 주요 이점은?
+            
+            @Choice(isCorrect: true) {
+                매번 새 Player를 생성하는 오버헤드를 줄여 
+                첫 재생 지연을 방지한다
+                
+                @Justification(reaction: "맞습니다! ⚡") {
+                    특히 첫 번째 햅틱 재생에서 
+                    눈에 띄는 지연을 방지합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 강한 햅틱을 만들 수 있다
+                
+                @Justification(reaction: "관련이 없습니다.") {
+                    캐싱은 성능 최적화 기법이지
+                    햅틱 강도와는 무관합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 많은 동시 햅틱을 재생할 수 있다
+                
+                @Justification(reaction: "직접적인 관련은 없습니다.") {
+                    동시 재생은 엔진의 capability에 따르며,
+                    캐싱과는 다른 주제입니다.
+                }
+            }
+        }
+    }
+}

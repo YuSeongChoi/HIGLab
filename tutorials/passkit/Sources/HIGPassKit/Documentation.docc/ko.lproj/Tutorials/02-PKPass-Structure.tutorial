@@ -1,0 +1,195 @@
+@Tutorial(time: 20) {
+    @Intro(title: "PKPass 구조 이해") {
+        PKPass 번들의 구성요소와 각 파일의 역할을 
+        상세히 이해합니다.
+        
+        @Image(source: "pkpass-structure.png", alt: "PKPass 구조")
+    }
+    
+    @Section(title: "PKPass 번들 구조") {
+        @ContentAndMedia {
+            PKPass는 `.pkpass` 확장자를 가진 서명된 번들입니다.
+            실제로는 ZIP 파일 형식이며, 다음 파일들을 포함합니다:
+            
+            - **pass.json**: 패스의 모든 데이터와 스타일 정의
+            - **manifest.json**: 모든 파일의 SHA1 해시
+            - **signature**: 개발자 인증서로 서명된 데이터
+            - **icon.png / icon@2x.png / icon@3x.png**: 앱 아이콘
+            - **logo.png**: 패스 상단 로고
+            - **strip.png / thumbnail.png**: 패스 이미지
+        }
+        
+        @Steps {
+            @Step {
+                PKPass 파일을 URL에서 로드합니다.
+                번들 내의 pass.json을 자동으로 파싱합니다.
+                
+                @Code(name: "LoadPass.swift", file: "02-01-load-pass.swift")
+            }
+            
+            @Step {
+                PKPass 객체에서 다양한 정보에 접근할 수 있습니다.
+                시리얼 번호, 조직 이름, 설명 등을 확인합니다.
+                
+                @Code(name: "PassProperties.swift", file: "02-02-pass-properties.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패스 필드 구조") {
+        @ContentAndMedia {
+            패스의 콘텐츠는 필드 그룹으로 구성됩니다.
+            각 그룹은 패스의 특정 위치에 표시됩니다.
+            
+            - **headerFields**: 패스 상단 우측 (항상 표시)
+            - **primaryFields**: 메인 정보 영역
+            - **secondaryFields**: 보조 정보
+            - **auxiliaryFields**: 추가 정보
+            - **backFields**: 뒷면 정보
+        }
+        
+        @Steps {
+            @Step {
+                각 필드는 key, label, value로 구성됩니다.
+                key는 업데이트 시 필드를 식별하는 데 사용됩니다.
+                
+                @Code(name: "FieldStructure.swift", file: "02-03-field-structure.swift")
+            }
+            
+            @Step {
+                storeCard 타입에서의 필드 레이아웃을 이해합니다.
+                멤버십 번호, 포인트, 등급 등을 적절히 배치합니다.
+                
+                @Code(name: "StoreCardLayout.swift", file: "02-04-store-card-layout.swift")
+            }
+            
+            @Step {
+                필드의 데이터 타입을 지정할 수 있습니다.
+                날짜, 통화, 숫자 등의 형식을 자동으로 처리합니다.
+                
+                @Code(name: "FieldTypes.swift", file: "02-05-field-types.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이미지 에셋 가이드라인") {
+        @ContentAndMedia {
+            패스 이미지는 명확한 사양을 따라야 합니다.
+            잘못된 크기나 형식은 패스 생성 실패의 원인이 됩니다.
+            
+            | 이미지 | 크기 (1x) | 용도 |
+            |-------|----------|------|
+            | icon | 29×29 | 알림, 검색 |
+            | logo | 160×50 | 패스 상단 |
+            | strip | 375×123 | storeCard 배경 |
+            | thumbnail | 90×90 | eventTicket |
+        }
+        
+        @Steps {
+            @Step {
+                모든 이미지는 @1x, @2x, @3x 해상도를 제공합니다.
+                PNG 형식을 사용하고, 투명도가 필요하면 알파 채널을 포함합니다.
+                
+                @Code(name: "ImageAssets.swift", file: "02-06-image-assets.swift")
+            }
+            
+            @Step {
+                strip 이미지는 storeCard의 시각적 아이덴티티를 결정합니다.
+                브랜드 색상과 로고를 포함한 디자인을 권장합니다.
+                
+                @Code(name: "StripDesign.swift", file: "02-07-strip-design.swift")
+            }
+        }
+    }
+    
+    @Section(title: "바코드와 NFC") {
+        @ContentAndMedia {
+            패스는 스캔을 위한 바코드나 NFC 데이터를 포함할 수 있습니다.
+            
+            지원되는 바코드 형식:
+            - **PKBarcodeFormatQR**: QR 코드 (권장)
+            - **PKBarcodeFormatPDF417**: PDF417
+            - **PKBarcodeFormatAztec**: Aztec
+            - **PKBarcodeFormatCode128**: Code 128
+        }
+        
+        @Steps {
+            @Step {
+                바코드 정보는 barcodes 배열에 정의합니다.
+                여러 형식을 제공해 호환성을 높일 수 있습니다.
+                
+                @Code(name: "BarcodeSetup.swift", file: "02-08-barcode.swift")
+            }
+            
+            @Step {
+                NFC를 지원하면 탭만으로 패스를 인식할 수 있습니다.
+                nfc 필드에 메시지와 암호화 키를 설정합니다.
+                
+                @Code(name: "NFCSetup.swift", file: "02-09-nfc.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            PKPass 번들에서 패스의 데이터와 스타일을 정의하는 파일은?
+            
+            @Choice(isCorrect: true) {
+                pass.json
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    pass.json은 패스의 모든 정보를 담고 있는 
+                    핵심 설정 파일입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                manifest.json
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    manifest.json은 번들 내 파일들의 
+                    SHA1 해시값을 담고 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                signature
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    signature는 패스의 무결성을 보장하는 
+                    서명 데이터입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            storeCard 타입에서 배경 이미지로 사용되는 에셋은?
+            
+            @Choice(isCorrect: false) {
+                logo.png
+                
+                @Justification(reaction: "다시 확인해보세요.") {
+                    logo.png는 패스 상단에 표시되는 
+                    작은 로고 이미지입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                thumbnail.png
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    thumbnail은 주로 eventTicket 타입에서 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                strip.png
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    strip 이미지는 storeCard와 coupon의 
+                    주요 비주얼 영역을 담당합니다.
+                }
+            }
+        }
+    }
+}

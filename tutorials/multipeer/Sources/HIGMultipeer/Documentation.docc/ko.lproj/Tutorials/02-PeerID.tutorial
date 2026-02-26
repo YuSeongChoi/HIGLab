@@ -1,0 +1,155 @@
+@Tutorial(time: 8) {
+    @Intro(title: "MCPeerID 설정") {
+        MCPeerID를 사용하여 기기를 식별하고
+        다른 피어들과 구분되는 고유 ID를 설정합니다.
+    }
+    
+    @Section(title: "MCPeerID 이해하기") {
+        @ContentAndMedia {
+            MCPeerID는 MultipeerConnectivity에서 
+            각 기기를 고유하게 식별하는 객체입니다.
+            
+            표시 이름(displayName)으로 사용자에게 보여지며,
+            내부적으로는 고유한 ID를 가집니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCPeerID의 기본 구조를 살펴봅니다.
+                
+                displayName은 사용자에게 표시될 이름입니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-01-peerid-basic.swift")
+            }
+            
+            @Step {
+                기기 이름을 사용하여 MCPeerID를 생성합니다.
+                
+                iOS에서는 `UIDevice.current.name`을 사용합니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-02-device-name.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PeerID 관리") {
+        @ContentAndMedia {
+            MCPeerID는 세션 간에 일관성을 유지해야 합니다.
+            
+            같은 기기가 매번 다른 PeerID를 사용하면 
+            다른 피어들이 기기를 인식하지 못할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                MCPeerID를 UserDefaults에 저장합니다.
+                
+                앱을 재시작해도 같은 PeerID를 사용할 수 있습니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-03-save-peerid.swift")
+            }
+            
+            @Step {
+                저장된 MCPeerID를 불러오거나 새로 생성합니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-04-load-peerid.swift")
+            }
+            
+            @Step {
+                MCPeerID를 Data로 변환하고 복원하는 로직을 구현합니다.
+                
+                NSKeyedArchiver를 사용합니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-05-archive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "사용자 정의 이름") {
+        @ContentAndMedia {
+            사용자가 직접 표시 이름을 설정할 수 있게 
+            해주면 더 좋은 UX를 제공할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                사용자 입력을 받아 MCPeerID를 생성합니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-06-custom-name.swift")
+            }
+            
+            @Step {
+                SwiftUI View에서 이름 설정 UI를 만듭니다.
+                
+                @Code(name: "NameSettingView.swift", file: "02-07-name-view.swift")
+            }
+            
+            @Step {
+                이름 변경 시 새 MCPeerID를 생성하고 저장합니다.
+                
+                @Code(name: "PeerManager.swift", file: "02-08-update-name.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MCPeerID의 displayName은 어떤 용도로 사용되나요?
+            
+            @Choice(isCorrect: true) {
+                다른 피어들에게 표시되는 이름
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    displayName은 근처 기기 목록 등에서 
+                    사용자에게 표시되는 이름입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                내부 암호화 키
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    displayName은 암호화와 관련이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                네트워크 주소
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    displayName은 네트워크 주소가 아닙니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MCPeerID를 저장하는 데 사용하는 API는?
+            
+            @Choice(isCorrect: false) {
+                JSONEncoder
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MCPeerID는 Codable을 채택하지 않아 
+                    JSONEncoder를 사용할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                NSKeyedArchiver
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    MCPeerID는 NSSecureCoding을 채택하므로 
+                    NSKeyedArchiver로 직렬화할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                PropertyListEncoder
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    MCPeerID에는 NSKeyedArchiver를 사용합니다.
+                }
+            }
+        }
+    }
+}

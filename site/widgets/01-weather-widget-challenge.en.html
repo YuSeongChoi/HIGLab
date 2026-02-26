@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to WidgetKit widgets framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="🌤 Build Your Own Weather Widget — HIG Lab">
+    <meta property="og:description" content="Complete guide to WidgetKit widgets framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🌤 Build Your Own Weather Widget — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to WidgetKit widgets framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/widgets/01-weather-widget-challenge.en.html">
+<title>🌤 Build Your Own Weather Widget — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #86868b;
+  --accent: #0071e3;
+  --green: #34c759;
+  --red: #ff3b30;
+  --border: #d2d2d7;
+  --code-bg: #1e1e2e;
+  --tag-bg: #f5f5f7;
+  --radius: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.top-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,250,250,0.88);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border);
+}
+.top-bar-inner {
+  max-width: 800px; margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.top-logo { font-size: 16px; font-weight: 700; text-decoration: none; color: var(--text); }
+.top-logo span { color: var(--accent); }
+.top-nav { display: flex; gap: 20px; }
+.top-nav a { font-size: 13px; color: var(--text-2); text-decoration: none; font-weight: 500; }
+
+article { max-width: 800px; margin: 0 auto; padding: 48px 24px 120px; }
+
+.hero-section { margin-bottom: 56px; }
+.breadcrumb { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+
+.article-title {
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 900; letter-spacing: -1.5px; line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.article-subtitle {
+  font-size: 18px; color: var(--text-2); line-height: 1.7; margin-bottom: 28px;
+}
+
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  padding-bottom: 28px; border-bottom: 1px solid var(--border);
+}
+.meta-item { font-size: 13px; color: var(--text-2); }
+
+.growth-ring {
+  background: linear-gradient(135deg, #667eea08, #764ba208);
+  border: 1px solid #667eea20;
+  border-radius: var(--radius); padding: 32px; margin: 40px 0;
+}
+.growth-ring-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.growth-ring-desc { font-size: 15px; color: var(--text-2); margin-bottom: 24px; }
+.ring-steps { display: flex; flex-direction: column; gap: 0; }
+.ring-step { display: flex; gap: 16px; position: relative; }
+.ring-step::before {
+  content: ''; position: absolute; left: 19px; top: 40px; bottom: -8px;
+  width: 2px; background: var(--border);
+}
+.ring-step:last-child::before { display: none; }
+.ring-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  background: var(--surface); border: 2px solid var(--border);
+}
+.ring-step.active .ring-icon { border-color: var(--accent); background: #0071e310; }
+.ring-step.done .ring-icon { border-color: var(--green); background: #34c75910; }
+.ring-content { padding-bottom: 24px; }
+.ring-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); }
+.ring-name { font-size: 16px; font-weight: 700; margin: 2px 0 4px; }
+.ring-desc { font-size: 14px; color: var(--text-2); }
+
+h2 { font-size: 26px; font-weight: 800; margin: 56px 0 16px; padding-top: 24px; }
+h3 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; }
+p { margin-bottom: 16px; font-size: 16px; }
+
+.hig-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; margin: 24px 0;
+}
+.hig-box-header {
+  padding: 16px 20px;
+  background: var(--tag-bg);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px; font-weight: 700;
+}
+.hig-box-body { padding: 20px; }
+
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.do-card, .dont-card { border-radius: 12px; padding: 20px; border: 1px solid; }
+.do-card { background: #34c75908; border-color: #34c75930; }
+.dont-card { background: #ff3b3008; border-color: #ff3b3030; }
+.do-card h4 { color: var(--green); font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.dont-card h4 { color: var(--red); font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.do-card li, .dont-card li { font-size: 14px; color: var(--text-2); margin-bottom: 6px; margin-left: 16px; }
+
+/* Code Block - Key Modification */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 12px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  padding: 10px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.code-filename { font-size: 13px; color: #cdd6f4; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+.code-lang { font-size: 11px; color: #6c7086; background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 4px; }
+pre.code-body {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cdd6f4;
+  white-space: pre;
+  tab-size: 4;
+}
+.code-body .kw { color: #cba6f7; }
+.code-body .type { color: #89b4fa; }
+.code-body .str { color: #a6e3a1; }
+.code-body .num { color: #fab387; }
+.code-body .comment { color: #6c7086; font-style: italic; }
+.code-body .func { color: #89dceb; }
+.code-body .prop { color: #f5c2e7; }
+.code-body .attr { color: #f9e2af; }
+
+.checkpoint {
+  background: linear-gradient(135deg, #0071e308, #5856d608);
+  border: 1px solid #0071e320;
+  border-radius: 12px; padding: 20px 24px; margin: 32px 0;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.checkpoint-icon { font-size: 24px; flex-shrink: 0; }
+.checkpoint h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.checkpoint p { font-size: 14px; color: var(--text-2); margin: 0; }
+
+.challenge-box {
+  background: linear-gradient(135deg, #ff950008, #ff3b3008);
+  border: 1px solid #ff950025;
+  border-radius: var(--radius); padding: 24px; margin: 24px 0;
+}
+.challenge-box h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.challenge-box p { font-size: 14px; color: var(--text-2); margin-bottom: 8px; }
+.challenge-list { padding-left: 20px; }
+.challenge-list li { font-size: 14px; color: var(--text-2); margin-bottom: 4px; }
+
+.resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+.resource-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-decoration: none; color: inherit;
+  transition: all 0.2s; text-align: center;
+}
+.resource-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.resource-icon { font-size: 28px; margin-bottom: 8px; }
+.resource-label { font-size: 13px; font-weight: 600; color: var(--accent); }
+.resource-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+@media (max-width: 640px) {
+  .do-dont { grid-template-columns: 1fr; }
+  .resource-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-weather-widget-challenge.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;margin-left:auto;">🌐 KO</a>
+    <div class="top-nav">
+      <a href="https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/">Tutorial</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="https://youtube.com/@leeo25">leeo_dev</a>
+    </div>
+  </div>
+</div>
+
+<article>
+  <div class="hero-section">
+    <div class="breadcrumb">
+      <a href="../index.html">HIG Lab</a> → <a href="../index.html#phase1">Technologies</a> → Widgets
+    </div>
+    <h1 class="article-title">🌤 Build Your Own Weather Widget<br>Challenge</h1>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐⭐⭐</span>
+  <span>⏱️ Est. Time: 2-3h</span>
+  <span>📂 App Frameworks</span>
+</div>
+    <p class="article-subtitle">
+      Following Apple HIG Widget Design Guidelines, we'll build a working interactive weather widget with SwiftUI.
+    </p>
+    <div class="meta-row">
+      <span class="meta-item">📅 2025.02</span>
+      <span class="meta-item">⏱ Estimated 2 Hours</span>
+      <span class="meta-item">📱 iOS 17+ / Xcode 15+</span>
+      <span class="meta-item">🎯 초급 → 중급</span>
+    </div>
+  </div>
+
+  <!-- Growth Ring -->
+  <div class="growth-ring">
+    <div class="growth-ring-title">🔄 성장고리 커리큘럼</div>
+    <p class="growth-ring-desc">Follow the 5-stage growth path to master the complete widget development process.</p>
+    <div class="ring-steps">
+      <div class="ring-step done">
+        <div class="ring-icon">📖</div>
+        <div class="ring-content">
+          <div class="ring-label">Ring 1 · 이해하기</div>
+          <div class="ring-name">HIG 위젯 guidelines 학습</div>
+          <div class="ring-desc">Glanceable, Relevant, Personalized — The 3 Principles of Widgets</div>
+        </div>
+      </div>
+      <div class="ring-step done">
+        <div class="ring-icon">🏗️</div>
+        <div class="ring-content">
+          <div class="ring-label">Ring 2 · 뼈대 잡기</div>
+          <div class="ring-name">Widget Extension Basic Structure</div>
+          <div class="ring-desc">Core architecture: TimelineProvider, Entry, and View</div>
+        </div>
+      </div>
+      <div class="ring-step done">
+        <div class="ring-icon">🎨</div>
+        <div class="ring-content">
+          <div class="ring-label">Ring 3 · 꾸미기</div>
+          <div class="ring-name">HIG 준수 UI 디자인</div>
+          <div class="ring-desc">크기별 레이아웃, 다크모드, 틴트 대응</div>
+        </div>
+      </div>
+      <div class="ring-step done">
+        <div class="ring-icon">⚡</div>
+        <div class="ring-content">
+          <div class="ring-label">Ring 4 · 연결하기</div>
+          <div class="ring-name">데이터 & 인터랙션</div>
+          <div class="ring-desc">날씨 API 연동, 인터랙티브 버튼, 딥링크</div>
+        </div>
+      </div>
+      <div class="ring-step done">
+        <div class="ring-icon">🚀</div>
+        <div class="ring-content">
+          <div class="ring-label">Ring 5 · 완성하기</div>
+          <div class="ring-name">설정 & 퍼스널라이즈</div>
+          <div class="ring-desc">App Intent 설정, 잠금 화면 위젯</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ring 1 -->
+  <h2>📖 Ring 1 — HIG Widget Guidelines</h2>
+  
+  <p>
+    Apple은 위젯을 "미니 앱"이 아니라 <strong>앱의 핵심 정보를 홈 화면에 투영하는 것</strong>.
+    Users check their home screen over 90 times a day on average, but only stay for a few seconds.
+  </p>
+
+  <div class="hig-box">
+    <div class="hig-box-header">🍎 HIG Core Principles 3가지</div>
+    <div class="hig-box-body">
+      <p><strong>1. Glanceable (한눈에 파악)</strong><br>
+      Users should be able to grasp key information within seconds.</p>
+      <p><strong>2. Relevant (시의적절)</strong><br>
+      Show information relevant to the time, place, and user context.</p>
+      <p><strong>3. Personalized (개인화)</strong><br>
+      Let users customize through widget configuration.</p>
+    </div>
+  </div>
+
+  <div class="do-dont">
+    <div class="do-card">
+      <h4>✅ Do</h4>
+      <ul>
+        <li>콘텐츠가 주인공 — 큰 숫자, 명확한 아이콘</li>
+        <li>크기별로 other 레이아웃 제공</li>
+        <li>다크모드/틴트 자동 대응</li>
+        <li>containerBackground로 배경 처리</li>
+      </ul>
+    </div>
+    <div class="dont-card">
+      <h4>❌ Don't</h4>
+      <ul>
+        <li>작은 크기에 너무 많은 정보</li>
+        <li>로딩 스피너 표시</li>
+        <li>앱 아이콘/이름 반복</li>
+        <li>실시간 초 단위 업데이트</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Ring 2 -->
+  <h2>🏗️ Ring 2 — Widget Extension Basic Structure</h2>
+
+  <p>WidgetKit operates on a 3-layer architecture: TimelineProvider → TimelineEntry → View.</p>
+
+  <h3>Step 2-1: 날씨 데이터 모델</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">WeatherData.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Foundation</span>
+
+<span class="kw">struct</span> <span class="type">WeatherData</span> {
+    <span class="kw">let</span> <span class="prop">cityName</span>: <span class="type">String</span>
+    <span class="kw">let</span> <span class="prop">temperature</span>: <span class="type">Int</span>
+    <span class="kw">let</span> <span class="prop">highTemperature</span>: <span class="type">Int</span>
+    <span class="kw">let</span> <span class="prop">lowTemperature</span>: <span class="type">Int</span>
+    <span class="kw">let</span> <span class="prop">condition</span>: <span class="type">WeatherCondition</span>
+    <span class="kw">let</span> <span class="prop">humidity</span>: <span class="type">Int</span>
+    <span class="kw">let</span> <span class="prop">windSpeed</span>: <span class="type">Double</span>
+    <span class="kw">let</span> <span class="prop">hourlyForecast</span>: [<span class="type">HourlyWeather</span>]
+}
+
+<span class="kw">enum</span> <span class="type">WeatherCondition</span>: <span class="type">String</span>, <span class="type">CaseIterable</span> {
+    <span class="kw">case</span> <span class="prop">sunny</span> = <span class="str">"맑음"</span>
+    <span class="kw">case</span> <span class="prop">cloudy</span> = <span class="str">"흐림"</span>
+    <span class="kw">case</span> <span class="prop">rainy</span> = <span class="str">"비"</span>
+    <span class="kw">case</span> <span class="prop">snowy</span> = <span class="str">"눈"</span>
+    <span class="kw">case</span> <span class="prop">stormy</span> = <span class="str">"뇌우"</span>
+    
+    <span class="kw">var</span> <span class="prop">symbol</span>: <span class="type">String</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .<span class="prop">sunny</span>:  <span class="str">"sun.max.fill"</span>
+        <span class="kw">case</span> .<span class="prop">cloudy</span>: <span class="str">"cloud.fill"</span>
+        <span class="kw">case</span> .<span class="prop">rainy</span>:  <span class="str">"cloud.rain.fill"</span>
+        <span class="kw">case</span> .<span class="prop">snowy</span>:  <span class="str">"cloud.snow.fill"</span>
+        <span class="kw">case</span> .<span class="prop">stormy</span>: <span class="str">"cloud.bolt.rain.fill"</span>
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">HourlyWeather</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span> = <span class="type">UUID</span>()
+    <span class="kw">let</span> <span class="prop">hour</span>: <span class="type">String</span>
+    <span class="kw">let</span> <span class="prop">temperature</span>: <span class="type">Int</span>
+    <span class="kw">let</span> <span class="prop">condition</span>: <span class="type">WeatherCondition</span>
+}</pre>
+  </div>
+
+  <h3>Step 2-2: Implement AppIntentTimelineProvider (iOS 17+)</h3>
+
+  <p>iOS 17부터 <code>AppIntentTimelineProvider</code> integrates with App Intents, letting users customize widgets.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">WeatherProvider.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">WidgetKit</span>
+<span class="kw">import</span> <span class="type">SwiftUI</span>
+<span class="kw">import</span> <span class="type">AppIntents</span>
+
+<span class="kw">struct</span> <span class="type">WeatherEntry</span>: <span class="type">TimelineEntry</span> {
+    <span class="kw">let</span> <span class="prop">date</span>: <span class="type">Date</span>
+    <span class="kw">let</span> <span class="prop">weather</span>: <span class="type">WeatherData</span>
+    <span class="kw">let</span> <span class="prop">configuration</span>: <span class="type">SelectCityIntent</span>
+}
+
+<span class="comment">// iOS 17+ AppIntentTimelineProvider (async/await 기반)</span>
+<span class="kw">struct</span> <span class="type">WeatherProvider</span>: <span class="type">AppIntentTimelineProvider</span> {
+    
+    <span class="comment">// 위젯 갤러리 미리보기용</span>
+    <span class="kw">func</span> <span class="func">placeholder</span>(<span class="attr">in</span> context: <span class="type">Context</span>) -> <span class="type">WeatherEntry</span> {
+        <span class="type">WeatherEntry</span>(date: .<span class="func">now</span>, weather: .<span class="prop">preview</span>, configuration: <span class="type">SelectCityIntent</span>())
+    }
+    
+    <span class="comment">// 위젯 추가 시 스냅샷 (async)</span>
+    <span class="kw">func</span> <span class="func">snapshot</span>(<span class="attr">for</span> configuration: <span class="type">SelectCityIntent</span>, <span class="attr">in</span> context: <span class="type">Context</span>) <span class="kw">async</span> -> <span class="type">WeatherEntry</span> {
+        <span class="kw">let</span> weather = <span class="kw">await</span> <span class="type">WeatherService</span>.<span class="prop">shared</span>.<span class="func">fetchWeather</span>(for: configuration.city)
+        <span class="kw">return</span> <span class="type">WeatherEntry</span>(date: .<span class="func">now</span>, weather: weather, configuration: configuration)
+    }
+    
+    <span class="comment">// 실제 타임라인 생성 (async)</span>
+    <span class="kw">func</span> <span class="func">timeline</span>(<span class="attr">for</span> configuration: <span class="type">SelectCityIntent</span>, <span class="attr">in</span> context: <span class="type">Context</span>) <span class="kw">async</span> -> <span class="type">Timeline</span>&lt;<span class="type">WeatherEntry</span>&gt; {
+        <span class="kw">let</span> weather = <span class="kw">await</span> <span class="type">WeatherService</span>.<span class="prop">shared</span>.<span class="func">fetchWeather</span>(for: configuration.city)
+        <span class="kw">let</span> entry = <span class="type">WeatherEntry</span>(date: .<span class="func">now</span>, weather: weather, configuration: configuration)
+        
+        <span class="comment">// 15분 후 다음 갱신</span>
+        <span class="kw">let</span> nextUpdate = <span class="type">Calendar</span>.<span class="prop">current</span>.<span class="func">date</span>(byAdding: .minute, value: <span class="num">15</span>, to: .<span class="func">now</span>)!
+        
+        <span class="kw">return</span> <span class="type">Timeline</span>(entries: [entry], policy: .<span class="func">after</span>(nextUpdate))
+    }
+}</pre>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-icon">✅</div>
+    <div class="checkpoint-content">
+      <h4>Ring 2 체크포인트</h4>
+      <p>The TimelineProvider fetches weather data, creates entries, and sets a 15-minute refresh policy.</p>
+    </div>
+  </div>
+
+  <!-- Ring 3 -->
+  <h2>🎨 Ring 3 — HIG-Compliant UI Design</h2>
+
+  <p>Implement size-optimized layouts and gradient backgrounds based on weather conditions.</p>
+
+  <h3>Step 3-1: Small 위젯 뷰</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">SmallWeatherView.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">SmallWeatherView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">weather</span>: <span class="type">WeatherData</span>
+    
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">4</span>) {
+            <span class="comment">// HIG: 콘텐츠가 주인공</span>
+            <span class="type">Image</span>(systemName: weather.condition.<span class="prop">symbol</span>)
+                .<span class="func">font</span>(.<span class="func">title2</span>)
+                .<span class="func">symbolRenderingMode</span>(.<span class="prop">multicolor</span>)
+            
+            <span class="type">Spacer</span>()
+            
+            <span class="comment">// HIG: 한눈에 파악 — 큰 기온 숫자</span>
+            <span class="type">Text</span>(<span class="str">"\(weather.temperature)°"</span>)
+                .<span class="func">font</span>(.<span class="func">system</span>(size: <span class="num">36</span>, weight: .light))
+                .<span class="func">contentTransition</span>(.<span class="func">numericText</span>())
+            
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">0</span>) {
+                <span class="type">Text</span>(weather.<span class="prop">cityName</span>)
+                    .<span class="func">font</span>(.<span class="func">caption</span>)
+                    .<span class="func">fontWeight</span>(.<span class="prop">semibold</span>)
+                
+                <span class="type">Text</span>(<span class="str">"H:\(weather.highTemperature)° L:\(weather.lowTemperature)°"</span>)
+                    .<span class="func">font</span>(.<span class="func">caption2</span>)
+                    .<span class="func">foregroundStyle</span>(.<span class="prop">secondary</span>)
+            }
+        }
+        .<span class="func">frame</span>(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+}</pre>
+  </div>
+
+  <h3>Step 3-2: Medium 위젯 — 시간별 예보</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">MediumWeatherView.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">MediumWeatherView</span>: <span class="type">View</span> {
+    <span class="kw">let</span> <span class="prop">weather</span>: <span class="type">WeatherData</span>
+    
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">HStack</span>(spacing: <span class="num">16</span>) {
+            <span class="comment">// 왼쪽: 현재 날씨</span>
+            <span class="type">VStack</span>(alignment: .leading, spacing: <span class="num">4</span>) {
+                <span class="type">Text</span>(weather.<span class="prop">cityName</span>)
+                    .<span class="func">font</span>(.<span class="func">subheadline</span>)
+                    .<span class="func">fontWeight</span>(.<span class="prop">semibold</span>)
+                
+                <span class="type">Text</span>(<span class="str">"\(weather.temperature)°"</span>)
+                    .<span class="func">font</span>(.<span class="func">system</span>(size: <span class="num">44</span>, weight: .light))
+                
+                <span class="type">Text</span>(weather.condition.<span class="prop">rawValue</span>)
+                    .<span class="func">font</span>(.<span class="func">caption</span>)
+                    .<span class="func">foregroundStyle</span>(.<span class="prop">secondary</span>)
+            }
+            
+            <span class="type">Divider</span>()
+            
+            <span class="comment">// 오른쪽: 시간별 예보</span>
+            <span class="type">HStack</span>(spacing: <span class="num">12</span>) {
+                <span class="type">ForEach</span>(weather.<span class="prop">hourlyForecast</span>.<span class="func">prefix</span>(<span class="num">5</span>)) { hourly <span class="kw">in</span>
+                    <span class="type">VStack</span>(spacing: <span class="num">6</span>) {
+                        <span class="type">Text</span>(hourly.<span class="prop">hour</span>)
+                            .<span class="func">font</span>(.<span class="func">caption2</span>)
+                        <span class="type">Image</span>(systemName: hourly.condition.<span class="prop">symbol</span>)
+                            .<span class="func">symbolRenderingMode</span>(.<span class="prop">multicolor</span>)
+                        <span class="type">Text</span>(<span class="str">"\(hourly.temperature)°"</span>)
+                            .<span class="func">font</span>(.<span class="func">caption</span>)
+                    }
+                }
+            }
+        }
+    }
+}</pre>
+  </div>
+
+  <h3>Step 3-3: 날씨 기반 그래디언트 배경</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">WeatherGradient.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">extension</span> <span class="type">WeatherCondition</span> {
+    <span class="kw">var</span> <span class="prop">gradient</span>: <span class="type">LinearGradient</span> {
+        <span class="kw">switch</span> <span class="kw">self</span> {
+        <span class="kw">case</span> .<span class="prop">sunny</span>:
+            <span class="type">LinearGradient</span>(
+                colors: [.<span class="prop">orange</span>, .<span class="prop">yellow</span>],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        <span class="kw">case</span> .<span class="prop">cloudy</span>:
+            <span class="type">LinearGradient</span>(
+                colors: [<span class="type">Color</span>(<span class="str">"CloudTop"</span>), <span class="type">Color</span>(<span class="str">"CloudBottom"</span>)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        <span class="kw">case</span> .<span class="prop">rainy</span>:
+            <span class="type">LinearGradient</span>(
+                colors: [.<span class="prop">gray</span>, .<span class="prop">blue</span>.opacity(<span class="num">0.6</span>)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        <span class="kw">case</span> .<span class="prop">snowy</span>:
+            <span class="type">LinearGradient</span>(
+                colors: [.<span class="prop">white</span>, <span class="type">Color</span>(<span class="str">"IceBlue"</span>)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        <span class="kw">case</span> .<span class="prop">stormy</span>:
+            <span class="type">LinearGradient</span>(
+                colors: [<span class="type">Color</span>(<span class="str">"StormDark"</span>), <span class="type">Color</span>(<span class="str">"StormPurple"</span>)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+}</pre>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-icon">✅</div>
+    <div class="checkpoint-content">
+      <h4>Ring 3 체크포인트</h4>
+      <p>Completed optimal layouts for Small/Medium sizes and gradient backgrounds by weather condition.</p>
+    </div>
+  </div>
+
+  <!-- Ring 4 -->
+  <h2>⚡ Ring 4 — Data & Interaction</h2>
+
+  <p>From iOS 17, you can add Button and Toggle to widgets for interactivity.</p>
+
+  <h3>Step 4-1: 인터랙티브 새로고침 버튼</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">RefreshWeatherIntent.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AppIntents</span>
+<span class="kw">import</span> <span class="type">WidgetKit</span>
+
+<span class="kw">struct</span> <span class="type">RefreshWeatherIntent</span>: <span class="type">AppIntent</span> {
+    <span class="kw">static var</span> <span class="prop">title</span>: <span class="type">LocalizedStringResource</span> = <span class="str">"날씨 새로고침"</span>
+    
+    <span class="kw">func</span> <span class="func">perform</span>() <span class="kw">async throws</span> -> <span class="kw">some</span> <span class="type">IntentResult</span> {
+        <span class="type">WidgetCenter</span>.<span class="prop">shared</span>.<span class="func">reloadAllTimelines</span>()
+        <span class="kw">return</span> .<span class="func">result</span>()
+    }
+}
+
+<span class="comment">// 위젯 뷰에서 사용:</span>
+<span class="type">Button</span>(intent: <span class="type">RefreshWeatherIntent</span>()) {
+    <span class="type">Image</span>(systemName: <span class="str">"arrow.clockwise"</span>)
+        .<span class="func">font</span>(.<span class="func">caption</span>)
+}
+.<span class="func">buttonStyle</span>(.<span class="prop">plain</span>)</pre>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-icon">✅</div>
+    <div class="checkpoint-content">
+      <h4>Ring 4 체크포인트</h4>
+      <p>인터랙티브 새로고침 버튼까지 구현했습니다!</p>
+    </div>
+  </div>
+
+  <!-- Ring 5 -->
+  <h2>🚀 Ring 5 — Settings & Personalization</h2>
+
+  <p>With App Intent Configuration, let users choose a city and support Lock Screen widgets.</p>
+
+  <h3>Step 5-1: City Selection Configuration</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">SelectCityIntent.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">AppIntents</span>
+<span class="kw">import</span> <span class="type">WidgetKit</span>
+
+<span class="kw">struct</span> <span class="type">SelectCityIntent</span>: <span class="type">WidgetConfigurationIntent</span> {
+    <span class="kw">static var</span> <span class="prop">title</span>: <span class="type">LocalizedStringResource</span> = <span class="str">"도시 선택"</span>
+    <span class="kw">static var</span> <span class="prop">description</span>: <span class="type">IntentDescription</span> = <span class="str">"날씨를 확인할 도시Selectdo it."</span>
+    
+    @<span class="type">Parameter</span>(title: <span class="str">"도시"</span>, default: .<span class="prop">seoul</span>)
+    <span class="kw">var</span> <span class="prop">city</span>: <span class="type">CityOption</span>
+}
+
+<span class="kw">enum</span> <span class="type">CityOption</span>: <span class="type">String</span>, <span class="type">AppEnum</span> {
+    <span class="kw">case</span> <span class="prop">seoul</span>   = <span class="str">"서울"</span>
+    <span class="kw">case</span> <span class="prop">busan</span>   = <span class="str">"부산"</span>
+    <span class="kw">case</span> <span class="prop">jeju</span>    = <span class="str">"제주"</span>
+    <span class="kw">case</span> <span class="prop">daejeon</span> = <span class="str">"대전"</span>
+    <span class="kw">case</span> <span class="prop">gwangju</span> = <span class="str">"광주"</span>
+    
+    <span class="kw">static var</span> <span class="prop">typeDisplayRepresentation</span> = <span class="type">TypeDisplayRepresentation</span>(name: <span class="str">"도시"</span>)
+    <span class="kw">static var</span> <span class="prop">caseDisplayRepresentations</span>: [<span class="type">CityOption</span>: <span class="type">DisplayRepresentation</span>] = [
+        .<span class="prop">seoul</span>:   <span class="str">"서울"</span>,
+        .<span class="prop">busan</span>:   <span class="str">"부산"</span>,
+        .<span class="prop">jeju</span>:    <span class="str">"제주"</span>,
+        .<span class="prop">daejeon</span>: <span class="str">"대전"</span>,
+        .<span class="prop">gwangju</span>: <span class="str">"광주"</span>,
+    ]
+}</pre>
+  </div>
+
+  <h3>Step 5-2: 최종 위젯 구성</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-filename">WeatherWidget.swift</span>
+      <span class="code-lang">Swift</span>
+    </div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">WidgetKit</span>
+<span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">WeatherWidget</span>: <span class="type">Widget</span> {
+    <span class="kw">let</span> <span class="prop">kind</span> = <span class="str">"WeatherWidget"</span>
+    
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">WidgetConfiguration</span> {
+        <span class="type">AppIntentConfiguration</span>(
+            kind: kind,
+            intent: <span class="type">SelectCityIntent</span>.<span class="kw">self</span>,
+            provider: <span class="type">WeatherProvider</span>()
+        ) { entry <span class="kw">in</span>
+            <span class="type">WeatherWidgetEntryView</span>(entry: entry)
+                .<span class="func">containerBackground</span>(
+                    entry.weather.condition.<span class="prop">gradient</span>,
+                    <span class="kw">for</span>: .widget
+                )
+        }
+        .<span class="func">configurationDisplayName</span>(<span class="str">"날씨"</span>)
+        .<span class="func">description</span>(<span class="str">"현재 날씨와 예보를 확인do it."</span>)
+        .<span class="func">supportedFamilies</span>([
+            .systemSmall, .systemMedium, .systemLarge,
+            .accessoryCircular, .accessoryRectangular, .accessoryInline
+        ])
+    }
+}
+
+<span class="kw">struct</span> <span class="type">WeatherWidgetEntryView</span>: <span class="type">View</span> {
+    @<span class="type">Environment</span>(\.widgetFamily) <span class="kw">var</span> <span class="prop">family</span>
+    <span class="kw">let</span> <span class="prop">entry</span>: <span class="type">WeatherEntry</span>
+    
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="kw">switch</span> family {
+        <span class="kw">case</span> .systemSmall:
+            <span class="type">SmallWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        <span class="kw">case</span> .systemMedium:
+            <span class="type">MediumWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        <span class="kw">case</span> .systemLarge:
+            <span class="type">LargeWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        <span class="kw">case</span> .accessoryCircular:
+            <span class="type">CircularWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        <span class="kw">case</span> .accessoryRectangular:
+            <span class="type">RectangularWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        <span class="kw">case</span> .accessoryInline:
+            <span class="type">Text</span>(<span class="str">"\(entry.weather.condition.rawValue) \(entry.weather.temperature)°"</span>)
+        <span class="kw">default</span>:
+            <span class="type">SmallWeatherView</span>(weather: entry.<span class="prop">weather</span>)
+        }
+    }
+}</pre>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-icon">🎉</div>
+    <div class="checkpoint-content">
+      <h4>Challenge Complete!</h4>
+      <p>You've completed all 5 growth stages. A fully HIG-compliant weather widget is finished!</p>
+    </div>
+  </div>
+
+  <!-- Bonus Challenge -->
+  <h2>🏆 Bonus Challenge</h2>
+
+  <div class="challenge-box">
+    <h4>🔥 더 도전해보세요!</h4>
+    <p>Completed the basic challenge? Level up with these bonus tasks.</p>
+    <ul class="challenge-list">
+      <li><strong>watchOS 위젯:</strong> Watch 컴플리케이션으로 확장</li>
+      <li><strong>StandBy 모드:</strong> iOS 17 StandBy 디스플레이 대응</li>
+      <li><strong>위젯 번들:</strong> 여러 위젯을 WidgetBundle로 묶기</li>
+      <li><strong>실제 WeatherKit API:</strong> Mock 데이터를 실제 API로 교체</li>
+    </ul>
+  </div>
+
+  <!-- Resources -->
+  <h2>📦 Learning Resources</h2>
+  
+  <div class="resource-grid">
+    <a href="https://m1zz.github.io/HIGLab/tutorials/widgets/documentation/higwidgets/" class="resource-card">
+      <div class="resource-icon">📚</div>
+      <div class="resource-label">DocC Tutorial</div>
+      <div class="resource-desc">Try it in Xcode</div>
+    </a>
+    <a href="https://github.com/M1zz/HIGLab/tree/main/samples/WeatherWidget" class="resource-card">
+      <div class="resource-icon">💻</div>
+      <div class="resource-label">GitHub Project</div>
+      <div class="resource-desc">Complete Source Code</div>
+    </a>
+    <a href="https://developer.apple.com/design/human-interface-guidelines/widgets" class="resource-card">
+      <div class="resource-icon">🍎</div>
+      <div class="resource-label">Apple HIG Docs</div>
+      <div class="resource-desc">Widgets guidelines</div>
+    </a>
+  </div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/widgetkit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/documentation/widgetkit/emoji-rangers-supporting-live-activities-interactivity-and-animations" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">💻 Sample Code</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=WidgetKit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+
+</body>
+</html>

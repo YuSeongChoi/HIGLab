@@ -1,0 +1,149 @@
+@Tutorial(time: 10) {
+    @Intro(title: "알림 추가") {
+        이벤트에 알림(EKAlarm)을 추가하여 
+        사용자에게 미리 알려주는 방법을 배웁니다.
+    }
+    
+    @Section(title: "EKAlarm 생성") {
+        @ContentAndMedia {
+            `EKAlarm`은 이벤트 시작 전이나 특정 시간에 
+            알림을 보내도록 설정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                상대 시간으로 알림을 만듭니다.
+                
+                이벤트 시작 몇 분/시간 전에 알림을 받습니다.
+                
+                @Code(name: "AlarmHelper.swift", file: "07-01-relative.swift")
+            }
+            
+            @Step {
+                절대 시간으로 알림을 만듭니다.
+                
+                특정 날짜와 시간에 알림을 받습니다.
+                
+                @Code(name: "AlarmHelper.swift", file: "07-02-absolute.swift")
+            }
+        }
+    }
+    
+    @Section(title: "이벤트에 알림 추가") {
+        @ContentAndMedia {
+            생성한 알림을 이벤트에 추가합니다. 
+            하나의 이벤트에 여러 알림을 추가할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                이벤트에 알림을 추가합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "07-03-add.swift")
+            }
+            
+            @Step {
+                여러 개의 알림을 추가합니다.
+                
+                예: 1시간 전, 15분 전 두 번 알림
+                
+                @Code(name: "CalendarManager.swift", file: "07-04-multiple.swift")
+            }
+            
+            @Step {
+                기존 알림을 제거합니다.
+                
+                @Code(name: "CalendarManager.swift", file: "07-05-remove.swift")
+            }
+        }
+    }
+    
+    @Section(title: "알림 UI 구현") {
+        @ContentAndMedia {
+            사용자가 알림 시간을 선택할 수 있는 
+            UI를 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                알림 옵션을 정의합니다.
+                
+                @Code(name: "AlarmOption.swift", file: "07-06-options.swift")
+            }
+            
+            @Step {
+                알림 선택 Picker를 만듭니다.
+                
+                @Code(name: "AlarmPickerView.swift", file: "07-07-picker.swift")
+            }
+            
+            @Step {
+                이벤트 생성 폼에 알림 선택을 통합합니다.
+                
+                @Code(name: "CreateEventView.swift", file: "07-08-integrate.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            이벤트 시작 30분 전에 알림을 설정하려면?
+            
+            @Choice(isCorrect: true) {
+                `EKAlarm(relativeOffset: -1800)`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    relativeOffset은 초 단위이며, 
+                    음수는 이벤트 시작 전을 의미합니다.
+                    30분 = 30 × 60 = 1800초
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `EKAlarm(relativeOffset: 30)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    relativeOffset은 초 단위입니다.
+                    30은 30초를 의미하며, 양수는 이벤트 후입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `EKAlarm(minutesBefore: 30)`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이런 이니셜라이저는 존재하지 않습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            하나의 이벤트에 추가할 수 있는 알림 개수는?
+            
+            @Choice(isCorrect: false) {
+                1개만 가능
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    여러 개의 알림을 추가할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                여러 개 가능
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    이벤트의 `alarms` 프로퍼티는 배열이며, 
+                    여러 알림을 추가할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                최대 2개
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    2개 이상도 가능합니다.
+                }
+            }
+        }
+    }
+}

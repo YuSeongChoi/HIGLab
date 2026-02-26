@@ -1,0 +1,123 @@
+@Tutorial(time: 25) {
+    @Intro(title: "엔티티 쿼리") {
+        `EntityQuery`를 구현해 Siri와 단축어가 앱의 데이터를 검색하고 선택할 수 있게 합니다.
+        
+        @Image(source: "placeholder.png", alt: "Entity Query 개념")
+    }
+    
+    @Section(title: "기본 EntityQuery") {
+        @ContentAndMedia {
+            `EntityQuery`는 시스템이 앱의 Entity를 조회하는 방법을 정의합니다.
+            
+            - ID로 조회: `entities(for:)`
+            - 검색어로 조회: `suggestedEntities()`
+            - 전체 조회: `allEntities()`
+        }
+        
+        @Steps {
+            @Step {
+                EntityQuery 프로토콜을 채택한 구조체를 만듭니다.
+                
+                가장 기본적인 형태로 ID 기반 조회를 구현합니다.
+                
+                @Code(name: "BookQuery.swift", file: "07-query-basic.swift")
+            }
+            
+            @Step {
+                `suggestedEntities()`로 추천 항목을 제공합니다.
+                
+                Siri가 사용자에게 선택지를 보여줄 때 사용됩니다.
+                
+                @Code(name: "BookQuery.swift", file: "07-query-suggested.swift")
+            }
+        }
+    }
+    
+    @Section(title: "문자열 검색 지원") {
+        @ContentAndMedia {
+            `EntityStringQuery`를 채택하면 사용자가 텍스트로 Entity를 검색할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                `EntityStringQuery`를 채택하고 `entities(matching:)` 메서드를 구현합니다.
+                
+                @Code(name: "BookQuery.swift", file: "07-query-string.swift")
+            }
+        }
+    }
+    
+    @Section(title: "속성 기반 필터링") {
+        @ContentAndMedia {
+            `EntityPropertyQuery`로 Entity의 속성을 기준으로 필터링합니다.
+            
+            단축어 앱에서 "작가가 OOO인 책" 같은 조건을 만들 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                `EntityPropertyQuery`를 채택하고 정렬/필터 옵션을 정의합니다.
+                
+                @Code(name: "BookQuery.swift", file: "07-query-property.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            사용자가 "김작가의 책 찾아줘"라고 말할 때 사용되는 Query 프로토콜은?
+            
+            @Choice(isCorrect: false) {
+                `EntityQuery`
+                
+                @Justification(reaction: "기본이지만...") {
+                    기본 EntityQuery는 ID 조회만 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `EntityStringQuery`
+                
+                @Justification(reaction: "정답! 🔍") {
+                    문자열 검색을 지원하는 EntityStringQuery가 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `EntityPropertyQuery`
+                
+                @Justification(reaction: "가까웠어요!") {
+                    PropertyQuery는 속성 기반 필터링용입니다. 자유 텍스트 검색은 StringQuery입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Siri가 Entity 선택지를 보여줄 때 호출되는 메서드는?
+            
+            @Choice(isCorrect: false) {
+                `entities(for:)`
+                
+                @Justification(reaction: "아쉽네요!") {
+                    이 메서드는 ID로 특정 Entity를 조회할 때 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `suggestedEntities()`
+                
+                @Justification(reaction: "맞습니다! 💡") {
+                    추천 항목을 제공하는 suggestedEntities()가 호출됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `allEntities()`
+                
+                @Justification(reaction: "다시 생각해보세요!") {
+                    전체 조회는 성능상 추천에 적합하지 않습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,175 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Marker와 Annotation") {
+        지도 위에 맛집 위치를 표시하는 Marker와 Annotation을 학습합니다.
+        시스템 제공 스타일부터 커스텀 디자인까지 다룹니다.
+    }
+    
+    @Section(title: "Marker 사용하기") {
+        @ContentAndMedia {
+            Marker는 Apple Maps 스타일의 핀 모양 마커입니다.
+            간단하게 위치를 표시할 때 적합합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 Marker**
+                
+                좌표와 라벨만으로 Marker를 생성합니다.
+                기본 빨간색 핀이 표시됩니다.
+                
+                @Code(name: "MarkerView.swift", file: "03-basic-marker.swift")
+            }
+            
+            @Step {
+                **SF Symbol 아이콘**
+                
+                systemImage 파라미터로 아이콘을 변경합니다.
+                음식 관련 아이콘으로 맛집을 표현합니다.
+                
+                @Code(name: "MarkerView.swift", file: "03-marker-icon.swift")
+            }
+            
+            @Step {
+                **마커 색상 변경**
+                
+                .tint 수정자로 마커 색상을 커스터마이징합니다.
+                카테고리별로 다른 색상을 적용할 수 있습니다.
+                
+                @Code(name: "MarkerView.swift", file: "03-marker-tint.swift")
+            }
+            
+            @Step {
+                **ForEach로 여러 마커 표시**
+                
+                맛집 배열을 순회하며 마커를 생성합니다.
+                각 맛집의 카테고리에 맞는 색상을 적용합니다.
+                
+                @Code(name: "MarkerView.swift", file: "03-marker-foreach.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Annotation 사용하기") {
+        @ContentAndMedia {
+            Annotation은 완전히 커스텀한 뷰를 지도에 표시합니다.
+            SwiftUI 뷰라면 무엇이든 Annotation으로 사용할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 Annotation**
+                
+                Annotation의 content 클로저에 SwiftUI 뷰를 넣습니다.
+                원형 배지 스타일의 마커를 만들어봅니다.
+                
+                @Code(name: "AnnotationView.swift", file: "03-basic-annotation.swift")
+            }
+            
+            @Step {
+                **맛집 카드 Annotation**
+                
+                이름, 평점, 썸네일이 포함된 카드형 Annotation입니다.
+                .annotation(anchor:)로 앵커 포인트를 조절합니다.
+                
+                @Code(name: "AnnotationView.swift", file: "03-card-annotation.swift")
+            }
+            
+            @Step {
+                **선택 가능한 Annotation**
+                
+                tag와 selection 바인딩으로 선택 상태를 관리합니다.
+                선택된 맛집을 강조 표시합니다.
+                
+                @Code(name: "AnnotationView.swift", file: "03-selectable-annotation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "맛집 지도에 통합") {
+        @ContentAndMedia {
+            Marker와 Annotation을 조합하여 
+            실용적인 맛집 표시 시스템을 완성합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **줌 레벨별 표시 전환**
+                
+                축소 시에는 Marker, 확대 시에는 Annotation을 표시합니다.
+                MapCameraPosition의 region으로 줌 레벨을 감지합니다.
+                
+                @Code(name: "ContentView.swift", file: "03-zoom-switch.swift")
+            }
+            
+            @Step {
+                **선택 시 상세 시트 표시**
+                
+                맛집을 선택하면 하단 시트에 상세 정보를 보여줍니다.
+                .sheet와 선택 상태를 연동합니다.
+                
+                @Code(name: "ContentView.swift", file: "03-detail-sheet.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Marker와 Annotation의 차이점은?
+            
+            @Choice(isCorrect: true) {
+                Marker는 시스템 스타일 핀, Annotation은 커스텀 SwiftUI 뷰
+                
+                @Justification(reaction: "정답!") {
+                    Marker는 Apple Maps의 표준 핀 디자인을 사용하고,
+                    Annotation은 어떤 SwiftUI 뷰든 자유롭게 표시할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Marker는 터치 가능, Annotation은 터치 불가
+                
+                @Justification(reaction: "아쉽네요") {
+                    둘 다 selection 바인딩으로 터치/선택이 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Annotation이 Marker보다 성능이 좋음
+                
+                @Justification(reaction: "아쉽네요") {
+                    실제로는 Marker가 시스템 최적화되어 더 가볍습니다.
+                    많은 수를 표시할 때는 Marker가 더 효율적입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Marker의 색상을 변경하는 수정자는?
+            
+            @Choice(isCorrect: true) {
+                .tint(_:)
+                
+                @Justification(reaction: "정확합니다!") {
+                    Marker().tint(.blue)처럼 사용하여 마커 색상을 변경합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .foregroundColor(_:)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Marker는 .tint 수정자를 사용합니다.
+                    foregroundColor는 일반 SwiftUI 뷰에 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .backgroundColor(_:)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Marker의 색상은 .tint로 변경합니다.
+                }
+            }
+        }
+    }
+}

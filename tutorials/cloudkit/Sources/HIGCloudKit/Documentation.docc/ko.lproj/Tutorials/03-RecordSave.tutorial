@@ -1,0 +1,118 @@
+@Tutorial(time: 20) {
+    @Intro(title: "레코드 저장 (CKRecord)") {
+        CKRecord를 사용하여 CloudKit에 데이터를 저장하는 방법을 배웁니다.
+        메모 데이터를 클라우드에 저장하고 관리합니다.
+    }
+    
+    @Section(title: "CKRecord 이해하기") {
+        @ContentAndMedia {
+            CKRecord는 CloudKit의 기본 데이터 단위입니다.
+            키-값 쌍으로 데이터를 저장하며, 다양한 타입을 지원합니다.
+        }
+        @Steps {
+            @Step {
+                CKRecord가 지원하는 데이터 타입을 확인합니다.
+                String, Number, Date, Data, Location, Asset 등을 지원합니다.
+                @Code(name: "RecordTypes.swift", file: "03-01-recordtypes.swift")
+            }
+            @Step {
+                메모 레코드 타입을 정의합니다.
+                레코드 타입명과 필드명을 상수로 관리합니다.
+                @Code(name: "NoteRecord.swift", file: "03-02-noterecord.swift")
+            }
+            @Step {
+                Note 모델에서 CKRecord를 생성하는 메서드를 추가합니다.
+                @Code(name: "Note.swift", file: "03-03-notetorecord.swift")
+            }
+        }
+    }
+    
+    @Section(title: "레코드 저장하기") {
+        @ContentAndMedia {
+            CKDatabase의 save 메서드로 레코드를 저장합니다.
+            async/await 패턴을 사용합니다.
+        }
+        @Steps {
+            @Step {
+                단일 레코드를 저장하는 메서드를 만듭니다.
+                @Code(name: "CloudKitManager.swift", file: "03-04-saverecord.swift")
+            }
+            @Step {
+                메모를 저장하는 고수준 메서드를 추가합니다.
+                @Code(name: "CloudKitManager.swift", file: "03-05-savenote.swift")
+            }
+            @Step {
+                저장 결과를 처리하고 에러를 핸들링합니다.
+                @Code(name: "CloudKitManager.swift", file: "03-06-saveerror.swift")
+            }
+        }
+    }
+    
+    @Section(title: "배치 저장") {
+        @ContentAndMedia {
+            CKModifyRecordsOperation으로 여러 레코드를 한 번에 저장합니다.
+        }
+        @Steps {
+            @Step {
+                배치 저장 Operation을 구성합니다.
+                @Code(name: "CloudKitManager.swift", file: "03-07-batchsave.swift")
+            }
+            @Step {
+                저장 정책(SavePolicy)을 설정합니다.
+                충돌 발생 시 동작을 제어합니다.
+                @Code(name: "CloudKitManager.swift", file: "03-08-savepolicy.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CKRecord에 저장할 수 없는 타입은?
+            @Choice(isCorrect: false) {
+                CLLocation
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CLLocation은 CKRecord에서 직접 지원하는 타입입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                CKAsset
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CKAsset은 파일/이미지 저장에 사용되는 지원 타입입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                UIImage
+                @Justification(reaction: "정답입니다!") {
+                    UIImage는 직접 저장할 수 없습니다. CKAsset으로 변환해야 합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                [String]
+                @Justification(reaction: "다시 생각해보세요.") {
+                    배열 타입도 지원됩니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CKModifyRecordsOperation의 savePolicy에서 .ifServerRecordUnchanged의 의미는?
+            @Choice(isCorrect: true) {
+                서버 레코드가 변경되지 않았을 때만 저장
+                @Justification(reaction: "정답입니다!") {
+                    낙관적 잠금(Optimistic Locking) 방식으로 충돌을 감지합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                항상 서버 레코드를 덮어씀
+                @Justification(reaction: "다시 생각해보세요.") {
+                    그것은 .allKeys 정책입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                변경된 필드만 업데이트
+                @Justification(reaction: "다시 생각해보세요.") {
+                    그것은 .changedKeys 정책입니다.
+                }
+            }
+        }
+    }
+}

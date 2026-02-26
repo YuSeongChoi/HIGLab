@@ -1,0 +1,281 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Apple Watch 연동") {
+        watchOS 앱을 만들어 Apple Watch에서 직접 건강 데이터를 조회합니다.
+        Watch Connectivity를 통한 iPhone-Watch 간 데이터 동기화도 다룹니다.
+    }
+    
+    @Section(title: "watchOS 타겟 추가") {
+        @ContentAndMedia {
+            Apple Watch용 앱을 추가하고 HealthKit을 설정합니다.
+            watchOS에서 HealthKit은 더욱 강력하게 동작합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Watch App 타겟 추가**
+                
+                File > New > Target에서 "watchOS App"을 선택합니다.
+                "Watch App for Existing iOS App"을 체크합니다.
+                
+                @Code(name: "WatchTarget.swift", file: "10-watch-target.swift")
+            }
+            
+            @Step {
+                **HealthKit Capability**
+                
+                watchOS 타겟에도 HealthKit capability를 추가합니다.
+                "Clinical Health Records"는 watchOS에서 지원되지 않습니다.
+                
+                @Code(name: "WatchCapability.swift", file: "10-watch-capability.swift")
+            }
+            
+            @Step {
+                **Info.plist 설정**
+                
+                watchOS용 건강 데이터 사용 설명을 추가합니다.
+                
+                @Code(name: "WatchInfoPlist.swift", file: "10-watch-info-plist.swift")
+            }
+        }
+    }
+    
+    @Section(title: "watchOS HealthKit 특징") {
+        @ContentAndMedia {
+            watchOS의 HealthKit은 iPhone과 약간 다른 특성을 가집니다.
+            Apple Watch는 심박수, 운동 등의 **주요 데이터 소스**입니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Watch 고유 데이터**
+                
+                Apple Watch에서만 측정 가능한 데이터가 있습니다:
+                - 실시간 심박수 (손목 센서)
+                - 혈중 산소 (Series 6+)
+                - 심전도 (ECG, Series 4+)
+                - 낙상 감지
+                
+                @Code(name: "WatchOnlyData.swift", file: "10-watch-only-data.swift")
+            }
+            
+            @Step {
+                **권한 자동 동기화**
+                
+                iPhone에서 승인한 HealthKit 권한은 
+                페어링된 Apple Watch에 자동으로 적용됩니다.
+                
+                @Code(name: "PermissionSync.swift", file: "10-permission-sync.swift")
+            }
+            
+            @Step {
+                **독립 실행 vs 페어링**
+                
+                watchOS 앱은 iPhone 없이도 독립 실행할 수 있습니다.
+                셀룰러 Watch라면 완전 독립 동작이 가능합니다.
+                
+                @Code(name: "IndependentMode.swift", file: "10-independent-mode.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Watch 대시보드 UI") {
+        @ContentAndMedia {
+            Apple Watch 화면에 최적화된 간결한 대시보드를 만듭니다.
+            작은 화면에서 핵심 정보만 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **WatchHealthManager**
+                
+                watchOS용 HealthManager를 작성합니다.
+                iOS와 거의 동일하지만 일부 조정이 필요합니다.
+                
+                @Code(name: "WatchHealthManager.swift", file: "10-watch-health-manager.swift")
+            }
+            
+            @Step {
+                **Watch 대시보드 뷰**
+                
+                걸음 수와 심박수를 표시하는 간결한 뷰를 만듭니다.
+                Digital Crown 스크롤을 지원합니다.
+                
+                @Code(name: "WatchDashboardView.swift", file: "10-watch-dashboard-view.swift")
+            }
+            
+            @Step {
+                **링 프로그레스**
+                
+                Activity 앱 스타일의 링을 구현합니다.
+                watchOS의 작은 화면에 최적화합니다.
+                
+                @Code(name: "WatchProgressRing.swift", file: "10-watch-progress-ring.swift")
+            }
+            
+            @Step {
+                **심박수 실시간 표시**
+                
+                현재 심박수와 심박 아이콘 애니메이션을 구현합니다.
+                
+                @Code(name: "WatchHeartRateView.swift", file: "10-watch-heartrate-view.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Watch Connectivity") {
+        @ContentAndMedia {
+            **WatchConnectivity**를 사용하여 iPhone과 Apple Watch 간
+            실시간 데이터를 주고받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **WCSession 설정**
+                
+                iPhone과 Watch 양쪽에서 WCSession을 활성화합니다.
+                
+                @Code(name: "WCSessionSetup.swift", file: "10-wcsession-setup.swift")
+            }
+            
+            @Step {
+                **데이터 전송**
+                
+                sendMessage나 updateApplicationContext로 데이터를 전송합니다.
+                
+                @Code(name: "SendData.swift", file: "10-send-data.swift")
+            }
+            
+            @Step {
+                **데이터 수신**
+                
+                WCSessionDelegate로 받은 데이터를 처리합니다.
+                
+                @Code(name: "ReceiveData.swift", file: "10-receive-data.swift")
+            }
+            
+            @Step {
+                **HealthKit vs WatchConnectivity**
+                
+                HealthKit 데이터는 자동으로 동기화되므로,
+                WatchConnectivity는 앱 고유 데이터 (목표, 설정 등)에 사용합니다.
+                
+                @Code(name: "DataStrategy.swift", file: "10-data-strategy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Complications") {
+        @ContentAndMedia {
+            Watch Face에 표시되는 Complication으로 
+            건강 데이터를 항상 볼 수 있게 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Complication 타입**
+                
+                다양한 Complication Family를 지원합니다:
+                - circularSmall: 작은 원형
+                - modularSmall: 모듈형 작은 사각형
+                - graphicCircular: 그래픽 원형
+                
+                @Code(name: "ComplicationTypes.swift", file: "10-complication-types.swift")
+            }
+            
+            @Step {
+                **걸음 수 Complication**
+                
+                현재 걸음 수와 목표 대비 진행률을 표시합니다.
+                
+                @Code(name: "StepsComplication.swift", file: "10-steps-complication.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Apple Watch에서만 측정 가능한 데이터는?
+            
+            @Choice(isCorrect: true) {
+                실시간 심박수, 혈중 산소, ECG
+                
+                @Justification(reaction: "정답!") {
+                    이 데이터들은 Apple Watch의 센서로만 측정됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                걸음 수
+                
+                @Justification(reaction: "아쉽네요") {
+                    걸음 수는 iPhone에서도 측정됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                체중
+                
+                @Justification(reaction: "아쉽네요") {
+                    체중은 수동 입력이나 스마트 체중계에서 측정됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            iPhone에서 승인한 HealthKit 권한은 Apple Watch에서?
+            
+            @Choice(isCorrect: true) {
+                자동으로 동기화된다
+                
+                @Justification(reaction: "정답!") {
+                    페어링된 Apple Watch는 iPhone의 권한 설정을 자동으로 따릅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                별도로 다시 요청해야 한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    권한은 자동 동기화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Watch에서만 유효하다
+                
+                @Justification(reaction: "아쉽네요") {
+                    양방향으로 동기화됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            WatchConnectivity를 HealthKit과 함께 사용할 때 적절한 용도는?
+            
+            @Choice(isCorrect: true) {
+                앱 고유 데이터 (목표, 설정)를 동기화
+                
+                @Justification(reaction: "정답!") {
+                    HealthKit 데이터는 자동 동기화되므로, 
+                    WatchConnectivity는 앱 설정 등에 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                걸음 수를 iPhone에서 Watch로 전송
+                
+                @Justification(reaction: "아쉽네요") {
+                    HealthKit 데이터는 자동으로 동기화됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                심박수를 Watch에서 iPhone으로 전송
+                
+                @Justification(reaction: "아쉽네요") {
+                    HealthKit을 통해 자동 동기화됩니다.
+                }
+            }
+        }
+    }
+}

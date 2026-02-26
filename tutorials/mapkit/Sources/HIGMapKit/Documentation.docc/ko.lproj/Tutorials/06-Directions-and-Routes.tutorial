@@ -1,0 +1,196 @@
+@Tutorial(time: 25) {
+    @Intro(title: "경로 & 방향 (MKDirections)") {
+        MKDirections를 사용하여 현재 위치에서 맛집까지의 
+        경로를 계산하고 지도에 표시합니다.
+    }
+    
+    @Section(title: "MKDirections 기초") {
+        @ContentAndMedia {
+            MKDirections는 출발지와 목적지 사이의 
+            실제 이동 경로를 계산해줍니다.
+        }
+        
+        @Steps {
+            @Step {
+                **경로 요청 생성**
+                
+                MKDirections.Request로 출발지, 목적지, 이동 수단을 설정합니다.
+                .automobile, .walking, .transit 중 선택할 수 있습니다.
+                
+                @Code(name: "DirectionsService.swift", file: "06-directions-request.swift")
+            }
+            
+            @Step {
+                **경로 계산 실행**
+                
+                async/await로 경로를 계산합니다.
+                여러 대안 경로가 반환될 수 있습니다.
+                
+                @Code(name: "DirectionsService.swift", file: "06-calculate-directions.swift")
+            }
+            
+            @Step {
+                **MKRoute 정보 활용**
+                
+                예상 소요 시간, 거리, 경로 좌표를 추출합니다.
+                사용자에게 도착 예정 정보를 제공합니다.
+                
+                @Code(name: "DirectionsService.swift", file: "06-route-info.swift")
+            }
+        }
+    }
+    
+    @Section(title: "경로 지도 표시") {
+        @ContentAndMedia {
+            계산된 경로를 MapPolyline으로 지도에 그립니다.
+            이동 수단별로 다른 스타일을 적용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **MKRoute를 MapPolyline으로 변환**
+                
+                route.polyline의 좌표를 추출하여 MapPolyline을 생성합니다.
+                
+                @Code(name: "RouteMapView.swift", file: "06-route-polyline.swift")
+            }
+            
+            @Step {
+                **이동 수단별 스타일**
+                
+                도보는 점선, 차량은 실선, 대중교통은 다른 색상으로 표시합니다.
+                
+                @Code(name: "RouteMapView.swift", file: "06-transport-style.swift")
+            }
+            
+            @Step {
+                **경로에 맞게 카메라 조정**
+                
+                출발지와 목적지가 모두 보이도록 카메라를 자동 조정합니다.
+                
+                @Code(name: "RouteMapView.swift", file: "06-camera-fit.swift")
+            }
+        }
+    }
+    
+    @Section(title: "턴바이턴 안내") {
+        @ContentAndMedia {
+            MKRoute.Step으로 세부 경로 안내 정보를 제공합니다.
+            "200m 앞에서 좌회전" 같은 안내를 표시합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **경로 단계 추출**
+                
+                route.steps 배열에서 각 단계의 안내문과 거리를 가져옵니다.
+                
+                @Code(name: "RouteStepsView.swift", file: "06-route-steps.swift")
+            }
+            
+            @Step {
+                **안내 UI 구현**
+                
+                스와이프 가능한 경로 안내 카드를 만듭니다.
+                현재 단계를 강조 표시합니다.
+                
+                @Code(name: "RouteStepsView.swift", file: "06-steps-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "맛집 앱에 통합") {
+        @ContentAndMedia {
+            맛집 상세 화면에서 길찾기 기능을 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **"길찾기" 버튼 추가**
+                
+                맛집 상세 시트에 길찾기 버튼을 추가합니다.
+                현재 위치에서 해당 맛집까지의 경로를 계산합니다.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-directions-button.swift")
+            }
+            
+            @Step {
+                **예상 시간 표시**
+                
+                도보/차량별 예상 소요 시간을 미리 보여줍니다.
+                "도보 15분 / 차량 5분" 형식으로 표시합니다.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-eta-display.swift")
+            }
+            
+            @Step {
+                **Apple Maps 앱으로 열기**
+                
+                상세 경로 안내는 기본 Maps 앱에서 제공합니다.
+                MKMapItem.openInMaps로 네비게이션을 시작합니다.
+                
+                @Code(name: "RestaurantDetailView.swift", file: "06-open-maps.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MKDirections.Request에서 지원하는 이동 수단이 아닌 것은?
+            
+            @Choice(isCorrect: true) {
+                .bicycle (자전거)
+                
+                @Justification(reaction: "정답!") {
+                    아쉽게도 Apple MapKit은 아직 자전거 경로를 지원하지 않습니다.
+                    .automobile, .walking, .transit, .any만 사용 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .walking (도보)
+                
+                @Justification(reaction: "아쉽네요") {
+                    도보 경로는 지원됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .transit (대중교통)
+                
+                @Justification(reaction: "아쉽네요") {
+                    대중교통 경로는 지원됩니다 (지역에 따라 가용성 다름).
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MKRoute에서 예상 소요 시간의 단위는?
+            
+            @Choice(isCorrect: true) {
+                초(seconds) - TimeInterval 타입
+                
+                @Justification(reaction: "정확합니다!") {
+                    route.expectedTravelTime은 TimeInterval(Double)로 초 단위입니다.
+                    분으로 변환하려면 60으로 나누세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                분(minutes)
+                
+                @Justification(reaction: "아쉽네요") {
+                    TimeInterval은 초 단위입니다. / 60으로 분 변환이 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                밀리초(milliseconds)
+                
+                @Justification(reaction: "아쉽네요") {
+                    Foundation의 TimeInterval은 초 단위입니다.
+                }
+            }
+        }
+    }
+}

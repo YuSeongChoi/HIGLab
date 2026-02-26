@@ -1,0 +1,239 @@
+@Tutorial(time: 12) {
+    @Intro(title: "접근성 & 개인정보 보호") {
+        모든 사용자가 앱을 사용할 수 있도록 접근성을 보장하고,
+        생체 데이터와 관련된 개인정보 보호 지침을 따르는 방법을 배웁니다.
+    }
+    
+    @Section(title: "접근성 고려사항") {
+        @ContentAndMedia {
+            생체 인증을 사용할 수 없는 사용자도 있습니다.
+            모든 사용자에게 대안을 제공해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **대체 인증 수단 제공**
+                
+                생체 인증이 불가능한 경우를 위해
+                항상 패스코드나 PIN 옵션을 제공하세요.
+                
+                @Code(name: "AlternativeAuth.swift", file: "10-alternative-auth.swift")
+            }
+            
+            @Step {
+                **VoiceOver 지원**
+                
+                잠금 화면의 모든 요소에 적절한 
+                접근성 레이블과 힌트를 제공합니다.
+                
+                @Code(name: "VoiceOver.swift", file: "10-voiceover.swift")
+            }
+            
+            @Step {
+                **Dynamic Type 지원**
+                
+                큰 글씨 설정에서도 잠금 화면이 
+                올바르게 표시되도록 합니다.
+                
+                @Code(name: "DynamicType.swift", file: "10-dynamic-type.swift")
+            }
+            
+            @Step {
+                **시각적 피드백**
+                
+                청각 장애 사용자를 위해 
+                인증 결과를 시각적으로도 표시합니다.
+                
+                @Code(name: "VisualFeedback.swift", file: "10-visual-feedback.swift")
+            }
+        }
+    }
+    
+    @Section(title: "개인정보 보호 지침") {
+        @ContentAndMedia {
+            생체 데이터는 매우 민감한 개인정보입니다.
+            Apple의 지침과 법적 요구사항을 준수해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **생체 데이터 수집 금지**
+                
+                LocalAuthentication은 생체 데이터 자체에 접근하지 않습니다.
+                개발자가 얼굴 이미지나 지문 데이터를 수집할 수 없습니다.
+                
+                @Code(name: "NoDataCollection.swift", file: "10-no-data-collection.swift")
+            }
+            
+            @Step {
+                **명확한 목적 설명**
+                
+                Info.plist의 NSFaceIDUsageDescription에
+                인증 목적을 명확하고 정직하게 설명하세요.
+                
+                @Code(name: "UsageDescription.swift", file: "10-usage-description.swift")
+            }
+            
+            @Step {
+                **GDPR 및 개인정보 규정**
+                
+                유럽 사용자를 대상으로 하는 앱은
+                생체 인증 사용에 대한 동의를 받아야 합니다.
+                
+                @Code(name: "GDPRCompliance.swift", file: "10-gdpr-compliance.swift")
+            }
+            
+            @Step {
+                **개인정보 처리방침 업데이트**
+                
+                앱의 개인정보 처리방침에 
+                생체 인증 사용을 명시해야 합니다.
+                
+                @Code(name: "PrivacyPolicy.swift", file: "10-privacy-policy.swift")
+            }
+        }
+    }
+    
+    @Section(title: "보안 금고 앱 완성") {
+        @ContentAndMedia {
+            지금까지 배운 모든 내용을 통합하여
+            접근성과 개인정보 보호를 갖춘 완성도 높은 앱을 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                **설정 화면 구현**
+                
+                사용자가 인증 방식, 자동 잠금, 
+                생체 인증 사용 여부를 선택할 수 있게 합니다.
+                
+                @Code(name: "SettingsView.swift", file: "10-settings-view.swift")
+            }
+            
+            @Step {
+                **온보딩 플로우**
+                
+                앱 최초 실행 시 생체 인증 설정을 안내합니다.
+                접근성 있는 대안도 함께 설명합니다.
+                
+                @Code(name: "Onboarding.swift", file: "10-onboarding.swift")
+            }
+            
+            @Step {
+                **최종 앱 구조**
+                
+                App, ContentView, LockScreen, VaultList 등
+                전체 앱 구조를 확인합니다.
+                
+                @Code(name: "FinalApp.swift", file: "10-final-app.swift")
+            }
+            
+            @Step {
+                **테스트 체크리스트**
+                
+                출시 전 확인해야 할 항목들:
+                - Face ID/Touch ID 모두 테스트
+                - 생체 인증 미등록 기기 테스트
+                - VoiceOver로 전체 플로우 테스트
+                - 다양한 Dynamic Type 설정 테스트
+                
+                @Code(name: "TestChecklist.swift", file: "10-test-checklist.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            LocalAuthentication 프레임워크에서 개발자가 접근할 수 있는 것은?
+            
+            @Choice(isCorrect: true) {
+                인증 성공/실패 결과만
+                
+                @Justification(reaction: "정답입니다!") {
+                    보안을 위해 Apple은 생체 데이터 자체에는 접근을 허용하지 않습니다.
+                    개발자는 인증 결과(성공/실패)만 받을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                사용자의 얼굴 이미지
+                
+                @Justification(reaction: "아쉽네요") {
+                    Face ID의 얼굴 데이터는 Secure Enclave에 저장되며
+                    앱에서 접근할 수 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                지문 패턴 데이터
+                
+                @Justification(reaction: "아쉽네요") {
+                    Touch ID의 지문 데이터도 Secure Enclave에 보호되어
+                    앱에서 접근할 수 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            접근성을 위해 생체 인증 앱에서 반드시 제공해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                생체 인증 외의 대체 인증 수단
+                
+                @Justification(reaction: "맞습니다!") {
+                    모든 사용자가 생체 인증을 사용할 수 있는 것은 아닙니다.
+                    패스코드, PIN 등 대안을 항상 제공해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                음성 안내 기능
+                
+                @Justification(reaction: "아쉽네요") {
+                    VoiceOver 지원은 좋지만, 
+                    핵심은 대체 인증 수단 제공입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                생체 인증 강제 사용 안내
+                
+                @Justification(reaction: "아쉽네요") {
+                    강제하면 안 됩니다. 
+                    대안을 제공하는 것이 접근성의 핵심입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            보안 금고 앱을 출시하기 전 반드시 테스트해야 하는 것은?
+            
+            @Choice(isCorrect: true) {
+                생체 인증 미등록 기기에서의 동작
+                
+                @Justification(reaction: "정답입니다!") {
+                    실제 사용자 중 일부는 생체 인증을 등록하지 않았을 수 있습니다.
+                    이런 상황에서도 앱이 정상 동작해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                최신 iOS 버전에서만 테스트
+                
+                @Justification(reaction: "아쉽네요") {
+                    다양한 iOS 버전과 기기에서 테스트해야 합니다.
+                    생체 인증 미등록 케이스도 중요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실제 은행 앱과의 연동 테스트
+                
+                @Justification(reaction: "아쉽네요") {
+                    다른 앱과의 연동은 관련이 없습니다.
+                    자체 앱의 다양한 상황을 테스트하세요.
+                }
+            }
+        }
+    }
+}

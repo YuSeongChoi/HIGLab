@@ -1,0 +1,206 @@
+@Tutorial(time: 12) {
+    @Intro(title: "HealthKit 소개 & 권한 모델") {
+        Apple HealthKit의 개념과 철학, 그리고 엄격한 권한 모델을 학습합니다.
+        건강 데이터를 다루기 전에 반드시 이해해야 할 기초 개념들입니다.
+    }
+    
+    @Section(title: "HealthKit이란?") {
+        @ContentAndMedia {
+            HealthKit은 Apple의 **통합 건강 데이터 저장소**입니다.
+            
+            iPhone, Apple Watch, 그리고 서드파티 앱들이 수집한 건강 데이터를
+            하나의 중앙 저장소에서 안전하게 관리합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **중앙 집중식 건강 저장소**
+                
+                HealthKit은 걸음 수, 심박수, 수면, 운동 기록 등
+                300개 이상의 건강 데이터 타입을 저장합니다.
+                
+                각 앱은 필요한 데이터만 요청하고, 사용자가 승인한 데이터만 접근할 수 있습니다.
+                
+                @Code(name: "HealthKitOverview.swift", file: "01-overview.swift")
+            }
+            
+            @Step {
+                **데이터 타입의 분류**
+                
+                HealthKit 데이터는 크게 3가지로 분류됩니다:
+                - **Quantity**: 숫자 값 (걸음 수, 체중, 심박수)
+                - **Category**: 카테고리 값 (수면 분석, 생리 주기)
+                - **Workout**: 운동 세션 기록
+                
+                @Code(name: "DataTypes.swift", file: "01-data-types.swift")
+            }
+            
+            @Step {
+                **샘플(Sample) 기반 구조**
+                
+                모든 데이터는 **HKSample** 형태로 저장됩니다.
+                각 샘플은 값, 시작 시간, 종료 시간, 출처(앱/기기)를 포함합니다.
+                
+                @Code(name: "SampleStructure.swift", file: "01-sample.swift")
+            }
+        }
+    }
+    
+    @Section(title: "권한 모델 이해하기") {
+        @ContentAndMedia {
+            Apple은 건강 데이터를 **가장 민감한 개인정보**로 취급합니다.
+            따라서 HealthKit은 매우 엄격한 권한 모델을 따릅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **읽기 vs 쓰기 권한 분리**
+                
+                HealthKit은 읽기와 쓰기 권한을 **완전히 분리**합니다.
+                앱이 데이터를 쓸 수 있다고 해서 읽을 수 있는 것이 아닙니다.
+                
+                예: 걸음 수를 기록하는 권한과 읽는 권한은 별개입니다.
+                
+                @Code(name: "Permissions.swift", file: "01-permissions.swift")
+            }
+            
+            @Step {
+                **권한 거부 시 무응답 정책**
+                
+                사용자가 읽기 권한을 거부하면, 앱은 이를 **알 수 없습니다**.
+                
+                API는 단순히 "데이터 없음"을 반환합니다.
+                이는 사용자의 프라이버시를 보호하기 위한 설계입니다.
+                
+                @Code(name: "DenialPolicy.swift", file: "01-denial.swift")
+            }
+            
+            @Step {
+                **Info.plist 필수 설정**
+                
+                HealthKit을 사용하려면 반드시 Info.plist에
+                사용 목적을 명시해야 합니다.
+                
+                - `NSHealthShareUsageDescription`: 읽기 권한 요청 시 표시
+                - `NSHealthUpdateUsageDescription`: 쓰기 권한 요청 시 표시
+                
+                @Code(name: "InfoPlist.swift", file: "01-info-plist.swift")
+            }
+            
+            @Step {
+                **HealthKit Entitlement**
+                
+                Xcode에서 HealthKit capability를 활성화해야 합니다.
+                이 설정 없이는 HKHealthStore 인스턴스조차 생성할 수 없습니다.
+                
+                @Code(name: "Entitlement.swift", file: "01-entitlement.swift")
+            }
+        }
+    }
+    
+    @Section(title: "지원 기기 확인") {
+        @ContentAndMedia {
+            HealthKit은 모든 Apple 기기에서 사용 가능한 것이 아닙니다.
+            iPad와 일부 iPod touch에서는 지원되지 않습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **isHealthDataAvailable() 체크**
+                
+                앱 시작 시 반드시 HealthKit 사용 가능 여부를 확인하세요.
+                지원되지 않는 기기에서는 관련 UI를 숨기는 것이 좋습니다.
+                
+                @Code(name: "Availability.swift", file: "01-availability.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            HealthKit에서 사용자가 읽기 권한을 거부하면 어떻게 되나요?
+            
+            @Choice(isCorrect: false) {
+                에러가 발생한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    HealthKit은 프라이버시 보호를 위해 에러를 반환하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                데이터 없음으로 처리된다
+                
+                @Justification(reaction: "정답!") {
+                    Apple은 사용자의 프라이버시를 보호하기 위해 
+                    권한 거부와 데이터 없음을 구분하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                권한 거부 상태를 API로 확인할 수 있다
+                
+                @Justification(reaction: "아쉽네요") {
+                    읽기 권한 거부 여부는 앱에서 알 수 없도록 설계되어 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HealthKit에서 걸음 수 데이터는 어떤 타입인가요?
+            
+            @Choice(isCorrect: true) {
+                HKQuantityType
+                
+                @Justification(reaction: "정확합니다!") {
+                    걸음 수는 숫자 값이므로 HKQuantityType에 해당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKCategoryType
+                
+                @Justification(reaction: "아쉽네요") {
+                    HKCategoryType은 수면 분석처럼 카테고리 기반 데이터에 사용됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                HKWorkoutType
+                
+                @Justification(reaction: "아쉽네요") {
+                    HKWorkoutType은 운동 세션 기록에 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HealthKit을 사용할 수 없는 기기는?
+            
+            @Choice(isCorrect: true) {
+                iPad
+                
+                @Justification(reaction: "정답!") {
+                    iPad는 HealthKit을 지원하지 않습니다. 
+                    isHealthDataAvailable()로 반드시 확인하세요.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                iPhone
+                
+                @Justification(reaction: "아쉽네요") {
+                    iPhone은 HealthKit을 완전히 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple Watch
+                
+                @Justification(reaction: "아쉽네요") {
+                    Apple Watch는 HealthKit의 핵심 데이터 소스입니다.
+                }
+            }
+        }
+    }
+}

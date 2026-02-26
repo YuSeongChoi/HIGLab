@@ -1,0 +1,94 @@
+@Tutorial(time: 20) {
+    @Intro(title: "URL & 텍스트 레코드") {
+        가장 많이 사용되는 URL과 텍스트 레코드를 상세히 파싱합니다.
+        wellKnownTypeURIPayload()와 wellKnownTypeTextPayload() 메서드를 활용합니다.
+    }
+    
+    @Section(title: "URL 레코드 파싱") {
+        @ContentAndMedia {
+            URL 레코드는 웹 링크, 앱 스킴 등을 저장하는 가장 일반적인 형태입니다.
+            CoreNFC의 편의 메서드로 쉽게 URL을 추출할 수 있습니다.
+        }
+        @Steps {
+            @Step {
+                wellKnownTypeURIPayload() 메서드로 URL을 추출합니다.
+                @Code(name: "URLTextParser.swift", file: "05-01-uri.swift")
+            }
+            @Step {
+                URL 프리픽스 코드를 이해합니다.
+                첫 바이트가 http://, https:// 등의 프리픽스를 나타냅니다.
+                @Code(name: "URLTextParser.swift", file: "05-02-prefix.swift")
+            }
+            @Step {
+                추출한 URL로 Safari나 앱을 실행합니다.
+                @Code(name: "URLTextParser.swift", file: "05-03-open.swift")
+            }
+        }
+    }
+    
+    @Section(title: "텍스트 레코드 파싱") {
+        @ContentAndMedia {
+            텍스트 레코드는 언어 코드와 인코딩 정보를 포함합니다.
+        }
+        @Steps {
+            @Step {
+                wellKnownTypeTextPayload() 메서드로 텍스트와 로케일을 추출합니다.
+                @Code(name: "URLTextParser.swift", file: "05-04-text.swift")
+            }
+            @Step {
+                텍스트 레코드의 바이트 구조를 분석합니다.
+                상태 바이트, 언어 코드, 실제 텍스트 순서로 구성됩니다.
+                @Code(name: "URLTextParser.swift", file: "05-05-structure.swift")
+            }
+            @Step {
+                다국어 텍스트 레코드를 처리하는 함수를 만듭니다.
+                @Code(name: "URLTextParser.swift", file: "05-06-multilang.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            URL 레코드에서 프리픽스 코드 0x01은 무엇을 의미하나요?
+            @Choice(isCorrect: false) {
+                ftp://
+                @Justification(reaction: "다시 생각해보세요.") {
+                    ftp://는 다른 코드입니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                http://www.
+                @Justification(reaction: "정답입니다!") {
+                    0x01은 "http://www." 프리픽스를 나타냅니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                https://
+                @Justification(reaction: "다시 생각해보세요.") {
+                    https://는 0x04입니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            텍스트 레코드의 첫 바이트(상태 바이트)가 포함하는 정보는?
+            @Choice(isCorrect: true) {
+                인코딩 타입과 언어 코드 길이
+                @Justification(reaction: "정답입니다!") {
+                    비트 7은 UTF-8/UTF-16, 비트 0-5는 언어 코드 길이입니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                텍스트 전체 길이
+                @Justification(reaction: "다시 생각해보세요.") {
+                    텍스트 길이는 상태 바이트에 포함되지 않습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                버전 정보
+                @Justification(reaction: "다시 생각해보세요.") {
+                    상태 바이트는 인코딩과 언어 코드 정보를 담습니다.
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,123 @@
+@Tutorial(time: 20) {
+    @Intro(title: "레코드 쿼리") {
+        CKQuery와 NSPredicate를 사용하여 CloudKit에서 데이터를 조회합니다.
+        필터링, 정렬, 페이징 기법을 배웁니다.
+    }
+    
+    @Section(title: "CKQuery 기초") {
+        @ContentAndMedia {
+            CKQuery는 레코드 타입과 NSPredicate로 구성됩니다.
+            SQL의 SELECT문과 유사한 역할을 합니다.
+        }
+        @Steps {
+            @Step {
+                모든 메모를 조회하는 기본 쿼리를 만듭니다.
+                @Code(name: "CloudKitManager.swift", file: "04-01-basicquery.swift")
+            }
+            @Step {
+                쿼리 결과를 Note 모델로 변환합니다.
+                @Code(name: "Note.swift", file: "04-02-recordtonote.swift")
+            }
+            @Step {
+                조회 메서드를 완성합니다.
+                @Code(name: "CloudKitManager.swift", file: "04-03-fetchnotes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "필터링과 정렬") {
+        @ContentAndMedia {
+            NSPredicate로 조건을 지정하고 NSSortDescriptor로 정렬합니다.
+        }
+        @Steps {
+            @Step {
+                제목으로 메모를 검색하는 쿼리를 만듭니다.
+                @Code(name: "CloudKitManager.swift", file: "04-04-searchquery.swift")
+            }
+            @Step {
+                날짜 범위로 필터링합니다.
+                @Code(name: "CloudKitManager.swift", file: "04-05-datefilter.swift")
+            }
+            @Step {
+                복합 조건 쿼리를 만듭니다.
+                AND, OR 조건을 조합합니다.
+                @Code(name: "CloudKitManager.swift", file: "04-06-compoundquery.swift")
+            }
+            @Step {
+                정렬 순서를 지정합니다.
+                @Code(name: "CloudKitManager.swift", file: "04-07-sorting.swift")
+            }
+        }
+    }
+    
+    @Section(title: "페이징 처리") {
+        @ContentAndMedia {
+            CKQueryOperation과 cursor를 사용하여 대량 데이터를 페이징합니다.
+        }
+        @Steps {
+            @Step {
+                CKQueryOperation으로 페이징 가능한 쿼리를 만듭니다.
+                @Code(name: "CloudKitManager.swift", file: "04-08-pagination.swift")
+            }
+            @Step {
+                cursor를 사용하여 다음 페이지를 로드합니다.
+                @Code(name: "CloudKitManager.swift", file: "04-09-cursor.swift")
+            }
+            @Step {
+                무한 스크롤을 위한 ViewModel을 구현합니다.
+                @Code(name: "NotesViewModel.swift", file: "04-10-infinitescroll.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CloudKit 쿼리에서 지원하지 않는 NSPredicate 연산자는?
+            @Choice(isCorrect: false) {
+                BEGINSWITH
+                @Justification(reaction: "다시 생각해보세요.") {
+                    BEGINSWITH는 문자열 접두사 검색에 사용됩니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                REGEX
+                @Justification(reaction: "정답입니다!") {
+                    CloudKit은 정규식(REGEX)을 지원하지 않습니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                IN
+                @Justification(reaction: "다시 생각해보세요.") {
+                    IN 연산자는 값 목록 비교에 사용됩니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                CONTAINS
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CONTAINS는 문자열 포함 검색에 사용됩니다.
+                }
+            }
+        }
+        @MultipleChoice {
+            CKQueryOperation에서 페이징을 위해 사용하는 것은?
+            @Choice(isCorrect: false) {
+                offset
+                @Justification(reaction: "다시 생각해보세요.") {
+                    CloudKit은 offset 기반이 아닌 cursor 기반 페이징을 사용합니다.
+                }
+            }
+            @Choice(isCorrect: true) {
+                cursor
+                @Justification(reaction: "정답입니다!") {
+                    CKQueryOperation.Cursor로 다음 페이지 위치를 추적합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                page
+                @Justification(reaction: "다시 생각해보세요.") {
+                    page 속성은 없습니다. cursor를 사용합니다.
+                }
+            }
+        }
+    }
+}

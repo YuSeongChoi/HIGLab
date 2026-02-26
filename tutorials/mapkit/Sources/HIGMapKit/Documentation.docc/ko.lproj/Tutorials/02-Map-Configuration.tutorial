@@ -1,0 +1,175 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Map 기본 설정") {
+        MapCamera와 MapCameraPosition을 사용하여 
+        지도의 초기 위치, 줌 레벨, 회전 각도를 제어합니다.
+    }
+    
+    @Section(title: "MapCameraPosition 이해하기") {
+        @ContentAndMedia {
+            MapCameraPosition은 지도가 어디를 보여줄지 정의합니다.
+            자동 위치, 특정 좌표, 영역 등 다양한 방식을 지원합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **자동 위치 (.automatic)**
+                
+                콘텐츠에 맞춰 자동으로 카메라 위치를 조정합니다.
+                마커가 모두 보이도록 자동 줌됩니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-automatic-position.swift")
+            }
+            
+            @Step {
+                **특정 좌표 중심 (.camera)**
+                
+                CLLocationCoordinate2D로 정확한 위치를 지정합니다.
+                서울 시청을 중심으로 지도를 표시해봅니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-position.swift")
+            }
+            
+            @Step {
+                **영역 지정 (.region)**
+                
+                MKCoordinateRegion으로 보여줄 영역을 정의합니다.
+                span으로 줌 레벨을 세밀하게 조절할 수 있습니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-region-position.swift")
+            }
+            
+            @Step {
+                **@Binding으로 양방향 연결**
+                
+                사용자가 지도를 움직이면 position이 업데이트됩니다.
+                프로그래밍으로 position을 변경하면 지도가 이동합니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-binding-position.swift")
+            }
+        }
+    }
+    
+    @Section(title: "MapCamera 세부 설정") {
+        @ContentAndMedia {
+            MapCamera로 카메라의 거리, 피치(기울기), 헤딩(방향)을 
+            세밀하게 조절할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **카메라 거리 (distance)**
+                
+                카메라와 지면 사이의 거리(미터)를 설정합니다.
+                작을수록 확대, 클수록 축소됩니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-distance.swift")
+            }
+            
+            @Step {
+                **카메라 피치 (pitch)**
+                
+                0°는 수직(위에서 내려다봄), 최대 85°까지 기울일 수 있습니다.
+                3D 건물 뷰와 함께 사용하면 몰입감이 높아집니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-pitch.swift")
+            }
+            
+            @Step {
+                **카메라 헤딩 (heading)**
+                
+                0°는 북쪽, 90°는 동쪽, 180°는 남쪽입니다.
+                지도의 회전 방향을 제어합니다.
+                
+                @Code(name: "MapConfigView.swift", file: "02-camera-heading.swift")
+            }
+        }
+    }
+    
+    @Section(title: "맛집 지도에 적용") {
+        @ContentAndMedia {
+            배운 설정들을 맛집 지도 앱에 적용합니다.
+            서울 강남 지역을 기본 위치로 설정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **앱 시작 위치 설정**
+                
+                강남역을 중심으로 적절한 줌 레벨을 설정합니다.
+                약 2km 반경이 보이도록 span을 조절합니다.
+                
+                @Code(name: "ContentView.swift", file: "02-initial-location.swift")
+            }
+            
+            @Step {
+                **위치 이동 버튼 추가**
+                
+                특정 맛집으로 이동하는 버튼을 구현합니다.
+                withAnimation으로 부드럽게 이동합니다.
+                
+                @Code(name: "ContentView.swift", file: "02-move-button.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            MapCameraPosition.automatic의 동작은?
+            
+            @Choice(isCorrect: true) {
+                지도 콘텐츠(마커 등)가 모두 보이도록 자동 조정
+                
+                @Justification(reaction: "정답!") {
+                    automatic은 Map 내부의 모든 콘텐츠가 화면에 보이도록 
+                    카메라 위치와 줌을 자동으로 조절합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                현재 사용자 위치로 이동
+                
+                @Justification(reaction: "아쉽네요") {
+                    사용자 위치로 이동하려면 .userLocation()을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                서울 중심으로 고정
+                
+                @Justification(reaction: "아쉽네요") {
+                    automatic은 지도 콘텐츠 기반으로 동적 조정됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MapCamera의 pitch 값이 0°일 때의 시점은?
+            
+            @Choice(isCorrect: true) {
+                수직으로 위에서 내려다보는 시점
+                
+                @Justification(reaction: "정확합니다!") {
+                    pitch 0°는 완전히 수직인 탑다운 뷰입니다.
+                    값이 커질수록 지평선 방향으로 기울어집니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                지평선과 평행한 측면 시점
+                
+                @Justification(reaction: "아쉽네요") {
+                    측면 시점에 가까워지려면 pitch를 높여야 합니다 (최대 85°).
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                아래에서 위로 올려다보는 시점
+                
+                @Justification(reaction: "아쉽네요") {
+                    MapCamera의 pitch는 0° ~ 85° 범위입니다.
+                    아래에서 올려다보는 시점은 지원하지 않습니다.
+                }
+            }
+        }
+    }
+}

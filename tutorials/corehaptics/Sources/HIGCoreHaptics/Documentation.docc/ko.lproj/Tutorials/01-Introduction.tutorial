@@ -1,0 +1,173 @@
+@Tutorial(time: 15) {
+    @Intro(title: "CoreHaptics 소개 & Taptic Engine") {
+        CoreHaptics 프레임워크의 핵심 개념과 
+        iPhone의 Taptic Engine이 어떻게 동작하는지 이해합니다.
+        
+        @Image(source: "haptic-intro.png", alt: "CoreHaptics 개요")
+    }
+    
+    @Section(title: "Taptic Engine이란?") {
+        @ContentAndMedia {
+            Taptic Engine은 Apple이 개발한 선형 액추에이터로,
+            정밀한 진동 피드백을 생성합니다.
+            
+            - **선형 진동**: 기존 모터와 달리 직선 운동으로 섬세한 피드백 제공
+            - **빠른 응답**: 밀리초 단위의 정밀한 타이밍 제어
+            - **다양한 강도**: 미세한 탭부터 강한 충격까지 표현
+            
+            @Image(source: "taptic-engine.png", alt: "Taptic Engine 구조")
+        }
+        
+        @Steps {
+            @Step {
+                CoreHaptics를 사용할 수 있는 디바이스인지 확인합니다.
+                시뮬레이터에서는 햅틱이 동작하지 않으므로 
+                실제 디바이스에서 테스트해야 합니다.
+                
+                @Code(name: "HapticCapability.swift", file: "01-01-capability.swift")
+            }
+            
+            @Step {
+                CoreHaptics의 주요 구성요소를 살펴봅니다.
+                
+                - `CHHapticEngine`: 햅틱 재생을 관리하는 엔진
+                - `CHHapticPattern`: 햅틱 이벤트의 시퀀스
+                - `CHHapticEvent`: 개별 햅틱 이벤트
+                
+                @Code(name: "CoreHapticsOverview.swift", file: "01-02-overview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "햅틱 이벤트 타입") {
+        @ContentAndMedia {
+            CoreHaptics는 두 가지 기본 이벤트 타입을 제공합니다.
+            
+            - **Transient**: 순간적인 탭 느낌 (버튼 클릭, 충돌)
+            - **Continuous**: 지속적인 진동 (엔진 소리, 드래그)
+            
+            각 타입은 intensity(강도)와 sharpness(날카로움)으로 조절됩니다.
+        }
+        
+        @Steps {
+            @Step {
+                Transient 이벤트는 짧고 날카로운 피드백을 제공합니다.
+                버튼 탭이나 토글 스위치에 적합합니다.
+                
+                @Code(name: "TransientEvent.swift", file: "01-03-transient.swift")
+            }
+            
+            @Step {
+                Continuous 이벤트는 일정 시간 동안 지속되는 진동입니다.
+                슬라이더 드래그나 로딩 상태에 활용됩니다.
+                
+                @Code(name: "ContinuousEvent.swift", file: "01-04-continuous.swift")
+            }
+            
+            @Step {
+                Intensity와 Sharpness를 조합해 다양한 느낌을 만들 수 있습니다.
+                
+                - 높은 intensity + 높은 sharpness = 강하고 날카로운 탭
+                - 낮은 intensity + 낮은 sharpness = 부드러운 쿵 소리
+                
+                @Code(name: "HapticParameters.swift", file: "01-05-parameters.swift")
+            }
+        }
+    }
+    
+    @Section(title: "UIKit의 UIFeedbackGenerator와 비교") {
+        @ContentAndMedia {
+            UIKit의 UIFeedbackGenerator는 간단하지만 제한적입니다.
+            CoreHaptics는 더 세밀한 제어가 필요할 때 사용합니다.
+            
+            | 기능 | UIFeedbackGenerator | CoreHaptics |
+            |-----|---------------------|-------------|
+            | 사용 난이도 | 쉬움 | 중간 |
+            | 커스터마이징 | 제한적 | 완전 제어 |
+            | 오디오 동기화 | 불가 | 가능 |
+            | AHAP 파일 | 불가 | 지원 |
+        }
+        
+        @Steps {
+            @Step {
+                UIFeedbackGenerator는 미리 정의된 피드백만 제공합니다.
+                빠르게 구현하고 싶을 때 유용합니다.
+                
+                @Code(name: "UIFeedbackComparison.swift", file: "01-06-feedback-generator.swift")
+            }
+            
+            @Step {
+                CoreHaptics를 선택해야 하는 상황:
+                
+                - 브랜드 고유의 햅틱 시그니처가 필요할 때
+                - 오디오와 정확히 동기화해야 할 때
+                - 게임이나 미디어 앱에서 몰입감을 높일 때
+                
+                @Code(name: "WhenToUseCoreHaptics.swift", file: "01-07-when-to-use.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CoreHaptics에서 Transient 이벤트와 Continuous 이벤트의 
+            주요 차이점은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                Transient는 소리만, Continuous는 진동만 발생시킨다.
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    두 이벤트 모두 진동을 발생시킵니다.
+                    오디오는 별도의 AudioCustom 타입으로 처리됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                Transient는 순간적인 탭, Continuous는 지속적인 진동이다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    Transient는 버튼 클릭처럼 짧은 피드백에,
+                    Continuous는 슬라이더 드래그처럼 지속적인 피드백에 적합합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Transient만 intensity 파라미터를 지원한다.
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    두 이벤트 모두 intensity와 sharpness 파라미터를 지원합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Taptic Engine이 기존 진동 모터보다 우수한 이유는?
+            
+            @Choice(isCorrect: true) {
+                선형 운동으로 정밀하고 빠른 응답이 가능하다.
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    Taptic Engine은 선형 액추에이터로 
+                    밀리초 단위의 정밀한 제어가 가능합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                더 큰 소리를 낼 수 있다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    Taptic Engine은 소리가 아닌 촉각 피드백을 위한 장치입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                배터리를 더 많이 소모해서 강한 진동이 가능하다.
+                
+                @Justification(reaction: "오히려 반대입니다.") {
+                    Taptic Engine은 효율적인 설계로 
+                    정밀한 피드백을 적은 전력으로 제공합니다.
+                }
+            }
+        }
+    }
+}

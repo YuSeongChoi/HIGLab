@@ -1,0 +1,201 @@
+@Tutorial(time: 25) {
+    @Intro(title: "기본 햅틱 패턴") {
+        CHHapticPattern으로 다양한 햅틱 이벤트를 조합하여
+        의미 있는 피드백을 만드는 방법을 배웁니다.
+        
+        @Image(source: "basic-patterns.png", alt: "기본 햅틱 패턴")
+    }
+    
+    @Section(title: "첫 번째 햅틱 패턴 만들기") {
+        @ContentAndMedia {
+            CHHapticPattern은 하나 이상의 CHHapticEvent로 구성됩니다.
+            이벤트는 시작 시간, 지속 시간, 파라미터로 정의됩니다.
+            
+            간단한 탭 피드백부터 시작해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                단일 Transient 이벤트로 가장 기본적인 탭 피드백을 만듭니다.
+                버튼 터치에 적합한 패턴입니다.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-01-simple-tap.swift")
+            }
+            
+            @Step {
+                CHHapticEventParameter로 강도와 날카로움을 조절합니다.
+                다양한 조합을 실험해보세요.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-02-parameters.swift")
+            }
+            
+            @Step {
+                패턴을 Player로 변환하고 재생합니다.
+                Player는 재사용 가능하므로 한 번 만들어두면 효율적입니다.
+                
+                @Code(name: "BasicPatterns.swift", file: "03-03-play-pattern.swift")
+            }
+        }
+    }
+    
+    @Section(title: "복합 패턴 만들기") {
+        @ContentAndMedia {
+            여러 이벤트를 조합하면 더 풍부한 피드백을 만들 수 있습니다.
+            이벤트의 relativeTime을 조절해 시퀀스를 구성합니다.
+            
+            성공, 실패, 경고 등 상황별 패턴을 디자인해봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                성공 피드백: 두 번의 가벼운 탭으로 긍정적인 느낌을 전달합니다.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-04-success.swift")
+            }
+            
+            @Step {
+                실패 피드백: 강하고 무거운 단일 탭으로 주의를 환기합니다.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-05-failure.swift")
+            }
+            
+            @Step {
+                경고 피드백: 연속된 탭으로 긴급함을 표현합니다.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-06-warning.swift")
+            }
+            
+            @Step {
+                하트비트 패턴: 심장 박동을 모방한 연속 피드백입니다.
+                
+                @Code(name: "FeedbackPatterns.swift", file: "03-07-heartbeat.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Continuous 이벤트 활용") {
+        @ContentAndMedia {
+            Continuous 이벤트는 지정된 시간 동안 지속되는 진동입니다.
+            슬라이더, 스크롤, 로딩 상태 표시에 적합합니다.
+            
+            Transient과 Continuous를 조합하면 
+            더욱 다채로운 피드백이 가능합니다.
+        }
+        
+        @Steps {
+            @Step {
+                기본 Continuous 이벤트를 만듭니다.
+                duration 파라미터로 지속 시간을 설정합니다.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-08-continuous-basic.swift")
+            }
+            
+            @Step {
+                진동의 강도를 시간에 따라 변화시킵니다.
+                페이드인/페이드아웃 효과를 만들 수 있습니다.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-09-continuous-curve.swift")
+            }
+            
+            @Step {
+                Transient과 Continuous를 조합한 복합 패턴입니다.
+                충돌 후 여운이 남는 듯한 효과를 표현합니다.
+                
+                @Code(name: "ContinuousPatterns.swift", file: "03-10-combined.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패턴 재사용과 관리") {
+        @ContentAndMedia {
+            잘 디자인된 패턴은 앱 전체에서 일관되게 사용해야 합니다.
+            패턴을 체계적으로 관리하는 구조를 만들어봅시다.
+        }
+        
+        @Steps {
+            @Step {
+                HapticPattern enum으로 앱의 모든 패턴을 중앙 관리합니다.
+                
+                @Code(name: "HapticPatternLibrary.swift", file: "03-11-pattern-library.swift")
+            }
+            
+            @Step {
+                HapticManager에 패턴 재생 기능을 추가합니다.
+                
+                @Code(name: "HapticManager+Patterns.swift", file: "03-12-manager-patterns.swift")
+            }
+            
+            @Step {
+                View에서 쉽게 햅틱을 사용할 수 있도록 
+                ViewModifier를 만듭니다.
+                
+                @Code(name: "HapticModifier.swift", file: "03-13-view-modifier.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            CHHapticEvent의 relativeTime은 무엇을 의미하나요?
+            
+            @Choice(isCorrect: false) {
+                이전 이벤트가 끝난 후의 대기 시간
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    relativeTime은 이전 이벤트 기준이 아니라 
+                    패턴 시작점 기준입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                패턴 시작점으로부터의 상대적 시작 시간
+                
+                @Justification(reaction: "정확합니다! ⏱️") {
+                    relativeTime: 0.1은 패턴 시작 후 0.1초에 
+                    해당 이벤트가 시작됨을 의미합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                이벤트의 총 지속 시간
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    지속 시간은 duration 파라미터로 설정합니다.
+                    relativeTime은 시작 시점만 정의합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            성공 피드백과 실패 피드백을 디자인할 때 
+            일반적으로 권장되는 접근 방식은?
+            
+            @Choice(isCorrect: true) {
+                성공은 가볍고 밝게, 실패는 무겁고 강하게
+                
+                @Justification(reaction: "좋은 선택입니다! ✅") {
+                    사용자가 직관적으로 결과를 인지할 수 있도록
+                    감정에 맞는 물리적 특성을 부여합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                성공과 실패 모두 동일한 강도로 일관성 유지
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    일관성도 중요하지만, 햅틱의 목적은 
+                    정보 전달입니다. 구분 가능해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                실패는 햅틱 없이 조용히 처리
+                
+                @Justification(reaction: "권장하지 않습니다.") {
+                    실패도 명확히 알려야 사용자가 
+                    적절한 조치를 취할 수 있습니다.
+                }
+            }
+        }
+    }
+}

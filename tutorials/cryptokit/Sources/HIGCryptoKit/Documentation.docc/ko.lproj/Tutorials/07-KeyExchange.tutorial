@@ -1,0 +1,67 @@
+@Tutorial(time: 25) {
+    @Intro(title: "키 교환 (ECDH)") {
+        ECDH(Elliptic Curve Diffie-Hellman)로 안전하게 공유 비밀을 생성합니다.
+        두 당사자가 공개 채널에서 비밀 키를 교환할 수 있습니다.
+    }
+    
+    @Section(title: "ECDH 키 교환") {
+        @ContentAndMedia {
+            Alice와 Bob이 각자의 공개 키만 교환하여 동일한 공유 비밀을 생성합니다.
+            이 공유 비밀로 대칭 키를 파생하여 암호화 통신을 합니다.
+        }
+        @Steps {
+            @Step {
+                Alice와 Bob의 키 쌍을 생성합니다.
+                @Code(name: "KeyExchange.swift", file: "07-01-keypairs.swift")
+            }
+            @Step {
+                ECDH로 공유 비밀을 생성합니다.
+                @Code(name: "KeyExchange.swift", file: "07-02-shared.swift")
+            }
+            @Step {
+                공유 비밀에서 대칭 키를 파생합니다(HKDF).
+                @Code(name: "KeyExchange.swift", file: "07-03-derive.swift")
+            }
+        }
+    }
+    
+    @Section(title: "End-to-End 암호화") {
+        @ContentAndMedia {
+            ECDH와 AES-GCM을 결합하여 진정한 E2E 암호화를 구현합니다.
+        }
+        @Steps {
+            @Step {
+                키 교환과 메시지 암호화를 통합합니다.
+                @Code(name: "KeyExchange.swift", file: "07-04-e2e.swift")
+            }
+            @Step {
+                메시지 앱의 E2E 암호화 채팅을 구현합니다.
+                @Code(name: "KeyExchange.swift", file: "07-05-chat.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            ECDH에서 두 당사자가 공유하는 것은?
+            @Choice(isCorrect: true) {
+                공개 키
+                @Justification(reaction: "정답입니다!") {
+                    ECDH에서는 공개 키만 교환하고, 각자 상대방의 공개 키와 자신의 개인 키로 동일한 공유 비밀을 계산합니다.
+                }
+            }
+            @Choice(isCorrect: false) {
+                개인 키
+                @Justification(reaction: "다시 생각해보세요.") {
+                    개인 키는 절대 공유하면 안 됩니다!
+                }
+            }
+            @Choice(isCorrect: false) {
+                대칭 키
+                @Justification(reaction: "다시 생각해보세요.") {
+                    대칭 키는 공유 비밀에서 파생됩니다. 직접 교환하지 않습니다.
+                }
+            }
+        }
+    }
+}

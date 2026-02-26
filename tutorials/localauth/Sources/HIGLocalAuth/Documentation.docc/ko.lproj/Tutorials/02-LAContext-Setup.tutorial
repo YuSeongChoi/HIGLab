@@ -1,0 +1,175 @@
+@Tutorial(time: 10) {
+    @Intro(title: "LAContext 설정") {
+        LAContext 인스턴스를 생성하고 구성하는 방법을 배웁니다.
+        인증 매니저 클래스를 만들어 앱 전체에서 재사용할 수 있도록 설계합니다.
+    }
+    
+    @Section(title: "LAContext 인스턴스 생성") {
+        @ContentAndMedia {
+            LAContext는 생체 인증의 모든 것을 담당합니다.
+            새 인스턴스를 생성하고 속성을 설정하는 방법을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **기본 인스턴스 생성**
+                
+                LAContext 인스턴스는 단순히 초기화하면 됩니다.
+                하지만 매 인증마다 새 인스턴스를 생성하는 것이 권장됩니다.
+                
+                @Code(name: "ContextCreate.swift", file: "02-context-create.swift")
+            }
+            
+            @Step {
+                **localizedReason 설정**
+                
+                인증 다이얼로그에 표시될 메시지입니다.
+                사용자가 왜 인증이 필요한지 명확히 알 수 있도록 작성하세요.
+                
+                @Code(name: "LocalizedReason.swift", file: "02-localized-reason.swift")
+            }
+            
+            @Step {
+                **localizedFallbackTitle 설정**
+                
+                생체 인증 실패 시 표시되는 버튼의 텍스트입니다.
+                빈 문자열("")을 설정하면 버튼이 숨겨집니다.
+                
+                @Code(name: "FallbackTitle.swift", file: "02-fallback-title.swift")
+            }
+            
+            @Step {
+                **localizedCancelTitle 설정**
+                
+                취소 버튼의 텍스트를 커스터마이징할 수 있습니다.
+                nil이면 시스템 기본값("취소")이 사용됩니다.
+                
+                @Code(name: "CancelTitle.swift", file: "02-cancel-title.swift")
+            }
+        }
+    }
+    
+    @Section(title: "AuthenticationManager 설계") {
+        @ContentAndMedia {
+            앱 전체에서 일관된 인증 경험을 제공하려면
+            별도의 매니저 클래스로 LAContext를 감싸는 것이 좋습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **AuthenticationManager 클래스 생성**
+                
+                @Observable 매크로를 사용하여 SwiftUI와 쉽게 연동합니다.
+                인증 상태, 에러, 잠금 여부를 관리합니다.
+                
+                @Code(name: "AuthManager.swift", file: "02-auth-manager.swift")
+            }
+            
+            @Step {
+                **싱글톤 vs 인스턴스**
+                
+                보안 앱에서는 싱글톤보다 명시적인 주입을 권장합니다.
+                SwiftUI의 @Environment를 활용하면 깔끔하게 관리할 수 있습니다.
+                
+                @Code(name: "Injection.swift", file: "02-injection.swift")
+            }
+            
+            @Step {
+                **인증 상태 열거형**
+                
+                앱의 인증 상태를 명확하게 표현하는 열거형을 정의합니다.
+                
+                @Code(name: "AuthState.swift", file: "02-auth-state.swift")
+            }
+        }
+    }
+    
+    @Section(title: "에러 처리 준비") {
+        @ContentAndMedia {
+            LAError를 이해하고 사용자 친화적인 에러 메시지로 변환하는 방법을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                **LAError 종류**
+                
+                인증 과정에서 발생할 수 있는 다양한 에러 케이스입니다.
+                각 케이스별로 적절한 대응이 필요합니다.
+                
+                @Code(name: "ErrorTypes.swift", file: "02-error-types.swift")
+            }
+            
+            @Step {
+                **사용자 친화적 메시지 변환**
+                
+                기술적인 에러 코드를 사용자가 이해할 수 있는 메시지로 변환합니다.
+                
+                @Code(name: "ErrorMessages.swift", file: "02-error-messages.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            LAContext의 localizedFallbackTitle을 빈 문자열("")로 설정하면 어떻게 되나요?
+            
+            @Choice(isCorrect: true) {
+                폴백 버튼이 숨겨진다
+                
+                @Justification(reaction: "정확합니다!") {
+                    빈 문자열을 설정하면 "비밀번호 입력" 버튼이 표시되지 않습니다.
+                    패스코드 폴백을 원하지 않을 때 유용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                시스템 기본 텍스트가 표시된다
+                
+                @Justification(reaction: "아쉽네요") {
+                    nil을 설정하면 시스템 기본값이 표시되지만,
+                    빈 문자열("")은 버튼 자체를 숨깁니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                에러가 발생한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    빈 문자열은 유효한 값이며, 에러를 발생시키지 않습니다.
+                    버튼을 숨기는 의도적인 동작입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            매번 새로운 LAContext 인스턴스를 생성하는 것이 권장되는 이유는?
+            
+            @Choice(isCorrect: true) {
+                이전 인증 결과와 상태가 초기화되어 보안이 강화된다
+                
+                @Justification(reaction: "맞습니다!") {
+                    LAContext는 인증 결과와 내부 상태를 캐시합니다.
+                    새 인스턴스를 생성하면 깨끗한 상태에서 시작할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                메모리 사용량이 줄어든다
+                
+                @Justification(reaction: "아쉽네요") {
+                    새 인스턴스를 생성하면 오히려 메모리를 더 사용합니다.
+                    보안을 위한 권장 사항입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                Apple 문서에 명시된 필수 요구사항이다
+                
+                @Justification(reaction: "아쉽네요") {
+                    필수는 아니지만, 보안 강화를 위해 권장됩니다.
+                    같은 인스턴스 재사용 시 이전 상태가 유지될 수 있습니다.
+                }
+            }
+        }
+    }
+}

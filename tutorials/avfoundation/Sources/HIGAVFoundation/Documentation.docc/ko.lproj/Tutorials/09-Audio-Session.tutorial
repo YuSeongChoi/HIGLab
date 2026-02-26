@@ -1,0 +1,197 @@
+@Tutorial(time: 20) {
+    @Intro(title: "오디오 세션 관리") {
+        AVAudioSession으로 앱의 오디오 동작을 관리합니다.
+        카테고리, 모드, 인터럽션 처리를 구현합니다.
+    }
+    
+    @Section(title: "AVAudioSession 기초") {
+        @ContentAndMedia {
+            AVAudioSession은 앱과 시스템 오디오의 상호작용을 관리합니다.
+            다른 앱의 오디오와 어떻게 공존할지 결정합니다.
+            
+            **주요 카테고리:**
+            - `.playback`: 음악 재생, 다른 앱 음소거
+            - `.record`: 녹음만
+            - `.playAndRecord`: 재생과 녹음 동시
+            - `.ambient`: 다른 앱 오디오와 믹싱
+        }
+        
+        @Steps {
+            @Step {
+                AVAudioSession 싱글톤을 가져옵니다.
+                sharedInstance()로 공유 인스턴스에 접근합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-shared-instance.swift")
+            }
+            
+            @Step {
+                카테고리와 모드를 설정합니다.
+                카메라 앱은 보통 .playAndRecord를 사용합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-set-category.swift")
+            }
+            
+            @Step {
+                세션을 활성화합니다.
+                setActive(true)로 오디오 하드웨어를 점유합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-activate-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "카테고리와 옵션") {
+        @ContentAndMedia {
+            상황에 맞는 카테고리와 옵션을 조합합니다.
+            블루투스 헤드셋, 스피커 출력 등을 제어합니다.
+        }
+        
+        @Steps {
+            @Step {
+                카테고리 옵션을 이해합니다.
+                - `.mixWithOthers`: 다른 앱과 믹싱
+                - `.allowBluetooth`: 블루투스 입력 허용
+                - `.defaultToSpeaker`: 스피커로 출력
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-category-options.swift")
+            }
+            
+            @Step {
+                비디오 녹화용 세션을 설정합니다.
+                마이크 입력과 스피커 출력을 모두 활성화합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-video-recording-session.swift")
+            }
+            
+            @Step {
+                음성 메모용 세션을 설정합니다.
+                녹음에 최적화된 설정을 적용합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-voice-memo-session.swift")
+            }
+        }
+    }
+    
+    @Section(title: "인터럽션 처리") {
+        @ContentAndMedia {
+            전화 수신, 알람 등으로 인한 인터럽션을 처리합니다.
+            인터럽션 시작과 종료에 적절히 대응합니다.
+        }
+        
+        @Steps {
+            @Step {
+                인터럽션 노티피케이션을 등록합니다.
+                NotificationCenter로 인터럽션 이벤트를 감지합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-interruption-observer.swift")
+            }
+            
+            @Step {
+                인터럽션 시작을 처리합니다.
+                녹음/재생을 일시정지합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-begin.swift")
+            }
+            
+            @Step {
+                인터럽션 종료를 처리합니다.
+                shouldResume 옵션을 확인하고 재개합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-end.swift")
+            }
+        }
+    }
+    
+    @Section(title: "라우트 변경 처리") {
+        @ContentAndMedia {
+            헤드폰 연결/해제 등 오디오 라우트 변경에 대응합니다.
+        }
+        
+        @Steps {
+            @Step {
+                라우트 변경 노티피케이션을 등록합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-route-change-observer.swift")
+            }
+            
+            @Step {
+                라우트 변경 이유를 확인합니다.
+                헤드폰 연결 해제 시 재생을 일시정지합니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-handle-route-change.swift")
+            }
+            
+            @Step {
+                현재 오디오 라우트를 확인합니다.
+                입력/출력 장치 정보를 가져옵니다.
+                
+                @Code(name: "AudioSessionManager.swift", file: "09-current-route.swift")
+            }
+            
+            @Step {
+                UI에 오디오 라우트를 표시합니다.
+                연결된 장치 아이콘을 보여줍니다.
+                
+                @Code(name: "AudioRouteView.swift", file: "09-route-ui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            녹음과 재생을 동시에 하기 위한 AVAudioSession 카테고리는?
+            
+            @Choice(isCorrect: false) {
+                `.playback`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .playback은 재생만 지원합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.playAndRecord`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    .playAndRecord 카테고리로 재생과 녹음을 동시에 할 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.record`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .record는 녹음만 지원합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            다른 앱의 오디오와 함께 재생하기 위한 카테고리 옵션은?
+            
+            @Choice(isCorrect: true) {
+                `.mixWithOthers`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    mixWithOthers 옵션으로 다른 앱의 오디오와 믹싱됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.duckOthers`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    duckOthers는 다른 앱의 볼륨을 낮춥니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.allowBluetooth`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    allowBluetooth는 블루투스 입력을 허용하는 옵션입니다.
+                }
+            }
+        }
+    }
+}

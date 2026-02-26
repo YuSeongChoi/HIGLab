@@ -1,0 +1,137 @@
+@Tutorial(time: 25) {
+    @Intro(title: "피사체 감지") {
+        ExtensibleImage의 피사체 감지로 이미지 내 주요 객체를 자동으로 식별하고 분류합니다.
+        
+        인물, 동물, 사물, 텍스트 등 다양한 피사체를 인식하고 상호작용할 수 있습니다.
+        
+        @Image(source: "subject-detection-hero.png", alt: "피사체 감지 예시")
+    }
+    
+    @Section(title: "피사체 자동 감지") {
+        @ContentAndMedia {
+            `ExtensibleImage.SubjectDetector`는 이미지를 분석하여 모든 주요 피사체의 위치, 경계, 분류를 반환합니다.
+        }
+        
+        @Steps {
+            @Step {
+                SubjectDetector를 초기화하고 감지 요청을 생성합니다.
+                
+                @Code(name: "SubjectDetection.swift", file: "06-subject-01.swift")
+            }
+            
+            @Step {
+                감지된 피사체 목록을 순회하며 각 피사체의 정보를 확인합니다.
+                
+                @Code(name: "SubjectDetection.swift", file: "06-subject-02.swift")
+            }
+            
+            @Step {
+                특정 카테고리의 피사체만 필터링합니다.
+                
+                @Code(name: "SubjectDetection.swift", file: "06-subject-03.swift")
+            }
+        }
+    }
+    
+    @Section(title: "탭하여 피사체 선택") {
+        @ContentAndMedia {
+            사용자가 이미지를 탭하면 해당 위치의 피사체를 선택하는 인터랙티브 기능을 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                탭 위치를 기반으로 피사체를 찾는 함수를 구현합니다.
+                
+                @Code(name: "TapToSelect.swift", file: "06-subject-04.swift")
+            }
+            
+            @Step {
+                SwiftUI 뷰에서 탭 제스처와 선택된 피사체 하이라이트를 표시합니다.
+                
+                @Code(name: "TapToSelect.swift", file: "06-subject-05.swift")
+            }
+            
+            @Step {
+                선택된 피사체에 대한 컨텍스트 메뉴를 제공합니다.
+                
+                @Code(name: "TapToSelect.swift", file: "06-subject-06.swift")
+            }
+        }
+    }
+    
+    @Section(title: "피사체 리프트") {
+        @ContentAndMedia {
+            iOS 16에서 도입된 "피사체 들어올리기" 기능을 ExtensibleImage API로 구현합니다.
+        }
+        
+        @Steps {
+            @Step {
+                피사체를 분리하여 새 이미지로 추출합니다.
+                
+                @Code(name: "SubjectLift.swift", file: "06-subject-07.swift")
+            }
+            
+            @Step {
+                드래그 앤 드롭으로 피사체를 다른 앱으로 전달합니다.
+                
+                @Code(name: "SubjectLift.swift", file: "06-subject-08.swift")
+            }
+            
+            @Step {
+                복사/붙여넣기 지원을 추가합니다.
+                
+                @Code(name: "SubjectLift.swift", file: "06-subject-09.swift")
+            }
+        }
+    }
+    
+    @Section(title: "다중 피사체 처리") {
+        @ContentAndMedia {
+            여러 피사체가 있는 이미지에서 각각을 개별적으로 처리하는 방법을 알아봅니다.
+        }
+        
+        @Steps {
+            @Step {
+                모든 피사체를 감지하고 개별 마스크를 생성합니다.
+                
+                @Code(name: "MultiSubject.swift", file: "06-subject-10.swift")
+            }
+            
+            @Step {
+                각 피사체에 다른 효과를 적용합니다.
+                
+                @Code(name: "MultiSubject.swift", file: "06-subject-11.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            피사체 감지 결과에서 `Subject.bounds`는 무엇을 나타내나요?
+            
+            @Choice(isCorrect: true) {
+                이미지 좌표계에서 피사체를 감싸는 사각형 영역
+                
+                @Justification(reaction: "정답입니다!") {
+                    bounds는 CGRect 타입으로, 피사체의 바운딩 박스를 정규화된 좌표(0~1)로 나타냅니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                피사체의 정확한 외곽선 경로
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    외곽선 경로는 `Subject.outline` 또는 `Subject.mask` 속성을 통해 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                피사체가 차지하는 픽셀 수
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    픽셀 수가 아닌 영역 좌표입니다. 픽셀 수는 마스크에서 계산할 수 있습니다.
+                }
+            }
+        }
+    }
+}

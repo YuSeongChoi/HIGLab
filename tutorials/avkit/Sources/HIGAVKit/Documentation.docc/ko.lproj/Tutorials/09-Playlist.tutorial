@@ -1,0 +1,215 @@
+@Tutorial(time: 25) {
+    @Intro(title: "비디오 플레이리스트") {
+        AVQueuePlayer를 사용해 연속 재생과 
+        플레이리스트 기능을 구현합니다.
+        
+        @Image(source: "playlist.png", alt: "비디오 플레이리스트")
+    }
+    
+    @Section(title: "AVQueuePlayer 소개") {
+        @ContentAndMedia {
+            AVQueuePlayer는 AVPlayer의 서브클래스로
+            여러 아이템을 순차적으로 재생합니다.
+            
+            - 자동 다음 영상 재생
+            - 동적 아이템 추가/제거
+            - 현재 아이템 및 대기열 관리
+            
+            @Image(source: "queue-player.png", alt: "AVQueuePlayer 구조")
+        }
+        
+        @Steps {
+            @Step {
+                AVQueuePlayer를 생성하고 여러 아이템을 추가합니다.
+                
+                @Code(name: "CreateQueuePlayer.swift", file: "09-01-create-queue.swift")
+            }
+            
+            @Step {
+                현재 재생 중인 아이템과 대기열을 확인합니다.
+                
+                @Code(name: "QueueItems.swift", file: "09-02-queue-items.swift")
+            }
+            
+            @Step {
+                advanceToNextItem()으로 다음 아이템으로 넘어갑니다.
+                
+                @Code(name: "AdvanceNext.swift", file: "09-03-advance-next.swift")
+            }
+        }
+    }
+    
+    @Section(title: "동적 플레이리스트 관리") {
+        @ContentAndMedia {
+            재생 중에도 플레이리스트를 동적으로 수정할 수 있습니다.
+            
+            - 아이템 추가 (끝에 또는 특정 위치)
+            - 아이템 제거
+            - 대기열 재정렬
+        }
+        
+        @Steps {
+            @Step {
+                insert(_:after:)로 특정 위치에 아이템을 추가합니다.
+                
+                @Code(name: "InsertItem.swift", file: "09-04-insert-item.swift")
+            }
+            
+            @Step {
+                remove(_:)로 대기열에서 아이템을 제거합니다.
+                
+                @Code(name: "RemoveItem.swift", file: "09-05-remove-item.swift")
+            }
+            
+            @Step {
+                removeAllItems()로 대기열을 완전히 비웁니다.
+                
+                @Code(name: "ClearQueue.swift", file: "09-06-clear-queue.swift")
+            }
+            
+            @Step {
+                canInsert(_:after:)로 아이템 추가 가능 여부를 확인합니다.
+                
+                @Code(name: "CanInsert.swift", file: "09-07-can-insert.swift")
+            }
+        }
+    }
+    
+    @Section(title: "플레이리스트 UI") {
+        @ContentAndMedia {
+            사용자가 플레이리스트를 탐색하고 
+            관리할 수 있는 UI를 구현합니다.
+            
+            - 현재 재생 표시
+            - 드래그로 순서 변경
+            - 스와이프로 삭제
+        }
+        
+        @Steps {
+            @Step {
+                플레이리스트 모델을 정의합니다.
+                Identifiable을 채택해 SwiftUI List와 호환되게 합니다.
+                
+                @Code(name: "PlaylistModel.swift", file: "09-08-playlist-model.swift")
+            }
+            
+            @Step {
+                List로 플레이리스트 UI를 구현합니다.
+                현재 재생 중인 아이템을 강조 표시합니다.
+                
+                @Code(name: "PlaylistView.swift", file: "09-09-playlist-view.swift")
+            }
+            
+            @Step {
+                onMove로 드래그 앤 드롭 순서 변경을 구현합니다.
+                
+                @Code(name: "ReorderPlaylist.swift", file: "09-10-reorder.swift")
+            }
+            
+            @Step {
+                onDelete로 스와이프 삭제를 구현합니다.
+                
+                @Code(name: "DeleteFromPlaylist.swift", file: "09-11-delete.swift")
+            }
+        }
+    }
+    
+    @Section(title: "반복 재생과 셔플") {
+        @ContentAndMedia {
+            전체 반복, 한 곡 반복, 셔플 기능을 구현합니다.
+            
+            - 단일 반복
+            - 전체 반복
+            - 랜덤 셔플
+        }
+        
+        @Steps {
+            @Step {
+                현재 아이템 반복 재생을 구현합니다.
+                actionAtItemEnd를 .none으로 설정합니다.
+                
+                @Code(name: "RepeatOne.swift", file: "09-12-repeat-one.swift")
+            }
+            
+            @Step {
+                전체 플레이리스트 반복을 구현합니다.
+                마지막 아이템 종료 시 처음으로 돌아갑니다.
+                
+                @Code(name: "RepeatAll.swift", file: "09-13-repeat-all.swift")
+            }
+            
+            @Step {
+                셔플 기능을 구현합니다.
+                플레이리스트 순서를 랜덤하게 섞습니다.
+                
+                @Code(name: "Shuffle.swift", file: "09-14-shuffle.swift")
+            }
+            
+            @Step {
+                반복/셔플 상태를 관리하는 열거형을 정의합니다.
+                
+                @Code(name: "RepeatMode.swift", file: "09-15-repeat-mode.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            AVQueuePlayer에서 다음 영상으로 넘어가려면 어떤 메서드를 사용하나요?
+            
+            @Choice(isCorrect: true) {
+                advanceToNextItem()
+                
+                @Justification(reaction: "정확합니다! ▶️") {
+                    이 메서드는 현재 아이템을 종료하고
+                    대기열의 다음 아이템을 재생합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                next()
+                
+                @Justification(reaction: "메서드명이 다릅니다.") {
+                    AVQueuePlayer에서는 advanceToNextItem()을 사용합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                playNextItem()
+                
+                @Justification(reaction: "존재하지 않는 메서드입니다.") {
+                    advanceToNextItem()이 올바른 메서드입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            한 곡 반복을 구현하려면 어떻게 해야 하나요?
+            
+            @Choice(isCorrect: false) {
+                repeat 속성을 true로 설정한다
+                
+                @Justification(reaction: "그런 속성이 없습니다.") {
+                    AVPlayer에는 repeat 속성이 없습니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                actionAtItemEnd를 .none으로 설정하고 재생 종료 시 seek(to: .zero)한다
+                
+                @Justification(reaction: "맞습니다! 🔁") {
+                    .none은 재생 종료 시 다음으로 넘어가지 않고,
+                    수동으로 처음으로 돌아가 반복을 구현합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                같은 아이템을 대기열에 여러 번 추가한다
+                
+                @Justification(reaction: "비효율적입니다.") {
+                    무한 반복이 필요하면 메모리 문제가 발생합니다.
+                }
+            }
+        }
+    }
+}

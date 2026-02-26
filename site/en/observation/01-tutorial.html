@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to Observation data observation framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:title" content="👁️ @Observable State Management — HIG Lab">
+    <meta property="og:description" content="Complete guide to Observation data observation framework. Learn with hands-on examples at HIG Lab.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://m1zz.github.io/HIGLab/observation/01-tutorial.en.html">
+    <meta property="og:site_name" content="HIG Lab">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="👁️ @Observable State Management — HIG Lab">
+    <meta name="twitter:description" content="Complete guide to Observation data observation framework. Learn with hands-on examples at HIG Lab.">
+    <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/HIGLab/observation/01-tutorial.html">
+    <link rel="alternate" hreflang="en" href="https://m1zz.github.io/HIGLab/observation/01-tutorial.en.html">
+<title>👁️ @Observable State Management — HIG Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1d1d1f;--text-2:#6e6e73;--accent:#0071e3;--green:#34c759;--border:#d2d2d7;--code-bg:#1e1e2e;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.88);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border)}
+.top-bar-inner{max-width:800px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between}
+.top-logo{font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}.top-logo span{color:var(--accent)}
+article{max-width:800px;margin:0 auto;padding:48px 24px 120px}
+h1{font-size:clamp(32px,5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+h2{font-size:26px;font-weight:800;margin:48px 0 16px}p{margin-bottom:16px}
+.code-block{background:var(--code-bg);border-radius:12px;margin:20px 0;overflow:hidden}
+.code-header{padding:10px 16px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between}
+.code-filename{font-size:13px;color:#cdd6f4;font-family:'JetBrains Mono',monospace}
+pre.code-body{margin:0;padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cdd6f4;white-space:pre;overflow-x:auto}
+.code-body .kw{color:#cba6f7}.code-body .type{color:#89b4fa}.code-body .str{color:#a6e3a1}.code-body .func{color:#89dceb}.code-body .prop{color:#f5c2e7}.code-body .comment{color:#6c7086}.code-body .num{color:#fab387}
+</style>
+</head>
+<body>
+<div class="top-bar"><div class="top-bar-inner"><a href="../index.html" class="top-logo">HIG <span>Lab</span></a><a href="01-tutorial.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🌐 KO</a></div></div>
+<article>
+<h1>👁️ @Observable 상태관리</h1>
+<p>The new Observation framework in iOS 17. Modern state management that completely replaces ObservableObject.</p>
+<!-- higlab-metadata -->
+<div style="display:flex;gap:16px;align-items:center;margin:12px 0 24px;padding:12px 16px;background:var(--tag-bg,#f5f5f7);border-radius:10px;font-size:13px;color:var(--text-2,#6e6e73);flex-wrap:wrap;">
+  <span>⭐ Difficulty: ⭐</span>
+  <span>⏱️ Est. Time: 1h</span>
+  <span>📂 App Frameworks</span>
+</div>
+
+<h2>✨ @Observable is?</h2>
+<p>Swift macro-based state management introduced in iOS 17+. Replaces @Published, @StateObject, @ObservedObject with a simpler, more performant approach.</p>
+
+<h2>🆚 Before & After 비교</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Before (ObservableObject).swift</span></div>
+<pre class="code-body"><span class="comment">// iOS 16 이하: ObservableObject</span>
+<span class="kw">class</span> <span class="type">CounterViewModel</span>: <span class="type">ObservableObject</span> {
+    @<span class="type">Published</span> <span class="kw">var</span> count = <span class="num">0</span>
+    @<span class="type">Published</span> <span class="kw">var</span> message = <span class="str">""</span>
+
+    <span class="kw">func</span> <span class="func">increment</span>() {
+        count += <span class="num">1</span>
+        message = <span class="str">"Count: \(count)"</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    @<span class="type">StateObject</span> <span class="kw">private var</span> viewModel = <span class="type">CounterViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(<span class="str">"\(viewModel.count)"</span>)
+    }
+}</pre></div>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">After (@Observable).swift</span></div>
+<pre class="code-body"><span class="comment">// iOS 17+: @Observable</span>
+<span class="kw">import</span> <span class="type">Observation</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">CounterViewModel</span> {
+    <span class="kw">var</span> <span class="prop">count</span> = <span class="num">0</span>
+    <span class="kw">var</span> <span class="prop">message</span> = <span class="str">""</span>
+
+    <span class="kw">func</span> <span class="func">increment</span>() {
+        count += <span class="num">1</span>
+        message = <span class="str">"Count: \(count)"</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">CounterViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(<span class="str">"\(viewModel.count)"</span>)
+    }
+}</pre></div>
+
+<h2>🎯 Basic Usage</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">TodoViewModel.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Observation</span>
+<span class="kw">import</span> <span class="type">Foundation</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">TodoViewModel</span> {
+    <span class="kw">var</span> <span class="prop">todos</span>: [<span class="type">Todo</span>] = []
+    <span class="kw">var</span> <span class="prop">isLoading</span> = <span class="kw">false</span>
+    <span class="kw">var</span> <span class="prop">errorMessage</span>: <span class="type">String</span>?
+
+    <span class="kw">func</span> <span class="func">addTodo</span>(_ title: <span class="type">String</span>) {
+        <span class="kw">let</span> todo = <span class="type">Todo</span>(title: title)
+        todos.append(todo)
+    }
+
+    <span class="kw">func</span> <span class="func">loadTodos</span>() <span class="kw">async</span> {
+        isLoading = <span class="kw">true</span>
+        <span class="kw">defer</span> { isLoading = <span class="kw">false</span> }
+
+        <span class="kw">do</span> {
+            <span class="comment">// API 호출</span>
+            <span class="kw">try await</span> <span class="type">Task</span>.sleep(for: .seconds(<span class="num">1</span>))
+            todos = [<span class="type">Todo</span>(title: <span class="str">"샘플 할 일"</span>)]
+        } <span class="kw">catch</span> {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">Todo</span>: <span class="type">Identifiable</span> {
+    <span class="kw">let</span> <span class="prop">id</span> = <span class="type">UUID</span>()
+    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">String</span>
+}</pre></div>
+
+<h2>📱 SwiftUI Integration</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">ContentView.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">TodoViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationStack</span> {
+            <span class="type">List</span>(viewModel.todos) { todo <span class="kw">in</span>
+                <span class="type">Text</span>(todo.title)
+            }
+            .overlay {
+                <span class="kw">if</span> viewModel.isLoading {
+                    <span class="type">ProgressView</span>(<span class="str">"로딩 중..."</span>)
+                }
+            }
+            .navigationTitle(<span class="str">"할 일"</span>)
+            .toolbar {
+                <span class="type">Button</span>(<span class="str">"추가"</span>) {
+                    viewModel.<span class="func">addTodo</span>(<span class="str">"새 할 일"</span>)
+                }
+            }
+            .task {
+                <span class="kw">await</span> viewModel.<span class="func">loadTodos</span>()
+            }
+        }
+    }
+}</pre></div>
+
+<h2>🔄 @State vs 일반 프로퍼티</h2>
+<p>With @Observable, you don't need @State. Regular properties are automatically observed.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">StateComparison.swift</span></div>
+<pre class="code-body"><span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="comment">// ❌ 불필요 (iOS 17+)</span>
+    <span class="comment">// @State private var viewModel = TodoViewModel()</span>
+
+    <span class="comment">// ✅ 이렇게만 해도 자동으로 업데이트</span>
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">TodoViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(<span class="str">"\(viewModel.count)"</span>)
+    }
+}</pre></div>
+
+<h2>🎯 @ObservationIgnored</h2>
+<p>특정 프로퍼티를 관찰 대상에서 제외 is possible.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">IgnoredProperty.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Observation</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">ViewModel</span> {
+    <span class="kw">var</span> <span class="prop">count</span> = <span class="num">0</span>  <span class="comment">// 관찰됨 (UI 업데이트)</span>
+
+    @<span class="type">ObservationIgnored</span>
+    <span class="kw">var</span> <span class="prop">internalCache</span>: [<span class="type">String</span>: <span class="type">Any</span>] = [:]  <span class="comment">// 관찰 안 됨 (성능 최적화)</span>
+
+    <span class="kw">func</span> <span class="func">increment</span>() {
+        count += <span class="num">1</span>
+        internalCache[<span class="str">"lastIncrement"</span>] = <span class="type">Date</span>()  <span class="comment">// UI 업데이트 안 함</span>
+    }
+}</pre></div>
+
+<h2>🔗 Environment에서 사용</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">EnvironmentUsage.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">SwiftUI</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">AppState</span> {
+    <span class="kw">var</span> <span class="prop">isLoggedIn</span> = <span class="kw">false</span>
+    <span class="kw">var</span> <span class="prop">username</span> = <span class="str">""</span>
+}
+
+@<span class="kw">main</span>
+<span class="kw">struct</span> <span class="type">MyApp</span>: <span class="type">App</span> {
+    @<span class="type">State</span> <span class="kw">private var</span> appState = <span class="type">AppState</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">Scene</span> {
+        <span class="type">WindowGroup</span> {
+            <span class="type">ContentView</span>()
+                .environment(appState)
+        }
+    }
+}
+
+<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    @<span class="type">Environment</span>(<span class="type">AppState</span>.<span class="kw">self</span>) <span class="kw">private var</span> appState
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="kw">if</span> appState.isLoggedIn {
+            <span class="type">Text</span>(<span class="str">"안녕하세요, \(appState.username)"</span>)
+        } <span class="kw">else</span> {
+            <span class="type">LoginView</span>()
+        }
+    }
+}</pre></div>
+
+<h2>🧪 Computed Property</h2>
+<p>연산 프로퍼티도 자동으로 관찰.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">ComputedProperty.swift</span></div>
+<pre class="code-body">@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">CartViewModel</span> {
+    <span class="kw">var</span> <span class="prop">items</span>: [<span class="type">CartItem</span>] = []
+
+    <span class="comment">// 연산 프로퍼티도 자동으로 관찰됨</span>
+    <span class="kw">var</span> <span class="prop">totalPrice</span>: <span class="type">Double</span> {
+        items.reduce(<span class="num">0</span>) { $0 + $1.price }
+    }
+
+    <span class="kw">var</span> <span class="prop">itemCount</span>: <span class="type">Int</span> {
+        items.count
+    }
+
+    <span class="kw">func</span> <span class="func">addItem</span>(_ item: <span class="type">CartItem</span>) {
+        items.append(item)
+        <span class="comment">// totalPrice와 itemCount가 자동으로 업데이트됨</span>
+    }
+}
+
+<span class="kw">struct</span> <span class="type">CartView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span> = <span class="type">CartViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">VStack</span> {
+            <span class="type">Text</span>(<span class="str">"총 \(viewModel.itemCount)개"</span>)
+            <span class="type">Text</span>(<span class="str">"합계: \(viewModel.totalPrice)원"</span>)
+        }
+    }
+}</pre></div>
+
+<h2>⚡ Performance Optimization</h2>
+<p>@Observable only observes properties actually in use.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">Performance.swift</span></div>
+<pre class="code-body">@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">ViewModel</span> {
+    <span class="kw">var</span> <span class="prop">name</span> = <span class="str">""</span>
+    <span class="kw">var</span> <span class="prop">age</span> = <span class="num">0</span>
+    <span class="kw">var</span> <span class="prop">email</span> = <span class="str">""</span>
+}
+
+<span class="kw">struct</span> <span class="type">NameView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">viewModel</span>: <span class="type">ViewModel</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(viewModel.name)  <span class="comment">// name만 관찰, age/email 변경 시 업데이트 안 함</span>
+    }
+}
+
+<span class="comment">// ObservableObject는 @Published가 붙은 모든 프로퍼티 변경 시 업데이트</span>
+<span class="comment">// @Observable은 실제로 body에서 사용하는 프로퍼티만 관찰 (더 효율적!)</span></pre></div>
+
+<h2>🔄 withObservationTracking</h2>
+<p>SwiftUI 밖에서도 변경 감지가  is possible.</p>
+
+<div class="code-block"><div class="code-header"><span class="code-filename">ManualTracking.swift</span></div>
+<pre class="code-body"><span class="kw">import</span> <span class="type">Observation</span>
+
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">Counter</span> {
+    <span class="kw">var</span> <span class="prop">value</span> = <span class="num">0</span>
+}
+
+<span class="kw">let</span> counter = <span class="type">Counter</span>()
+
+<span class="comment">// 변경 감지</span>
+<span class="func">withObservationTracking</span> {
+    <span class="func">print</span>(<span class="str">"현재 값: \(counter.value)"</span>)
+} onChange: {
+    <span class="func">print</span>(<span class="str">"값이 변경되었습니다!"</span>)
+}
+
+counter.value = <span class="num">10</span>  <span class="comment">// onChange 실행됨</span></pre></div>
+
+<h2>📊 Migration 가이드</h2>
+<div class="code-block"><div class="code-header"><span class="code-filename">Migration.swift</span></div>
+<pre class="code-body"><span class="comment">// BEFORE (iOS 13-16)</span>
+<span class="kw">class</span> <span class="type">OldViewModel</span>: <span class="type">ObservableObject</span> {
+    @<span class="type">Published</span> <span class="kw">var</span> name = <span class="str">""</span>
+    @<span class="type">Published</span> <span class="kw">var</span> age = <span class="num">0</span>
+}
+
+<span class="kw">struct</span> <span class="type">OldView</span>: <span class="type">View</span> {
+    @<span class="type">StateObject</span> <span class="kw">var</span> vm = <span class="type">OldViewModel</span>()
+    <span class="comment">// 또는 @ObservedObject var vm: OldViewModel</span>
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(vm.name)
+    }
+}
+
+<span class="comment">// AFTER (iOS 17+)</span>
+@<span class="type">Observable</span>
+<span class="kw">class</span> <span class="type">NewViewModel</span> {
+    <span class="kw">var</span> <span class="prop">name</span> = <span class="str">""</span>
+    <span class="kw">var</span> <span class="prop">age</span> = <span class="num">0</span>
+}
+
+<span class="kw">struct</span> <span class="type">NewView</span>: <span class="type">View</span> {
+    <span class="kw">var</span> <span class="prop">vm</span> = <span class="type">NewViewModel</span>()
+
+    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">Text</span>(vm.name)
+    }
+}
+
+<span class="comment">// 변경 사항 요약:</span>
+<span class="comment">// 1. ObservableObject → @Observable</span>
+<span class="comment">// 2. @Published 삭제</span>
+<span class="comment">// 3. @StateObject/@ObservedObject → 일반 프로퍼티</span></pre></div>
+
+<p style="background:#34c75910;border:1px solid #34c75940;border-radius:12px;padding:16px 20px;margin:24px 0"><strong style="color:#34c759">💡 @Observable의 장점</strong><br>
+✅ 코드가 80% 간결해짐<br>
+✅ 사용하는 프로퍼티만 관찰 (성능 향상)<br>
+✅ No need for @Published or @StateObject<br>
+✅ 타입 안전성 향상<br>
+✅ 컴파일 타임에 에러 검출</p>
+
+<h2>📦 Learning Resources</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0">
+<a href="https://github.com/M1zz/HIGLab" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">💻</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">GitHub Project</div>
+</a>
+<a href="https://developer.apple.com/documentation/observation" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🍎</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">Apple Official Docs</div>
+</a>
+<a href="https://developer.apple.com/videos/play/wwdc2023/10149/" style="background:#fff;border:1px solid #d2d2d7;border-radius:12px;padding:20px;text-decoration:none;color:inherit;text-align:center">
+<div style="font-size:28px">🎥</div>
+<div style="font-size:13px;font-weight:600;color:#0071e3;margin-top:8px">WWDC23 Session</div>
+</a>
+</div>
+
+<div style="margin-top:48px;padding:24px;background:linear-gradient(135deg,#f5f5f7,#e8e8ed);border-radius:16px;">
+  <h2 style="font-size:20px;margin-bottom:12px;">📎 Apple Official Resources</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+    <a href="https://developer.apple.com/documentation/observation" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">📘 Documentation</a>
+    <a href="https://developer.apple.com/videos/all-videos/?q=Observation" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:white;border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;border:1px solid var(--border);transition:all .2s;">🎬 WWDC Sessions</a>
+  </div>
+</div>
+</article>
+</body>
+</html>

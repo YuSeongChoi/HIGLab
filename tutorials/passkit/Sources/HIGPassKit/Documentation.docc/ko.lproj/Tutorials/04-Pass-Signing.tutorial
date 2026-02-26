@@ -1,0 +1,217 @@
+@Tutorial(time: 20) {
+    @Intro(title: "패스 서명 & 배포") {
+        패스를 개발자 인증서로 서명하고 
+        사용자에게 배포하는 방법을 학습합니다.
+        
+        @Image(source: "pass-signing.png", alt: "패스 서명")
+    }
+    
+    @Section(title: "Pass Type ID 등록") {
+        @ContentAndMedia {
+            패스를 배포하려면 Apple Developer Portal에서 
+            Pass Type ID를 등록해야 합니다.
+            
+            **등록 단계:**
+            1. Certificates, Identifiers & Profiles 접속
+            2. Identifiers → Pass Type IDs 선택
+            3. 새 Pass Type ID 생성 (예: pass.com.myapp.membership)
+            4. 해당 ID로 인증서 생성 및 다운로드
+        }
+        
+        @Steps {
+            @Step {
+                Pass Type ID는 reverse-domain 형식을 따릅니다.
+                pass. 접두사가 필수입니다.
+                
+                @Code(name: "PassTypeID.swift", file: "04-01-pass-type-id.swift")
+            }
+            
+            @Step {
+                생성된 인증서를 키체인에 설치합니다.
+                .p12 형식으로 내보내 서버에서 사용할 수 있습니다.
+                
+                @Code(name: "CertificateSetup.swift", file: "04-02-certificate.swift")
+            }
+        }
+    }
+    
+    @Section(title: "manifest.json 생성") {
+        @ContentAndMedia {
+            manifest.json은 패스 번들 내 모든 파일의 
+            SHA1 해시를 포함합니다. 무결성 검증에 사용됩니다.
+            
+            pass.json, 이미지 파일 등 모든 리소스의 
+            해시를 계산하여 포함해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                패스 디렉토리 내 모든 파일의 SHA1 해시를 계산합니다.
+                signature 파일은 제외합니다.
+                
+                @Code(name: "ManifestCreation.swift", file: "04-03-manifest.swift")
+            }
+            
+            @Step {
+                계산된 해시를 manifest.json 파일로 저장합니다.
+                파일명을 키로, 해시값을 값으로 합니다.
+                
+                @Code(name: "ManifestJson.swift", file: "04-04-manifest-json.swift")
+            }
+        }
+    }
+    
+    @Section(title: "패스 서명") {
+        @ContentAndMedia {
+            manifest.json을 개발자 인증서로 서명하여 
+            signature 파일을 생성합니다.
+            
+            PKCS#7 형식으로 서명하며, 
+            Apple WWDR 인증서 체인을 포함해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                OpenSSL을 사용해 서명을 생성합니다.
+                개인 키, 인증서, WWDR 인증서가 필요합니다.
+                
+                @Code(name: "SigningCommand.swift", file: "04-05-signing.swift")
+            }
+            
+            @Step {
+                서버에서 프로그래매틱하게 서명하는 방법입니다.
+                Node.js나 Python 라이브러리를 활용합니다.
+                
+                @Code(name: "ServerSigning.swift", file: "04-06-server-signing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "PKPass 번들 생성") {
+        @ContentAndMedia {
+            모든 파일을 ZIP으로 압축하여 .pkpass 번들을 생성합니다.
+            
+            **번들 구조:**
+            ```
+            membership.pkpass/
+            ├── pass.json
+            ├── manifest.json
+            ├── signature
+            ├── icon.png
+            ├── icon@2x.png
+            ├── logo.png
+            └── strip.png
+            ```
+        }
+        
+        @Steps {
+            @Step {
+                파일들을 ZIP으로 압축합니다.
+                디렉토리 구조 없이 플랫하게 압축해야 합니다.
+                
+                @Code(name: "CreateBundle.swift", file: "04-07-create-bundle.swift")
+            }
+            
+            @Step {
+                확장자를 .pkpass로 변경합니다.
+                MIME 타입은 application/vnd.apple.pkpass입니다.
+                
+                @Code(name: "BundleMime.swift", file: "04-08-bundle-mime.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앱에서 패스 추가") {
+        @ContentAndMedia {
+            생성된 패스를 사용자의 Wallet에 추가합니다.
+            PKAddPassesViewController를 사용해 
+            사용자에게 추가 여부를 확인받습니다.
+        }
+        
+        @Steps {
+            @Step {
+                서버에서 패스를 다운로드하고 PKPass 객체를 생성합니다.
+                유효하지 않은 패스는 오류가 발생합니다.
+                
+                @Code(name: "DownloadPass.swift", file: "04-09-download-pass.swift")
+            }
+            
+            @Step {
+                PKAddPassesViewController로 추가 UI를 표시합니다.
+                사용자가 "추가"를 탭하면 Wallet에 저장됩니다.
+                
+                @Code(name: "AddPassVC.swift", file: "04-10-add-pass-vc.swift")
+            }
+            
+            @Step {
+                SwiftUI에서는 sheet modifier로 표시합니다.
+                UIViewControllerRepresentable을 활용합니다.
+                
+                @Code(name: "AddPassSwiftUI.swift", file: "04-11-add-pass-swiftui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            패스 번들에서 무결성 검증을 위해 파일 해시를 저장하는 파일은?
+            
+            @Choice(isCorrect: true) {
+                manifest.json
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    manifest.json은 번들 내 모든 파일의 
+                    SHA1 해시를 포함합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                signature
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    signature는 manifest.json을 서명한 
+                    결과물입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                pass.json
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    pass.json은 패스의 데이터와 스타일을 
+                    정의하는 파일입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            .pkpass 파일의 실제 형식은?
+            
+            @Choice(isCorrect: false) {
+                JSON 파일
+                
+                @Justification(reaction: "다시 확인하세요.") {
+                    pass.json은 JSON이지만, 
+                    .pkpass 자체는 다른 형식입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                ZIP 아카이브
+                
+                @Justification(reaction: "맞습니다! ✨") {
+                    .pkpass는 ZIP 형식으로 압축된 번들이며,
+                    확장자만 변경된 것입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                바이너리 plist
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    plist 형식이 아닌 ZIP 아카이브입니다.
+                }
+            }
+        }
+    }
+}

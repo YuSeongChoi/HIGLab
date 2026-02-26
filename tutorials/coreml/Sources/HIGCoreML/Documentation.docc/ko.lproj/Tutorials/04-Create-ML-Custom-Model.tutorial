@@ -1,0 +1,213 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Create ML로 커스텀 모델 만들기") {
+        Apple의 Create ML 앱을 사용하여
+        나만의 이미지 분류 모델을 학습시킵니다.
+    }
+    
+    @Section(title: "Create ML 소개") {
+        @ContentAndMedia {
+            Create ML은 macOS에 내장된 머신러닝 학습 도구입니다.
+            코드 없이 GUI로 모델을 만들 수 있고,
+            Swift 코드로 프로그래매틱하게도 학습할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Create ML 앱 실행**
+                
+                Xcode > Open Developer Tool > Create ML
+                또는 Applications 폴더에서 직접 실행합니다.
+                
+                @Code(name: "CreateMLInfo.swift", file: "04-createml-info.swift")
+            }
+            
+            @Step {
+                **템플릿 선택**
+                
+                Image Classification 템플릿을 선택합니다.
+                Object Detection, Sound Classification 등 
+                다양한 템플릿이 있습니다.
+                
+                @Code(name: "Templates.swift", file: "04-templates.swift")
+            }
+        }
+    }
+    
+    @Section(title: "학습 데이터 준비") {
+        @ContentAndMedia {
+            머신러닝의 핵심은 **데이터**입니다.
+            폴더 구조로 레이블링된 이미지를 준비합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **폴더 구조 생성**
+                
+                클래스별로 폴더를 만들고 이미지를 분류합니다.
+                폴더 이름이 레이블이 됩니다.
+                
+                @Code(name: "FolderStructure.swift", file: "04-folder-structure.swift")
+            }
+            
+            @Step {
+                **데이터 품질 체크리스트**
+                
+                - 클래스당 최소 50장 이상 권장
+                - 다양한 조명, 각도, 배경 포함
+                - Train/Validation 8:2 분할
+                - 균형 잡힌 클래스 분포
+                
+                @Code(name: "DataQuality.swift", file: "04-data-quality.swift")
+            }
+            
+            @Step {
+                **데이터 증강 활용**
+                
+                Create ML은 자동으로 데이터 증강을 적용합니다.
+                회전, 플립, 크롭, 색상 변환 등으로
+                적은 데이터로도 좋은 성능을 얻을 수 있습니다.
+                
+                @Code(name: "DataAugmentation.swift", file: "04-augmentation.swift")
+            }
+        }
+    }
+    
+    @Section(title: "모델 학습하기") {
+        @ContentAndMedia {
+            준비된 데이터로 모델을 학습시키고
+            평가 결과를 확인합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **학습 시작**
+                
+                Training Data 폴더를 드래그하고 Train 버튼을 누릅니다.
+                Neural Engine이 있는 Mac에서는 매우 빠르게 학습됩니다.
+                
+                @Code(name: "TrainingStart.swift", file: "04-training-start.swift")
+            }
+            
+            @Step {
+                **학습 모니터링**
+                
+                실시간으로 Training/Validation 정확도를 확인합니다.
+                과적합(Overfitting) 징후가 있는지 주시합니다.
+                
+                - Training >> Validation: 과적합 의심
+                - 둘 다 낮음: 데이터 부족 또는 모델 한계
+                
+                @Code(name: "TrainingMonitor.swift", file: "04-training-monitor.swift")
+            }
+            
+            @Step {
+                **모델 평가**
+                
+                Evaluation 탭에서 혼동 행렬(Confusion Matrix)을 확인합니다.
+                어떤 클래스가 혼동되는지 파악할 수 있습니다.
+                
+                @Code(name: "ModelEvaluation.swift", file: "04-evaluation.swift")
+            }
+            
+            @Step {
+                **모델 내보내기**
+                
+                Output 탭에서 .mlmodel 파일을 내보냅니다.
+                모델 이름, 작성자, 설명을 메타데이터로 추가합니다.
+                
+                @Code(name: "ModelExport.swift", file: "04-export.swift")
+            }
+        }
+    }
+    
+    @Section(title: "프로그래매틱 학습") {
+        @ContentAndMedia {
+            Swift 코드로 Create ML을 사용할 수도 있습니다.
+            자동화된 파이프라인이나 macOS 앱에서 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **CreateML 프레임워크 import**
+                
+                macOS 앱이나 Swift Playground에서
+                CreateML 프레임워크를 사용합니다.
+                
+                @Code(name: "ProgrammaticML.swift", file: "04-programmatic.swift")
+            }
+            
+            @Step {
+                **MLImageClassifier로 학습**
+                
+                코드 몇 줄로 이미지 분류기를 학습시킵니다.
+                
+                @Code(name: "MLImageClassifier.swift", file: "04-ml-classifier.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Create ML에서 이미지 분류 학습 시 권장되는 클래스당 최소 이미지 수는?
+            
+            @Choice(isCorrect: true) {
+                50장 이상
+                
+                @Justification(reaction: "정답!") {
+                    Create ML은 전이 학습을 사용하므로 비교적 적은 데이터로도 
+                    학습 가능하지만, 최소 50장 이상을 권장합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                10장 이상
+                
+                @Justification(reaction: "아쉽네요") {
+                    10장은 너무 적습니다. 50장 이상을 권장합니다.
+                    더 많은 데이터가 있으면 더 좋은 성능을 얻을 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                1000장 이상
+                
+                @Justification(reaction: "아쉽네요") {
+                    Create ML은 전이 학습을 사용하므로 
+                    50장 정도로도 시작할 수 있습니다.
+                    물론 더 많으면 좋습니다!
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Training 정확도가 95%인데 Validation 정확도가 60%라면?
+            
+            @Choice(isCorrect: true) {
+                과적합(Overfitting) — 학습 데이터에만 특화됨
+                
+                @Justification(reaction: "정확합니다!") {
+                    이 차이는 전형적인 과적합 징후입니다.
+                    더 많은 데이터, 데이터 증강, 정규화가 필요합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                과소적합(Underfitting) — 모델이 너무 단순함
+                
+                @Justification(reaction: "아쉽네요") {
+                    과소적합은 Training 정확도도 낮은 경우입니다.
+                    여기서는 Training은 높고 Validation만 낮으므로 과적합입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                정상 — 충분히 좋은 성능
+                
+                @Justification(reaction: "아쉽네요") {
+                    35%포인트 차이는 심각한 과적합입니다.
+                    새로운 데이터에서 성능이 좋지 않을 것입니다.
+                }
+            }
+        }
+    }
+}

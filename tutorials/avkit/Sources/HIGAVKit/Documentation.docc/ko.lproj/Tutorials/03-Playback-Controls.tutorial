@@ -1,0 +1,209 @@
+@Tutorial(time: 20) {
+    @Intro(title: "비디오 재생 제어") {
+        재생, 일시정지, 볼륨, 음소거 등 
+        기본 제어 기능을 프로그래밍 방식으로 구현합니다.
+        
+        @Image(source: "playback-controls.png", alt: "재생 제어")
+    }
+    
+    @Section(title: "재생과 일시정지") {
+        @ContentAndMedia {
+            AVPlayer의 기본 재생 제어 메서드를 사용하여
+            비디오 재생을 관리합니다.
+            
+            - `play()`: 재생 시작
+            - `pause()`: 일시정지
+            - `rate`: 재생 속도 (0 = 정지, 1 = 정상)
+        }
+        
+        @Steps {
+            @Step {
+                play()와 pause() 메서드로 
+                기본적인 재생 제어를 구현합니다.
+                
+                @Code(name: "PlayPause.swift", file: "03-01-play-pause.swift")
+            }
+            
+            @Step {
+                토글 방식의 재생/일시정지 버튼을 만듭니다.
+                timeControlStatus로 현재 상태를 확인합니다.
+                
+                @Code(name: "TogglePlayback.swift", file: "03-02-toggle-playback.swift")
+            }
+            
+            @Step {
+                재생 완료 시 처리를 위해 
+                AVPlayerItemDidPlayToEndTime 노티피케이션을 관찰합니다.
+                
+                @Code(name: "PlaybackEnd.swift", file: "03-03-playback-end.swift")
+            }
+        }
+    }
+    
+    @Section(title: "볼륨 제어") {
+        @ContentAndMedia {
+            볼륨과 음소거 기능을 구현하여
+            사용자에게 오디오 제어권을 제공합니다.
+            
+            - `volume`: 0.0 ~ 1.0 범위
+            - `isMuted`: 음소거 상태
+        }
+        
+        @Steps {
+            @Step {
+                AVPlayer의 volume 속성으로 볼륨을 조절합니다.
+                0.0(무음)부터 1.0(최대)까지의 값을 사용합니다.
+                
+                @Code(name: "VolumeControl.swift", file: "03-04-volume.swift")
+            }
+            
+            @Step {
+                isMuted 속성으로 음소거를 토글합니다.
+                볼륨 값은 유지되며 음소거만 전환됩니다.
+                
+                @Code(name: "MuteControl.swift", file: "03-05-mute.swift")
+            }
+            
+            @Step {
+                SwiftUI에서 볼륨 슬라이더와 음소거 버튼을
+                포함한 커스텀 컨트롤을 만듭니다.
+                
+                @Code(name: "VolumeUI.swift", file: "03-06-volume-ui.swift")
+            }
+        }
+    }
+    
+    @Section(title: "현재 시간 추적") {
+        @ContentAndMedia {
+            비디오의 현재 재생 위치를 추적하고
+            타임라인 UI를 업데이트합니다.
+            
+            - `addPeriodicTimeObserver`: 주기적 시간 관찰
+            - `currentTime()`: 현재 재생 위치
+        }
+        
+        @Steps {
+            @Step {
+                addPeriodicTimeObserver로 재생 시간 변화를 관찰합니다.
+                CMTime 간격으로 콜백을 받습니다.
+                
+                @Code(name: "TimeObserver.swift", file: "03-07-time-observer.swift")
+            }
+            
+            @Step {
+                관찰자를 적절히 해제하여 메모리 누수를 방지합니다.
+                뷰가 사라질 때 removeTimeObserver를 호출합니다.
+                
+                @Code(name: "RemoveObserver.swift", file: "03-08-remove-observer.swift")
+            }
+            
+            @Step {
+                CMTime을 사람이 읽을 수 있는 형식으로 변환합니다.
+                "00:00" 또는 "1:23:45" 형태로 표시합니다.
+                
+                @Code(name: "TimeFormatting.swift", file: "03-09-time-formatting.swift")
+            }
+            
+            @Step {
+                재생 진행률 바와 현재 시간 레이블을 구현합니다.
+                
+                @Code(name: "ProgressBar.swift", file: "03-10-progress-bar.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Now Playing 정보") {
+        @ContentAndMedia {
+            잠금 화면과 제어 센터에 표시되는
+            Now Playing 정보를 설정합니다.
+            
+            - 제목, 아티스트, 앨범 아트
+            - 재생 시간 및 현재 위치
+        }
+        
+        @Steps {
+            @Step {
+                MPNowPlayingInfoCenter를 사용해
+                미디어 정보를 시스템에 등록합니다.
+                
+                @Code(name: "NowPlayingInfo.swift", file: "03-11-now-playing.swift")
+            }
+            
+            @Step {
+                MPRemoteCommandCenter로 원격 제어 명령을 처리합니다.
+                이어폰, 잠금화면, CarPlay에서의 제어를 지원합니다.
+                
+                @Code(name: "RemoteCommands.swift", file: "03-12-remote-commands.swift")
+            }
+            
+            @Step {
+                재생 위치가 변경될 때마다 
+                Now Playing 정보를 업데이트합니다.
+                
+                @Code(name: "UpdateNowPlaying.swift", file: "03-13-update-now-playing.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            addPeriodicTimeObserver의 반환값을 어떻게 처리해야 하나요?
+            
+            @Choice(isCorrect: true) {
+                저장해두었다가 뷰가 사라질 때 removeTimeObserver로 해제한다.
+                
+                @Justification(reaction: "정확합니다! 🎯") {
+                    관찰자를 해제하지 않으면 메모리 누수가 발생하고
+                    콜백이 계속 호출될 수 있습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                반환값은 무시해도 된다.
+                
+                @Justification(reaction: "위험합니다!") {
+                    관찰자를 해제하지 않으면 retain cycle이 발생하고
+                    앱 성능에 악영향을 줍니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                자동으로 해제되므로 신경 쓰지 않아도 된다.
+                
+                @Justification(reaction: "틀렸습니다.") {
+                    AVPlayer의 시간 관찰자는 자동으로 해제되지 않습니다.
+                    명시적으로 removeTimeObserver를 호출해야 합니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            MPRemoteCommandCenter가 처리하는 것은 무엇인가요?
+            
+            @Choice(isCorrect: false) {
+                앱 내 재생 버튼 탭
+                
+                @Justification(reaction: "아쉽습니다.") {
+                    앱 내 UI 이벤트는 일반 UIKit/SwiftUI 이벤트로 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                이어폰, 잠금화면, CarPlay 등 외부 제어 명령
+                
+                @Justification(reaction: "맞습니다! 🎧") {
+                    MPRemoteCommandCenter는 시스템 레벨의 
+                    미디어 제어 이벤트를 처리합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                AirPlay 기기 검색
+                
+                @Justification(reaction: "다시 확인해보세요.") {
+                    AirPlay 기기 검색은 AVRoutePickerView가 담당합니다.
+                }
+            }
+        }
+    }
+}

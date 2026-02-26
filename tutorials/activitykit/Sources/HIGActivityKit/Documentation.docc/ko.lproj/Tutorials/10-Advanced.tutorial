@@ -1,0 +1,170 @@
+@Tutorial(time: 20) {
+    @Intro(title: "고급 Live Activity 기능") {
+        타이머, 상태 전환 애니메이션, 그리고 고급 디버깅 기법을 학습합니다.
+        실제 배포 환경에서 유용한 패턴들을 익혀봅시다.
+    }
+    
+    @Section(title: "실시간 타이머 구현") {
+        @ContentAndMedia {
+            Text의 타이머 기능으로 서버 업데이트 없이도
+            카운트다운이나 경과 시간을 자동으로 표시할 수 있습니다.
+            이는 배터리 효율적이며 정확한 시간 표시를 제공합니다.
+        }
+        
+        @Steps {
+            @Step {
+                배달 예상 시간까지 남은 시간을 카운트다운으로 표시합니다.
+                Text의 init(_:style:) 이니셜라이저를 활용합니다.
+                
+                @Code(name: "TimerView.swift", file: "10-timer-countdown.swift")
+            }
+            
+            @Step {
+                주문 후 경과 시간을 표시하는 타이머를 구현합니다.
+                .relative와 .timer 스타일의 차이를 이해합니다.
+                
+                @Code(name: "TimerView.swift", file: "10-timer-elapsed.swift")
+            }
+            
+            @Step {
+                DateRange를 활용해 진행률 바와 함께 타이머를 표현합니다.
+                
+                @Code(name: "TimerProgressView.swift", file: "10-timer-progress.swift")
+            }
+        }
+    }
+    
+    @Section(title: "상태 전환과 애니메이션") {
+        @ContentAndMedia {
+            Live Activity에서 상태 전환 시 자연스러운 애니메이션을 적용합니다.
+            contentTransition과 numericText 수정자를 활용합니다.
+        }
+        
+        @Steps {
+            @Step {
+                배달 상태 변경 시 아이콘과 텍스트에 애니메이션을 적용합니다.
+                
+                @Code(name: "AnimatedStatus.swift", file: "10-state-animation.swift")
+            }
+            
+            @Step {
+                숫자 값 변경에 부드러운 전환 효과를 추가합니다.
+                
+                @Code(name: "AnimatedStatus.swift", file: "10-numeric-transition.swift")
+            }
+        }
+    }
+    
+    @Section(title: "고급 디버깅 기법") {
+        @ContentAndMedia {
+            실제 배포 환경에서 Live Activity 문제를 진단하고 해결하는 방법을 학습합니다.
+            시스템 로그, Activity 상태 모니터링, 일반적인 문제 해결 패턴을 다룹니다.
+        }
+        
+        @Steps {
+            @Step {
+                OSLog를 활용하여 Activity 이벤트를 체계적으로 로깅합니다.
+                
+                @Code(name: "ActivityLogger.swift", file: "10-oslog-debug.swift")
+            }
+            
+            @Step {
+                모든 활성 Activity의 상태를 모니터링하는 유틸리티를 구현합니다.
+                
+                @Code(name: "ActivityMonitor.swift", file: "10-activity-monitor.swift")
+            }
+            
+            @Step {
+                일반적인 오류 상황을 처리하는 패턴을 구현합니다.
+                
+                @Code(name: "ErrorHandling.swift", file: "10-error-handling.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            Text에서 실시간 카운트다운을 표시할 때 사용하는 스타일은?
+            
+            @Choice(isCorrect: false) {
+                .relative
+                
+                @Justification(reaction: "아쉽네요.") {
+                    .relative는 "2분 전"처럼 상대적 시간을 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .timer
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    .timer 스타일은 00:00 형식의 카운트다운을 표시합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .countdown
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    SwiftUI Text에는 .countdown 스타일이 없습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Live Activity에서 숫자 변경 애니메이션에 사용하는 수정자는?
+            
+            @Choice(isCorrect: false) {
+                .animation(.default)
+                
+                @Justification(reaction: "아쉽네요.") {
+                    일반적인 애니메이션 수정자는 Live Activity에서 제한적입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                .contentTransition(.numericText())
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    numericText는 숫자 변경 시 부드러운 전환 효과를 제공합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                .transition(.slide)
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .transition은 뷰 삽입/제거에 사용됩니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            Live Activity가 시작되지 않을 때 가장 먼저 확인해야 할 것은?
+            
+            @Choice(isCorrect: true) {
+                areActivitiesEnabled 속성 확인
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    사용자가 Live Activity를 비활성화했을 수 있으므로 권한을 먼저 확인합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                앱 재설치
+                
+                @Justification(reaction: "아쉽네요.") {
+                    재설치 전에 권한 설정을 먼저 확인해야 합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                기기 재부팅
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    대부분의 경우 권한 설정 문제입니다.
+                }
+            }
+        }
+    }
+}

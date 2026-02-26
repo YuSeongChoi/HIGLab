@@ -1,0 +1,164 @@
+@Tutorial(time: 10) {
+    @Intro(title: "HKHealthStore 설정") {
+        HealthKit의 핵심 클래스인 HKHealthStore를 설정하고,
+        앱 전체에서 사용할 수 있도록 구성합니다.
+    }
+    
+    @Section(title: "HKHealthStore 이해하기") {
+        @ContentAndMedia {
+            **HKHealthStore**는 HealthKit 데이터베이스와 통신하는 
+            유일한 인터페이스입니다. 권한 요청, 데이터 읽기/쓰기 모두
+            이 클래스를 통해 이루어집니다.
+        }
+        
+        @Steps {
+            @Step {
+                **싱글톤 패턴 권장**
+                
+                HKHealthStore 인스턴스는 앱 전체에서 하나만 사용하는 것이 좋습니다.
+                여러 인스턴스를 만들어도 동작하지만, 불필요한 리소스 낭비입니다.
+                
+                @Code(name: "HealthStore.swift", file: "02-singleton.swift")
+            }
+            
+            @Step {
+                **HealthManager 클래스 생성**
+                
+                권한 요청, 데이터 쿼리 등을 담당할 Manager 클래스를 만듭니다.
+                ObservableObject로 구현하여 SwiftUI와 쉽게 연동합니다.
+                
+                @Code(name: "HealthManager.swift", file: "02-health-manager.swift")
+            }
+            
+            @Step {
+                **사용 가능 여부 체크 추가**
+                
+                초기화 시점에 HealthKit 사용 가능 여부를 확인합니다.
+                iPad 등에서 graceful하게 처리할 수 있습니다.
+                
+                @Code(name: "HealthManager.swift", file: "02-availability-check.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Xcode 프로젝트 설정") {
+        @ContentAndMedia {
+            코드 작성 전에 Xcode 프로젝트에서 
+            HealthKit capability를 활성화해야 합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **Capability 추가**
+                
+                Xcode에서 프로젝트 > Signing & Capabilities에서
+                "HealthKit"을 추가합니다. Clinical Health Records가 필요하면
+                해당 옵션도 체크합니다.
+                
+                @Code(name: "Entitlements.swift", file: "02-capability.swift")
+            }
+            
+            @Step {
+                **Info.plist 설정**
+                
+                권한 요청 시 사용자에게 표시될 메시지를 설정합니다.
+                명확하고 구체적인 이유를 작성하세요.
+                
+                @Code(name: "InfoPlist.swift", file: "02-info-plist.swift")
+            }
+            
+            @Step {
+                **HealthKit 프레임워크 임포트**
+                
+                HealthKit을 사용할 파일에서 import HealthKit을 추가합니다.
+                
+                @Code(name: "Import.swift", file: "02-import.swift")
+            }
+        }
+    }
+    
+    @Section(title: "앱 구조 설계") {
+        @ContentAndMedia {
+            HealthManager를 앱 전체에서 사용할 수 있도록
+            Environment Object로 주입합니다.
+        }
+        
+        @Steps {
+            @Step {
+                **App Entry Point에서 주입**
+                
+                @main App 구조체에서 HealthManager를 생성하고
+                environmentObject로 전달합니다.
+                
+                @Code(name: "FitnessDashboardApp.swift", file: "02-app-entry.swift")
+            }
+            
+            @Step {
+                **View에서 접근**
+                
+                @EnvironmentObject를 사용하여 어느 View에서든
+                HealthManager에 접근할 수 있습니다.
+                
+                @Code(name: "DashboardView.swift", file: "02-view-access.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            HKHealthStore 인스턴스는 몇 개를 만드는 것이 권장되나요?
+            
+            @Choice(isCorrect: true) {
+                앱 전체에서 1개
+                
+                @Justification(reaction: "정답!") {
+                    HKHealthStore는 싱글톤 패턴으로 하나만 사용하는 것이 권장됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                화면마다 1개씩
+                
+                @Justification(reaction: "아쉽네요") {
+                    여러 인스턴스를 만들면 불필요한 리소스가 낭비됩니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                데이터 타입마다 1개씩
+                
+                @Justification(reaction: "아쉽네요") {
+                    하나의 HKHealthStore로 모든 데이터 타입을 처리할 수 있습니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            HealthKit capability 없이 HKHealthStore를 사용하면?
+            
+            @Choice(isCorrect: true) {
+                런타임 에러가 발생한다
+                
+                @Justification(reaction: "정답!") {
+                    HealthKit entitlement 없이는 HKHealthStore가 제대로 동작하지 않습니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                정상 동작한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    HealthKit capability는 필수입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                컴파일 에러가 발생한다
+                
+                @Justification(reaction: "아쉽네요") {
+                    컴파일은 되지만 런타임에 문제가 발생합니다.
+                }
+            }
+        }
+    }
+}

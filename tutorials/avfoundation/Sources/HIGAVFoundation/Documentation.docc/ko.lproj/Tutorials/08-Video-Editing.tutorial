@@ -1,0 +1,196 @@
+@Tutorial(time: 30) {
+    @Intro(title: "비디오 편집 (AVMutableComposition)") {
+        AVMutableComposition으로 비디오를 편집합니다.
+        자르기, 합치기, 오디오 믹싱 등을 구현합니다.
+    }
+    
+    @Section(title: "Composition 기초") {
+        @ContentAndMedia {
+            AVMutableComposition은 여러 미디어 트랙을 합성하는 컨테이너입니다.
+            비디오, 오디오 트랙을 추가하고 시간 범위를 조작합니다.
+            
+            **핵심 개념:**
+            - `AVMutableComposition`: 전체 합성물
+            - `AVMutableCompositionTrack`: 개별 트랙
+            - `CMTimeRange`: 시간 범위
+        }
+        
+        @Steps {
+            @Step {
+                VideoEditor 클래스를 생성합니다.
+                비디오 편집 기능을 캡슐화합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-video-editor-class.swift")
+            }
+            
+            @Step {
+                AVMutableComposition을 생성합니다.
+                빈 컴포지션에 트랙을 추가할 준비를 합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-create-composition.swift")
+            }
+            
+            @Step {
+                비디오 에셋을 로드합니다.
+                AVURLAsset으로 파일에서 에셋을 가져옵니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-load-asset.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비디오 자르기") {
+        @ContentAndMedia {
+            비디오의 특정 구간만 추출합니다.
+            시작 시간과 종료 시간으로 범위를 지정합니다.
+        }
+        
+        @Steps {
+            @Step {
+                CMTimeRange로 자를 구간을 지정합니다.
+                CMTime으로 시작점과 길이를 정의합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-time-range.swift")
+            }
+            
+            @Step {
+                컴포지션에 비디오 트랙을 추가합니다.
+                insertTimeRange로 지정 구간만 삽입합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-trim-video.swift")
+            }
+            
+            @Step {
+                오디오 트랙도 함께 자릅니다.
+                비디오와 같은 시간 범위를 적용합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-trim-audio.swift")
+            }
+        }
+    }
+    
+    @Section(title: "비디오 합치기") {
+        @ContentAndMedia {
+            여러 비디오 클립을 하나로 연결합니다.
+            순서대로 이어붙여 하나의 비디오로 만듭니다.
+        }
+        
+        @Steps {
+            @Step {
+                여러 에셋을 순서대로 삽입합니다.
+                각 클립의 끝 시간을 다음 클립의 시작 시간으로 사용합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-merge-videos.swift")
+            }
+            
+            @Step {
+                트랜지션을 추가합니다.
+                크로스페이드 효과로 자연스러운 전환을 만듭니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-transition.swift")
+            }
+            
+            @Step {
+                비디오 크기를 통일합니다.
+                서로 다른 해상도의 비디오를 합칠 때 필요합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-normalize-size.swift")
+            }
+        }
+    }
+    
+    @Section(title: "내보내기 (Export)") {
+        @ContentAndMedia {
+            AVAssetExportSession으로 편집된 비디오를 파일로 저장합니다.
+            다양한 프리셋과 포맷을 선택할 수 있습니다.
+        }
+        
+        @Steps {
+            @Step {
+                AVAssetExportSession을 생성합니다.
+                프리셋으로 출력 품질을 지정합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-create-export-session.swift")
+            }
+            
+            @Step {
+                출력 설정을 구성합니다.
+                파일 형식, 출력 URL, 시간 범위를 설정합니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-configure-export.swift")
+            }
+            
+            @Step {
+                내보내기를 실행합니다.
+                비동기로 진행되며 progress를 모니터링할 수 있습니다.
+                
+                @Code(name: "VideoEditor.swift", file: "08-execute-export.swift")
+            }
+            
+            @Step {
+                진행률 UI를 구현합니다.
+                ProgressView로 내보내기 상태를 표시합니다.
+                
+                @Code(name: "ExportProgressView.swift", file: "08-progress-ui.swift")
+            }
+        }
+    }
+    
+    @Assessments {
+        @MultipleChoice {
+            여러 비디오를 합성하는 AVFoundation 클래스는?
+            
+            @Choice(isCorrect: true) {
+                `AVMutableComposition`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    AVMutableComposition으로 여러 미디어 트랙을 합성합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVAssetExportSession`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVAssetExportSession은 내보내기를 담당합니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `AVPlayerItem`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    AVPlayerItem은 재생을 위한 클래스입니다.
+                }
+            }
+        }
+        
+        @MultipleChoice {
+            비디오 내보내기 품질 프리셋 중 가장 높은 품질은?
+            
+            @Choice(isCorrect: false) {
+                `.presetMediumQuality`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    이것은 중간 품질 프리셋입니다.
+                }
+            }
+            
+            @Choice(isCorrect: false) {
+                `.presetHighestQuality`
+                
+                @Justification(reaction: "다시 생각해보세요.") {
+                    .presetHighestQuality는 비디오 내보내기용 프리셋입니다.
+                }
+            }
+            
+            @Choice(isCorrect: true) {
+                `.presetPassthrough`
+                
+                @Justification(reaction: "정답입니다! 🎉") {
+                    presetPassthrough는 원본 품질을 그대로 유지합니다.
+                }
+            }
+        }
+    }
+}
