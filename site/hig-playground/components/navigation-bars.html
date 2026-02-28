@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigation Bars — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Navigation Bar를 브라우저에서 직접 체험해보세요. Large Title, Inline 스타일과 다양한 바 버튼 아이템을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+
+/* ─── iOS Navigation Bar ─── */
+.ios-navbar{
+  flex-shrink:0;
+  position:relative;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;
+}
+.ios-navbar-bg{
+  background:rgba(249,249,249,0.94);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+}
+/* Inline (small) nav bar */
+.ios-navbar-inline{
+  height:44px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  border-bottom:0.5px solid var(--ios-separator);
+}
+.ios-navbar-inline .navbar-title{
+  font-size:17px;font-weight:600;
+  color:#000;
+  position:absolute;left:50%;transform:translateX(-50%);
+  white-space:nowrap;
+}
+.ios-navbar-inline .navbar-leading,
+.ios-navbar-inline .navbar-trailing{
+  display:flex;align-items:center;gap:16px;
+  z-index:1;
+}
+.ios-navbar-inline .navbar-btn{
+  font-size:17px;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-weight:400;
+  display:flex;align-items:center;gap:4px;
+}
+.ios-navbar-inline .navbar-btn svg{
+  width:22px;height:22px;
+}
+
+/* Large title nav bar */
+.ios-navbar-large .navbar-top{
+  height:44px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+}
+.ios-navbar-large .navbar-top .navbar-leading,
+.ios-navbar-large .navbar-top .navbar-trailing{
+  display:flex;align-items:center;gap:16px;
+  z-index:1;
+}
+.ios-navbar-large .navbar-top .navbar-btn{
+  font-size:17px;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-weight:400;
+  display:flex;align-items:center;gap:4px;
+}
+.ios-navbar-large .navbar-top .navbar-btn svg{
+  width:22px;height:22px;
+}
+.ios-navbar-large .navbar-large-title{
+  padding:0 16px 8px;
+  font-size:34px;font-weight:700;
+  letter-spacing:0.37px;
+  color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
+}
+.ios-navbar-large .navbar-bottom-border{
+  height:0.5px;
+  background:var(--ios-separator);
+}
+
+/* Screen list items */
+.screen-list{
+  background:var(--ios-card);
+}
+.screen-list-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;
+  border-bottom:0.5px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:17px;color:#000;
+}
+.screen-list-item:last-child{border-bottom:none}
+.screen-list-item .item-left{display:flex;align-items:center;gap:12px}
+.screen-list-item .item-icon{
+  width:29px;height:29px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;
+}
+.screen-list-item .item-chevron{
+  color:var(--ios-gray3);font-size:14px;font-weight:600;
+}
+.screen-list-header{
+  padding:28px 16px 6px;
+  font-size:13px;font-weight:400;
+  color:var(--ios-gray);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Text Input Control ─── */
+.control-input{
+  width:100%;padding:8px 12px;
+  border-radius:8px;border:1.5px solid var(--border);
+  font-size:14px;font-family:'Noto Sans KR',-apple-system,sans-serif;
+  color:var(--text);background:var(--bg);
+  outline:none;transition:border-color .15s;
+}
+.control-input:focus{border-color:var(--accent)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Navigation Bars
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Navigation Bars</h1>
+<p class="page-desc">iOS Navigation Bar의 Large Title과 Inline 스타일을 직접 체험해보세요. 컨트롤 패널에서 속성을 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+
+      <!-- Navigation Bar -->
+      <div class="ios-navbar ios-navbar-bg" id="navbarContainer">
+        <!-- Large Title mode (default) -->
+        <div class="ios-navbar-large" id="navbarLarge">
+          <div class="navbar-top">
+            <div class="navbar-leading" id="leadingItems"></div>
+            <div class="navbar-trailing" id="trailingItemsLarge"></div>
+          </div>
+          <div class="navbar-large-title" id="largeTitleText">Settings</div>
+          <div class="navbar-bottom-border"></div>
+        </div>
+        <!-- Inline mode -->
+        <div class="ios-navbar-inline" id="navbarInline" style="display:none">
+          <div class="navbar-leading" id="leadingItemsInline"></div>
+          <span class="navbar-title" id="inlineTitleText">Settings</span>
+          <div class="navbar-trailing" id="trailingItemsInline"></div>
+        </div>
+      </div>
+
+      <!-- Screen Content -->
+      <div class="screen-content" id="screenContent">
+        <!-- List Content -->
+        <div class="screen-list-header" id="sectionHeader1">General</div>
+        <div class="screen-list">
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-gray)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              </div>
+              <span>About</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-blue)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              </div>
+              <span>Software Update</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-green)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+              </div>
+              <span>iPhone Storage</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+        </div>
+
+        <div class="screen-list-header" id="sectionHeader2">Settings</div>
+        <div class="screen-list">
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-blue)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <span>Accessibility</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-purple)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </div>
+              <span>Privacy &amp; Security</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-red)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              </div>
+              <span>Notifications</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-orange)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              </div>
+              <span>Display &amp; Brightness</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+          <div class="screen-list-item">
+            <div class="item-left">
+              <div class="item-icon" style="background:var(--ios-teal)">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <span>Wallpaper</span>
+            </div>
+            <span class="item-chevron">&#8250;</span>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Title Style -->
+        <div class="control-group">
+          <label>Title Style</label>
+          <div class="control-options" id="titleStyleOptions">
+            <div class="control-option active" data-value="large">Large Title</div>
+            <div class="control-option" data-value="inline">Inline</div>
+          </div>
+        </div>
+        <!-- Leading Item -->
+        <div class="control-group">
+          <label>Leading Item</label>
+          <div class="control-options" id="leadingOptions">
+            <div class="control-option active" data-value="none">None</div>
+            <div class="control-option" data-value="back">Back Button</div>
+          </div>
+        </div>
+        <!-- Trailing Items -->
+        <div class="control-group">
+          <label>Trailing Items</label>
+          <div class="control-options" id="trailingOptions">
+            <div class="control-option active" data-value="none">None</div>
+            <div class="control-option" data-value="edit">Edit</div>
+            <div class="control-option" data-value="add">Add (+)</div>
+            <div class="control-option" data-value="edit-add">Edit + Add</div>
+          </div>
+        </div>
+        <!-- Title Text -->
+        <div class="control-group">
+          <label>Title Text</label>
+          <input type="text" class="control-input" id="titleInput" value="Settings" maxlength="24" placeholder="Enter title text">
+        </div>
+        <!-- Search Bar Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Search Bar</span>
+            <div class="toggle-switch" id="toggleSearch"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"><span class="kw">NavigationStack</span> {
+    <span class="type">List</span> {
+        <span class="comment">// content</span>
+    }
+    .<span class="func">navigationTitle</span>(<span class="str">"Settings"</span>)
+    .<span class="func">navigationBarTitleDisplayMode</span>(<span class="prop">.large</span>)
+}</div>
+    </div>
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-body">
+        <div class="do-dont">
+          <div class="do-card">
+            <h4>&#10003; Do</h4>
+            <ul>
+              <li>Use a clear, concise title that describes the current view</li>
+              <li>Use Large Title style for top-level navigation</li>
+              <li>Use the standard back button to return to the previous screen</li>
+              <li>Place controls that affect the current view in the trailing area</li>
+              <li>Use SF Symbols for bar button items when possible</li>
+            </ul>
+          </div>
+          <div class="dont-card">
+            <h4>&#10007; Don't</h4>
+            <ul>
+              <li>Don't use more than 2-3 trailing bar button items</li>
+              <li>Don't replace the standard back button with a custom one unnecessarily</li>
+              <li>Don't use overly long titles that get truncated</li>
+              <li>Don't hide the navigation bar in the middle of a navigation flow</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note">
+          iOS Navigation Bars provide a consistent way to navigate hierarchical content.
+          <strong>Large Title</strong> (.large) is recommended for top-level views like Settings or Mail,
+          while <strong>Inline</strong> (.inline) is better for child views in the navigation stack.
+          The navigation bar supports leading items (typically a back button) and trailing items
+          for contextual actions like Edit, Add, or Search.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/navigation-bars" class="guideline-link" target="_blank">
+          Apple HIG: Navigation Bars &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  titleStyle: 'large',
+  leading: 'none',
+  trailing: 'none',
+  title: 'Settings',
+  search: false
+};
+
+// ─── SVG Icons ───
+const icons = {
+  back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+  add: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'titleStyleOptions') state.titleStyle = opt.dataset.value;
+      if (group.id === 'leadingOptions') state.leading = opt.dataset.value;
+      if (group.id === 'trailingOptions') state.trailing = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Title Input ───
+document.getElementById('titleInput').addEventListener('input', function() {
+  state.title = this.value || 'Title';
+  updatePreview();
+});
+
+// ─── Toggles ───
+document.getElementById('toggleSearch').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.search = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Build bar button items ───
+function buildLeadingHTML() {
+  if (state.leading === 'back') {
+    return '<button class="navbar-btn">' + icons.back + '<span>Back</span></button>';
+  }
+  return '';
+}
+
+function buildTrailingHTML() {
+  let html = '';
+  if (state.trailing === 'edit' || state.trailing === 'edit-add') {
+    html += '<button class="navbar-btn">Edit</button>';
+  }
+  if (state.trailing === 'add' || state.trailing === 'edit-add') {
+    html += '<button class="navbar-btn">' + icons.add + '</button>';
+  }
+  return html;
+}
+
+// ─── Build Search Bar HTML ───
+function buildSearchHTML() {
+  if (!state.search) return '';
+  return '<div style="padding:8px 16px 10px;"><div style="background:rgba(118,118,128,0.12);border-radius:10px;height:36px;display:flex;align-items:center;padding:0 8px;gap:6px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span style="font-size:17px;color:#8E8E93;">Search</span></div></div>';
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  const navLarge = document.getElementById('navbarLarge');
+  const navInline = document.getElementById('navbarInline');
+
+  if (state.titleStyle === 'large') {
+    navLarge.style.display = 'block';
+    navInline.style.display = 'none';
+    // Update large title
+    document.getElementById('largeTitleText').textContent = state.title;
+    // Leading
+    document.getElementById('leadingItems').innerHTML = buildLeadingHTML();
+    // Trailing
+    document.getElementById('trailingItemsLarge').innerHTML = buildTrailingHTML();
+  } else {
+    navLarge.style.display = 'none';
+    navInline.style.display = 'flex';
+    // Update inline title
+    document.getElementById('inlineTitleText').textContent = state.title;
+    // Leading
+    document.getElementById('leadingItemsInline').innerHTML = buildLeadingHTML();
+    // Trailing
+    document.getElementById('trailingItemsInline').innerHTML = buildTrailingHTML();
+  }
+
+  // Search bar
+  const existingSearch = document.getElementById('searchBarArea');
+  if (existingSearch) existingSearch.remove();
+  if (state.search) {
+    const searchDiv = document.createElement('div');
+    searchDiv.id = 'searchBarArea';
+    searchDiv.innerHTML = buildSearchHTML();
+    const navContainer = document.getElementById('navbarContainer');
+    navContainer.appendChild(searchDiv);
+  }
+
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const displayMode = state.titleStyle === 'large' ? '.large' : '.inline';
+  const escapedTitle = state.title.replace(/"/g, '\\"');
+
+  let code = '<span class="kw">NavigationStack</span> {\n';
+  code += '    <span class="type">List</span> {\n';
+  code += '        <span class="comment">// content</span>\n';
+  code += '    }\n';
+  code += '    .<span class="func">navigationTitle</span>(<span class="str">"' + escapedTitle + '"</span>)\n';
+  code += '    .<span class="func">navigationBarTitleDisplayMode</span>(<span class="prop">' + displayMode + '</span>)';
+
+  if (state.search) {
+    code += '\n    .<span class="func">searchable</span>(<span class="prop">text</span>: <span class="prop">$searchText</span>)';
+  }
+
+  if (state.trailing !== 'none' || state.leading === 'back') {
+    code += '\n    .<span class="func">toolbar</span> {';
+    if (state.leading === 'back') {
+      code += '\n        <span class="type">ToolbarItem</span>(<span class="prop">placement</span>: .<span class="prop">navigationBarLeading</span>) {';
+      code += '\n            <span class="kw">Button</span>(<span class="str">"Back"</span>) { <span class="comment">/* action */</span> }';
+      code += '\n        }';
+    }
+    if (state.trailing === 'edit' || state.trailing === 'edit-add') {
+      code += '\n        <span class="type">ToolbarItem</span>(<span class="prop">placement</span>: .<span class="prop">navigationBarTrailing</span>) {';
+      code += '\n            <span class="type">EditButton</span>()';
+      code += '\n        }';
+    }
+    if (state.trailing === 'add' || state.trailing === 'edit-add') {
+      code += '\n        <span class="type">ToolbarItem</span>(<span class="prop">placement</span>: .<span class="prop">navigationBarTrailing</span>) {';
+      code += '\n            <span class="kw">Button</span>(<span class="prop">action</span>: { <span class="comment">/* add */</span> }) {';
+      code += '\n                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"plus"</span>)';
+      code += '\n            }';
+      code += '\n        }';
+    }
+    code += '\n    }';
+  }
+
+  code += '\n}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// Initial render
+updatePreview();
+</script>
+</body>
+</html>

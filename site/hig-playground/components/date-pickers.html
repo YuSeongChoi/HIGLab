@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Pickers — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Date Picker 스타일을 브라우저에서 직접 체험해보세요. Compact, Wheel, Graphical 스타일과 다양한 컴포넌트 조합을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── iOS Date Picker Styles ─── */
+
+/* Compact Style */
+.dp-compact-row{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.dp-compact-label{
+  font-size:17px;font-weight:400;color:#000;
+}
+.dp-compact-value{
+  font-size:15px;font-weight:400;
+  color:var(--ios-blue);
+  background:rgba(0,122,255,0.12);
+  padding:6px 12px;border-radius:8px;
+  cursor:pointer;
+  transition:background .15s;
+}
+.dp-compact-value:hover{background:rgba(0,122,255,0.2)}
+
+/* Wheel Style */
+.dp-wheel-container{
+  width:100%;display:flex;justify-content:center;
+  gap:2px;padding:8px 0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  user-select:none;
+}
+.dp-wheel-column{
+  width:80px;height:180px;
+  overflow:hidden;position:relative;
+  text-align:center;
+}
+.dp-wheel-column.narrow{width:60px}
+.dp-wheel-column::before,.dp-wheel-column::after{
+  content:'';position:absolute;left:0;right:0;
+  height:60px;z-index:2;pointer-events:none;
+}
+.dp-wheel-column::before{
+  top:0;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.95),rgba(255,255,255,0));
+}
+.dp-wheel-column::after{
+  bottom:0;
+  background:linear-gradient(to top,rgba(255,255,255,0.95),rgba(255,255,255,0));
+}
+.dp-wheel-highlight{
+  position:absolute;top:50%;left:0;right:0;
+  height:36px;transform:translateY(-50%);
+  background:var(--ios-gray6);
+  border-radius:8px;z-index:1;
+}
+.dp-wheel-items{
+  position:relative;z-index:3;
+  padding:72px 0;
+  transition:transform 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.dp-wheel-item{
+  height:36px;line-height:36px;
+  font-size:21px;font-weight:400;
+  color:#000;cursor:pointer;
+  transition:opacity .15s;
+}
+.dp-wheel-item.faded{opacity:0.3}
+.dp-wheel-item.selected{font-weight:500}
+.dp-wheel-separator{
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;font-weight:400;color:#000;
+  height:180px;width:10px;
+}
+
+/* Graphical Style */
+.dp-graphical{
+  width:100%;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.dp-graphical-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.dp-graphical-month{
+  font-size:17px;font-weight:600;color:var(--ios-blue);
+  cursor:pointer;
+}
+.dp-graphical-nav{display:flex;gap:16px}
+.dp-graphical-nav button{
+  background:none;border:none;
+  font-size:18px;color:var(--ios-blue);
+  cursor:pointer;padding:4px;
+  font-weight:500;
+}
+.dp-graphical-nav button:hover{opacity:0.7}
+.dp-graphical-weekdays{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  margin-bottom:6px;
+}
+.dp-graphical-weekday{
+  text-align:center;font-size:13px;font-weight:600;
+  color:var(--ios-gray);padding:4px 0;
+}
+.dp-graphical-days{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:2px;
+}
+.dp-graphical-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:400;
+  border-radius:50%;cursor:pointer;
+  transition:all .15s;color:#000;
+}
+.dp-graphical-day:hover{background:var(--ios-gray6)}
+.dp-graphical-day.today{
+  background:var(--ios-gray5);font-weight:600;
+}
+.dp-graphical-day.selected{
+  background:var(--ios-blue);color:#fff;font-weight:600;
+}
+.dp-graphical-day.other-month{color:var(--ios-gray3)}
+.dp-graphical-day.empty{cursor:default}
+
+/* Time Display for Graphical */
+.dp-graphical-time{
+  margin-top:16px;padding-top:14px;
+  border-top:1px solid var(--ios-separator);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dp-graphical-time-label{
+  font-size:17px;font-weight:400;color:#000;
+}
+.dp-graphical-time-value{
+  font-size:15px;font-weight:400;
+  color:var(--ios-blue);
+  background:rgba(0,122,255,0.12);
+  padding:6px 12px;border-radius:8px;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Date Pickers
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Date Pickers</h1>
+<p class="page-desc">iOS Date Picker의 3가지 스타일을 직접 체험해보세요. Compact, Wheel, Graphical 스타일과 다양한 컴포넌트 조합을 컨트롤 패널에서 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Date Pickers</div>
+
+        <!-- Picker Display Area -->
+        <div id="pickerArea"></div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Style -->
+        <div class="control-group">
+          <label>Style</label>
+          <div class="control-options" id="styleOptions">
+            <div class="control-option active" data-value="compact">Compact</div>
+            <div class="control-option" data-value="wheel">Wheel</div>
+            <div class="control-option" data-value="graphical">Graphical</div>
+          </div>
+        </div>
+        <!-- Components -->
+        <div class="control-group">
+          <label>Components</label>
+          <div class="control-options" id="componentOptions">
+            <div class="control-option" data-value="date">Date Only</div>
+            <div class="control-option active" data-value="dateAndTime">Date & Time</div>
+            <div class="control-option" data-value="time">Time Only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-body">
+        <div class="do-dont">
+          <div class="do-card">
+            <h4>&#10003; Do</h4>
+            <ul>
+              <li>Use Compact style in space-constrained areas like forms and list rows</li>
+              <li>Use Graphical style when users need to see surrounding dates for context</li>
+              <li>Use Wheel style when a familiar, quick-scroll experience is preferred</li>
+              <li>Set sensible minimum and maximum date ranges</li>
+              <li>Show only the components (date, time) relevant to the task</li>
+            </ul>
+          </div>
+          <div class="dont-card">
+            <h4>&#10007; Don't</h4>
+            <ul>
+              <li>Don't use Wheel style when screen space is limited</li>
+              <li>Don't mix different picker styles in the same form</li>
+              <li>Don't hide the date picker behind extra taps if date selection is the primary task</li>
+              <li>Don't use Graphical style for time-only selection</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note">
+          iOS provides three date picker styles: <strong>Compact</strong> displays the date as a tappable label that
+          expands inline, ideal for forms. <strong>Wheel</strong> presents the classic spinning columns for quick scrubbing.
+          <strong>Graphical</strong> shows a full calendar grid, best for selecting dates where surrounding context matters,
+          such as scheduling or date range selection.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/date-pickers" class="guideline-link" target="_blank">
+          Apple HIG: Date Pickers &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  style: 'compact',
+  component: 'dateAndTime',
+  selectedDay: 28,
+  currentMonth: 1, // 0-indexed: 1 = February
+  currentYear: 2026,
+  selectedHour: 10,
+  selectedMinute: 30,
+  selectedAmPm: 'AM'
+};
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const monthNamesShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      if (group.id === 'componentOptions') state.component = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Helpers ───
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+function getFirstDayOfMonth(year, month) {
+  return new Date(year, month, 1).getDay();
+}
+function formatDate() {
+  return monthNamesShort[state.currentMonth] + ' ' + state.selectedDay + ', ' + state.currentYear;
+}
+function formatTime() {
+  const h = state.selectedHour === 0 ? 12 : (state.selectedHour > 12 ? state.selectedHour - 12 : state.selectedHour);
+  const m = String(state.selectedMinute).padStart(2, '0');
+  return h + ':' + m + ' ' + state.selectedAmPm;
+}
+function format24Time() {
+  let h = state.selectedHour;
+  if (state.selectedAmPm === 'PM' && h < 12) h += 12;
+  if (state.selectedAmPm === 'AM' && h === 12) h = 0;
+  return String(h).padStart(2,'0') + ':' + String(state.selectedMinute).padStart(2,'0');
+}
+
+// ─── Render: Compact ───
+function renderCompact() {
+  const area = document.getElementById('pickerArea');
+  let html = '';
+
+  if (state.component === 'date' || state.component === 'dateAndTime') {
+    html += '<div class="screen-section">';
+    html += '<div class="screen-section-title">Date</div>';
+    html += '<div class="screen-card">';
+    html += '<div class="dp-compact-row">';
+    html += '<span class="dp-compact-label">Date</span>';
+    html += '<span class="dp-compact-value">' + formatDate() + '</span>';
+    html += '</div></div></div>';
+  }
+
+  if (state.component === 'time' || state.component === 'dateAndTime') {
+    html += '<div class="screen-section">';
+    html += '<div class="screen-section-title">Time</div>';
+    html += '<div class="screen-card">';
+    html += '<div class="dp-compact-row">';
+    html += '<span class="dp-compact-label">Time</span>';
+    html += '<span class="dp-compact-value">' + formatTime() + '</span>';
+    html += '</div></div></div>';
+  }
+
+  if (state.component === 'dateAndTime') {
+    html += '<div class="screen-section">';
+    html += '<div class="screen-section-title">Combined</div>';
+    html += '<div class="screen-card">';
+    html += '<div class="dp-compact-row">';
+    html += '<span class="dp-compact-label">Event</span>';
+    html += '<span class="dp-compact-value" style="font-size:13px">' + formatDate() + '  ' + formatTime() + '</span>';
+    html += '</div></div></div>';
+  }
+
+  area.innerHTML = html;
+}
+
+// ─── Render: Wheel ───
+function renderWheel() {
+  const area = document.getElementById('pickerArea');
+  let html = '<div class="screen-section">';
+  html += '<div class="screen-section-title">Wheel Picker</div>';
+  html += '<div class="screen-card" style="padding:8px 8px">';
+  html += '<div class="dp-wheel-container">';
+
+  if (state.component === 'date' || state.component === 'dateAndTime') {
+    // Month column
+    html += renderWheelColumn('month', monthNamesShort, state.currentMonth, false);
+    // Day column
+    const days = [];
+    const daysInMonth = getDaysInMonth(state.currentYear, state.currentMonth);
+    for (let i = 1; i <= daysInMonth; i++) days.push(i);
+    html += renderWheelColumn('day', days, state.selectedDay - 1, true);
+  }
+
+  if (state.component === 'dateAndTime') {
+    html += '<div class="dp-wheel-separator"></div>';
+  }
+
+  if (state.component === 'time' || state.component === 'dateAndTime') {
+    // Hour column
+    const hours = [];
+    for (let i = 1; i <= 12; i++) hours.push(i);
+    const currentHourDisplay = state.selectedHour === 0 ? 12 : (state.selectedHour > 12 ? state.selectedHour - 12 : state.selectedHour);
+    html += renderWheelColumn('hour', hours, currentHourDisplay - 1, true);
+
+    // Separator
+    html += '<div class="dp-wheel-separator">:</div>';
+
+    // Minute column
+    const minutes = [];
+    for (let i = 0; i < 60; i++) minutes.push(String(i).padStart(2, '0'));
+    html += renderWheelColumn('minute', minutes, state.selectedMinute, true);
+
+    // AM/PM column
+    html += renderWheelColumn('ampm', ['AM', 'PM'], state.selectedAmPm === 'AM' ? 0 : 1, true);
+  }
+
+  html += '</div></div></div>';
+  area.innerHTML = html;
+
+  // Attach wheel click events
+  document.querySelectorAll('.dp-wheel-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const col = this.closest('.dp-wheel-column');
+      const type = col.dataset.type;
+      const idx = parseInt(this.dataset.index);
+
+      if (type === 'month') {
+        state.currentMonth = idx;
+        const maxDays = getDaysInMonth(state.currentYear, state.currentMonth);
+        if (state.selectedDay > maxDays) state.selectedDay = maxDays;
+      } else if (type === 'day') {
+        state.selectedDay = idx + 1;
+      } else if (type === 'hour') {
+        state.selectedHour = idx + 1;
+      } else if (type === 'minute') {
+        state.selectedMinute = idx;
+      } else if (type === 'ampm') {
+        state.selectedAmPm = idx === 0 ? 'AM' : 'PM';
+      }
+      updatePreview();
+    });
+  });
+}
+
+function renderWheelColumn(type, items, selectedIdx, narrow) {
+  const offset = -(selectedIdx * 36);
+  let html = '<div class="dp-wheel-column' + (narrow ? ' narrow' : '') + '" data-type="' + type + '">';
+  html += '<div class="dp-wheel-highlight"></div>';
+  html += '<div class="dp-wheel-items" style="transform:translateY(' + offset + 'px)">';
+  items.forEach((item, i) => {
+    const sel = i === selectedIdx ? ' selected' : '';
+    const faded = Math.abs(i - selectedIdx) > 1 ? ' faded' : '';
+    html += '<div class="dp-wheel-item' + sel + faded + '" data-index="' + i + '">' + item + '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// ─── Render: Graphical ───
+function renderGraphical() {
+  const area = document.getElementById('pickerArea');
+  let html = '<div class="screen-section">';
+  html += '<div class="screen-section-title">Calendar</div>';
+  html += '<div class="screen-card" style="padding:12px 14px">';
+  html += '<div class="dp-graphical">';
+
+  if (state.component === 'date' || state.component === 'dateAndTime') {
+    // Header
+    html += '<div class="dp-graphical-header">';
+    html += '<span class="dp-graphical-month">' + monthNames[state.currentMonth] + ' ' + state.currentYear + '</span>';
+    html += '<div class="dp-graphical-nav">';
+    html += '<button onclick="changeMonth(-1)">&lsaquo;</button>';
+    html += '<button onclick="changeMonth(1)">&rsaquo;</button>';
+    html += '</div></div>';
+
+    // Weekday headers
+    html += '<div class="dp-graphical-weekdays">';
+    weekdays.forEach(d => {
+      html += '<div class="dp-graphical-weekday">' + d + '</div>';
+    });
+    html += '</div>';
+
+    // Days grid
+    html += '<div class="dp-graphical-days">';
+    const firstDay = getFirstDayOfMonth(state.currentYear, state.currentMonth);
+    const daysInMonth = getDaysInMonth(state.currentYear, state.currentMonth);
+    const prevMonthDays = getDaysInMonth(state.currentYear, state.currentMonth === 0 ? 11 : state.currentMonth - 1);
+
+    // Previous month trailing days
+    for (let i = 0; i < firstDay; i++) {
+      const d = prevMonthDays - firstDay + 1 + i;
+      html += '<div class="dp-graphical-day other-month">' + d + '</div>';
+    }
+
+    // Current month days
+    const today = new Date();
+    const isCurrentMonthView = (state.currentYear === 2026 && state.currentMonth === 1);
+    for (let d = 1; d <= daysInMonth; d++) {
+      let cls = 'dp-graphical-day';
+      if (d === state.selectedDay) cls += ' selected';
+      else if (isCurrentMonthView && d === 28) cls += ' today';
+      html += '<div class="' + cls + '" onclick="selectDay(' + d + ')">' + d + '</div>';
+    }
+
+    // Next month leading days
+    const totalCells = firstDay + daysInMonth;
+    const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let i = 1; i <= remaining; i++) {
+      html += '<div class="dp-graphical-day other-month">' + i + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // Time row for dateAndTime
+  if (state.component === 'dateAndTime') {
+    html += '<div class="dp-graphical-time">';
+    html += '<span class="dp-graphical-time-label">Time</span>';
+    html += '<span class="dp-graphical-time-value">' + formatTime() + '</span>';
+    html += '</div>';
+  }
+
+  // Time-only shows wheel fallback notice
+  if (state.component === 'time') {
+    html += '<div style="text-align:center;padding:24px 0;font-size:14px;color:var(--ios-gray);font-family:-apple-system,BlinkMacSystemFont,sans-serif;">';
+    html += '<div style="font-size:32px;margin-bottom:8px">&#128337;</div>';
+    html += 'Graphical style is not available for<br>time-only selection. Use Compact or Wheel.';
+    html += '</div>';
+  }
+
+  html += '</div></div></div>';
+  area.innerHTML = html;
+}
+
+function selectDay(d) {
+  state.selectedDay = d;
+  updatePreview();
+}
+
+function changeMonth(delta) {
+  state.currentMonth += delta;
+  if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+  if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+  const maxDays = getDaysInMonth(state.currentYear, state.currentMonth);
+  if (state.selectedDay > maxDays) state.selectedDay = maxDays;
+  updatePreview();
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  switch (state.style) {
+    case 'compact': renderCompact(); break;
+    case 'wheel': renderWheel(); break;
+    case 'graphical': renderGraphical(); break;
+  }
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const styleMap = {
+    compact: '.compact',
+    wheel: '.wheel',
+    graphical: '.graphical'
+  };
+  const componentMap = {
+    date: '[.date]',
+    time: '[.hourAndMinute]',
+    dateAndTime: '[.date, .hourAndMinute]'
+  };
+
+  let code = '<span class="kw">@State</span> <span class="kw">private var</span> <span class="prop">selectedDate</span> = <span class="type">Date</span>()\n\n';
+  code += '<span class="type">DatePicker</span>(\n';
+  code += '    <span class="str">"Select Date"</span>,\n';
+  code += '    selection: <span class="prop">$selectedDate</span>,\n';
+  code += '    displayedComponents: <span class="prop">' + componentMap[state.component] + '</span>\n';
+  code += ')\n';
+  code += '.<span class="func">datePickerStyle</span>(<span class="prop">' + styleMap[state.style] + '</span>)';
+
+  if (state.style === 'compact') {
+    code += '\n\n<span class="comment">// Compact shows a label that expands</span>';
+    code += '\n<span class="comment">// when tapped, ideal for form rows</span>';
+  } else if (state.style === 'wheel') {
+    code += '\n\n<span class="comment">// Wheel provides the classic iOS</span>';
+    code += '\n<span class="comment">// spinning column picker</span>';
+  } else if (state.style === 'graphical') {
+    code += '\n\n<span class="comment">// Graphical shows a full calendar</span>';
+    code += '\n<span class="comment">// with month navigation</span>';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// Initial render
+updatePreview();
+</script>
+</body>
+</html>
