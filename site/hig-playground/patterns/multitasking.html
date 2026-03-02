@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multitasking — HIG Playground | HIG Lab</title>
+<meta name="description" content="iPad 멀티태스킹 모드의 레이아웃 변화를 브라우저에서 직접 체험해보세요. Full Screen, Split View, Slide Over 모드를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Multitasking Simulation ─── */
+.mt-container{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  position:relative;
+}
+.mt-toolbar{
+  height:44px;background:#fff;
+  border-bottom:1px solid var(--ios-separator);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 12px;flex-shrink:0;
+  transition:all .3s ease;
+}
+.mt-toolbar-title{
+  font-size:15px;font-weight:600;color:#1d1d1f;
+}
+.mt-toolbar-icons{display:flex;gap:12px}
+.mt-toolbar-icon{
+  width:24px;height:24px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--ios-blue);cursor:pointer;
+}
+.mt-body{flex:1;display:flex;overflow:hidden;position:relative}
+
+/* Notes Pane */
+.mt-pane-notes{
+  flex:1;background:#fff;display:flex;flex-direction:column;
+  overflow:hidden;transition:all .3s ease;
+}
+.mt-notes-header{
+  padding:12px 14px 8px;border-bottom:1px solid var(--ios-separator);
+}
+.mt-notes-title{
+  font-size:20px;font-weight:700;color:#1d1d1f;margin-bottom:4px;
+}
+.mt-notes-date{
+  font-size:11px;color:var(--ios-gray);
+}
+.mt-notes-body{
+  padding:12px 14px;font-size:13px;color:#1d1d1f;line-height:1.7;
+  flex:1;overflow-y:auto;
+}
+.mt-notes-line{
+  margin-bottom:8px;display:flex;align-items:flex-start;gap:6px;
+}
+.mt-notes-bullet{
+  width:5px;height:5px;border-radius:50%;background:var(--ios-orange);
+  flex-shrink:0;margin-top:7px;
+}
+.mt-notes-text{flex:1}
+
+/* Mail Pane */
+.mt-pane-mail{
+  background:#fff;display:flex;flex-direction:column;
+  overflow:hidden;border-left:1px solid var(--ios-separator);
+  transition:all .3s ease;
+}
+.mt-mail-header{
+  padding:10px 12px 8px;border-bottom:1px solid var(--ios-separator);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.mt-mail-title{
+  font-size:15px;font-weight:600;color:#1d1d1f;
+}
+.mt-mail-badge{
+  background:var(--ios-blue);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;
+}
+.mt-mail-list{flex:1;overflow-y:auto}
+.mt-mail-item{
+  padding:10px 12px;border-bottom:1px solid var(--ios-separator);
+  cursor:pointer;transition:background .15s;
+}
+.mt-mail-item:hover{background:rgba(0,122,255,0.06)}
+.mt-mail-sender{font-size:13px;font-weight:600;color:#1d1d1f}
+.mt-mail-subject{font-size:12px;color:#1d1d1f;margin-top:1px}
+.mt-mail-preview{font-size:11px;color:var(--ios-gray);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt-mail-time{font-size:10px;color:var(--ios-gray);float:right}
+.mt-mail-unread .mt-mail-sender::before{
+  content:'';display:inline-block;width:8px;height:8px;
+  border-radius:50%;background:var(--ios-blue);margin-right:6px;
+}
+
+/* Divider */
+.mt-divider{
+  width:1px;background:var(--ios-gray3);
+  cursor:col-resize;position:relative;flex-shrink:0;
+  display:none;
+}
+.mt-divider::after{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:4px;height:32px;border-radius:2px;
+  background:var(--ios-gray2);
+}
+
+/* Slide Over Panel */
+.mt-slide-over{
+  position:absolute;right:0;top:0;bottom:0;
+  width:45%;background:#fff;
+  box-shadow:-4px 0 20px rgba(0,0,0,0.15);
+  border-radius:12px 0 0 12px;
+  display:none;flex-direction:column;
+  z-index:5;
+  animation:slideOverIn .3s ease;
+}
+@keyframes slideOverIn{
+  from{transform:translateX(100%)}
+  to{transform:translateX(0)}
+}
+.mt-slide-over-handle{
+  width:36px;height:5px;border-radius:3px;
+  background:var(--ios-gray3);margin:8px auto 4px;
+}
+
+/* Adaptive Layout */
+.mt-notes-sidebar{
+  display:none;border-right:1px solid var(--ios-separator);
+  width:100%;background:#f9f9f9;
+}
+.mt-notes-sidebar-item{
+  padding:10px 12px;border-bottom:1px solid var(--ios-separator);
+  font-size:12px;color:#1d1d1f;cursor:pointer;
+}
+.mt-notes-sidebar-item.active{
+  background:rgba(0,122,255,0.1);color:var(--ios-blue);font-weight:600;
+}
+.mt-notes-sidebar-item .item-title{font-weight:600;margin-bottom:2px}
+.mt-notes-sidebar-item .item-preview{font-size:10px;color:var(--ios-gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Clipped/Bad state */
+.mt-clipped .mt-notes-body{overflow:visible}
+.mt-clipped .mt-notes-line{white-space:nowrap}
+.mt-overflow-text{
+  white-space:nowrap;
+  overflow:visible;
+  font-size:13px;
+}
+.mt-missing-toolbar .mt-toolbar{display:none!important}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-option.disabled-opt{
+  opacity:0.4;pointer-events:none;
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Multitasking
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Multitasking</h1>
+<p class="page-desc">iPad 멀티태스킹 모드의 레이아웃 변화를 확인해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <!-- Multitasking simulation renders here -->
+        <div class="mt-container" id="mtContainer">
+          <!-- Toolbar -->
+          <div class="mt-toolbar" id="mtToolbar">
+            <div class="mt-toolbar-icons">
+              <div class="mt-toolbar-icon">&#9664;</div>
+            </div>
+            <div class="mt-toolbar-title" id="mtToolbarTitle">Notes</div>
+            <div class="mt-toolbar-icons">
+              <div class="mt-toolbar-icon">&#9998;</div>
+              <div class="mt-toolbar-icon">&#8943;</div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="mt-body" id="mtBody">
+            <!-- Notes Pane (Primary) -->
+            <div class="mt-pane-notes" id="mtPaneNotes">
+              <!-- Sidebar for adaptive layout in full mode -->
+              <div class="mt-notes-sidebar" id="mtNotesSidebar">
+                <div class="mt-notes-sidebar-item active">
+                  <div class="item-title">Meeting Notes</div>
+                  <div class="item-preview">Today's agenda and action items...</div>
+                </div>
+                <div class="mt-notes-sidebar-item">
+                  <div class="item-title">Project Ideas</div>
+                  <div class="item-preview">New feature brainstorming...</div>
+                </div>
+                <div class="mt-notes-sidebar-item">
+                  <div class="item-title">Shopping List</div>
+                  <div class="item-preview">Groceries for the week...</div>
+                </div>
+                <div class="mt-notes-sidebar-item">
+                  <div class="item-title">Travel Plans</div>
+                  <div class="item-preview">Itinerary for summer trip...</div>
+                </div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+                <div class="mt-notes-header">
+                  <div class="mt-notes-title">Meeting Notes</div>
+                  <div class="mt-notes-date">2024.03.15 14:30</div>
+                </div>
+                <div class="mt-notes-body" id="mtNotesBody">
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">Q1 목표 달성률 리뷰</div>
+                  </div>
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">신규 기능 개발 일정 확인</div>
+                  </div>
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">디자인 시스템 업데이트</div>
+                  </div>
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">사용자 피드백 분석 결과 공유</div>
+                  </div>
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">다음 스프린트 계획 수립</div>
+                  </div>
+                  <div class="mt-notes-line">
+                    <div class="mt-notes-bullet"></div>
+                    <div class="mt-notes-text">팀 빌딩 이벤트 논의</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Divider (for split view) -->
+            <div class="mt-divider" id="mtDivider"></div>
+
+            <!-- Mail Pane (Secondary, for split view) -->
+            <div class="mt-pane-mail" id="mtPaneMail" style="display:none">
+              <div class="mt-mail-header">
+                <div class="mt-mail-title">Mail</div>
+                <div class="mt-mail-badge">3</div>
+              </div>
+              <div class="mt-mail-list">
+                <div class="mt-mail-item mt-mail-unread">
+                  <div class="mt-mail-sender">Kim Jisu <span class="mt-mail-time">10:24</span></div>
+                  <div class="mt-mail-subject">Sprint Review 자료</div>
+                  <div class="mt-mail-preview">안녕하세요, 이번 스프린트 리뷰에 필요한 자료를 첨부합니다...</div>
+                </div>
+                <div class="mt-mail-item mt-mail-unread">
+                  <div class="mt-mail-sender">Lee Minho <span class="mt-mail-time">09:15</span></div>
+                  <div class="mt-mail-subject">디자인 가이드라인 업데이트</div>
+                  <div class="mt-mail-preview">새로운 HIG 가이드라인에 맞춰 컴포넌트를 업데이트했습니다...</div>
+                </div>
+                <div class="mt-mail-item">
+                  <div class="mt-mail-sender">Park Soyeon <span class="mt-mail-time">Yesterday</span></div>
+                  <div class="mt-mail-subject">주간 회의 안건</div>
+                  <div class="mt-mail-preview">이번 주 회의 안건을 공유합니다. 확인 부탁드립니다...</div>
+                </div>
+                <div class="mt-mail-item mt-mail-unread">
+                  <div class="mt-mail-sender">Choi Yuna <span class="mt-mail-time">Yesterday</span></div>
+                  <div class="mt-mail-subject">API 문서 검토 요청</div>
+                  <div class="mt-mail-preview">새로운 API 엔드포인트에 대한 문서를 작성했습니다...</div>
+                </div>
+                <div class="mt-mail-item">
+                  <div class="mt-mail-sender">System <span class="mt-mail-time">Mon</span></div>
+                  <div class="mt-mail-subject">빌드 성공 알림</div>
+                  <div class="mt-mail-preview">v2.3.1 빌드가 성공적으로 완료되었습니다...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide Over Panel -->
+            <div class="mt-slide-over" id="mtSlideOver">
+              <div class="mt-slide-over-handle"></div>
+              <div class="mt-mail-header">
+                <div class="mt-mail-title">Mail</div>
+                <div class="mt-mail-badge">3</div>
+              </div>
+              <div class="mt-mail-list">
+                <div class="mt-mail-item mt-mail-unread">
+                  <div class="mt-mail-sender">Kim Jisu <span class="mt-mail-time">10:24</span></div>
+                  <div class="mt-mail-subject">Sprint Review 자료</div>
+                  <div class="mt-mail-preview">안녕하세요, 이번 스프린트 리뷰에...</div>
+                </div>
+                <div class="mt-mail-item mt-mail-unread">
+                  <div class="mt-mail-sender">Lee Minho <span class="mt-mail-time">09:15</span></div>
+                  <div class="mt-mail-subject">디자인 가이드라인</div>
+                  <div class="mt-mail-preview">새로운 HIG 가이드라인에 맞춰...</div>
+                </div>
+                <div class="mt-mail-item">
+                  <div class="mt-mail-sender">Park Soyeon <span class="mt-mail-time">Yesterday</span></div>
+                  <div class="mt-mail-subject">주간 회의 안건</div>
+                  <div class="mt-mail-preview">이번 주 회의 안건을 공유합니다...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>모든 멀티태스킹 모드를 <strong>지원</strong>하세요</li>
+              <li>사용 가능한 너비에 맞게 <strong>레이아웃을 적응</strong>시키세요</li>
+              <li>크기 변경 시 <strong>상태를 유지</strong>하세요</li>
+              <li>Compact 너비에서 <strong>읽기 좋은 여백</strong>을 사용하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>Full Screen 프레젠테이션을 <strong>가정</strong>하지 마세요</li>
+              <li><strong>고정된 너비</strong>를 하드코딩하지 마세요</li>
+              <li>Size Class 변경을 <strong>무시</strong>하지 마세요</li>
+              <li>Split View에서 <strong>필수 컨트롤을 숨기지</strong> 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iPad supports multiple multitasking modes: <strong>Full Screen</strong> for single-app focus,
+          <strong>Split View</strong> for side-by-side apps with adjustable ratios,
+          and <strong>Slide Over</strong> for a floating compact panel.
+          Apps should adapt their layout using <strong>size classes</strong> and <strong>NavigationSplitView</strong>.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/multitasking" class="guideline-link" target="_blank">
+          Apple HIG: Multitasking &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Mode -->
+        <div class="control-group">
+          <label>Mode</label>
+          <div class="control-options" id="modeOptions">
+            <div class="control-option active" data-value="full">Full</div>
+            <div class="control-option" data-value="splitView">Split View</div>
+            <div class="control-option" data-value="slideOver">Slide Over</div>
+          </div>
+        </div>
+        <!-- Split Ratio -->
+        <div class="control-group" id="ratioGroup">
+          <label>Split Ratio</label>
+          <div class="control-options" id="ratioOptions">
+            <div class="control-option active disabled-opt" data-value="50:50">50:50</div>
+            <div class="control-option disabled-opt" data-value="66:33">66:33</div>
+            <div class="control-option disabled-opt" data-value="33:66">33:66</div>
+          </div>
+        </div>
+        <!-- Toggles -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Toolbar</span>
+            <div class="toggle-switch on" id="toggleToolbar"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Adaptive Layout</span>
+            <div class="toggle-switch on" id="toggleAdaptive"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"><span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {
+    <span class="kw">@Environment</span>(\.<span class="prop">horizontalSizeClass</span>) <span class="kw">var</span> sizeClass
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {
+        <span class="type">NavigationSplitView</span> {
+            <span class="func">SidebarView</span>()
+        } detail: {
+            <span class="func">DetailView</span>()
+        }
+        .<span class="func">navigationSplitViewStyle</span>(.<span class="prop">balanced</span>)
+    }
+}</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  mode: 'full',
+  splitRatio: '50:50',
+  showToolbar: true,
+  adaptiveLayout: true
+};
+
+let isDontMode = false;
+
+// ─── Mode Options ───
+document.getElementById('modeOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.getElementById('modeOptions').querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.mode = opt.dataset.value;
+    updateRatioEnabled();
+    updatePreview();
+  });
+});
+
+// ─── Ratio Options ───
+document.getElementById('ratioOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    if (opt.classList.contains('disabled-opt')) return;
+    document.getElementById('ratioOptions').querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.splitRatio = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+function updateRatioEnabled() {
+  var ratioOpts = document.getElementById('ratioOptions').querySelectorAll('.control-option');
+  if (state.mode === 'splitView') {
+    ratioOpts.forEach(function(o) { o.classList.remove('disabled-opt'); });
+  } else {
+    ratioOpts.forEach(function(o) { o.classList.add('disabled-opt'); });
+  }
+}
+
+// ─── Toggles ───
+document.getElementById('toggleToolbar').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showToolbar = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleAdaptive').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.adaptiveLayout = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  var toolbar = document.getElementById('mtToolbar');
+  var paneNotes = document.getElementById('mtPaneNotes');
+  var paneMail = document.getElementById('mtPaneMail');
+  var divider = document.getElementById('mtDivider');
+  var slideOver = document.getElementById('mtSlideOver');
+  var sidebar = document.getElementById('mtNotesSidebar');
+  var container = document.getElementById('mtContainer');
+
+  // Reset classes
+  container.classList.remove('mt-clipped', 'mt-missing-toolbar');
+
+  // Toolbar visibility
+  toolbar.style.display = state.showToolbar ? 'flex' : 'none';
+
+  // Reset all panes
+  paneMail.style.display = 'none';
+  divider.style.display = 'none';
+  slideOver.style.display = 'none';
+  paneNotes.style.flex = '1';
+  paneNotes.style.width = '';
+
+  if (state.mode === 'full') {
+    // Full screen mode — single app
+    document.getElementById('mtToolbarTitle').textContent = 'Notes';
+    // Show sidebar if adaptive
+    if (state.adaptiveLayout) {
+      sidebar.style.display = 'block';
+    } else {
+      sidebar.style.display = 'none';
+    }
+  } else if (state.mode === 'splitView') {
+    // Split View mode — two panes side by side
+    paneMail.style.display = 'flex';
+    divider.style.display = 'block';
+    sidebar.style.display = 'none';
+    document.getElementById('mtToolbarTitle').textContent = 'Notes + Mail';
+
+    var parts = state.splitRatio.split(':');
+    var left = parseInt(parts[0]);
+    var right = parseInt(parts[1]);
+    paneNotes.style.flex = '' + left;
+    paneMail.style.flex = '' + right;
+    paneMail.style.display = 'flex';
+
+    // In 33:66, notes pane is narrow — adaptive layout shows collapsed list
+    if (state.adaptiveLayout && state.splitRatio === '33:66') {
+      sidebar.style.display = 'block';
+      // Hide the notes body and header in narrow, show sidebar only
+      paneNotes.querySelector('.mt-notes-header').parentElement.style.display = 'none';
+      sidebar.style.width = '100%';
+    } else if (state.adaptiveLayout && state.splitRatio === '50:50') {
+      // Normal split, hide sidebar
+      sidebar.style.display = 'none';
+      paneNotes.querySelector('.mt-notes-header').parentElement.style.display = 'flex';
+    } else {
+      sidebar.style.display = 'none';
+      paneNotes.querySelector('.mt-notes-header').parentElement.style.display = 'flex';
+    }
+  } else if (state.mode === 'slideOver') {
+    // Slide Over mode — floating panel
+    slideOver.style.display = 'flex';
+    sidebar.style.display = 'none';
+    document.getElementById('mtToolbarTitle').textContent = 'Notes';
+
+    if (state.adaptiveLayout) {
+      sidebar.style.display = 'none';
+    }
+    // Ensure notes body visible
+    paneNotes.querySelector('.mt-notes-header').parentElement.style.display = 'flex';
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+
+  if (state.mode === 'full') {
+    code = '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+    code += '    <span class="kw">@Environment</span>(\\.<span class="prop">horizontalSizeClass</span>) <span class="kw">var</span> sizeClass\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">NavigationSplitView</span> {\n';
+    code += '            <span class="func">SidebarView</span>()\n';
+    code += '        } detail: {\n';
+    code += '            <span class="func">DetailView</span>()\n';
+    code += '        }\n';
+    code += '        .<span class="func">navigationSplitViewStyle</span>(.<span class="prop">balanced</span>)\n';
+    code += '    }\n';
+    code += '}';
+  } else if (state.mode === 'splitView') {
+    code = '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+    code += '    <span class="kw">@Environment</span>(\\.<span class="prop">horizontalSizeClass</span>) <span class="kw">var</span> sizeClass\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">NavigationSplitView</span> {\n';
+    code += '            <span class="func">SidebarView</span>()\n';
+    code += '        } content: {\n';
+    code += '            <span class="func">ContentListView</span>()\n';
+    code += '        } detail: {\n';
+    code += '            <span class="func">DetailView</span>()\n';
+    code += '        }\n';
+
+    if (state.splitRatio === '50:50') {
+      code += '        .<span class="func">navigationSplitViewStyle</span>(.<span class="prop">balanced</span>)\n';
+    } else if (state.splitRatio === '66:33') {
+      code += '        .<span class="func">navigationSplitViewStyle</span>(.<span class="prop">prominentDetail</span>)\n';
+    } else {
+      code += '        <span class="comment">// Primary pane is narrow</span>\n';
+      code += '        .<span class="func">navigationSplitViewStyle</span>(.<span class="prop">balanced</span>)\n';
+    }
+
+    if (state.adaptiveLayout) {
+      code += '        <span class="comment">// Adapts to available width</span>\n';
+      code += '        .<span class="func">navigationSplitViewColumnWidth</span>(\n';
+      code += '            min: <span class="prop">200</span>, ideal: <span class="prop">300</span>, max: <span class="prop">400</span>\n';
+      code += '        )\n';
+    }
+    code += '    }\n';
+    code += '}';
+  } else if (state.mode === 'slideOver') {
+    code = '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+    code += '    <span class="kw">@Environment</span>(\\.<span class="prop">horizontalSizeClass</span>) <span class="kw">var</span> sizeClass\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">NavigationSplitView</span> {\n';
+    code += '            <span class="func">SidebarView</span>()\n';
+    code += '        } detail: {\n';
+    code += '            <span class="func">DetailView</span>()\n';
+    code += '        }\n';
+    code += '        <span class="comment">// In Slide Over, sizeClass becomes .compact</span>\n';
+    code += '        .<span class="func">navigationSplitViewStyle</span>(\n';
+    code += '            sizeClass == .<span class="prop">compact</span>\n';
+    code += '                ? .<span class="prop">automatic</span>\n';
+    code += '                : .<span class="prop">balanced</span>\n';
+    code += '        )\n';
+
+    if (state.showToolbar) {
+      code += '        .<span class="func">toolbar</span> {\n';
+      code += '            <span class="type">ToolbarItem</span>(placement: .<span class="prop">navigationBarTrailing</span>) {\n';
+      code += '                <span class="type">Button</span>(<span class="str">"Edit"</span>) { }\n';
+      code += '            }\n';
+      code += '        }\n';
+    }
+    code += '    }\n';
+    code += '}';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+// Store original screen content
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="mt-container">' +
+  '<div class="mt-body" style="flex-direction:column;gap:0">' +
+    '<!-- No toolbar - bad -->' +
+    '<div style="flex:1;display:flex;overflow:hidden">' +
+      '<!-- Left pane clipped -->' +
+      '<div style="flex:1;background:#fff;overflow:visible;padding:8px;font-family:-apple-system,sans-serif">' +
+        '<div style="font-size:13px;font-weight:700;color:#FF3B30;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">No Toolbar</div>' +
+        '<div style="font-size:18px;font-weight:700;color:#1d1d1f;margin-bottom:8px;white-space:nowrap">Meeting Notes - Q1 Sprint Review Summary</div>' +
+        '<div style="font-size:12px;color:#1d1d1f;line-height:1.6">' +
+          '<div style="white-space:nowrap;overflow:visible;margin-bottom:4px">&#8226; Q1 목표 달성률 리뷰 - 전체 팀 성과 분석 및 개선점 도출하기</div>' +
+          '<div style="white-space:nowrap;overflow:visible;margin-bottom:4px">&#8226; 신규 기능 개발 일정 확인 - 마일스톤 재조정 필요 여부 검토</div>' +
+          '<div style="white-space:nowrap;overflow:visible;margin-bottom:4px">&#8226; 디자인 시스템 업데이트 - 컴포넌트 라이브러리 버전 관리</div>' +
+        '</div>' +
+      '</div>' +
+      '<!-- Right pane also clipped -->' +
+      '<div style="width:45%;background:#fff;border-left:1px solid rgba(60,60,67,0.12);overflow:visible;padding:8px;font-family:-apple-system,sans-serif">' +
+        '<div style="font-size:13px;font-weight:700;color:#FF3B30;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Fixed Width</div>' +
+        '<div style="font-size:15px;font-weight:600;margin-bottom:8px">Mail</div>' +
+        '<div style="padding:8px;border-bottom:1px solid rgba(60,60,67,0.12)">' +
+          '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:visible">Kim Jisu - Sprint Review 자료 공유 드립니다</div>' +
+          '<div style="font-size:10px;color:#8E8E93;white-space:nowrap;overflow:visible">안녕하세요, 이번 스프린트 리뷰에 필요한 자료를 첨부합니다...</div>' +
+        '</div>' +
+        '<div style="padding:8px;border-bottom:1px solid rgba(60,60,67,0.12)">' +
+          '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:visible">Lee Minho - 디자인 가이드라인 업데이트 완료</div>' +
+          '<div style="font-size:10px;color:#8E8E93;white-space:nowrap;overflow:visible">새로운 HIG 가이드라인에 맞춰 컴포넌트를 전부 수정했습니다...</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<!-- Non-adaptive warning -->' +
+    '<div style="background:rgba(255,59,48,0.1);padding:10px 12px;font-size:11px;color:#FF3B30;font-weight:600;font-family:-apple-system,sans-serif;text-align:center;border-top:1px solid rgba(255,59,48,0.2)">' +
+      'Content clipped, no toolbar, no adaptive layout' +
+    '</div>' +
+  '</div>' +
+'</div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  // Re-bind references and update
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  var w = document.getElementById('higWarning');
+  w.textContent = 'HIG: Content clipped, toolbar missing, no adaptive layout';
+  w.classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.mode === 'splitView' && !state.adaptiveLayout; },
+    ko: 'Split View에서는 Adaptive Layout이 필수입니다',
+    en: 'Adaptive Layout is required in Split View mode'
+  },
+  {
+    check: function() { return state.mode === 'slideOver' && !state.showToolbar; },
+    ko: 'Slide Over에서 툴바를 숨기면 네비게이션이 어렵습니다',
+    en: 'Hiding toolbar in Slide Over makes navigation difficult'
+  },
+  {
+    check: function() { return state.splitRatio === '33:66' && !state.adaptiveLayout; },
+    ko: '좁은 Primary 영역에서 Adaptive Layout 없이는 콘텐츠가 잘립니다',
+    en: 'Content clips in narrow primary pane without Adaptive Layout'
+  }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview — already called within updatePreview, but also listen to clicks
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// ─── Initial render ───
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

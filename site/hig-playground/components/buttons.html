@@ -303,6 +303,49 @@ a:hover{text-decoration:underline}
 .do-card ul,.dont-card ul{padding-left:16px}
 .do-card li,.dont-card li{margin-bottom:4px}
 
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
 .guideline-note{
   font-size:13px;color:var(--text-2);line-height:1.7;
   margin-bottom:16px;
@@ -371,6 +414,44 @@ a:hover{text-decoration:underline}
     margin-bottom:-220px;
   }
 }
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
 </style>
 </head>
 <body>
@@ -383,6 +464,7 @@ a:hover{text-decoration:underline}
       <a href="../index.html">HIG Playground</a>
       <a href="../../index.html">Home</a>
       <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="buttons.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
     </div>
   </div>
 </div>
@@ -466,6 +548,7 @@ a:hover{text-decoration:underline}
 
         <div style="height:20px"></div>
       </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 이 패턴은 권장되지 않습니다</div>
       <div class="home-indicator"><div class="home-indicator-bar"></div></div>
     </div>
   </div>
@@ -476,35 +559,47 @@ a:hover{text-decoration:underline}
 
     <!-- Guidelines -->
     <div class="guidelines">
-      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
       <div class="guidelines-body">
-        <div class="do-dont">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
           <div class="do-card">
-            <h4>&#10003; Do</h4>
+            <h4>&#10003; 이렇게 하세요</h4>
             <ul>
-              <li>Use Filled style for the primary action</li>
-              <li>Use verbs or short verb phrases as labels</li>
-              <li>Use title case for button titles</li>
-              <li>Limit button text to one or two words</li>
-              <li>Use system-provided button styles</li>
-            </ul>
-          </div>
-          <div class="dont-card">
-            <h4>&#10007; Don't</h4>
-            <ul>
-              <li>Don't use multiple Filled buttons side by side</li>
-              <li>Don't use overly long button labels</li>
-              <li>Don't use a button when a link is more appropriate</li>
-              <li>Don't use destructive style for non-destructive actions</li>
+              <li><strong>Filled</strong> 스타일을 주요 액션에 사용</li>
+              <li>짧은 동사로 라벨 작성 ("Save", "Continue")</li>
+              <li>버튼 텍스트는 1~2 단어로 제한</li>
+              <li>계층 구조에 맞는 스타일 사용 (Filled → Tinted → Plain)</li>
+              <li>시스템 제공 버튼 스타일 사용</li>
             </ul>
           </div>
         </div>
-        <p class="guideline-note">
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>❌ Filled 버튼을 나란히 여러 개 배치하지 마세요</li>
+              <li>❌ 지나치게 긴 버튼 라벨은 피하세요</li>
+              <li>❌ 비파괴 액션에 destructive 스타일을 쓰지 마세요</li>
+              <li>❌ 모든 버튼을 같은 강조도로 만들지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
           iOS provides four button styles: <strong>Filled</strong> (borderedProminent) for primary actions,
           <strong>Tinted</strong> (bordered with tint) for secondary actions,
           <strong>Bordered</strong> for tertiary actions, and
           <strong>Plain</strong> (borderless) for minimal emphasis.
-          Always use the highest emphasis button for the most important action.
         </p>
         <a href="https://developer.apple.com/design/human-interface-guidelines/buttons" class="guideline-link" target="_blank">
           Apple HIG: Buttons &rarr;
@@ -564,6 +659,14 @@ a:hover{text-decoration:underline}
     </div>
 
     <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
     <div class="code-preview">
       <div class="code-preview-header">
         <span>SwiftUI Code</span>
@@ -748,8 +851,133 @@ function copyCode() {
   });
 }
 
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+
+// Store original screen content
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+const dontScreenHTML = `
+  <div class="screen-nav-title">Buttons</div>
+
+  <div class="screen-section">
+    <div class="screen-section-title" style="color:#FF3B30">❌ Multiple Filled Buttons</div>
+    <div class="screen-card" style="flex-direction:row;flex-wrap:wrap;gap:10px;justify-content:center">
+      <button class="ios-btn style-filled size-regular" style="background:#007AFF;color:#fff">Save</button>
+      <button class="ios-btn style-filled size-regular" style="background:#007AFF;color:#fff">Edit</button>
+      <button class="ios-btn style-filled size-regular" style="background:#007AFF;color:#fff">Share</button>
+      <button class="ios-btn style-filled size-regular" style="background:#007AFF;color:#fff">Cancel</button>
+    </div>
+  </div>
+
+  <div class="screen-section">
+    <div class="screen-section-title" style="color:#FF3B30">❌ Overly Long Labels</div>
+    <div class="screen-card">
+      <button class="ios-btn style-filled size-large" style="background:#007AFF;color:#fff;font-size:13px">Click Here To Save Your Current Document Now</button>
+      <button class="ios-btn style-tinted size-regular" style="background:rgba(0,122,255,0.15);color:#007AFF;font-size:11px">Please Tap This Button To Go Back To Previous Screen</button>
+    </div>
+  </div>
+
+  <div class="screen-section">
+    <div class="screen-section-title" style="color:#FF3B30">❌ Wrong Destructive Usage</div>
+    <div class="screen-card" style="flex-direction:row;gap:10px;justify-content:center">
+      <button class="ios-btn style-filled size-regular" style="background:#FF3B30;color:#fff">Save</button>
+      <button class="ios-btn style-filled size-regular" style="background:#FF3B30;color:#fff">Continue</button>
+    </div>
+  </div>
+
+  <div class="screen-section">
+    <div class="screen-section-title" style="color:#FF3B30">❌ No Hierarchy</div>
+    <div class="screen-card">
+      <button class="ios-btn style-filled size-large" style="background:#007AFF;color:#fff">Save</button>
+      <button class="ios-btn style-filled size-large" style="background:#007AFF;color:#fff">Cancel</button>
+      <button class="ios-btn style-filled size-large" style="background:#007AFF;color:#fff">Maybe Later</button>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  // Re-bind demo buttons
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
 // Initial render
 updatePreview();
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.destructive && state.style !== 'filled'; }, ko: "Destructive 액션은 Filled 스타일로 명확하게 표시하세요", en: "Use Filled style to clearly indicate destructive actions" },
+    { check: function(){ return state.disabled && state.destructive; }, ko: "비활성화된 destructive 버튼은 사용자를 혼란스럽게 합니다", en: "Disabled destructive buttons confuse users" },
+    { check: function(){ return state.size === 'small' && state.style === 'filled'; }, ko: "Small Filled 버튼은 탭하기 어렵습니다. Regular 이상을 권장합니다", en: "Small Filled buttons are hard to tap. Use Regular or larger" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
 </script>
 </body>
 </html>

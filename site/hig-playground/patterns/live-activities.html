@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Activities — HIG Playground | HIG Lab</title>
+<meta name="description" content="Live Activity의 Dynamic Island과 Lock Screen 표시를 브라우저에서 직접 체험해보세요. Delivery, Sports, Timer 타입과 다양한 상태를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* --- Reset & Variables --- */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* --- Header --- */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* --- Breadcrumb --- */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* --- Page Layout --- */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* --- iPhone Frame --- */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+  transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.dynamic-island.expanded{
+  width:340px;height:160px;
+  border-radius:38px;
+  top:12px;
+}
+.dynamic-island.stale{
+  opacity:0.5;
+}
+.dynamic-island.ended{
+  opacity:0.35;
+}
+.di-content{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;height:100%;padding:0 16px;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;
+  opacity:0;
+  transition:opacity 0.3s ease 0.1s;
+}
+.dynamic-island.has-content .di-content{
+  opacity:1;
+}
+.di-compact{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;
+}
+.di-compact-leading{
+  display:flex;align-items:center;gap:6px;
+  font-size:14px;
+}
+.di-compact-trailing{
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.85);
+}
+.di-expanded-content{
+  display:none;
+  flex-direction:column;
+  width:100%;height:100%;
+  padding:14px 4px 10px;
+  gap:8px;
+}
+.dynamic-island.expanded .di-compact{display:none}
+.dynamic-island.expanded .di-expanded-content{display:flex}
+.di-expanded-header{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;font-weight:600;
+}
+.di-expanded-body{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  gap:12px;
+}
+.di-expanded-footer{
+  font-size:11px;color:rgba(255,255,255,0.6);
+  text-align:center;
+}
+.di-progress-bar{
+  width:100%;height:4px;background:rgba(255,255,255,0.15);
+  border-radius:2px;overflow:hidden;margin-top:4px;
+}
+.di-progress-fill{
+  height:100%;border-radius:2px;
+  background:var(--ios-green);
+  transition:width 0.5s ease;
+}
+.di-score{
+  font-size:32px;font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.di-timer-display{
+  font-size:36px;font-weight:300;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:2px;
+}
+.di-icon{font-size:16px}
+
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* --- Lock Screen Live Activity Widget --- */
+.ls-widget{
+  background:rgba(255,255,255,0.92);
+  border-radius:20px;
+  padding:16px 18px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  box-shadow:0 2px 16px rgba(0,0,0,0.06);
+  transition:opacity 0.3s ease;
+}
+.ls-widget.stale{opacity:0.45}
+.ls-widget.ended{opacity:0.35}
+.ls-widget-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.ls-widget-title{
+  font-size:15px;font-weight:700;color:#000;
+  display:flex;align-items:center;gap:8px;
+}
+.ls-widget-badge{
+  font-size:10px;font-weight:600;
+  padding:2px 8px;border-radius:10px;
+  background:rgba(52,199,89,0.15);color:var(--ios-green);
+}
+.ls-widget-badge.stale{background:rgba(255,149,0,0.15);color:var(--ios-orange)}
+.ls-widget-badge.ended{background:rgba(142,142,147,0.15);color:var(--ios-gray)}
+.ls-widget-body{
+  display:flex;flex-direction:column;gap:10px;
+}
+.ls-progress{
+  width:100%;height:6px;background:rgba(0,0,0,0.06);
+  border-radius:3px;overflow:hidden;
+}
+.ls-progress-fill{
+  height:100%;border-radius:3px;
+  background:var(--ios-green);
+  transition:width 0.5s ease;
+}
+.ls-info-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;color:#666;
+}
+.ls-info-value{
+  font-weight:600;color:#000;
+}
+.ls-score-row{
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  padding:8px 0;
+}
+.ls-team{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-size:12px;font-weight:600;color:#666;
+}
+.ls-team-score{
+  font-size:28px;font-weight:700;color:#000;
+  font-variant-numeric:tabular-nums;
+}
+.ls-vs{
+  font-size:14px;font-weight:700;color:var(--ios-gray);
+}
+.ls-timer-big{
+  font-size:40px;font-weight:300;color:#000;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:2px;
+  text-align:center;padding:8px 0;
+}
+.ls-timer-label{
+  font-size:12px;color:var(--ios-gray);
+  text-align:center;
+}
+.ls-ended-overlay{
+  text-align:center;padding:8px 0;
+  font-size:14px;font-weight:600;color:var(--ios-gray);
+}
+
+/* --- Right Panel --- */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* --- Controls Panel --- */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* --- Guidelines Section --- */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* --- Interactive Do/Don't --- */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* --- Code Preview --- */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* --- Footer --- */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* --- Mobile iPhone Scale --- */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* --- Realtime HIG Violation Warnings --- */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Live Activities
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Live Activities</h1>
+<p class="page-desc">Live Activity의 Dynamic Island과 Lock Screen 표시를 확인해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island has-content" id="dynamicIsland">
+        <div class="di-content">
+          <div class="di-compact" id="diCompact">
+            <div class="di-compact-leading" id="diCompactLeading"></div>
+            <div class="di-compact-trailing" id="diCompactTrailing"></div>
+          </div>
+          <div class="di-expanded-content" id="diExpanded">
+            <div class="di-expanded-header" id="diExpandedHeader"></div>
+            <div class="di-expanded-body" id="diExpandedBody"></div>
+            <div class="di-expanded-footer" id="diExpandedFooter"></div>
+          </div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Live Activities</div>
+
+        <!-- Lock Screen Widget -->
+        <div class="screen-section">
+          <div class="screen-section-title">Lock Screen</div>
+          <div id="lockScreenWidget"></div>
+        </div>
+
+        <!-- Activity Info -->
+        <div class="screen-section">
+          <div class="screen-section-title">Activity Info</div>
+          <div class="screen-card" id="activityInfoCard">
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li><strong>Compact View</strong>를 한눈에 파악할 수 있게 유지하세요</li>
+              <li>적절한 간격으로 콘텐츠를 업데이트하세요</li>
+              <li>의미 있는 진행 상황을 표시하세요</li>
+              <li>명확한 종료 상태를 제공하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>너무 빈번하게 업데이트하지 마세요 (배터리 소모)</li>
+              <li>Stale 데이터를 표시 없이 보여주지 마세요</li>
+              <li>정적 콘텐츠에 Live Activity를 사용하지 마세요</li>
+              <li>Compact View에 너무 많은 텍스트를 넣지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          Live Activities display your app's most current data on the Lock Screen and in the Dynamic Island,
+          helping people stay informed about tasks and events they're tracking. Keep compact presentations
+          <strong>glanceable</strong> and provide <strong>meaningful updates</strong> at appropriate intervals.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/live-activities" class="guideline-link" target="_blank">
+          Apple HIG: Live Activities &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Activity Type -->
+        <div class="control-group">
+          <label>Activity Type</label>
+          <div class="control-options" id="typeOptions">
+            <div class="control-option active" data-value="delivery">Delivery</div>
+            <div class="control-option" data-value="sports">Sports</div>
+            <div class="control-option" data-value="timer">Timer</div>
+          </div>
+        </div>
+        <!-- State -->
+        <div class="control-group">
+          <label>State</label>
+          <div class="control-options" id="stateOptions">
+            <div class="control-option active" data-value="active">Active</div>
+            <div class="control-option" data-value="stale">Stale</div>
+            <div class="control-option" data-value="ended">Ended</div>
+          </div>
+        </div>
+        <!-- Expanded Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Expanded View</span>
+            <div class="toggle-switch" id="toggleExpanded"></div>
+          </div>
+        </div>
+        <!-- Update Frequency -->
+        <div class="control-group">
+          <label>Update Frequency</label>
+          <div class="control-options" id="frequencyOptions">
+            <div class="control-option" data-value="fast">Fast</div>
+            <div class="control-option active" data-value="normal">Normal</div>
+            <div class="control-option" data-value="slow">Slow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// --- State ---
+var state = {
+  activityType: 'delivery',
+  activityState: 'active',
+  expanded: false,
+  updateFrequency: 'normal'
+};
+
+// --- Timer interval ---
+var timerInterval = null;
+var timerSeconds = 185; // 3:05
+
+// --- Control Options ---
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'typeOptions') state.activityType = opt.dataset.value;
+      if (group.id === 'stateOptions') state.activityState = opt.dataset.value;
+      if (group.id === 'frequencyOptions') state.updateFrequency = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// --- Toggle ---
+document.getElementById('toggleExpanded').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.expanded = this.classList.contains('on');
+  updatePreview();
+});
+
+// --- Do/Don't Interactive ---
+var isDontMode = false;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  updateDontPreview();
+}
+
+function updateDontPreview() {
+  // Dynamic Island - bad example: tiny unreadable text
+  var di = document.getElementById('dynamicIsland');
+  di.className = 'dynamic-island has-content';
+  if (state.expanded) di.classList.add('expanded');
+
+  var compactLeading = document.getElementById('diCompactLeading');
+  var compactTrailing = document.getElementById('diCompactTrailing');
+  var expandedHeader = document.getElementById('diExpandedHeader');
+  var expandedBody = document.getElementById('diExpandedBody');
+  var expandedFooter = document.getElementById('diExpandedFooter');
+
+  // Compact: tiny unreadable text crammed in
+  compactLeading.innerHTML = '<span style="font-size:6px;opacity:0.5">Your delivery order #38291 from Restaurant Name That Is Way Too Long</span>';
+  compactTrailing.innerHTML = '<span style="font-size:5px;opacity:0.4">ETA: 2:34:56 PM tomorrow maybe</span>';
+
+  // Expanded: also bad
+  expandedHeader.innerHTML = '<span style="font-size:7px">Order #38291-XYZ-ABCDEF from Super Long Restaurant Name Inc.</span><span style="font-size:6px;opacity:0.4">Status Unknown</span>';
+  expandedBody.innerHTML = '<div style="font-size:6px;opacity:0.4;text-align:center;line-height:1.2">Delivery status: We are not sure where your order is right now. The driver might be on the way or might have stopped somewhere. Please check back later for more updates about your delivery order status.</div>';
+  expandedFooter.innerHTML = '<span style="font-size:5px;opacity:0.3">Last updated: unknown | No progress data available</span>';
+
+  // Lock Screen Widget - bad: no progress, stale data, no visual cue
+  var lsWidget = document.getElementById('lockScreenWidget');
+  lsWidget.innerHTML = '<div class="ls-widget">' +
+    '<div class="ls-widget-header">' +
+      '<div class="ls-widget-title" style="font-size:11px;opacity:0.5">' +
+        '<span>?</span> Unknown Activity' +
+      '</div>' +
+    '</div>' +
+    '<div class="ls-widget-body">' +
+      '<div style="font-size:10px;color:#999;line-height:1.3">' +
+        'This is a very long description that provides no useful information about the current state of anything. ' +
+        'There is no progress indicator, no ETA, no meaningful data shown here at all. ' +
+        'The user has no idea what is happening.' +
+      '</div>' +
+      '<div style="font-size:9px;color:#ccc;margin-top:4px">Data might be outdated. No stale indicator shown.</div>' +
+    '</div>' +
+  '</div>';
+
+  // Activity Info - bad
+  var infoCard = document.getElementById('activityInfoCard');
+  infoCard.innerHTML = '<div style="font-size:11px;color:var(--ios-red);text-align:center;line-height:1.5">' +
+    '<div style="font-size:20px;margin-bottom:4px">&#10060;</div>' +
+    '<strong>Bad Practices Shown:</strong><br>' +
+    'Tiny unreadable text in Dynamic Island<br>' +
+    'No progress indication<br>' +
+    'Stale data without visual cue<br>' +
+    'Overwhelming text in compact view' +
+  '</div>';
+
+  document.getElementById('higWarning').textContent = '\u26A0\uFE0F HIG \uC704\uBC18: Live Activity\uAC00 \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4';
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// --- Update Preview ---
+function updatePreview() {
+  if (isDontMode) {
+    updateDontPreview();
+    return;
+  }
+
+  updateDynamicIsland();
+  updateLockScreenWidget();
+  updateActivityInfo();
+  updateCode();
+  checkHigViolations();
+  startTimerIfNeeded();
+}
+
+function updateDynamicIsland() {
+  var di = document.getElementById('dynamicIsland');
+  di.className = 'dynamic-island has-content';
+
+  if (state.expanded) di.classList.add('expanded');
+  if (state.activityState === 'stale') di.classList.add('stale');
+  if (state.activityState === 'ended') di.classList.add('ended');
+
+  var compactLeading = document.getElementById('diCompactLeading');
+  var compactTrailing = document.getElementById('diCompactTrailing');
+  var expandedHeader = document.getElementById('diExpandedHeader');
+  var expandedBody = document.getElementById('diExpandedBody');
+  var expandedFooter = document.getElementById('diExpandedFooter');
+
+  if (state.activityState === 'ended') {
+    compactLeading.innerHTML = '<span class="di-icon">&#9989;</span> <span>Ended</span>';
+    compactTrailing.innerHTML = '';
+    expandedHeader.innerHTML = '<span>Activity Ended</span>';
+    expandedBody.innerHTML = '<div style="text-align:center;opacity:0.6;font-size:14px">' + getEndedText() + '</div>';
+    expandedFooter.innerHTML = '';
+    return;
+  }
+
+  switch (state.activityType) {
+    case 'delivery':
+      compactLeading.innerHTML = '<span class="di-icon">&#128666;</span>';
+      compactTrailing.innerHTML = '12 min';
+      expandedHeader.innerHTML = '<span>&#128666; Delivering</span><span style="color:' + (state.activityState === 'stale' ? 'var(--ios-orange)' : 'var(--ios-green)') + ';font-size:11px">' + (state.activityState === 'stale' ? 'Stale' : 'On the way') + '</span>';
+      expandedBody.innerHTML = '<div style="width:100%"><div style="font-size:14px;font-weight:600;margin-bottom:8px">Your order is on the way</div><div class="di-progress-bar"><div class="di-progress-fill" style="width:65%"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;opacity:0.7"><span>Picked up</span><span>Arriving</span></div></div>';
+      expandedFooter.innerHTML = 'ETA: 9:53 AM';
+      break;
+    case 'sports':
+      compactLeading.innerHTML = '<span class="di-icon">&#9917;</span>';
+      compactTrailing.innerHTML = '2 - 1';
+      expandedHeader.innerHTML = '<span>&#9917; Live Match</span><span style="color:var(--ios-green);font-size:11px">' + (state.activityState === 'stale' ? 'Delayed' : '2nd Half \u00B7 67\'') + '</span>';
+      expandedBody.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:24px;width:100%"><div style="text-align:center"><div style="font-size:12px;opacity:0.7;margin-bottom:4px">HOME</div><div class="di-score">2</div></div><div style="font-size:14px;opacity:0.4">vs</div><div style="text-align:center"><div style="font-size:12px;opacity:0.7;margin-bottom:4px">AWAY</div><div class="di-score">1</div></div></div>';
+      expandedFooter.innerHTML = state.activityState === 'stale' ? 'Score update delayed' : 'Last goal: 54\' - HOME';
+      break;
+    case 'timer':
+      var mins = Math.floor(timerSeconds / 60);
+      var secs = timerSeconds % 60;
+      var timeStr = padZero(mins) + ':' + padZero(secs);
+      compactLeading.innerHTML = '<span class="di-icon">&#9201;</span>';
+      compactTrailing.innerHTML = timeStr;
+      expandedHeader.innerHTML = '<span>&#9201; Timer</span><span style="color:var(--ios-green);font-size:11px">' + (state.activityState === 'stale' ? 'Paused' : 'Running') + '</span>';
+      expandedBody.innerHTML = '<div class="di-timer-display">' + timeStr + '</div>';
+      expandedFooter.innerHTML = state.activityState === 'stale' ? 'Timer paused' : 'Counting down';
+      break;
+  }
+}
+
+function updateLockScreenWidget() {
+  var lsWidget = document.getElementById('lockScreenWidget');
+  var staleClass = state.activityState === 'stale' ? ' stale' : '';
+  var endedClass = state.activityState === 'ended' ? ' ended' : '';
+  var badgeClass = state.activityState === 'stale' ? ' stale' : (state.activityState === 'ended' ? ' ended' : '');
+  var badgeText = state.activityState === 'active' ? 'Live' : (state.activityState === 'stale' ? 'Stale' : 'Ended');
+
+  var html = '<div class="ls-widget' + staleClass + endedClass + '">';
+  html += '<div class="ls-widget-header">';
+
+  if (state.activityState === 'ended') {
+    html += '<div class="ls-widget-title">' + getActivityIcon() + ' ' + getActivityTitle() + '</div>';
+    html += '<div class="ls-widget-badge ended">Ended</div>';
+    html += '</div>';
+    html += '<div class="ls-widget-body">';
+    html += '<div class="ls-ended-overlay">' + getEndedText() + '</div>';
+    html += '</div></div>';
+    lsWidget.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="ls-widget-title">' + getActivityIcon() + ' ' + getActivityTitle() + '</div>';
+  html += '<div class="ls-widget-badge' + badgeClass + '">' + badgeText + '</div>';
+  html += '</div>';
+  html += '<div class="ls-widget-body">';
+
+  switch (state.activityType) {
+    case 'delivery':
+      html += '<div class="ls-progress"><div class="ls-progress-fill" style="width:65%"></div></div>';
+      html += '<div class="ls-info-row"><span>Status</span><span class="ls-info-value">' + (state.activityState === 'stale' ? 'Update pending...' : 'On the way') + '</span></div>';
+      html += '<div class="ls-info-row"><span>ETA</span><span class="ls-info-value">9:53 AM</span></div>';
+      html += '<div class="ls-info-row"><span>Driver</span><span class="ls-info-value">Kim M.</span></div>';
+      html += '<div class="ls-info-row"><span>Order</span><span class="ls-info-value">#2847</span></div>';
+      break;
+    case 'sports':
+      html += '<div class="ls-score-row">';
+      html += '<div class="ls-team"><span>HOME</span><span class="ls-team-score">2</span></div>';
+      html += '<span class="ls-vs">vs</span>';
+      html += '<div class="ls-team"><span>AWAY</span><span class="ls-team-score">1</span></div>';
+      html += '</div>';
+      html += '<div class="ls-info-row"><span>Period</span><span class="ls-info-value">' + (state.activityState === 'stale' ? 'Delayed' : '2nd Half \u00B7 67\'') + '</span></div>';
+      html += '<div class="ls-info-row"><span>Last Event</span><span class="ls-info-value">Goal 54\' - HOME</span></div>';
+      break;
+    case 'timer':
+      var mins = Math.floor(timerSeconds / 60);
+      var secs = timerSeconds % 60;
+      html += '<div class="ls-timer-big">' + padZero(mins) + ':' + padZero(secs) + '</div>';
+      html += '<div class="ls-timer-label">' + (state.activityState === 'stale' ? 'Timer paused' : 'Time remaining') + '</div>';
+      break;
+  }
+
+  html += '</div></div>';
+  lsWidget.innerHTML = html;
+}
+
+function updateActivityInfo() {
+  var infoCard = document.getElementById('activityInfoCard');
+  var freqLabel = { fast: 'Fast (every 5s)', normal: 'Normal (every 15s)', slow: 'Slow (every 60s)' };
+  var stateLabel = { active: 'Active', stale: 'Stale', ended: 'Ended' };
+  var typeLabel = { delivery: 'Delivery Tracking', sports: 'Sports Score', timer: 'Countdown Timer' };
+
+  infoCard.innerHTML =
+    '<div style="width:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ios-separator)"><span style="font-size:13px;color:var(--ios-gray)">Type</span><span style="font-size:13px;font-weight:600">' + typeLabel[state.activityType] + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ios-separator)"><span style="font-size:13px;color:var(--ios-gray)">State</span><span style="font-size:13px;font-weight:600;color:' + getStateColor() + '">' + stateLabel[state.activityState] + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ios-separator)"><span style="font-size:13px;color:var(--ios-gray)">View</span><span style="font-size:13px;font-weight:600">' + (state.expanded ? 'Expanded' : 'Compact') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:var(--ios-gray)">Update</span><span style="font-size:13px;font-weight:600">' + freqLabel[state.updateFrequency] + '</span></div>' +
+    '</div>';
+}
+
+// --- Helper Functions ---
+function getActivityIcon() {
+  switch (state.activityType) {
+    case 'delivery': return '&#128666;';
+    case 'sports': return '&#9917;';
+    case 'timer': return '&#9201;';
+  }
+}
+
+function getActivityTitle() {
+  switch (state.activityType) {
+    case 'delivery': return 'Delivery';
+    case 'sports': return 'Live Match';
+    case 'timer': return 'Timer';
+  }
+}
+
+function getEndedText() {
+  switch (state.activityType) {
+    case 'delivery': return 'Order delivered successfully';
+    case 'sports': return 'Final Score: HOME 2 - 1 AWAY';
+    case 'timer': return 'Timer completed';
+  }
+}
+
+function getStateColor() {
+  switch (state.activityState) {
+    case 'active': return 'var(--ios-green)';
+    case 'stale': return 'var(--ios-orange)';
+    case 'ended': return 'var(--ios-gray)';
+  }
+}
+
+function padZero(n) {
+  return n < 10 ? '0' + n : '' + n;
+}
+
+// --- Timer Logic ---
+function startTimerIfNeeded() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  if (state.activityType === 'timer' && state.activityState === 'active') {
+    timerInterval = setInterval(function() {
+      if (timerSeconds > 0) {
+        timerSeconds--;
+        updateDynamicIsland();
+        updateLockScreenWidget();
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }, 1000);
+  }
+}
+
+// --- Update Code ---
+function updateCode() {
+  var code = '';
+
+  switch (state.activityType) {
+    case 'delivery':
+      code = '<span class="kw">struct</span> <span class="type">DeliveryActivityWidget</span>: <span class="type">Widget</span> {\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">WidgetConfiguration</span> {\n';
+      code += '        <span class="type">ActivityConfiguration</span>(<span class="prop">for</span>: <span class="type">DeliveryAttributes</span>.<span class="kw">self</span>) { context <span class="kw">in</span>\n';
+      code += '            <span class="comment">// Lock Screen presentation</span>\n';
+      code += '            <span class="type">DeliveryLockScreenView</span>(context: context)\n';
+      code += '        } <span class="prop">dynamicIsland</span>: { context <span class="kw">in</span>\n';
+      code += '            <span class="type">DynamicIsland</span> {\n';
+      if (state.expanded) {
+        code += '                <span class="comment">// Expanded regions</span>\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">leading</span>) {\n';
+        code += '                    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"box.truck"</span>)\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">center</span>) {\n';
+        code += '                    <span class="type">Text</span>(<span class="str">"Delivering your order"</span>)\n';
+        code += '                    <span class="type">ProgressView</span>(<span class="prop">value</span>: context.state.<span class="prop">progress</span>)\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">trailing</span>) {\n';
+        code += '                    <span class="type">Text</span>(context.state.<span class="prop">eta</span>)\n';
+        code += '                }\n';
+      } else {
+        code += '                <span class="comment">// Expanded regions</span>\n';
+      }
+      code += '            } <span class="prop">compactLeading</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"box.truck"</span>)\n';
+      code += '            } <span class="prop">compactTrailing</span>: {\n';
+      code += '                <span class="type">Text</span>(context.state.<span class="prop">eta</span>)\n';
+      code += '            } <span class="prop">minimal</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"box.truck"</span>)\n';
+      code += '            }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+
+    case 'sports':
+      code = '<span class="kw">struct</span> <span class="type">SportsActivityWidget</span>: <span class="type">Widget</span> {\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">WidgetConfiguration</span> {\n';
+      code += '        <span class="type">ActivityConfiguration</span>(<span class="prop">for</span>: <span class="type">SportsAttributes</span>.<span class="kw">self</span>) { context <span class="kw">in</span>\n';
+      code += '            <span class="comment">// Lock Screen presentation</span>\n';
+      code += '            <span class="type">SportsLockScreenView</span>(context: context)\n';
+      code += '        } <span class="prop">dynamicIsland</span>: { context <span class="kw">in</span>\n';
+      code += '            <span class="type">DynamicIsland</span> {\n';
+      if (state.expanded) {
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">leading</span>) {\n';
+        code += '                    <span class="type">TeamScoreView</span>(<span class="prop">team</span>: context.state.<span class="prop">homeTeam</span>)\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">center</span>) {\n';
+        code += '                    <span class="type">Text</span>(<span class="str">"vs"</span>)\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">trailing</span>) {\n';
+        code += '                    <span class="type">TeamScoreView</span>(<span class="prop">team</span>: context.state.<span class="prop">awayTeam</span>)\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">bottom</span>) {\n';
+        code += '                    <span class="type">Text</span>(context.state.<span class="prop">gameTime</span>)\n';
+        code += '                }\n';
+      } else {
+        code += '                <span class="comment">// Expanded regions</span>\n';
+      }
+      code += '            } <span class="prop">compactLeading</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"sportscourt"</span>)\n';
+      code += '            } <span class="prop">compactTrailing</span>: {\n';
+      code += '                <span class="type">Text</span>(<span class="str">"\\(context.state.homeScore) - \\(context.state.awayScore)"</span>)\n';
+      code += '            } <span class="prop">minimal</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"sportscourt"</span>)\n';
+      code += '            }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+
+    case 'timer':
+      code = '<span class="kw">struct</span> <span class="type">TimerActivityWidget</span>: <span class="type">Widget</span> {\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">WidgetConfiguration</span> {\n';
+      code += '        <span class="type">ActivityConfiguration</span>(<span class="prop">for</span>: <span class="type">TimerAttributes</span>.<span class="kw">self</span>) { context <span class="kw">in</span>\n';
+      code += '            <span class="comment">// Lock Screen presentation</span>\n';
+      code += '            <span class="type">TimerLockScreenView</span>(context: context)\n';
+      code += '        } <span class="prop">dynamicIsland</span>: { context <span class="kw">in</span>\n';
+      code += '            <span class="type">DynamicIsland</span> {\n';
+      if (state.expanded) {
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">center</span>) {\n';
+        code += '                    <span class="type">Text</span>(context.state.<span class="prop">endTime</span>, <span class="prop">style</span>: .<span class="prop">timer</span>)\n';
+        code += '                        .<span class="func">font</span>(.<span class="prop">system</span>(<span class="prop">size</span>: <span class="str">36</span>, <span class="prop">weight</span>: .<span class="prop">light</span>))\n';
+        code += '                        .<span class="func">monospacedDigit</span>()\n';
+        code += '                }\n';
+        code += '                <span class="type">DynamicIslandExpandedRegion</span>(.<span class="prop">bottom</span>) {\n';
+        code += '                    <span class="type">Text</span>(<span class="str">"Time remaining"</span>)\n';
+        code += '                        .<span class="func">font</span>(.<span class="prop">caption2</span>)\n';
+        code += '                }\n';
+      } else {
+        code += '                <span class="comment">// Expanded regions</span>\n';
+      }
+      code += '            } <span class="prop">compactLeading</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"timer"</span>)\n';
+      code += '            } <span class="prop">compactTrailing</span>: {\n';
+      code += '                <span class="type">Text</span>(context.state.<span class="prop">endTime</span>, <span class="prop">style</span>: .<span class="prop">timer</span>)\n';
+      code += '                    .<span class="func">monospacedDigit</span>()\n';
+      code += '            } <span class="prop">minimal</span>: {\n';
+      code += '                <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"timer"</span>)\n';
+      code += '            }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+  }
+
+  // Add stale/ended handling code if relevant
+  if (state.activityState === 'stale') {
+    code += '\n\n<span class="comment">// Handle stale state</span>\n';
+    code += '<span class="comment">// ActivityKit marks activities as stale</span>\n';
+    code += '<span class="comment">// when updates stop arriving.</span>\n';
+    code += '<span class="comment">// Show visual indication to the user.</span>';
+  }
+  if (state.activityState === 'ended') {
+    code += '\n\n<span class="comment">// End the activity</span>\n';
+    code += '<span class="kw">await</span> activity.<span class="func">end</span>(\n';
+    code += '    <span class="type">ActivityContent</span>(<span class="prop">state</span>: finalState),\n';
+    code += '    <span class="prop">dismissalPolicy</span>: .<span class="prop">default</span>\n';
+    code += ')';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// --- Realtime HIG Violation Detection ---
+var higRules = [
+  {
+    check: function() { return state.updateFrequency === 'fast'; },
+    ko: '\uB108\uBB34 \uBE48\uBC88\uD55C \uC5C5\uB370\uC774\uD2B8\uB294 \uBC30\uD130\uB9AC\uB97C \uC18C\uBAA8\uD569\uB2C8\uB2E4. Normal \uC774\uC0C1\uC744 \uAD8C\uC7A5\uD569\uB2C8\uB2E4'
+  },
+  {
+    check: function() { return state.activityState === 'stale' && state.updateFrequency === 'fast'; },
+    ko: 'Stale \uC0C1\uD0DC\uC5D0\uC11C \uBE48\uBC88\uD55C \uC5C5\uB370\uC774\uD2B8\uB294 \uBAA8\uC21C\uB429\uB2C8\uB2E4'
+  },
+  {
+    check: function() { return state.activityState === 'ended' && state.expanded; },
+    ko: '\uC885\uB8CC\uB41C \uD65C\uB3D9\uC740 \uD655\uC7A5 \uD45C\uC2DC\uD560 \uD544\uC694\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4'
+  }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">\u26A0\uFE0F</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '\u26A0\uFE0F ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">\u2705 HIG \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook violation checks into control clicks
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// --- Initial render ---
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIG Playground — Interactive iOS Components | HIG Lab</title>
+<meta name="description" content="Apple Human Interface Guidelines의 iOS 컴포넌트 interactively in the browser. iPhone 목업 안에서 40개 컴포넌트를 인터랙티브하게 조작할 수 있습니다.">
+<meta property="og:title" content="HIG Playground — Interactive iOS Components">
+<meta property="og:description" content="Apple HIG UI 컴포넌트 interactively in the browser.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HIG Lab">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fafafa;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --tag-bg:#f5f5f7;
+  --green:#34c759;
+  --orange:#ff9500;
+  --purple:#af52de;
+  --red:#ff3b30;
+  --radius:16px;
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+.nav a.active-nav{color:var(--accent);font-weight:700}
+
+.hero{
+  text-align:center;padding:80px 24px 60px;
+  max-width:720px;margin:0 auto;
+}
+.hero h1{
+  font-size:clamp(32px,5vw,48px);
+  font-weight:900;letter-spacing:-2px;
+  line-height:1.15;margin-bottom:16px;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,#007AFF,#5856D6,#AF52DE);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{
+  font-size:17px;color:var(--text-2);
+  line-height:1.7;max-width:540px;margin:0 auto 24px;
+}
+.hero-stats{
+  display:flex;justify-content:center;gap:40px;
+}
+.stat-num{font-size:28px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--text-2);font-weight:500}
+
+.container{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.category-section{margin-bottom:48px}
+.category-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.category-icon{font-size:28px}
+.category-title{font-size:22px;font-weight:800}
+.category-count{font-size:13px;color:var(--text-2);margin-left:auto}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  text-decoration:none;color:inherit;
+  transition:all .2s;
+  display:block;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  text-decoration:none;
+}
+.card-gradient{
+  height:90px;
+  display:flex;align-items:center;justify-content:center;
+}
+.card-gradient .icon{font-size:36px}
+.card-body{padding:14px 16px 16px}
+.card-status{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+.card-status.done{color:var(--green)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.card-desc{font-size:12px;color:var(--text-2);line-height:1.5}
+
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">Home</a>
+      <a href="index.html" class="active-nav">HIG Playground</a>
+      <a href="../roadmap.html">Roadmap</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="index.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>iOS Components,<br><em>Interactive Playground</em></h1>
+  <p>Experience Apple HIG UI components inside an iPhone mockup. Adjust styles, sizes, and colors to learn HIG principles.</p>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">40</div>
+      <div class="stat-label">Components</div>
+    </div>
+    <div>
+      <div class="stat-num">8</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div>
+      <div class="stat-num">&#8734;</div>
+      <div class="stat-label">Combinations</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══════════ Content ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📄</span>
+      <span class="category-title">Content</span>
+      <span class="category-count">4 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/charts.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5E5CE6,#BF5AF2)"><div class="icon">📊</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Charts</div><div class="card-desc">Experience Bar, Line, Area, Pie chart types and color schemes</div></div>
+      </a>
+      <a href="components/image-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF6482,#FF375F)"><div class="icon">🖼️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Image Views</div><div class="card-desc">Adjust contentMode, aspectRatio, clipShape</div></div>
+      </a>
+      <a href="components/text-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">📝</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Text Views</div><div class="card-desc">Font styles, line limit, truncation, Dynamic Type</div></div>
+      </a>
+      <a href="components/web-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🌐</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Web Views</div><div class="card-desc">WKWebView container with nav bar and progress</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Layout ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📐</span>
+      <span class="category-title">Layout</span>
+      <span class="category-count">7 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/collections.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9F0A,#FF6B00)"><div class="icon">🔲</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Collections</div><div class="card-desc">LazyVGrid/LazyHGrid layout with adjustable columns</div></div>
+      </a>
+      <a href="components/disclosure-groups.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">📂</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Disclosure Groups</div><div class="card-desc">Expandable/Collapsible sections and nesting levels</div></div>
+      </a>
+      <a href="components/labels.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#5856D6)"><div class="icon">🏷️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Labels</div><div class="card-desc">SF Symbol + text combinations and label styles</div></div>
+      </a>
+      <a href="components/lists.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">📋</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Lists</div><div class="card-desc">Plain/Inset Grouped styles with swipe actions</div></div>
+      </a>
+      <a href="components/outline-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#636366)"><div class="icon">🌳</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Outline Views</div><div class="card-desc">Hierarchical tree list with expand/collapse</div></div>
+      </a>
+      <a href="components/split-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FFD60A,#FF9F0A)"><div class="icon">📱</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Split Views</div><div class="card-desc">NavigationSplitView sidebar + detail layout</div></div>
+      </a>
+      <a href="components/tables.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#0A84FF,#5E5CE6)"><div class="icon">📊</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Tables</div><div class="card-desc">Multi-column sortable table view</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Menus and Actions ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📋</span>
+      <span class="category-title">Menus and Actions</span>
+      <span class="category-count">8 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/activity-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5856D6)"><div class="icon">📤</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Activity Views</div><div class="card-desc">ShareLink/UIActivityViewController share sheet</div></div>
+      </a>
+      <a href="components/buttons.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5856D6)"><div class="icon">🔘</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Buttons</div><div class="card-desc">Filled, Tinted, Bordered, Plain styles + 3 sizes</div></div>
+      </a>
+      <a href="components/context-menus.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#636366)"><div class="icon">📌</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Context Menus</div><div class="card-desc">Long press menu with icons and dividers</div></div>
+      </a>
+      <a href="components/edit-menus.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">✂️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Edit Menus</div><div class="card-desc">Cut/Copy/Paste edit menu with custom actions</div></div>
+      </a>
+      <a href="components/menus.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE)"><div class="icon">📑</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Menus</div><div class="card-desc">Pull-down menu with icons, dividers, destructive items</div></div>
+      </a>
+      <a href="components/pop-up-buttons.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🔽</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pop-Up Buttons</div><div class="card-desc">Pop-up button selection indicator and styles</div></div>
+      </a>
+      <a href="components/pull-down-buttons.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#5E5CE6)"><div class="icon">⬇️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pull-Down Buttons</div><div class="card-desc">Pull-down button items and icon configuration</div></div>
+      </a>
+      <a href="components/toolbars.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🔧</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Toolbars</div><div class="card-desc">Icon/text/mixed style toolbar and placement</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Navigation and Search ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">🧭</span>
+      <span class="category-title">Navigation and Search</span>
+      <span class="category-count">5 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/navigation-bars.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#0A84FF,#5E5CE6)"><div class="icon">⬆️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Navigation Bars</div><div class="card-desc">Large/Inline title with back/trailing buttons</div></div>
+      </a>
+      <a href="components/search-fields.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9F0A,#FFD60A)"><div class="icon">🔍</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Search Fields</div><div class="card-desc">Search bar, scope bar, suggestions UI</div></div>
+      </a>
+      <a href="components/sidebars.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">📚</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sidebars</div><div class="card-desc">NavigationSplitView sidebar with sections and badges</div></div>
+      </a>
+      <a href="components/tab-bars.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🔖</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Tab Bars</div><div class="card-desc">3-5 tab configuration with badges and selection animation</div></div>
+      </a>
+      <a href="components/scroll-views.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BDB76B,#8B8000)"><div class="icon">📜</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Scroll Views</div><div class="card-desc">Vertical/Horizontal scrolling with paging and indicators</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Presentation ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">🪟</span>
+      <span class="category-title">Presentation</span>
+      <span class="category-count">5 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/action-sheets.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF6B00,#FF9500)"><div class="icon">📃</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Action Sheets</div><div class="card-desc">Bottom sheet style action list with cancel button</div></div>
+      </a>
+      <a href="components/alerts.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF3B30,#FF6B6B)"><div class="icon">⚠️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Alerts</div><div class="card-desc">1-3 button Alert with destructive action patterns</div></div>
+      </a>
+      <a href="components/page-controls.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#AEAEB2)"><div class="icon">⚪</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Page Controls</div><div class="card-desc">Page indicator dots with swipe navigation</div></div>
+      </a>
+      <a href="components/popovers.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#5E5CE6)"><div class="icon">💬</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Popovers</div><div class="card-desc">Popover direction, size, and dismiss behavior</div></div>
+      </a>
+      <a href="components/sheets.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE)"><div class="icon">📄</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sheets</div><div class="card-desc">Modal sheet detent sizes and drag indicator</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Selection and Input ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">✏️</span>
+      <span class="category-title">Selection and Input</span>
+      <span class="category-count">8 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/color-wells.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF6482)"><div class="icon">🎨</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Color Wells</div><div class="card-desc">ColorPicker wheel/grid/spectrum styles</div></div>
+      </a>
+      <a href="components/date-pickers.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF6482)"><div class="icon">📅</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Date Pickers</div><div class="card-desc">Compact/Wheel/Graphical style comparison</div></div>
+      </a>
+      <a href="components/pickers.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🎰</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pickers</div><div class="card-desc">Wheel, Menu, Segmented, Inline picker styles</div></div>
+      </a>
+      <a href="components/segmented-controls.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">⊞</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Segmented Controls</div><div class="card-desc">2-5 segment selection UI with sliding animation</div></div>
+      </a>
+      <a href="components/sliders.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#5856D6)"><div class="icon">⚙️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sliders</div><div class="card-desc">Continuous/stepped slider with min/max icon customization</div></div>
+      </a>
+      <a href="components/steppers.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">🔢</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Steppers</div><div class="card-desc">+/- increment control with value display and range</div></div>
+      </a>
+      <a href="components/text-fields.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FFD60A,#FF9F0A)"><div class="icon">✏️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Text Fields</div><div class="card-desc">Plain/Rounded styles with keyboard type and secure field</div></div>
+      </a>
+      <a href="components/toggles.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158)"><div class="icon">🔀</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Toggles</div><div class="card-desc">iOS Switch on/off animation with color customization</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Status ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📈</span>
+      <span class="category-title">Status</span>
+      <span class="category-count">3 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/activity-rings.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF2D55)"><div class="icon">⭕</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Activity Rings</div><div class="card-desc">Concentric progress rings with animation and color customization</div></div>
+      </a>
+      <a href="components/gauges.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🌡️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Gauges</div><div class="card-desc">Circular/Linear gauge indicators with gradient</div></div>
+      </a>
+      <a href="components/progress-indicators.en.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">⏳</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Progress Indicators</div><div class="card-desc">ProgressView linear/circular styles with progress control</div></div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+</body>
+</html>

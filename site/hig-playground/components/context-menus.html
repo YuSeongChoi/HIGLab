@@ -489,6 +489,85 @@ a:hover{text-decoration:underline}
     margin-bottom:-220px;
   }
 }
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
 </style>
 </head>
 <body>
@@ -501,6 +580,7 @@ a:hover{text-decoration:underline}
       <a href="../index.html">HIG Playground</a>
       <a href="../../index.html">Home</a>
       <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="context-menus.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
     </div>
   </div>
 </div>
@@ -581,6 +661,7 @@ a:hover{text-decoration:underline}
       <!-- Context Menu -->
       <div class="ctx-menu" id="ctxMenu"></div>
 
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 컨텍스트 메뉴가 부적절합니다</div>
       <div class="home-indicator"><div class="home-indicator-bar"></div></div>
     </div>
   </div>
@@ -591,11 +672,15 @@ a:hover{text-decoration:underline}
 
     <!-- Guidelines -->
     <div class="guidelines">
-      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
       <div class="guidelines-body">
-        <div class="do-dont">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
           <div class="do-card">
-            <h4>&#10003; Do</h4>
+            <h4>&#10003; 이렇게 하세요</h4>
             <ul>
               <li>Use context menus for secondary actions</li>
               <li>Keep the number of items concise (under 10)</li>
@@ -605,8 +690,10 @@ a:hover{text-decoration:underline}
               <li>Include a preview when appropriate</li>
             </ul>
           </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
           <div class="dont-card">
-            <h4>&#10007; Don't</h4>
+            <h4>&#10007; 이렇게 하지 마세요</h4>
             <ul>
               <li>Don't use context menus for primary actions</li>
               <li>Don't put too many items in a single menu</li>
@@ -614,32 +701,8 @@ a:hover{text-decoration:underline}
               <li>Don't mix destructive with non-destructive without separation</li>
               <li>Don't nest submenus more than one level deep</li>
             </ul>
-          </div>
-        </div>
-        <p class="guideline-note">
-          Context menus let people access functionality related to an onscreen item
-          without cluttering the interface. The system displays a context menu when someone
-          touches and holds (long-presses) or 3D Touches an element. Context menus show
-          a preview of the content along with a list of relevant commands. Use
-          <strong>.contextMenu</strong> modifier in SwiftUI to add context menus to any view.
-        </p>
-        <a href="https://developer.apple.com/design/human-interface-guidelines/context-menus" class="guideline-link" target="_blank">
-          Apple HIG: Context Menus &rarr;
-        </a>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls-panel">
-      <div class="controls-header">&#9881;&#65039; Controls</div>
-      <div class="controls-body">
-        <!-- Number of Items -->
-        <div class="control-group">
-          <label>Number of Items</label>
-          <div class="control-options" id="itemCountOptions">
-            <div class="control-option" data-value="3">3</div>
-            <div class="control-option active" data-value="4">4</div>
-            <div class="control-option" data-value="5">5</div>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
           </div>
         </div>
         <!-- Toggles -->
@@ -665,6 +728,14 @@ a:hover{text-decoration:underline}
     </div>
 
     <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
     <div class="code-preview">
       <div class="code-preview-header">
         <span>SwiftUI Code</span>
@@ -1068,6 +1139,95 @@ document.addEventListener('click', function(e) {
 
 // Initial render
 updateCode();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Context Menus</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Items</div>
+          <div class="screen-card"><div style="background:#fff;padding:4px 0;border-radius:14px;font-size:11px;font-family:-apple-system,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);max-height:140px;overflow-y:auto"><div style="padding:6px 12px;color:#000">Action 1</div><div style="padding:6px 12px;color:#000">Action 2</div><div style="padding:6px 12px;color:#000">Action 3</div><div style="padding:6px 12px;color:#000">Action 4</div><div style="padding:6px 12px;color:#000">Action 5</div><div style="padding:6px 12px;color:#000">Action 6</div><div style="padding:6px 12px;color:#000">Action 7</div><div style="padding:6px 12px;color:#000">Action 8</div><div style="padding:6px 12px;color:#000">Action 9</div><div style="padding:6px 12px;color:#000">Action 10</div><div style="padding:6px 12px;color:#000">Action 11</div><div style="padding:6px 12px;color:#000">Action 12</div><div style="padding:6px 12px;color:#000">Action 13</div><div style="padding:6px 12px;color:#000">Action 14</div><div style="padding:6px 12px;color:#000">Action 15</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.itemCount >= 6; }, ko: "6개 이상의 메뉴 항목은 과합니다. 그룹핑하거나 줄이세요", en: "6+ menu items is excessive. Group or reduce them" },
+    { check: function(){ return !state.showDividers && state.itemCount >= 4; }, ko: "4개 이상의 항목에는 divider로 그룹을 나누세요", en: "Use dividers to group 4+ items" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
 </script>
 </body>
 </html>

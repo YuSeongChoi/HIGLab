@@ -489,6 +489,85 @@ a:hover{text-decoration:underline}
     margin-bottom:-220px;
   }
 }
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
 </style>
 </head>
 <body>
@@ -501,6 +580,7 @@ a:hover{text-decoration:underline}
       <a href="../index.html">HIG Playground</a>
       <a href="../../index.html">Home</a>
       <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="tab-bars.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
     </div>
   </div>
 </div>
@@ -670,6 +750,7 @@ a:hover{text-decoration:underline}
         <!-- Tabs are rendered by JS -->
       </div>
 
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 탭 바가 부적절합니다</div>
       <div class="home-indicator"><div class="home-indicator-bar"></div></div>
     </div>
   </div>
@@ -680,11 +761,15 @@ a:hover{text-decoration:underline}
 
     <!-- Guidelines -->
     <div class="guidelines">
-      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
       <div class="guidelines-body">
-        <div class="do-dont">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
           <div class="do-card">
-            <h4>&#10003; Do</h4>
+            <h4>&#10003; 이렇게 하세요</h4>
             <ul>
               <li>Use a tab bar to organize content at the app level</li>
               <li>Use SF Symbols for tab icons for consistency</li>
@@ -694,8 +779,10 @@ a:hover{text-decoration:underline}
               <li>Make every tab accessible from any other tab</li>
             </ul>
           </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
           <div class="dont-card">
-            <h4>&#10007; Don't</h4>
+            <h4>&#10007; 이렇게 하지 마세요</h4>
             <ul>
               <li>Don't use more than 5 tabs on iPhone</li>
               <li>Don't remove or disable tabs based on context</li>
@@ -703,32 +790,8 @@ a:hover{text-decoration:underline}
               <li>Don't use overly complex or custom icons</li>
               <li>Don't duplicate tab bar functionality in the content area</li>
             </ul>
-          </div>
-        </div>
-        <p class="guideline-note">
-          A tab bar appears at the bottom of an app screen and provides the ability to quickly switch between
-          different sections of an app. Tab bars are translucent, may have a background tint, and persist across
-          all screens. iOS 18 introduced a floating tab bar style, but the classic bottom tab bar remains the
-          standard for most apps. Use <strong>filled SF Symbols</strong> for the selected state and
-          <strong>outlined SF Symbols</strong> for unselected tabs.
-        </p>
-        <a href="https://developer.apple.com/design/human-interface-guidelines/tab-bars" class="guideline-link" target="_blank">
-          Apple HIG: Tab Bars &rarr;
-        </a>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls-panel">
-      <div class="controls-header">&#9881;&#65039; Controls</div>
-      <div class="controls-body">
-        <!-- Number of Tabs -->
-        <div class="control-group">
-          <label>Number of Tabs</label>
-          <div class="control-options" id="tabCountOptions">
-            <div class="control-option" data-value="3">3</div>
-            <div class="control-option active" data-value="4">4</div>
-            <div class="control-option" data-value="5">5</div>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
           </div>
         </div>
         <!-- Tint Color -->
@@ -770,6 +833,14 @@ a:hover{text-decoration:underline}
     </div>
 
     <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
     <div class="code-preview">
       <div class="code-preview-header">
         <span>SwiftUI Code</span>
@@ -1051,6 +1122,93 @@ function copyCode() {
 updateBadgeTabOptions();
 renderTabs();
 updateCode();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Home</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Tabs</div>
+          <div class="screen-card"><div style="background:#F8F8F8;padding:4px 0;border-radius:14px;border-top:1px solid #E5E5EA;display:flex;justify-content:space-around;font-size:8px;font-family:-apple-system,sans-serif;text-align:center"><div style="color:#007AFF;padding:4px 0"><div style="font-size:14px">🏠</div>Home</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">🔍</div>Search</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">➕</div>Add</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">❤️</div>Likes</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">🛒</div>Cart</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">👤</div>Profile</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">⚙️</div>Settings</div><div style="color:#8E8E93;padding:4px 0"><div style="font-size:14px">•••</div>More</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+
+var higRules = [
+    { check: function(){ return state.tabCount >= 5; }, ko: "5개 이상의 탭은 라벨이 좁아져 읽기 어렵습니다", en: "5+ tabs make labels narrow and hard to read" },
+    { check: function(){ return state.showBadge && state.badgeCount > 99; }, ko: "배지 숫자가 99를 초과하면 '99+'로 표시하는 것이 좋습니다", en: "Badge numbers above 99 should display as '99+'" }
+];
+
+function checkHigViolations() {
+  if (typeof isDontMode !== 'undefined' && isDontMode) return;
+  
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into existing updatePreview if exists
+var _origUp = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUp) {
+  updatePreview = function() { _origUp(); checkHigViolations(); };
+}
+
+// Listen on all controls
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch, input[type=range]').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 100); });
+  el.addEventListener('input', function() { setTimeout(checkHigViolations, 100); });
+});
+
+setTimeout(checkHigViolations, 200);
 </script>
 </body>
 </html>

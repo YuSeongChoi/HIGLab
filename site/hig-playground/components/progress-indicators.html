@@ -92,10 +92,89 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
 @media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
 @media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
 </style>
 </head>
 <body>
-<div class="header"><div class="header-inner"><a href="../../index.html" class="logo">HIG <span>Lab</span></a><div class="nav"><a href="../index.html">HIG Playground</a><a href="../../index.html">Home</a><a href="https://github.com/M1zz/HIGLab">GitHub</a></div></div></div>
+<div class="header"><div class="header-inner"><a href="../../index.html" class="logo">HIG <span>Lab</span></a><div class="nav"><a href="../index.html">HIG Playground</a><a href="../../index.html">Home</a><a href="https://github.com/M1zz/HIGLab">GitHub</a><a href="progress-indicators.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;margin-left:8px;">🇺🇸 EN</a></div></div></div>
 <div class="breadcrumb"><a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Progress Indicators</div>
 <h1 class="page-title">Progress Indicators</h1>
 <p class="page-desc">iOS ProgressView의 linear bar와 circular spinner, 진행률 조절을 체험해보세요.</p>
@@ -158,43 +237,37 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 
 <div style="height:20px"></div>
 </div>
-<div class="home-indicator"><div class="home-indicator-bar"></div></div>
+<div class="hig-warning" id="higWarning">⚠️ HIG 위반: 진행 표시가 부적절합니다</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
 </div></div>
 
 <div class="right-panel">
 
 <div class="guidelines">
-<div class="guidelines-header">&#128218; HIG Guidelines</div>
-<div class="guidelines-body">
-<div class="do-dont">
-  <div class="do-card"><h4>&#10003; Do</h4><ul>
+<div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card"><h4>&#10003; 이렇게 하세요</h4><ul>
     <li>Use linear bars for known-duration tasks</li>
     <li>Use spinners for indeterminate loading</li>
     <li>Show percentage or file size when helpful</li>
     <li>Use system tint color by default</li>
   </ul></div>
-  <div class="dont-card"><h4>&#10007; Don't</h4><ul>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card"><h4>&#10007; 이렇게 하지 마세요</h4><ul>
     <li>Don't use a spinner when progress is measurable</li>
     <li>Don't show stale or frozen progress</li>
     <li>Don't make the progress bar too small</li>
     <li>Don't use custom animations that confuse users</li>
-  </ul></div>
-</div>
-<p class="guideline-note">Progress indicators show that a task is underway. Use a determinate indicator when you can estimate how long the task will take. Use an indeterminate indicator when the duration is unknown.</p>
-<a href="https://developer.apple.com/design/human-interface-guidelines/progress-indicators" class="guideline-link" target="_blank">Apple HIG: Progress Indicators &rarr;</a>
-</div>
-</div>
-
-<div class="controls-panel">
-<div class="controls-header">&#9881;&#65039; Controls</div>
-<div class="controls-body">
-<div class="control-group">
-  <label>Style</label>
-  <div class="control-options" id="styleOptions">
-    <div class="control-option active" data-value="linear">Linear</div>
-    <div class="control-option" data-value="circular">Circular</div>
-  </div>
-</div>
+  </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
 <div class="control-group">
   <label>Progress <span class="control-slider-value" id="progressValue">65%</span></label>
   <input type="range" class="control-slider" id="progressSlider" min="0" max="100" value="65">
@@ -212,7 +285,15 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 </div>
 </div>
 
-<div class="code-preview">
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
 <div class="code-preview-header"><span>SwiftUI Code</span><button class="copy-btn" onclick="copyCode()">Copy</button></div>
 <div class="code-preview-body" id="codePreview"><span class="comment">// Linear determinate</span>
 <span class="type">ProgressView</span>(value: <span class="prop">0.65</span>)
@@ -298,6 +379,93 @@ function copyCode(){
 }
 
 updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Downloads</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ No Progress Context</div>
+          <div class="screen-card"><div style="background:#fff;padding:20px;border-radius:14px;text-align:center"><div style="width:100%;height:4px;background:#E5E5EA;border-radius:2px"><div style="width:45%;height:100%;background:#007AFF;border-radius:2px"></div></div><p style="font-size:10px;color:#8E8E93;margin-top:12px">45%? 뭐의 45%? 얼마나 남았나?</p></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var state = { tintColor: tintColor || '#007AFF', progress: progress || 65, style: 'linear' };
+
+var higRules = [
+    { check: function(){ return state.progress === 0; }, ko: "진행률 0%는 시작 전인지 오류인지 구분이 안 됩니다. 로딩 인디케이터를 사용하세요", en: "0% progress is ambiguous — use a loading indicator for indeterminate state" }
+];
+
+function checkHigViolations() {
+  if (typeof isDontMode !== 'undefined' && isDontMode) return;
+  state.tintColor = tintColor; state.progress = progress;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into existing updatePreview if exists
+var _origUp = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUp) {
+  updatePreview = function() { _origUp(); checkHigViolations(); };
+}
+
+// Listen on all controls
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch, input[type=range]').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 100); });
+  el.addEventListener('input', function() { setTimeout(checkHigViolations, 100); });
+});
+
+setTimeout(checkHigViolations, 200);
 </script>
 </body>
 </html>
