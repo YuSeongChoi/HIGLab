@@ -139,7 +139,7 @@ struct ExpandedBottomView: View {
     }
 }
 
-private struct DeliveryProgressBar: View {
+struct DeliveryProgressBar: View {
     let progress: Double
     
     var body: some View {
