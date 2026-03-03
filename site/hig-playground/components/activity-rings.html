@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Rings — HIG Playground | HIG Lab</title>
+<meta name="description" content="Apple Activity Rings를 브라우저에서 직접 체험해보세요. 링 개수, 진행률, 색상, 애니메이션을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;
+  --accent:#0071e3;--border:#d2d2d7;--radius:16px;
+  --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;
+  --ios-purple:#AF52DE;--ios-teal:#5AC8FA;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12);
+}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}
+.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:24px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-card{background:var(--ios-card);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* ─── Ring Styles ─── */
+.rings-container{position:relative;width:220px;height:220px}
+.rings-svg{width:100%;height:100%}
+.ring-bg{fill:none;opacity:0.15}
+.ring-fg{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)}
+.ring-fg.no-animate{transition:none}
+.ring-cap{transition:all 1s cubic-bezier(0.4,0,0.2,1)}
+.ring-cap.no-animate{transition:none}
+
+.ring-legend{
+  display:flex;flex-direction:column;gap:10px;width:100%;
+}
+.legend-row{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:14px;
+}
+.legend-left{display:flex;align-items:center;gap:8px}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.legend-label{font-weight:500;color:#000}
+.legend-value{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Slider in iPhone */
+.ring-slider-group{width:100%}
+.ring-slider-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--ios-gray);margin-bottom:4px;
+}
+.ring-slider{
+  -webkit-appearance:none;width:100%;height:6px;
+  border-radius:3px;outline:none;
+  background:var(--ios-gray5);
+}
+.ring-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:24px;height:24px;
+  border-radius:50%;background:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  cursor:pointer;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+.control-slider-row{display:flex;align-items:center;gap:12px}
+.control-slider-label{font-size:13px;font-weight:600;color:var(--text-2);min-width:60px}
+.control-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none}
+.control-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.control-slider-value{font-size:13px;font-weight:600;color:var(--text);min-width:40px;text-align:right;font-variant-numeric:tabular-nums}
+
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="activity-rings.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Activity Rings
+</div>
+
+<h1 class="page-title">Activity Rings</h1>
+<p class="page-desc">Apple Activity Rings의 동심원 진행률 표시를 직접 체험해보세요. 링 개수, 진행률, 색상, 애니메이션을 컨트롤 패널에서 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content">
+        <div class="screen-nav-title">Activity</div>
+
+        <!-- Rings -->
+        <div class="screen-section">
+          <div class="screen-section-title">Progress</div>
+          <div class="screen-card" style="background:#000;border-radius:14px">
+            <div class="rings-container">
+              <svg class="rings-svg" id="ringsSvg" viewBox="0 0 220 220"></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="screen-section">
+          <div class="screen-section-title">Summary</div>
+          <div class="screen-card">
+            <div class="ring-legend" id="ringLegend"></div>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="screen-section">
+          <div class="screen-section-title">Adjust</div>
+          <div class="screen-card" id="sliderContainer"></div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 링이 읽기 어렵습니다</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>Use concentric rings for related progress metrics</li>
+              <li>Animate progress changes for visual delight</li>
+              <li>Use distinct, vibrant colors for each ring</li>
+              <li>Show rounded end caps for the Apple Watch style</li>
+              <li>Include a legend explaining what each ring represents</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>Don't use more than 3 rings (readability suffers)</li>
+              <li>Don't use similar colors for adjacent rings</li>
+              <li>Don't skip the background track — it shows the goal</li>
+              <li>Don't make rings too thin to be visible</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Ring 1 (Move) Progress</label>
+          <div class="control-slider-row">
+            <input type="range" class="control-slider" id="slider1" min="0" max="150" value="75">
+            <span class="control-slider-value" id="sliderVal1">75%</span>
+          </div>
+        </div>
+        <div class="control-group" id="slider2Group">
+          <label>Ring 2 (Exercise) Progress</label>
+          <div class="control-slider-row">
+            <input type="range" class="control-slider" id="slider2" min="0" max="150" value="50">
+            <span class="control-slider-value" id="sliderVal2">50%</span>
+          </div>
+        </div>
+        <div class="control-group" id="slider3Group">
+          <label>Ring 3 (Stand) Progress</label>
+          <div class="control-slider-row">
+            <input type="range" class="control-slider" id="slider3" min="0" max="150" value="90">
+            <span class="control-slider-value" id="sliderVal3">90%</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Color Theme</label>
+          <div class="control-options" id="themeOptions">
+            <div class="control-option active" data-value="classic">Classic</div>
+            <div class="control-option" data-value="ocean">Ocean</div>
+            <div class="control-option" data-value="sunset">Sunset</div>
+            <div class="control-option" data-value="neon">Neon</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Animate</span>
+            <div class="toggle-switch on" id="toggleAnimate"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+const themes = {
+  classic: [
+    {color:'#FF3B30',name:'Move',icon:'flame.fill'},
+    {color:'#34C759',name:'Exercise',icon:'figure.walk'},
+    {color:'#007AFF',name:'Stand',icon:'arrow.up.circle'}
+  ],
+  ocean: [
+    {color:'#00CED1',name:'Swim',icon:'drop.fill'},
+    {color:'#1E90FF',name:'Dive',icon:'water.waves'},
+    {color:'#4169E1',name:'Surf',icon:'wind'}
+  ],
+  sunset: [
+    {color:'#FF6B6B',name:'Calories',icon:'flame.fill'},
+    {color:'#FF9500',name:'Active',icon:'bolt.fill'},
+    {color:'#FFD93D',name:'Steps',icon:'figure.walk'}
+  ],
+  neon: [
+    {color:'#FF00FF',name:'Power',icon:'bolt.fill'},
+    {color:'#00FF88',name:'Speed',icon:'hare.fill'},
+    {color:'#00BFFF',name:'Focus',icon:'brain.head.profile'}
+  ]
+};
+
+let state = {
+  ringCount: 3,
+  progress: [75, 50, 90],
+  theme: 'classic',
+  animate: true
+};
+
+// ─── Controls ───
+document.querySelectorAll('#countOptions .control-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#countOptions .control-option').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    state.ringCount = parseInt(opt.dataset.value);
+    document.getElementById('slider2Group').style.display = state.ringCount >= 2 ? 'block' : 'none';
+    document.getElementById('slider3Group').style.display = state.ringCount >= 3 ? 'block' : 'none';
+    updatePreview();
+  });
+});
+
+document.querySelectorAll('#themeOptions .control-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#themeOptions .control-option').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    state.theme = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+['slider1','slider2','slider3'].forEach((id, i) => {
+  document.getElementById(id).addEventListener('input', function() {
+    state.progress[i] = parseInt(this.value);
+    document.getElementById('sliderVal' + (i+1)).textContent = this.value + '%';
+    updatePreview();
+  });
+});
+
+document.getElementById('toggleAnimate').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.animate = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Draw Rings ───
+function drawRings() {
+  const svg = document.getElementById('ringsSvg');
+  svg.innerHTML = '';
+  const cx = 110, cy = 110;
+  const strokeWidth = 18;
+  const gap = 6;
+  const theme = themes[state.theme];
+
+  for (let i = 0; i < state.ringCount; i++) {
+    const radius = 95 - i * (strokeWidth + gap);
+    const circumference = 2 * Math.PI * radius;
+    const progress = Math.min(state.progress[i], 150) / 100;
+    const offset = circumference * (1 - progress);
+    const ringColor = theme[i].color;
+
+    // Background ring
+    const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    bgCircle.setAttribute('class', 'ring-bg');
+    bgCircle.setAttribute('cx', cx);
+    bgCircle.setAttribute('cy', cy);
+    bgCircle.setAttribute('r', radius);
+    bgCircle.setAttribute('stroke', ringColor);
+    bgCircle.setAttribute('stroke-width', strokeWidth);
+    svg.appendChild(bgCircle);
+
+    // Foreground ring
+    const fgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    fgCircle.setAttribute('class', 'ring-fg' + (state.animate ? '' : ' no-animate'));
+    fgCircle.setAttribute('cx', cx);
+    fgCircle.setAttribute('cy', cy);
+    fgCircle.setAttribute('r', radius);
+    fgCircle.setAttribute('stroke', ringColor);
+    fgCircle.setAttribute('stroke-width', strokeWidth);
+    fgCircle.setAttribute('stroke-dasharray', circumference);
+    fgCircle.setAttribute('stroke-dashoffset', circumference);
+    fgCircle.setAttribute('transform', 'rotate(-90 ' + cx + ' ' + cy + ')');
+    fgCircle.setAttribute('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))');
+    svg.appendChild(fgCircle);
+
+    // Round end cap (circle at the end of progress)
+    if (progress > 0.02) {
+      const angle = (progress * 360 - 90) * Math.PI / 180;
+      const capX = cx + radius * Math.cos(angle);
+      const capY = cy + radius * Math.sin(angle);
+      const cap = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      cap.setAttribute('class', 'ring-cap' + (state.animate ? '' : ' no-animate'));
+      cap.setAttribute('cx', cx);
+      cap.setAttribute('cy', cy - radius);
+      cap.setAttribute('r', strokeWidth / 2);
+      cap.setAttribute('fill', ringColor);
+      cap.setAttribute('filter', 'drop-shadow(-2px 0 3px rgba(0,0,0,0.3))');
+      svg.appendChild(cap);
+
+      // Animate cap position
+      if (state.animate) {
+        setTimeout(() => {
+          cap.setAttribute('cx', capX);
+          cap.setAttribute('cy', capY);
+        }, 50);
+      } else {
+        cap.setAttribute('cx', capX);
+        cap.setAttribute('cy', capY);
+      }
+    }
+
+    // Animate foreground
+    if (state.animate) {
+      setTimeout(() => {
+        fgCircle.setAttribute('stroke-dashoffset', offset);
+      }, 50 + i * 100);
+    } else {
+      fgCircle.setAttribute('stroke-dashoffset', offset);
+    }
+  }
+}
+
+// ─── Update Legend ───
+function updateLegend() {
+  const legend = document.getElementById('ringLegend');
+  legend.innerHTML = '';
+  const theme = themes[state.theme];
+
+  for (let i = 0; i < state.ringCount; i++) {
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    row.innerHTML = '<div class="legend-left"><div class="legend-dot" style="background:' + theme[i].color + '"></div><span class="legend-label">' + theme[i].name + '</span></div><span class="legend-value" style="color:' + theme[i].color + '">' + state.progress[i] + '%</span>';
+    legend.appendChild(row);
+  }
+}
+
+// ─── Update Sliders in iPhone ───
+function updateSliders() {
+  const container = document.getElementById('sliderContainer');
+  container.innerHTML = '';
+  const theme = themes[state.theme];
+
+  for (let i = 0; i < state.ringCount; i++) {
+    const group = document.createElement('div');
+    group.className = 'ring-slider-group';
+    group.innerHTML = '<div class="ring-slider-label"><span>' + theme[i].name + '</span><span>' + state.progress[i] + '%</span></div>';
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'ring-slider';
+    slider.min = '0';
+    slider.max = '150';
+    slider.value = state.progress[i];
+    slider.style.setProperty('accent-color', theme[i].color);
+    const idx = i;
+    slider.addEventListener('input', function() {
+      state.progress[idx] = parseInt(this.value);
+      document.getElementById('slider' + (idx+1)).value = this.value;
+      document.getElementById('sliderVal' + (idx+1)).textContent = this.value + '%';
+      updatePreview();
+    });
+    group.appendChild(slider);
+    container.appendChild(group);
+  }
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  drawRings();
+  updateLegend();
+  updateSliders();
+  updateCode();
+}
+
+function updateCode() {
+  const theme = themes[state.theme];
+  const colorSwift = {
+    '#FF3B30':'red','#34C759':'green','#007AFF':'blue',
+    '#00CED1':'cyan','#1E90FF':'blue','#4169E1':'indigo',
+    '#FF6B6B':'red','#FF9500':'orange','#FFD93D':'yellow',
+    '#FF00FF':'purple','#00FF88':'green','#00BFFF':'cyan'
+  };
+
+  let code = '<span class="comment">// Activity Rings View</span>\n';
+  code += '<span class="kw">struct</span> <span class="type">ActivityRingsView</span>: <span class="type">View</span> {\n';
+
+  for (let i = 0; i < state.ringCount; i++) {
+    code += '    <span class="kw">@State var</span> <span class="prop">' + theme[i].name.toLowerCase() + 'Progress</span>: <span class="type">Double</span> = <span class="prop">' + (state.progress[i]/100).toFixed(2) + '</span>\n';
+  }
+
+  code += '\n    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">ZStack</span> {\n';
+
+  for (let i = 0; i < state.ringCount; i++) {
+    const c = colorSwift[theme[i].color] || 'blue';
+    const ringSize = 200 - i * 48;
+    code += '            <span class="type">Circle</span>()\n';
+    code += '                .<span class="func">trim</span>(from: <span class="prop">0</span>, to: <span class="prop">' + theme[i].name.toLowerCase() + 'Progress</span>)\n';
+    code += '                .<span class="func">stroke</span>(.<span class="prop">' + c + '</span>, style: <span class="type">StrokeStyle</span>(\n';
+    code += '                    lineWidth: <span class="prop">18</span>, lineCap: .<span class="prop">round</span>))\n';
+    code += '                .<span class="func">rotationEffect</span>(.<span class="func">degrees</span>(<span class="prop">-90</span>))\n';
+    code += '                .<span class="func">frame</span>(width: <span class="prop">' + ringSize + '</span>, height: <span class="prop">' + ringSize + '</span>)\n';
+    if (state.animate) {
+      code += '                .<span class="func">animation</span>(.<span class="prop">easeOut</span>, value: <span class="prop">' + theme[i].name.toLowerCase() + 'Progress</span>)\n';
+    }
+  }
+
+  code += '        }\n';
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Activity</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Rings</div>
+          <div class="screen-card"><div style="background:#000;padding:20px;border-radius:14px;text-align:center"><svg width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="60" fill="none" stroke="hsl(0,70%,50%)" stroke-width="4" stroke-dasharray="188.4 376.8" opacity="0.7"/><circle cx="70" cy="70" r="55" fill="none" stroke="hsl(50,70%,50%)" stroke-width="4" stroke-dasharray="172.70000000000002 345.40000000000003" opacity="0.7"/><circle cx="70" cy="70" r="50" fill="none" stroke="hsl(100,70%,50%)" stroke-width="4" stroke-dasharray="157 314" opacity="0.7"/><circle cx="70" cy="70" r="45" fill="none" stroke="hsl(150,70%,50%)" stroke-width="4" stroke-dasharray="141.3 282.6" opacity="0.7"/><circle cx="70" cy="70" r="40" fill="none" stroke="hsl(200,70%,50%)" stroke-width="4" stroke-dasharray="125.60000000000001 251.20000000000002" opacity="0.7"/><circle cx="70" cy="70" r="35" fill="none" stroke="hsl(250,70%,50%)" stroke-width="4" stroke-dasharray="109.9 219.8" opacity="0.7"/><circle cx="70" cy="70" r="30" fill="none" stroke="hsl(300,70%,50%)" stroke-width="4" stroke-dasharray="94.2 188.4" opacity="0.7"/></svg><p style="font-size:10px;color:#8E8E93;margin-top:8px">7개 링은 구분이 불가능합니다</p></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.ringCount >= 5; }, ko: "5개 이상의 링은 구분하기 어렵습니다 (Apple은 최대 3개)", en: "5+ rings are hard to distinguish (Apple uses max 3)" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

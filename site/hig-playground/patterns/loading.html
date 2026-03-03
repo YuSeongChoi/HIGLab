@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading — HIG Playground | HIG Lab</title>
+<meta name="description" content="로딩 상태의 다양한 표현 방식을 비교해보세요. Spinner, Progress, Skeleton, Shimmer 스타일을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Loading Animations ─── */
+/* iOS Spinner */
+.ios-spinner{
+  width:40px;height:40px;
+  position:relative;
+}
+.ios-spinner .spinner-blade{
+  position:absolute;
+  left:50%;top:0;
+  width:3px;height:10px;
+  margin-left:-1.5px;
+  background:rgba(0,0,0,0.25);
+  border-radius:2px;
+  transform-origin:center 20px;
+  animation:spinnerFade 1s linear infinite;
+}
+@keyframes spinnerFade{
+  0%{opacity:1}100%{opacity:0.15}
+}
+
+/* Progress Bar */
+.ios-progress-track{
+  width:100%;height:6px;
+  background:var(--ios-gray5);
+  border-radius:3px;
+  overflow:hidden;
+}
+.ios-progress-fill{
+  height:100%;
+  background:var(--ios-blue);
+  border-radius:3px;
+  transition:width 0.4s ease;
+}
+.ios-progress-label{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--ios-gray);
+  font-weight:500;
+  margin-top:4px;
+}
+
+/* Skeleton */
+.skeleton-block{
+  background:#E5E5EA;
+  border-radius:6px;
+  position:relative;
+  overflow:hidden;
+}
+.skeleton-block::after{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
+  animation:skeletonShimmer 1.8s ease infinite;
+}
+@keyframes skeletonShimmer{
+  0%{left:-100%}
+  100%{left:100%}
+}
+
+/* Shimmer */
+.shimmer-block{
+  background:linear-gradient(90deg,#E5E5EA 25%,#F2F2F7 50%,#E5E5EA 75%);
+  background-size:200% 100%;
+  border-radius:6px;
+  animation:shimmerSweep 1.5s ease infinite;
+}
+@keyframes shimmerSweep{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* Cancel Button */
+.ios-cancel-btn{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:15px;font-weight:500;
+  color:var(--ios-blue);
+  background:transparent;
+  border:none;cursor:pointer;
+  padding:8px 16px;
+  margin-top:4px;
+}
+
+/* Overlay */
+.loading-overlay{
+  position:absolute;
+  top:54px;left:0;right:0;bottom:40px;
+  background:rgba(0,0,0,0.3);
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;
+  border-radius:0;
+}
+.loading-overlay-content{
+  background:rgba(45,45,45,0.92);
+  border-radius:14px;
+  padding:24px 32px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:12px;
+}
+.loading-overlay-content .ios-spinner .spinner-blade{
+  background:rgba(255,255,255,0.25);
+}
+.loading-overlay-content .ios-progress-track{
+  background:rgba(255,255,255,0.15);
+}
+.loading-overlay-content .ios-progress-fill{
+  background:#fff;
+}
+.loading-overlay-content .ios-progress-label{
+  color:rgba(255,255,255,0.7);
+}
+.loading-overlay-content .ios-cancel-btn{
+  color:rgba(255,255,255,0.8);
+}
+.overlay-label{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:14px;font-weight:500;
+  color:rgba(255,255,255,0.9);
+}
+
+/* Full screen loading */
+.full-loading-container{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:280px;gap:16px;
+}
+.full-loading-label{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:14px;color:var(--ios-gray);
+  font-weight:500;
+}
+
+/* Loaded content */
+.loaded-content-row{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 0;
+  border-bottom:0.5px solid var(--ios-separator);
+  width:100%;
+}
+.loaded-content-row:last-child{border-bottom:none}
+.loaded-avatar{
+  width:40px;height:40px;
+  border-radius:10px;
+  background:var(--ios-blue);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:16px;font-weight:700;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  flex-shrink:0;
+}
+.loaded-text{flex:1}
+.loaded-text-title{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:15px;font-weight:600;color:#000;
+}
+.loaded-text-sub{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--ios-gray);
+  margin-top:2px;
+}
+
+/* Don't mode blocker */
+.dont-blocker{
+  position:absolute;
+  top:54px;left:0;right:0;bottom:40px;
+  background:rgba(0,0,0,0.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;
+}
+.dont-blocker-inner{
+  display:flex;flex-direction:column;
+  align-items:center;gap:8px;
+}
+.dont-blocker .ios-spinner{
+  width:24px;height:24px;
+}
+.dont-blocker .ios-spinner .spinner-blade{
+  width:2px;height:6px;
+  margin-left:-1px;
+  background:rgba(255,255,255,0.25);
+  transform-origin:center 12px;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Loading
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Loading</h1>
+<p class="page-desc">로딩 상태의 다양한 표현 방식을 비교해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Loading</div>
+
+        <!-- Loading Area -->
+        <div class="screen-section" id="loadingSection">
+          <div class="screen-section-title">Loading State</div>
+          <div class="screen-card" id="loadingCard" style="min-height:180px;justify-content:center">
+            <!-- Dynamic loading content goes here -->
+          </div>
+        </div>
+
+        <!-- Loaded Content for Contrast -->
+        <div class="screen-section" id="loadedSection">
+          <div class="screen-section-title">Loaded Content</div>
+          <div class="screen-card" style="align-items:stretch">
+            <div class="loaded-content-row">
+              <div class="loaded-avatar" style="background:#007AFF">A</div>
+              <div class="loaded-text">
+                <div class="loaded-text-title">Apple Design</div>
+                <div class="loaded-text-sub">Human Interface Guidelines</div>
+              </div>
+            </div>
+            <div class="loaded-content-row">
+              <div class="loaded-avatar" style="background:#34C759">S</div>
+              <div class="loaded-text">
+                <div class="loaded-text-title">SwiftUI</div>
+                <div class="loaded-text-sub">Declarative UI Framework</div>
+              </div>
+            </div>
+            <div class="loaded-content-row">
+              <div class="loaded-avatar" style="background:#FF9500">U</div>
+              <div class="loaded-text">
+                <div class="loaded-text-title">UIKit</div>
+                <div class="loaded-text-sub">Event-driven UI Framework</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- Overlay container (outside screen-content for positioning) -->
+      <div id="overlayContainer"></div>
+
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>짧은 대기에는 <strong>스피너</strong>, 긴 작업에는 <strong>프로그레스 바</strong> 사용</li>
+              <li><strong>스켈레톤 UI</strong>로 콘텐츠 레이아웃 미리보기</li>
+              <li>긴 작업에 <strong>취소 옵션</strong> 제공</li>
+              <li>로딩 위치를 <strong>콘텐츠 영역</strong>에 맞게 배치</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>전체 화면을 로딩으로 차단</li>
+              <li>진행률 표시 없이 긴 작업 실행</li>
+              <li>로딩 중 사용자 인터랙션 완전 차단</li>
+              <li>불필요한 로딩 상태 표시</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iOS는 다양한 로딩 표현 방식을 제공합니다. <strong>Spinner</strong>는 짧은 대기, <strong>Progress Bar</strong>는 진행률이 있는 작업, <strong>Skeleton</strong>은 콘텐츠 레이아웃 미리보기, <strong>Shimmer</strong>는 데이터 로딩 대기에 적합합니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/loading" class="guideline-link" target="_blank">
+          Apple HIG: Loading &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Style -->
+        <div class="control-group">
+          <label>Style</label>
+          <div class="control-options" id="styleOptions">
+            <div class="control-option active" data-value="spinner">Spinner</div>
+            <div class="control-option" data-value="progress">Progress</div>
+            <div class="control-option" data-value="skeleton">Skeleton</div>
+            <div class="control-option" data-value="shimmer">Shimmer</div>
+          </div>
+        </div>
+        <!-- Placement -->
+        <div class="control-group">
+          <label>Placement</label>
+          <div class="control-options" id="placementOptions">
+            <div class="control-option" data-value="full">Full</div>
+            <div class="control-option active" data-value="inline">Inline</div>
+            <div class="control-option" data-value="overlay">Overlay</div>
+          </div>
+        </div>
+        <!-- Show Cancel Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Cancel</span>
+            <div class="toggle-switch" id="toggleCancel"></div>
+          </div>
+        </div>
+        <!-- Progress Value -->
+        <div class="control-group" id="progressControl">
+          <label>Progress Value: <span id="progressLabel">45</span>%</label>
+          <input type="range" min="0" max="100" value="45" id="progressSlider" style="width:100%;accent-color:var(--accent);">
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  style: 'spinner',
+  placement: 'inline',
+  showCancel: false,
+  progressValue: 45
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      if (group.id === 'placementOptions') state.placement = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggle ───
+document.getElementById('toggleCancel').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showCancel = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Progress Slider ───
+document.getElementById('progressSlider').addEventListener('input', function() {
+  state.progressValue = parseInt(this.value);
+  document.getElementById('progressLabel').textContent = state.progressValue;
+  updatePreview();
+});
+
+// ─── Create Spinner HTML ───
+function createSpinnerHTML(size) {
+  var s = size || 40;
+  var bladeH = Math.round(s * 0.25);
+  var bladeW = Math.round(s * 0.075);
+  var origin = Math.round(s / 2);
+  var html = '<div class="ios-spinner" style="width:' + s + 'px;height:' + s + 'px;">';
+  for (var i = 0; i < 12; i++) {
+    var angle = i * 30;
+    var delay = -(1 - i / 12);
+    html += '<div class="spinner-blade" style="transform:rotate(' + angle + 'deg);animation-delay:' + delay.toFixed(2) + 's;width:' + bladeW + 'px;height:' + bladeH + 'px;margin-left:-' + (bladeW / 2) + 'px;transform-origin:center ' + origin + 'px;"></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ─── Create Progress HTML ───
+function createProgressHTML(value, wide) {
+  var w = wide ? 'width:100%' : 'width:200px';
+  var html = '<div style="' + w + ';display:flex;flex-direction:column;align-items:center;gap:8px;">';
+  html += '<div class="ios-progress-track" style="' + w + '">';
+  html += '<div class="ios-progress-fill" style="width:' + value + '%"></div>';
+  html += '</div>';
+  html += '<div class="ios-progress-label">' + value + '%</div>';
+  html += '</div>';
+  return html;
+}
+
+// ─── Create Skeleton HTML ───
+function createSkeletonHTML() {
+  var html = '<div style="width:100%;display:flex;flex-direction:column;gap:12px;">';
+  // Image placeholder
+  html += '<div class="skeleton-block" style="width:100%;height:120px;border-radius:10px;"></div>';
+  // Title line
+  html += '<div class="skeleton-block" style="width:75%;height:16px;"></div>';
+  // Text lines
+  html += '<div class="skeleton-block" style="width:100%;height:12px;"></div>';
+  html += '<div class="skeleton-block" style="width:90%;height:12px;"></div>';
+  html += '<div class="skeleton-block" style="width:60%;height:12px;"></div>';
+  // Row with avatar + text
+  html += '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;">';
+  html += '<div class="skeleton-block" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div>';
+  html += '<div style="flex:1;display:flex;flex-direction:column;gap:6px;">';
+  html += '<div class="skeleton-block" style="width:60%;height:12px;"></div>';
+  html += '<div class="skeleton-block" style="width:40%;height:10px;"></div>';
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
+// ─── Create Shimmer HTML ───
+function createShimmerHTML() {
+  var html = '<div style="width:100%;display:flex;flex-direction:column;gap:12px;">';
+  // Image placeholder
+  html += '<div class="shimmer-block" style="width:100%;height:120px;border-radius:10px;"></div>';
+  // Title line
+  html += '<div class="shimmer-block" style="width:75%;height:16px;"></div>';
+  // Text lines
+  html += '<div class="shimmer-block" style="width:100%;height:12px;"></div>';
+  html += '<div class="shimmer-block" style="width:90%;height:12px;"></div>';
+  html += '<div class="shimmer-block" style="width:60%;height:12px;"></div>';
+  // Row with avatar + text
+  html += '<div style="display:flex;gap:10px;align-items:center;margin-top:8px;">';
+  html += '<div class="shimmer-block" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;"></div>';
+  html += '<div style="flex:1;display:flex;flex-direction:column;gap:6px;">';
+  html += '<div class="shimmer-block" style="width:60%;height:12px;"></div>';
+  html += '<div class="shimmer-block" style="width:40%;height:10px;"></div>';
+  html += '</div></div>';
+  html += '</div>';
+  return html;
+}
+
+// ─── Build Loading Content ───
+function buildLoadingContent(forOverlay) {
+  var html = '';
+  switch (state.style) {
+    case 'spinner':
+      html += createSpinnerHTML(forOverlay ? 36 : 40);
+      if (forOverlay) {
+        html += '<div class="overlay-label">Loading...</div>';
+      }
+      break;
+    case 'progress':
+      html += createProgressHTML(state.progressValue, !forOverlay);
+      break;
+    case 'skeleton':
+      html += createSkeletonHTML();
+      break;
+    case 'shimmer':
+      html += createShimmerHTML();
+      break;
+  }
+  if (state.showCancel) {
+    html += '<button class="ios-cancel-btn">Cancel</button>';
+  }
+  return html;
+}
+
+// ─── Store original screen HTML ───
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  var loadingCard = document.getElementById('loadingCard');
+  var overlayContainer = document.getElementById('overlayContainer');
+  var loadedSection = document.getElementById('loadedSection');
+  var loadingSection = document.getElementById('loadingSection');
+
+  // Show/hide progress slider
+  var progressControl = document.getElementById('progressControl');
+  if (state.style === 'progress') {
+    progressControl.style.display = '';
+  } else {
+    progressControl.style.display = 'none';
+  }
+
+  // Clear overlay
+  overlayContainer.innerHTML = '';
+
+  if (state.placement === 'overlay') {
+    // Show loaded content, show loading card with minimal content, add overlay
+    loadingSection.style.display = 'none';
+    loadedSection.style.display = '';
+    var overlayHTML = '<div class="loading-overlay"><div class="loading-overlay-content">';
+    overlayHTML += buildLoadingContent(true);
+    overlayHTML += '</div></div>';
+    overlayContainer.innerHTML = overlayHTML;
+  } else if (state.placement === 'full') {
+    // Full screen loading: replace all content with centered loading
+    loadingSection.style.display = '';
+    loadedSection.style.display = 'none';
+    loadingCard.style.minHeight = '400px';
+    loadingCard.innerHTML = '<div class="full-loading-container">' + buildLoadingContent(false) + '</div>';
+  } else {
+    // Inline: show loading section + loaded content
+    loadingSection.style.display = '';
+    loadedSection.style.display = '';
+    loadingCard.style.minHeight = '180px';
+    loadingCard.innerHTML = buildLoadingContent(false);
+  }
+
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+
+  switch (state.style) {
+    case 'spinner':
+      code += '<span class="comment">// Spinner (Activity Indicator)</span>\n';
+      code += '<span class="kw">ProgressView</span>()\n';
+      code += '    .<span class="func">progressViewStyle</span>(.<span class="prop">circular</span>)';
+      break;
+    case 'progress':
+      code += '<span class="comment">// Progress Bar</span>\n';
+      code += '<span class="kw">ProgressView</span>(<span class="prop">value</span>: <span class="str">' + (state.progressValue / 100).toFixed(2) + '</span>)\n';
+      code += '    .<span class="func">progressViewStyle</span>(.<span class="prop">linear</span>)';
+      break;
+    case 'skeleton':
+      code += '<span class="comment">// Skeleton (Redacted Placeholder)</span>\n';
+      code += '<span class="kw">VStack</span> {\n';
+      code += '    <span class="type">Text</span>(<span class="str">"Loading content"</span>)\n';
+      code += '    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"photo"</span>)\n';
+      code += '}\n';
+      code += '.<span class="func">redacted</span>(<span class="prop">reason</span>: .<span class="prop">placeholder</span>)';
+      break;
+    case 'shimmer':
+      code += '<span class="comment">// Shimmer Effect</span>\n';
+      code += '<span class="kw">VStack</span> {\n';
+      code += '    <span class="type">Text</span>(<span class="str">"Loading content"</span>)\n';
+      code += '    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"photo"</span>)\n';
+      code += '}\n';
+      code += '.<span class="func">redacted</span>(<span class="prop">reason</span>: .<span class="prop">placeholder</span>)\n';
+      code += '.<span class="func">shimmering</span>()  <span class="comment">// Custom modifier</span>';
+      break;
+  }
+
+  // Placement
+  if (state.placement === 'overlay') {
+    code += '\n\n<span class="comment">// Overlay presentation</span>\n';
+    code += '<span class="kw">ZStack</span> {\n';
+    code += '    <span class="comment">// Main content</span>\n';
+    code += '    <span class="type">ContentView</span>()\n';
+    code += '    \n';
+    code += '    <span class="kw">if</span> isLoading {\n';
+    code += '        <span class="type">Color</span>.<span class="prop">black</span>.<span class="func">opacity</span>(<span class="str">0.3</span>)\n';
+    code += '            .<span class="func">ignoresSafeArea</span>()\n';
+    code += '        <span class="kw">ProgressView</span>()\n';
+    code += '    }\n';
+    code += '}';
+  } else if (state.placement === 'full') {
+    code += '\n\n<span class="comment">// Full screen loading</span>\n';
+    code += '<span class="kw">if</span> isLoading {\n';
+    code += '    <span class="kw">VStack</span> {\n';
+    code += '        <span class="type">Spacer</span>()\n';
+    code += '        <span class="kw">ProgressView</span>()\n';
+    code += '        <span class="type">Spacer</span>()\n';
+    code += '    }\n';
+    code += '}';
+  }
+
+  // Cancel
+  if (state.showCancel) {
+    code += '\n\n<span class="comment">// Cancel button</span>\n';
+    code += '<span class="kw">Button</span>(<span class="str">"Cancel"</span>) {\n';
+    code += '    task.<span class="func">cancel</span>()\n';
+    code += '}\n';
+    code += '.<span class="func">buttonStyle</span>(.<span class="prop">borderless</span>)';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+var dontScreenHTML = '\
+  <div class="screen-nav-title">Loading</div>\
+  <div class="dont-blocker">\
+    <div class="dont-blocker-inner">\
+      ' + createSpinnerHTML(24) + '\
+    </div>\
+  </div>\
+  <div class="screen-section" style="opacity:0.15;pointer-events:none">\
+    <div class="screen-section-title" style="color:#FF3B30">Blocked Content</div>\
+    <div class="screen-card" style="align-items:stretch">\
+      <div class="loaded-content-row">\
+        <div class="loaded-avatar" style="background:#007AFF">A</div>\
+        <div class="loaded-text">\
+          <div class="loaded-text-title">Apple Design</div>\
+          <div class="loaded-text-sub">Human Interface Guidelines</div>\
+        </div>\
+      </div>\
+      <div class="loaded-content-row">\
+        <div class="loaded-avatar" style="background:#34C759">S</div>\
+        <div class="loaded-text">\
+          <div class="loaded-text-title">SwiftUI</div>\
+          <div class="loaded-text-sub">Declarative UI Framework</div>\
+        </div>\
+      </div>\
+      <div class="loaded-content-row">\
+        <div class="loaded-avatar" style="background:#FF9500">U</div>\
+        <div class="loaded-text">\
+          <div class="loaded-text-title">UIKit</div>\
+          <div class="loaded-text-sub">Event-driven UI Framework</div>\
+        </div>\
+      </div>\
+    </div>\
+  </div>\
+  <div style="height:20px"></div>\
+';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('overlayContainer').innerHTML = '';
+  document.getElementById('higWarning').classList.remove('show');
+  // Re-apply current state
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('overlayContainer').innerHTML = '';
+  var w = document.getElementById('higWarning');
+  w.textContent = 'HIG: 전체 화면 차단, 취소 없음, 진행률 정보 없음';
+  w.classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.style === 'spinner' && state.progressValue > 0 && state.style !== 'progress'; },
+    ko: "진행률을 알 수 있는 작업에는 프로그레스 바를 사용하세요",
+    id: 'spinner-progress'
+  },
+  {
+    check: function() { return state.placement === 'full' && !state.showCancel; },
+    ko: "전체 화면 로딩 시 취소 옵션이 없으면 사용자가 갇힌 느낌을 받습니다",
+    id: 'full-no-cancel'
+  },
+  {
+    check: function() { return state.style === 'skeleton' && state.placement === 'overlay'; },
+    ko: "스켈레톤 UI는 콘텐츠 영역에 직접 배치해야 합니다. 오버레이 방식은 적합하지 않습니다",
+    id: 'skeleton-overlay'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Show iPhone warning with first violation
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial render
+updatePreview();
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

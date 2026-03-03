@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Going Full Screen — HIG Playground | HIG Lab</title>
+<meta name="description" content="전체 화면 전환의 다양한 트리거와 종료 방법을 인터랙티브하게 체험해보세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;--accent:#0071e3;--border:#d2d2d7;--radius:16px;--ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;--ios-purple:#AF52DE;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;--ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;--ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12)}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0;transition:opacity 0.3s}
+.status-bar.hidden{opacity:0}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+
+/* Full screen content area */
+.fs-content{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:14px;overflow:hidden;position:relative;height:280px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.4s ease}
+.fs-content.fullscreen{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:0;height:auto;z-index:20}
+.fs-content-inner{text-align:center;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.fs-content-inner .fs-icon{font-size:48px;margin-bottom:12px}
+.fs-content-inner .fs-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.fs-content-inner .fs-subtitle{font-size:13px;opacity:0.7}
+.fs-controls-overlay{position:absolute;bottom:20px;left:20px;right:20px;display:flex;justify-content:center;gap:24px;opacity:0;transition:opacity 0.3s}
+.fs-controls-overlay.show{opacity:1}
+.fs-ctrl-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fs-ctrl-btn:active{transform:scale(0.9)}
+.fs-exit-hint{position:absolute;top:60px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;opacity:0;transition:opacity 0.3s}
+.fs-exit-hint.show{opacity:1}
+.fs-trigger-label{margin-top:12px;text-align:center;font-size:13px;color:var(--ios-gray);font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.fs-enter-btn{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;background:var(--ios-blue);color:#fff;margin-top:12px;transition:all 0.15s}
+.fs-enter-btn:active{transform:scale(0.96);opacity:0.7}
+.orientation-indicator{margin-top:16px;text-align:center;font-size:13px;color:var(--ios-gray);font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.orientation-indicator .phone-icon{font-size:28px;display:inline-block;transition:transform 0.3s}
+.orientation-indicator .phone-icon.locked{color:var(--ios-red)}
+
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:25;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+</style>
+</head>
+<body>
+
+<div class="header"><div class="header-inner">
+  <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+  <div class="nav"><a href="../index.html">HIG Playground</a><a href="../../index.html">Home</a><a href="https://github.com/M1zz/HIGLab">GitHub</a></div>
+</div></div>
+
+<div class="breadcrumb"><a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Going Full Screen</div>
+<h1 class="page-title">Going Full Screen</h1>
+<p class="page-desc">전체 화면 전환의 다양한 트리거와 종료 방법을 체험해보세요</p>
+
+<div class="playground-layout">
+
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar" id="statusBar">
+        <span>9:41</span>
+        <div class="status-bar-right"><span>&#9679;&#9679;&#9679;&#9679;</span><span>WiFi</span><span>&#128267;</span></div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Gallery</div>
+
+        <div class="fs-content" id="fsContent" onclick="handleFSTap()">
+          <div class="fs-content-inner">
+            <div class="fs-icon">🏞️</div>
+            <div class="fs-title">Mountain View</div>
+            <div class="fs-subtitle" id="fsTriggerHint">탭하여 전체 화면</div>
+          </div>
+          <div class="fs-controls-overlay" id="fsControlsOverlay">
+            <div class="fs-ctrl-btn" onclick="event.stopPropagation()">⏮</div>
+            <div class="fs-ctrl-btn" onclick="event.stopPropagation()">⏸</div>
+            <div class="fs-ctrl-btn" onclick="event.stopPropagation()">⏭</div>
+            <div class="fs-ctrl-btn" onclick="event.stopPropagation();exitFullScreen()">✕</div>
+          </div>
+          <div class="fs-exit-hint" id="fsExitHint">아래로 스와이프하여 나가기</div>
+        </div>
+
+        <div class="fs-trigger-label" id="triggerLabel">탭하여 전체 화면으로 전환</div>
+        <button class="fs-enter-btn" id="enterBtn" onclick="enterFullScreen()" style="display:none;width:100%">전체 화면으로 보기</button>
+
+        <div class="orientation-indicator" id="orientationIndicator">
+          <div class="phone-icon" id="phoneIcon">📱</div>
+          <div style="margin-top:4px" id="orientationLabel">회전 지원</div>
+        </div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="guidelines">
+      <div class="guidelines-header">📘 HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>✓ 이렇게 하세요</h4>
+            <ul>
+              <li>명확한 전체 화면 진입/종료 방법 제공</li>
+              <li>컨트롤 오버레이로 주요 기능 접근 보장</li>
+              <li>가로/세로 모드 모두 지원</li>
+              <li>상태 바 숨김 시에도 시간 확인 수단 제공</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>✗ 이렇게 하지 마세요</h4>
+            <ul>
+              <li>종료 방법 없이 전체 화면 강제 진입</li>
+              <li>사용자 동의 없이 자동 전체 화면</li>
+              <li>상태 바와 컨트롤 모두 숨기기</li>
+              <li>화면 회전 잠금 강제 적용</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          전체 화면 모드는 몰입감을 높이지만, 사용자가 항상 제어할 수 있어야 합니다.
+          명확한 종료 방법과 필수 정보 접근을 보장하세요.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/going-full-screen" class="guideline-link" target="_blank">Apple HIG: Going Full Screen &rarr;</a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">⚙️ Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>Trigger</label>
+          <div class="control-options" id="triggerOptions">
+            <div class="control-option active" data-value="tap">Tap</div>
+            <div class="control-option" data-value="button">Button</div>
+            <div class="control-option" data-value="auto">Auto</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">컨트롤 오버레이 표시</span>
+            <div class="toggle-switch on" id="toggleControls"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Exit Method</label>
+          <div class="control-options" id="exitOptions">
+            <div class="control-option active" data-value="swipe">Swipe</div>
+            <div class="control-option" data-value="button">Button</div>
+            <div class="control-option" data-value="tap">Tap</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">상태 바 숨기기</span>
+            <div class="toggle-switch on" id="toggleStatusBar"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">화면 회전 잠금</span>
+            <div class="toggle-switch" id="toggleOrientation"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Immersive Level</label>
+          <div class="control-options" id="immersiveOptions">
+            <div class="control-option active" data-value="full">Full</div>
+            <div class="control-option" data-value="minimal">Minimal</div>
+            <div class="control-option" data-value="overlay">Overlay</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel">
+      <div class="controls-header"><span class="hig-live-badge ok" id="violationBadge"><span class="dot"></span> HIG OK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"><div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header"><span>SwiftUI Code</span><button class="copy-btn" onclick="copyCode()">Copy</button></div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+var state = {
+  trigger: 'tap',
+  showControls: true,
+  exitMethod: 'swipe',
+  statusBarHidden: true,
+  orientationLock: false,
+  immersiveLevel: 'full'
+};
+
+var isDontMode = false;
+var isFullScreen = false;
+
+function setupOptions(groupId, stateKey) {
+  var group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      state[stateKey] = opt.dataset.value;
+      updatePreview();
+    });
+  });
+}
+setupOptions('triggerOptions', 'trigger');
+setupOptions('exitOptions', 'exitMethod');
+setupOptions('immersiveOptions', 'immersiveLevel');
+
+document.getElementById('toggleControls').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showControls = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleStatusBar').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.statusBarHidden = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleOrientation').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.orientationLock = this.classList.contains('on');
+  updatePreview();
+});
+
+function handleFSTap() {
+  if (state.trigger === 'tap' && !isFullScreen) enterFullScreen();
+  else if (state.exitMethod === 'tap' && isFullScreen) exitFullScreen();
+}
+
+function enterFullScreen() {
+  isFullScreen = true;
+  document.getElementById('fsContent').classList.add('fullscreen');
+  if (state.showControls) document.getElementById('fsControlsOverlay').classList.add('show');
+  if (state.exitMethod === 'swipe') document.getElementById('fsExitHint').classList.add('show');
+  if (state.statusBarHidden) document.getElementById('statusBar').classList.add('hidden');
+}
+
+function exitFullScreen() {
+  isFullScreen = false;
+  document.getElementById('fsContent').classList.remove('fullscreen');
+  document.getElementById('fsControlsOverlay').classList.remove('show');
+  document.getElementById('fsExitHint').classList.remove('show');
+  document.getElementById('statusBar').classList.remove('hidden');
+}
+
+var autoTimer = null;
+function updatePreview() {
+  exitFullScreen();
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+
+  // Trigger UI
+  var enterBtn = document.getElementById('enterBtn');
+  var triggerLabel = document.getElementById('triggerLabel');
+  var fsTriggerHint = document.getElementById('fsTriggerHint');
+  if (state.trigger === 'tap') {
+    enterBtn.style.display = 'none';
+    triggerLabel.textContent = '탭하여 전체 화면으로 전환';
+    fsTriggerHint.textContent = '탭하여 전체 화면';
+  } else if (state.trigger === 'button') {
+    enterBtn.style.display = 'block';
+    triggerLabel.textContent = '버튼을 눌러 전체 화면으로 전환';
+    fsTriggerHint.textContent = '아래 버튼으로 전체 화면';
+  } else {
+    enterBtn.style.display = 'none';
+    triggerLabel.textContent = '자동으로 전체 화면 전환됩니다';
+    fsTriggerHint.textContent = '자동 전체 화면 전환 중...';
+    autoTimer = setTimeout(enterFullScreen, 1500);
+  }
+
+  // Orientation
+  var phoneIcon = document.getElementById('phoneIcon');
+  var orientLabel = document.getElementById('orientationLabel');
+  if (state.orientationLock) {
+    phoneIcon.classList.add('locked');
+    orientLabel.textContent = '회전 잠금 🔒';
+  } else {
+    phoneIcon.classList.remove('locked');
+    orientLabel.textContent = '회전 지원 🔄';
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+var higRules = [
+  {
+    check: function() { return state.exitMethod === 'swipe' && !state.showControls && state.immersiveLevel === 'full'; },
+    msg: '전체 화면에서 나가는 방법이 명확하지 않으면 사용자가 갇힌 느낌을 받습니다'
+  },
+  {
+    check: function() { return state.statusBarHidden && !state.showControls; },
+    msg: '상태 바를 숨기면 시간, 배터리 등 중요 정보에 접근할 수 없습니다'
+  },
+  {
+    check: function() { return state.trigger === 'auto'; },
+    msg: '사용자 동의 없이 자동으로 전체 화면으로 전환하지 마세요'
+  },
+  {
+    check: function() { return state.orientationLock; },
+    msg: '전체 화면 콘텐츠는 가로/세로 모드를 모두 지원하는 것이 좋습니다'
+  }
+];
+
+function checkHigViolations() {
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+  if (violations.length > 0) {
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.msg + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    w.textContent = violations[0].msg; w.classList.add('show');
+  } else {
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    document.getElementById('higWarning').classList.remove('show');
+  }
+}
+
+function updateCode() {
+  var c = '';
+  c += '<span class="comment">// Full screen presentation</span>\n';
+  c += '<span class="kw">struct</span> <span class="type">GalleryView</span>: <span class="type">View</span> {\n';
+  c += '    <span class="kw">@State private var</span> <span class="prop">isFullScreen</span> = <span class="prop">false</span>\n\n';
+  c += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  c += '        <span class="type">Image</span>(<span class="str">"mountain"</span>)\n';
+  c += '            .<span class="func">resizable</span>()\n';
+  c += '            .<span class="func">aspectRatio</span>(<span class="prop">contentMode</span>: .<span class="prop">fit</span>)\n';
+
+  if (state.trigger === 'tap') {
+    c += '            .<span class="func">onTapGesture</span> {\n';
+    c += '                <span class="prop">isFullScreen</span> = <span class="prop">true</span>\n';
+    c += '            }\n';
+  }
+
+  c += '            .<span class="func">fullScreenCover</span>(<span class="prop">isPresented</span>: <span class="prop">$isFullScreen</span>) {\n';
+  c += '                <span class="type">ZStack</span> {\n';
+  c += '                    <span class="type">Image</span>(<span class="str">"mountain"</span>)\n';
+  c += '                        .<span class="func">resizable</span>()\n';
+  c += '                        .<span class="func">ignoresSafeArea</span>()\n';
+
+  if (state.showControls) {
+    c += '                    <span class="comment">// Controls overlay</span>\n';
+    c += '                    <span class="type">VStack</span> {\n';
+    c += '                        <span class="type">Spacer</span>()\n';
+    c += '                        <span class="type">HStack</span>(<span class="prop">spacing</span>: <span class="prop">24</span>) {\n';
+    c += '                            <span class="type">Button</span>(<span class="str">"Close"</span>) {\n';
+    c += '                                <span class="prop">isFullScreen</span> = <span class="prop">false</span>\n';
+    c += '                            }\n';
+    c += '                        }\n';
+    c += '                    }\n';
+  }
+
+  c += '                }\n';
+  if (state.statusBarHidden) {
+    c += '                .<span class="func">statusBarHidden</span>(<span class="prop">true</span>)\n';
+  }
+  if (!state.orientationLock) {
+    c += '                <span class="comment">// Supports all orientations</span>\n';
+  }
+  c += '            }\n';
+  c += '    }\n}';
+  document.getElementById('codePreview').innerHTML = c;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  // Apply bad settings
+  state.trigger = 'auto';
+  state.showControls = false;
+  state.statusBarHidden = true;
+  state.orientationLock = true;
+  document.getElementById('toggleControls').classList.remove('on');
+  document.getElementById('toggleStatusBar').classList.add('on');
+  document.getElementById('toggleOrientation').classList.add('on');
+  updatePreview();
+}
+
+updatePreview();
+</script>
+</body>
+</html>

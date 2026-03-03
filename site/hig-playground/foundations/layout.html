@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS 레이아웃 시스템을 브라우저에서 직접 체험해보세요">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;
+  --accent:#0071e3;--border:#d2d2d7;--radius:16px;
+  --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;
+  --ios-purple:#AF52DE;--ios-gray:#8E8E93;--ios-gray3:#C7C7CC;
+  --ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12);
+}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}
+.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}
+.screen-content::-webkit-scrollbar{display:none}
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.slider-group{display:flex;align-items:center;gap:12px}
+.slider-group input[type=range]{flex:1;accent-color:var(--ios-blue)}
+.slider-value{font-size:13px;color:var(--text-2);font-weight:600;min-width:36px;text-align:right}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Layout
+</div>
+
+<h1 class="page-title">Layout</h1>
+<p class="page-desc">iOS 레이아웃 시스템(VStack, HStack, ZStack, Grid, List)을 실시간으로 조작하며 Safe Area, 간격, 정렬 등 HIG 가이드라인을 확인해보세요.</p>
+
+<div class="playground-layout">
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent"></div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="guidelines">
+      <div class="guidelines-header">📖 HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>✓ 이렇게 하세요</h4>
+            <ul>
+              <li>Safe Area를 존중하여 콘텐츠 배치</li>
+              <li>적절한 spacing으로 요소 간 여백 확보</li>
+              <li>Dynamic Type에 대응하는 유연한 레이아웃</li>
+              <li>일관된 padding으로 화면 가장자리 여백 유지</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>✗ 이렇게 하지 마세요</h4>
+            <ul>
+              <li>❌ Safe Area를 무시하지 마세요</li>
+              <li>❌ 인터랙티브 요소 간 간격을 0으로 두지 마세요</li>
+              <li>❌ iPhone에서 5열 이상의 그리드를 사용하지 마세요</li>
+              <li>❌ ZStack에서 정렬을 지정하지 않는 실수를 피하세요</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          SwiftUI는 <strong>VStack</strong>, <strong>HStack</strong>, <strong>ZStack</strong>, <strong>LazyVGrid</strong>, <strong>List</strong> 등
+          다양한 레이아웃 컨테이너를 제공합니다. Safe Area를 존중하고 Dynamic Type에 대응하는 것이 중요합니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/layout" class="guideline-link" target="_blank">
+          Apple HIG: Layout &rarr;
+        </a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">⚙️ Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>Layout Type</label>
+          <div class="control-options" id="layoutOptions">
+            <div class="control-option active" data-value="vstack">VStack</div>
+            <div class="control-option" data-value="hstack">HStack</div>
+            <div class="control-option" data-value="zstack">ZStack</div>
+            <div class="control-option" data-value="grid">Grid</div>
+            <div class="control-option" data-value="list">List</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Spacing: <span id="spacingLabel">8pt</span></label>
+          <div class="slider-group">
+            <input type="range" id="spacingSlider" min="0" max="32" step="1" value="8">
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Padding: <span id="paddingLabel">16pt</span></label>
+          <div class="slider-group">
+            <input type="range" id="paddingSlider" min="0" max="32" step="1" value="16">
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Alignment</label>
+          <div class="control-options" id="alignOptions">
+            <div class="control-option" data-value="leading">Leading</div>
+            <div class="control-option active" data-value="center">Center</div>
+            <div class="control-option" data-value="trailing">Trailing</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Safe Area</span>
+            <div class="toggle-switch on" id="toggleSafeArea"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Dynamic Type 대응</span>
+            <div class="toggle-switch" id="toggleDynamic"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+// ─── State ───
+let state = {
+  layoutType: 'vstack',
+  spacing: 8,
+  padding: 16,
+  alignment: 'center',
+  safeArea: true,
+  dynamicType: false
+};
+
+let isDontMode = false;
+
+const boxColors = ['#007AFF','#34C759','#FF9500','#FF3B30','#AF52DE','#5AC8FA'];
+const boxLabels = ['Header','Content','Image','Button','Footer','Badge'];
+
+// ─── Control bindings ───
+function bindOptions(id, key) {
+  document.querySelectorAll('#' + id + ' .control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#' + id + ' .control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      state[key] = opt.dataset.value;
+      updatePreview();
+    });
+  });
+}
+bindOptions('layoutOptions', 'layoutType');
+bindOptions('alignOptions', 'alignment');
+
+document.getElementById('spacingSlider').addEventListener('input', function() {
+  state.spacing = parseInt(this.value);
+  document.getElementById('spacingLabel').textContent = state.spacing + 'pt';
+  updatePreview();
+});
+document.getElementById('paddingSlider').addEventListener('input', function() {
+  state.padding = parseInt(this.value);
+  document.getElementById('paddingLabel').textContent = state.padding + 'pt';
+  updatePreview();
+});
+document.getElementById('toggleSafeArea').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.safeArea = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleDynamic').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.dynamicType = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Alignment CSS mapping ───
+function alignCSS(a) {
+  return a === 'leading' ? 'flex-start' : a === 'trailing' ? 'flex-end' : 'center';
+}
+
+// ─── Update preview ───
+function updatePreview() {
+  if (isDontMode) return;
+  const { layoutType, spacing, padding, alignment, safeArea, dynamicType } = state;
+  const fontSize = dynamicType ? 19 : 14;
+  const boxH = dynamicType ? 54 : 44;
+  const safeTop = safeArea ? 0 : -54;
+  const safeBottom = safeArea ? 0 : -20;
+
+  let html = '';
+  if (!safeArea) {
+    html += '<div style="background:rgba(255,59,48,0.1);border:1px dashed #FF3B30;border-radius:8px;padding:6px 10px;margin-bottom:8px;font-size:11px;color:#FF3B30;font-family:-apple-system,sans-serif;text-align:center">⚠️ Safe Area 무시됨</div>';
+  }
+
+  html += '<div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,sans-serif">Layout</div>';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">' + layoutType.toUpperCase() + '</div>';
+
+  html += '<div style="background:var(--ios-card);border-radius:14px;padding:' + padding + 'px;min-height:300px;position:relative">';
+
+  if (layoutType === 'vstack') {
+    html += '<div style="display:flex;flex-direction:column;gap:' + spacing + 'px;align-items:' + alignCSS(alignment) + '">';
+    for (let i = 0; i < 5; i++) {
+      const w = alignment === 'center' ? '100%' : alignment === 'leading' ? (60 + i * 10) + '%' : (90 - i * 10) + '%';
+      html += '<div style="background:' + boxColors[i] + ';border-radius:10px;padding:10px 16px;width:' + w + ';min-height:' + boxH + 'px;display:flex;align-items:center;color:#fff;font-size:' + fontSize + 'px;font-weight:600;font-family:-apple-system,sans-serif">' + boxLabels[i] + '</div>';
+    }
+    html += '</div>';
+  } else if (layoutType === 'hstack') {
+    html += '<div style="display:flex;flex-direction:row;gap:' + spacing + 'px;align-items:' + alignCSS(alignment) + ';flex-wrap:wrap">';
+    for (let i = 0; i < 4; i++) {
+      const h = 40 + (i % 3) * 20;
+      html += '<div style="background:' + boxColors[i] + ';border-radius:10px;padding:8px;flex:1;min-width:50px;height:' + h + 'px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:' + (fontSize - 2) + 'px;font-weight:600;font-family:-apple-system,sans-serif">' + boxLabels[i] + '</div>';
+    }
+    html += '</div>';
+  } else if (layoutType === 'zstack') {
+    html += '<div style="position:relative;height:200px">';
+    for (let i = 2; i >= 0; i--) {
+      const offset = i * 20;
+      const size = 200 - i * 40;
+      const al = alignment === 'leading' ? 'left:0;top:' + offset + 'px' : alignment === 'trailing' ? 'right:0;top:' + offset + 'px' : 'left:50%;top:50%;transform:translate(-50%,-50%)';
+      html += '<div style="position:absolute;' + al + ';width:' + size + 'px;height:' + size + 'px;background:' + boxColors[i] + ';opacity:' + (0.4 + i * 0.3) + ';border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:' + fontSize + 'px;font-weight:600;font-family:-apple-system,sans-serif">' + boxLabels[i] + '</div>';
+    }
+    html += '</div>';
+  } else if (layoutType === 'grid') {
+    const cols = 3;
+    html += '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:' + spacing + 'px">';
+    for (let i = 0; i < 6; i++) {
+      html += '<div style="background:' + boxColors[i] + ';border-radius:10px;padding:12px 8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:#fff;font-size:' + (fontSize - 3) + 'px;font-weight:600;font-family:-apple-system,sans-serif;text-align:center">' + boxLabels[i] + '</div>';
+    }
+    html += '</div>';
+  } else if (layoutType === 'list') {
+    html += '<div style="display:flex;flex-direction:column">';
+    for (let i = 0; i < 5; i++) {
+      const bt = i > 0 ? 'border-top:0.5px solid var(--ios-separator);' : '';
+      html += '<div style="' + bt + 'padding:' + Math.max(spacing, 4) + 'px 0;display:flex;align-items:center;gap:12px">';
+      html += '<div style="width:36px;height:36px;border-radius:8px;background:' + boxColors[i] + ';flex-shrink:0"></div>';
+      html += '<div style="flex:1"><div style="font-size:' + fontSize + 'px;font-weight:500;color:#000;font-family:-apple-system,sans-serif">' + boxLabels[i] + '</div><div style="font-size:12px;color:var(--ios-gray);font-family:-apple-system,sans-serif">Description text</div></div>';
+      html += '<span style="color:var(--ios-gray3);font-size:18px">›</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  // Dimension info
+  html += '<div style="margin-top:12px;background:var(--ios-card);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--ios-gray);font-family:monospace">';
+  html += 'spacing: ' + spacing + ' | padding: ' + padding + ' | align: ' + alignment;
+  html += ' | safeArea: ' + safeArea + ' | dynamicType: ' + dynamicType;
+  html += '</div>';
+  html += '<div style="height:20px"></div>';
+
+  document.getElementById('screenContent').innerHTML = html;
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Don't mode ───
+const dontScreenHTML = `
+  <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,sans-serif">Layout</div>
+  <div style="font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ NO SPACING BETWEEN BUTTONS</div>
+  <div style="background:var(--ios-card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:0">
+    <button style="padding:14px;background:#007AFF;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600">Save</button>
+    <button style="padding:14px;background:#FF3B30;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600">Delete</button>
+    <button style="padding:14px;background:#34C759;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600">Share</button>
+  </div>
+  <div style="margin-top:16px;font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ SAFE AREA IGNORED</div>
+  <div style="background:var(--ios-card);border-radius:14px;padding:4px;margin:-12px -16px 0">
+    <div style="background:#007AFF;color:#fff;padding:20px;font-size:15px;font-weight:600;font-family:-apple-system,sans-serif">Content extends to edges — overlapping notch and home indicator</div>
+  </div>
+  <div style="margin-top:24px;font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ TOO MANY GRID COLUMNS</div>
+  <div style="background:var(--ios-card);border-radius:14px;padding:8px;display:grid;grid-template-columns:repeat(6,1fr);gap:2px">
+    <div style="background:#007AFF;border-radius:4px;height:40px"></div>
+    <div style="background:#34C759;border-radius:4px;height:40px"></div>
+    <div style="background:#FF9500;border-radius:4px;height:40px"></div>
+    <div style="background:#FF3B30;border-radius:4px;height:40px"></div>
+    <div style="background:#AF52DE;border-radius:4px;height:40px"></div>
+    <div style="background:#5AC8FA;border-radius:4px;height:40px"></div>
+  </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  const w = document.getElementById('higWarning');
+  w.textContent = '⚠️ 레이아웃 HIG 위반 패턴입니다';
+  w.classList.add('show');
+}
+
+// ─── Code preview ───
+function updateCode() {
+  const { layoutType, spacing, padding, alignment, safeArea } = state;
+  const alignMap = { leading: '.leading', center: '.center', trailing: '.trailing' };
+  let code = '';
+
+  if (layoutType === 'vstack') {
+    code += '<span class="type">VStack</span>(alignment: <span class="prop">' + alignMap[alignment] + '</span>, spacing: <span class="prop">' + spacing + '</span>) {\n';
+    code += '    <span class="type">Text</span>(<span class="str">"Header"</span>)\n';
+    code += '    <span class="type">Text</span>(<span class="str">"Content"</span>)\n';
+    code += '    <span class="type">Text</span>(<span class="str">"Footer"</span>)\n';
+    code += '}\n';
+    code += '.<span class="func">padding</span>(<span class="prop">' + padding + '</span>)';
+  } else if (layoutType === 'hstack') {
+    code += '<span class="type">HStack</span>(alignment: <span class="prop">' + alignMap[alignment] + '</span>, spacing: <span class="prop">' + spacing + '</span>) {\n';
+    code += '    <span class="type">Text</span>(<span class="str">"A"</span>)\n';
+    code += '    <span class="type">Text</span>(<span class="str">"B"</span>)\n';
+    code += '    <span class="type">Text</span>(<span class="str">"C"</span>)\n';
+    code += '}\n';
+    code += '.<span class="func">padding</span>(<span class="prop">' + padding + '</span>)';
+  } else if (layoutType === 'zstack') {
+    code += '<span class="type">ZStack</span>(alignment: <span class="prop">' + alignMap[alignment] + '</span>) {\n';
+    code += '    <span class="type">RoundedRectangle</span>(cornerRadius: <span class="prop">14</span>)\n';
+    code += '        .<span class="func">fill</span>(.<span class="prop">blue</span>)\n';
+    code += '    <span class="type">Text</span>(<span class="str">"Overlay"</span>)\n';
+    code += '}\n';
+    code += '.<span class="func">padding</span>(<span class="prop">' + padding + '</span>)';
+  } else if (layoutType === 'grid') {
+    code += '<span class="kw">let</span> columns = [\n';
+    code += '    <span class="type">GridItem</span>(.<span class="prop">flexible</span>()),\n';
+    code += '    <span class="type">GridItem</span>(.<span class="prop">flexible</span>()),\n';
+    code += '    <span class="type">GridItem</span>(.<span class="prop">flexible</span>())\n';
+    code += ']\n\n';
+    code += '<span class="type">LazyVGrid</span>(columns: columns, spacing: <span class="prop">' + spacing + '</span>) {\n';
+    code += '    <span class="kw">ForEach</span>(<span class="prop">0</span>..<span class="prop">6</span>, id: \\.<span class="prop">self</span>) { i <span class="kw">in</span>\n';
+    code += '        <span class="type">RoundedRectangle</span>(cornerRadius: <span class="prop">10</span>)\n';
+    code += '    }\n';
+    code += '}\n';
+    code += '.<span class="func">padding</span>(<span class="prop">' + padding + '</span>)';
+  } else {
+    code += '<span class="type">List</span> {\n';
+    code += '    <span class="kw">ForEach</span>(items) { item <span class="kw">in</span>\n';
+    code += '        <span class="type">HStack</span>(spacing: <span class="prop">12</span>) {\n';
+    code += '            item.<span class="prop">icon</span>\n';
+    code += '            <span class="type">VStack</span>(alignment: .<span class="prop">leading</span>) {\n';
+    code += '                <span class="type">Text</span>(item.<span class="prop">title</span>)\n';
+    code += '                <span class="type">Text</span>(item.<span class="prop">subtitle</span>)\n';
+    code += '                    .<span class="func">foregroundStyle</span>(.<span class="prop">secondary</span>)\n';
+    code += '            }\n';
+    code += '        }\n';
+    code += '    }\n';
+    code += '}';
+  }
+
+  if (!safeArea) {
+    code += '\n.<span class="func">ignoresSafeArea</span>() <span class="comment">// ⚠️ Not recommended</span>';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── HIG Rules ───
+const higRules = [
+  {
+    check: () => state.spacing === 0,
+    ko: '인터랙티브 요소 사이에 간격이 없으면 터치 오류가 발생합니다'
+  },
+  {
+    check: () => !state.safeArea,
+    ko: 'Safe Area를 무시하면 콘텐츠가 노치/홈 인디케이터에 가려집니다'
+  },
+  {
+    check: () => state.layoutType === 'zstack' && state.alignment === 'center',
+    ko: 'ZStack에서 정렬을 지정하지 않으면 의도치 않은 겹침이 발생합니다'
+  },
+  {
+    check: () => state.layoutType === 'grid' && state.spacing < 4,
+    ko: 'iPhone에서 4열 초과 그리드는 콘텐츠가 너무 작아집니다'
+  }
+];
+
+function checkHigViolations() {
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  const violations = higRules.filter(r => { try { return r.check(); } catch(e) { return false; } });
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(v => '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>').join('');
+    const w = document.getElementById('higWarning');
+    if (w && !isDontMode) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    const w = document.getElementById('higWarning');
+    if (w && !isDontMode) w.classList.remove('show');
+  }
+}
+
+updatePreview();
+</script>
+</body>
+</html>

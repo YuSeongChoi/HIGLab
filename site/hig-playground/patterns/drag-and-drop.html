@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drag and Drop — HIG Playground | HIG Lab</title>
+<meta name="description" content="드래그 앤 드롭 인터랙션의 시각적 피드백을 확인해보세요. 리프트 효과, 드롭 영역 하이라이트, 멀티 셀렉트 등을 인터랙티브하게 체험할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Drag and Drop Specific ─── */
+.drop-zone{
+  width:100%;min-height:120px;
+  border-radius:12px;
+  padding:12px;
+  display:flex;flex-wrap:wrap;gap:8px;
+  align-content:flex-start;
+  transition:all 0.2s ease;
+  position:relative;
+}
+.drop-zone.source-zone{
+  background:rgba(0,122,255,0.06);
+  border:1.5px dashed rgba(0,122,255,0.3);
+}
+.drop-zone.target-zone{
+  background:rgba(52,199,89,0.06);
+  border:1.5px dashed rgba(52,199,89,0.3);
+}
+.drop-zone.drag-over{
+  border-color:var(--ios-blue);
+  background:rgba(0,122,255,0.12);
+  box-shadow:0 0 0 3px rgba(0,122,255,0.15);
+}
+.drop-zone.no-highlight{
+  border-color:var(--ios-gray4);
+  background:rgba(0,0,0,0.02);
+}
+.drop-zone.no-highlight.drag-over{
+  border-color:var(--ios-gray4);
+  background:rgba(0,0,0,0.02);
+  box-shadow:none;
+}
+.zone-label{
+  position:absolute;top:6px;left:10px;
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.5px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  pointer-events:none;
+}
+.source-zone .zone-label{color:var(--ios-blue)}
+.target-zone .zone-label{color:var(--ios-green)}
+.zone-empty-hint{
+  width:100%;text-align:center;
+  font-size:12px;color:var(--ios-gray2);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  padding:20px 0;pointer-events:none;
+}
+
+.drag-card{
+  width:calc(50% - 4px);height:52px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:13px;font-weight:600;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  cursor:grab;
+  transition:transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  user-select:none;
+  -webkit-user-select:none;
+  position:relative;
+}
+.drag-card:active{cursor:grabbing}
+.drag-card.dragging{
+  opacity:0.4;
+  transform:scale(0.95);
+}
+.drag-card.lift-effect{
+  transform:scale(1.05);
+  box-shadow:0 8px 25px rgba(0,0,0,0.25);
+  z-index:10;
+}
+.drag-card.selected{
+  outline:2.5px solid #fff;
+  outline-offset:-2.5px;
+  box-shadow:0 0 0 2px rgba(0,0,0,0.3);
+}
+.drag-card .card-icon{font-size:16px}
+.drag-card .select-badge{
+  display:none;
+  position:absolute;top:-4px;right:-4px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ios-blue);color:#fff;
+  font-size:10px;font-weight:700;
+  align-items:center;justify-content:center;
+  box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+.drag-card .select-badge.show{display:flex}
+
+.multi-badge{
+  display:none;
+  position:absolute;top:-6px;right:-6px;
+  min-width:20px;height:20px;border-radius:10px;
+  background:var(--ios-red);color:#fff;
+  font-size:11px;font-weight:700;
+  align-items:center;justify-content:center;
+  padding:0 5px;
+  box-shadow:0 2px 6px rgba(255,59,48,0.4);
+}
+.multi-badge.show{display:flex}
+
+/* Spring Loading */
+.spring-loading-indicator{
+  display:none;
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:60%;height:3px;border-radius:2px;
+  background:var(--ios-gray4);
+  overflow:hidden;
+}
+.spring-loading-indicator.show{display:block}
+.spring-loading-indicator .progress{
+  width:0;height:100%;
+  background:var(--ios-blue);
+  border-radius:2px;
+  transition:width 1.5s linear;
+}
+.spring-loading-indicator .progress.animating{width:100%}
+
+/* Don't mode cards */
+.drag-card-bad{
+  width:26px;height:26px;
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:600;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Drag and Drop
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Drag and Drop</h1>
+<p class="page-desc">드래그 앤 드롭 인터랙션의 시각적 피드백을 확인해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Drag &amp; Drop</div>
+
+        <!-- Source Zone -->
+        <div class="screen-section">
+          <div class="screen-section-title">Source</div>
+          <div class="screen-card" style="padding:8px">
+            <div class="drop-zone source-zone" id="sourceZone" data-zone="source">
+              <span class="zone-label">Source</span>
+              <div class="drag-card" draggable="true" data-id="card1" data-color="#007AFF" style="background:#007AFF">
+                <span class="card-icon">&#128444;</span> Photo
+                <span class="select-badge">&#10003;</span>
+                <span class="multi-badge">2</span>
+              </div>
+              <div class="drag-card" draggable="true" data-id="card2" data-color="#FF9500" style="background:#FF9500">
+                <span class="card-icon">&#128196;</span> Note
+                <span class="select-badge">&#10003;</span>
+                <span class="multi-badge">2</span>
+              </div>
+              <div class="drag-card" draggable="true" data-id="card3" data-color="#AF52DE" style="background:#AF52DE">
+                <span class="card-icon">&#127925;</span> Music
+                <span class="select-badge">&#10003;</span>
+                <span class="multi-badge">2</span>
+              </div>
+              <div class="drag-card" draggable="true" data-id="card4" data-color="#FF3B30" style="background:#FF3B30">
+                <span class="card-icon">&#127916;</span> Video
+                <span class="select-badge">&#10003;</span>
+                <span class="multi-badge">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="screen-section">
+          <div class="screen-section-title">Drop Zone</div>
+          <div class="screen-card" style="padding:8px">
+            <div class="drop-zone target-zone" id="targetZone" data-zone="target">
+              <span class="zone-label">Drop Here</span>
+              <div class="zone-empty-hint" id="targetHint">Drag items here</div>
+              <div class="spring-loading-indicator" id="springIndicator">
+                <div class="progress" id="springProgress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines &#8212; &#51649;&#51217; &#52404;&#54744;&#54616;&#44592;</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do &#8212; &#50732;&#48148;&#47480; &#50696;&#49884;</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't &#8212; &#45208;&#49244; &#50696;&#49884;</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; &#51060;&#47111;&#44172; &#54616;&#49464;&#50836;</h4>
+            <ul>
+              <li>&#46300;&#47000;&#44536; &#49884;&#51089; &#49884; &#47749;&#54869;&#54620; &#47532;&#54532;&#53944; &#54952;&#44284; &#51228;&#44277;</li>
+              <li>&#50976;&#54952;&#54620; &#46300;&#47217; &#50689;&#50669; &#49884;&#44033;&#51201;&#51004;&#47196; &#54364;&#49884;</li>
+              <li>&#46300;&#47000;&#44536; &#51473;&#51064; &#54637;&#47785;&#51032; &#48120;&#47532;&#48372;&#44592; &#54364;&#49884;</li>
+              <li>&#50668;&#47084; &#54637;&#47785; &#49440;&#53469; &#49884; &#44060;&#49688; &#48176;&#51648; &#54364;&#49884;</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; &#51060;&#47111;&#44172; &#54616;&#51648; &#47560;&#49464;&#50836;</h4>
+            <ul>
+              <li>&#46300;&#47000;&#44536; &#54588;&#46300;&#48177; &#50630;&#51060; &#54637;&#47785; &#51060;&#46041;</li>
+              <li>&#46300;&#47217; &#44032;&#45733; &#50689;&#50669; &#54364;&#49884; &#50630;&#51020;</li>
+              <li>&#51089;&#51008; &#53552;&#52824; &#53440;&#44191;&#50640; &#46300;&#47000;&#44536; &#51201;&#50857;</li>
+              <li>&#46104;&#46028;&#47532;&#44592;(Undo) &#50741;&#49496; &#48120;&#51228;&#44277;</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone &#48120;&#47532;&#48372;&#44592;&#50640;&#49436; &#45208;&#49244; &#54056;&#53556;&#51012; &#51649;&#51217; &#54869;&#51064;&#54644;&#48372;&#49464;&#50836;</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iOS drag and drop provides a visual <strong>lift effect</strong> when a drag begins,
+          <strong>drop zone highlighting</strong> to indicate valid targets,
+          <strong>drag previews</strong> showing the item being moved, and
+          <strong>count badges</strong> when multiple items are selected.
+          Spring-loading allows users to hover over navigational elements to reveal drop destinations.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/drag-and-drop" class="guideline-link" target="_blank">
+          Apple HIG: Drag and Drop &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Drag Preview Style -->
+        <div class="control-group">
+          <label>Drag Preview</label>
+          <div class="control-options" id="previewOptions">
+            <div class="control-option active" data-value="lift">Lift</div>
+            <div class="control-option" data-value="custom">Custom</div>
+          </div>
+        </div>
+        <!-- Drop Zone Highlight -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Drop Zone Highlight</span>
+            <div class="toggle-switch on" id="toggleHighlight"></div>
+          </div>
+        </div>
+        <!-- Multi-select -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Multi-select</span>
+            <div class="toggle-switch" id="toggleMultiSelect"></div>
+          </div>
+        </div>
+        <!-- Spring-loading -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Spring-loading</span>
+            <div class="toggle-switch" id="toggleSpringLoading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  previewStyle: 'lift',
+  highlightZone: true,
+  multiSelect: false,
+  springLoading: false
+};
+
+// Track selected cards for multi-select
+var selectedCards = new Set();
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'previewOptions') state.previewStyle = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleHighlight').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.highlightZone = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleMultiSelect').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.multiSelect = this.classList.contains('on');
+  if (!state.multiSelect) {
+    selectedCards.clear();
+    document.querySelectorAll('.drag-card').forEach(function(c) { c.classList.remove('selected'); });
+  }
+  updatePreview();
+});
+document.getElementById('toggleSpringLoading').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.springLoading = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Drag & Drop Logic ───
+var draggedCard = null;
+var draggedCards = [];
+
+function initDragDrop() {
+  var cards = document.querySelectorAll('.drag-card');
+  var zones = document.querySelectorAll('.drop-zone');
+
+  cards.forEach(function(card) {
+    // Multi-select click
+    card.addEventListener('click', function(e) {
+      if (!state.multiSelect) return;
+      e.preventDefault();
+      if (selectedCards.has(card.dataset.id)) {
+        selectedCards.delete(card.dataset.id);
+        card.classList.remove('selected');
+      } else {
+        selectedCards.add(card.dataset.id);
+        card.classList.add('selected');
+      }
+      updateMultiBadges();
+    });
+
+    card.addEventListener('dragstart', function(e) {
+      draggedCard = card;
+
+      // Gather dragged cards
+      if (state.multiSelect && selectedCards.size > 0 && selectedCards.has(card.dataset.id)) {
+        draggedCards = [];
+        selectedCards.forEach(function(id) {
+          var c = document.querySelector('.drag-card[data-id="' + id + '"]');
+          if (c) draggedCards.push(c);
+        });
+      } else {
+        draggedCards = [card];
+      }
+
+      // Apply visual effect
+      setTimeout(function() {
+        draggedCards.forEach(function(c) {
+          c.classList.add('dragging');
+        });
+      }, 0);
+
+      // Lift effect
+      if (state.previewStyle === 'lift') {
+        card.classList.add('lift-effect');
+      }
+
+      // Custom preview with count badge
+      if (state.previewStyle === 'custom' && draggedCards.length > 1) {
+        var preview = document.createElement('div');
+        preview.style.cssText = 'width:80px;height:52px;border-radius:10px;background:' + card.dataset.color + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;font-family:-apple-system,sans-serif;position:absolute;top:-1000px;left:-1000px;';
+        preview.textContent = draggedCards.length + ' items';
+        document.body.appendChild(preview);
+        e.dataTransfer.setDragImage(preview, 40, 26);
+        setTimeout(function() { document.body.removeChild(preview); }, 0);
+      }
+
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+    });
+
+    card.addEventListener('dragend', function() {
+      card.classList.remove('lift-effect');
+      draggedCards.forEach(function(c) {
+        c.classList.remove('dragging');
+      });
+      // Clean up zone highlights
+      zones.forEach(function(z) { z.classList.remove('drag-over'); });
+      // Hide spring loading
+      var si = document.getElementById('springIndicator');
+      var sp = document.getElementById('springProgress');
+      if (si) si.classList.remove('show');
+      if (sp) sp.classList.remove('animating');
+      draggedCard = null;
+      draggedCards = [];
+    });
+  });
+
+  zones.forEach(function(zone) {
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (state.highlightZone) {
+        zone.classList.add('drag-over');
+      }
+      // Spring loading for target zone
+      if (state.springLoading && zone.id === 'targetZone') {
+        var si = document.getElementById('springIndicator');
+        var sp = document.getElementById('springProgress');
+        if (si && !si.classList.contains('show')) {
+          si.classList.add('show');
+          requestAnimationFrame(function() {
+            sp.classList.add('animating');
+          });
+        }
+      }
+    });
+
+    zone.addEventListener('dragleave', function(e) {
+      // Only react if actually leaving the zone
+      if (!zone.contains(e.relatedTarget)) {
+        zone.classList.remove('drag-over');
+        if (zone.id === 'targetZone') {
+          var si = document.getElementById('springIndicator');
+          var sp = document.getElementById('springProgress');
+          if (si) si.classList.remove('show');
+          if (sp) sp.classList.remove('animating');
+        }
+      }
+    });
+
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+
+      // Hide spring loading
+      var si = document.getElementById('springIndicator');
+      var sp = document.getElementById('springProgress');
+      if (si) si.classList.remove('show');
+      if (sp) sp.classList.remove('animating');
+
+      if (!draggedCard) return;
+
+      var cardsToMove = draggedCards.length > 0 ? draggedCards : [draggedCard];
+
+      cardsToMove.forEach(function(card) {
+        // Remove from current zone
+        if (card.parentNode) {
+          card.parentNode.removeChild(card);
+        }
+        // Append to new zone (before the hint or spring indicator)
+        var hint = zone.querySelector('.zone-empty-hint');
+        var springEl = zone.querySelector('.spring-loading-indicator');
+        if (hint) {
+          zone.insertBefore(card, hint);
+        } else if (springEl) {
+          zone.insertBefore(card, springEl);
+        } else {
+          zone.appendChild(card);
+        }
+        card.classList.remove('dragging', 'lift-effect', 'selected');
+      });
+
+      // Clear selection after drop
+      selectedCards.clear();
+      updateMultiBadges();
+
+      // Update empty hints
+      updateZoneHints();
+
+      // Re-init drag events for moved cards
+      initDragDrop();
+    });
+  });
+}
+
+function updateMultiBadges() {
+  document.querySelectorAll('.drag-card .multi-badge').forEach(function(badge) {
+    var card = badge.closest('.drag-card');
+    if (state.multiSelect && selectedCards.size > 1 && selectedCards.has(card.dataset.id)) {
+      badge.textContent = selectedCards.size;
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  });
+  document.querySelectorAll('.drag-card .select-badge').forEach(function(badge) {
+    var card = badge.closest('.drag-card');
+    if (state.multiSelect && selectedCards.has(card.dataset.id)) {
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  });
+}
+
+function updateZoneHints() {
+  var sourceZone = document.getElementById('sourceZone');
+  var targetZone = document.getElementById('targetZone');
+  var targetHint = document.getElementById('targetHint');
+
+  // Show/hide target hint
+  var targetCards = targetZone.querySelectorAll('.drag-card');
+  if (targetHint) {
+    targetHint.style.display = targetCards.length > 0 ? 'none' : '';
+  }
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  // Apply highlight zone state
+  var zones = document.querySelectorAll('.drop-zone');
+  zones.forEach(function(zone) {
+    if (state.highlightZone) {
+      zone.classList.remove('no-highlight');
+    } else {
+      zone.classList.add('no-highlight');
+    }
+  });
+
+  // Spring loading indicator visibility
+  var si = document.getElementById('springIndicator');
+  if (si) {
+    // Only show during actual drag, but toggle availability
+    si.style.opacity = state.springLoading ? '1' : '0';
+  }
+
+  // Multi-select visual
+  if (!state.multiSelect) {
+    selectedCards.clear();
+    document.querySelectorAll('.drag-card').forEach(function(c) { c.classList.remove('selected'); });
+    updateMultiBadges();
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+
+  code += '<span class="comment">// Draggable item</span>\n';
+  code += '<span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"photo"</span>)\n';
+
+  if (state.previewStyle === 'lift') {
+    code += '    .<span class="func">draggable</span>(item)\n';
+  } else {
+    code += '    .<span class="func">draggable</span>(item) {\n';
+    code += '        <span class="comment">// Custom drag preview</span>\n';
+    if (state.multiSelect) {
+      code += '        <span class="type">Label</span>(<span class="str">"\\(selectedItems.count) items"</span>,\n';
+      code += '              <span class="prop">systemImage</span>: <span class="str">"square.stack.3d.up"</span>)\n';
+    } else {
+      code += '        <span class="type">Label</span>(item.<span class="prop">title</span>,\n';
+      code += '              <span class="prop">systemImage</span>: item.<span class="prop">icon</span>)\n';
+    }
+    code += '            .<span class="func">padding</span>()\n';
+    code += '            .<span class="func">background</span>(.<span class="prop">ultraThinMaterial</span>)\n';
+    code += '            .<span class="func">cornerRadius</span>(<span class="prop">12</span>)\n';
+    code += '    }\n';
+  }
+
+  code += '\n<span class="comment">// Drop destination</span>\n';
+  code += '<span class="type">VStack</span> {\n';
+  code += '    <span class="comment">// Drop zone content</span>\n';
+  code += '}\n';
+
+  if (state.highlightZone) {
+    code += '.<span class="func">dropDestination</span>(<span class="kw">for</span>: <span class="type">Item</span>.<span class="kw">self</span>) { items, location <span class="kw">in</span>\n';
+  } else {
+    code += '.<span class="func">dropDestination</span>(<span class="kw">for</span>: <span class="type">Item</span>.<span class="kw">self</span>) { items, location <span class="kw">in</span>\n';
+  }
+  code += '    <span class="comment">// Handle dropped items</span>\n';
+  code += '    <span class="kw">return</span> <span class="prop">true</span>\n';
+  code += '}';
+
+  if (state.highlightZone) {
+    code += ' <span class="prop">isTargeted</span>: { isTargeted <span class="kw">in</span>\n';
+    code += '    <span class="prop">dropHighlight</span> = isTargeted\n';
+    code += '}';
+  }
+
+  if (state.springLoading) {
+    code += '\n.<span class="func">onDrop</span>(<span class="prop">of</span>: [.<span class="type">item</span>]) { providers <span class="kw">in</span>\n';
+    code += '    <span class="comment">// Spring-loading: navigate after hover delay</span>\n';
+    code += '    <span class="kw">return true</span>\n';
+    code += '}';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '\
+  <div class="screen-nav-title">Drag &amp; Drop</div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">&#10060; No Visual Feedback</div>\
+    <div class="screen-card" style="padding:8px">\
+      <div style="width:100%;min-height:100px;border-radius:12px;background:rgba(0,0,0,0.02);border:1px solid var(--ios-gray4);padding:12px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start">\
+        <div style="width:calc(50% - 3px);height:40px;border-radius:6px;background:#007AFF;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-family:-apple-system,sans-serif;font-weight:600;opacity:0.5">Photo</div>\
+        <div style="width:calc(50% - 3px);height:40px;border-radius:6px;background:#FF9500;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-family:-apple-system,sans-serif;font-weight:600;opacity:0.5">Note</div>\
+        <div style="width:calc(50% - 3px);height:40px;border-radius:6px;background:#AF52DE;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-family:-apple-system,sans-serif;font-weight:600;opacity:0.5">Music</div>\
+        <div style="width:calc(50% - 3px);height:40px;border-radius:6px;background:#FF3B30;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-family:-apple-system,sans-serif;font-weight:600;opacity:0.5">Video</div>\
+      </div>\
+    </div>\
+  </div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">&#10060; No Drop Zone Indicator</div>\
+    <div class="screen-card" style="padding:8px">\
+      <div style="width:100%;min-height:80px;border-radius:12px;background:rgba(0,0,0,0.02);border:1px solid var(--ios-gray5);padding:12px;display:flex;align-items:center;justify-content:center">\
+        <span style="font-size:12px;color:var(--ios-gray3);font-family:-apple-system,sans-serif">No indication this is a drop zone</span>\
+      </div>\
+    </div>\
+  </div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">&#10060; Tiny Touch Targets</div>\
+    <div class="screen-card" style="padding:16px">\
+      <div style="width:100%;display:flex;flex-wrap:wrap;gap:4px;justify-content:center">\
+        <div class="drag-card-bad" style="background:#007AFF">P</div>\
+        <div class="drag-card-bad" style="background:#FF9500">N</div>\
+        <div class="drag-card-bad" style="background:#AF52DE">M</div>\
+        <div class="drag-card-bad" style="background:#FF3B30">V</div>\
+        <div class="drag-card-bad" style="background:#34C759">F</div>\
+        <div class="drag-card-bad" style="background:#5AC8FA">D</div>\
+        <div class="drag-card-bad" style="background:#8E8E93">X</div>\
+        <div class="drag-card-bad" style="background:#007AFF">A</div>\
+      </div>\
+      <span style="font-size:11px;color:var(--ios-gray);font-family:-apple-system,sans-serif;margin-top:4px">26pt targets are too small for drag</span>\
+    </div>\
+  </div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">&#10060; No Undo Option</div>\
+    <div class="screen-card" style="padding:16px">\
+      <div style="display:flex;align-items:center;gap:8px">\
+        <span style="font-size:24px">&#9888;&#65039;</span>\
+        <span style="font-size:12px;color:var(--ios-gray);font-family:-apple-system,sans-serif;line-height:1.4">Item moved permanently.<br>No way to undo this action.</span>\
+      </div>\
+    </div>\
+  </div>\
+  <div style="height:20px"></div>\
+';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  // Re-init drag & drop
+  initDragDrop();
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').textContent = '\u26A0\uFE0F HIG \uC704\uBC18: \uC774 \uD328\uD134\uC740 \uAD8C\uC7A5\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4';
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return !state.highlightZone; },
+    ko: '\uB4DC\uB86D \uAC00\uB2A5 \uC601\uC5ED\uC744 \uC2DC\uAC01\uC801\uC73C\uB85C \uD45C\uC2DC\uD558\uC9C0 \uC54A\uC73C\uBA74 \uC0AC\uC6A9\uC790\uAC00 \uC5B4\uB514\uC5D0 \uB193\uC744 \uC218 \uC788\uB294\uC9C0 \uC54C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4'
+  },
+  {
+    check: function() { return state.multiSelect && state.previewStyle !== 'custom'; },
+    ko: '\uB2E4\uC911 \uC120\uD0DD \uC2DC \uCEE4\uC2A4\uD140 \uBBF8\uB9AC\uBCF4\uAE30\uB85C \uC120\uD0DD \uAC1C\uC218\uB97C \uD45C\uC2DC\uD574\uC57C \uD569\uB2C8\uB2E4'
+  },
+  {
+    check: function() { return state.springLoading && !state.highlightZone; },
+    ko: 'Spring-loading\uC740 \uB4DC\uB86D \uC601\uC5ED \uD558\uC774\uB77C\uC774\uD2B8\uC640 \uD568\uAED8 \uC0AC\uC6A9\uD574\uC57C \uD6A8\uACFC\uC801\uC785\uB2C8\uB2E4'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">\u26A0\uFE0F</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '\u26A0\uFE0F ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">\u2705 HIG \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// ─── Initialize ───
+initDragDrop();
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

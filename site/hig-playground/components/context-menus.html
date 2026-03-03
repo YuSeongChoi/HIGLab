@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context Menus — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Context Menu를 브라우저에서 직접 체험해보세요. 롱프레스로 나타나는 메뉴의 아이템 수, 서브메뉴, 구분선, 파괴적 액션을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+  position:relative;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Context Menu Demo Elements ─── */
+.demo-source-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  width:100%;
+  cursor:pointer;
+  transition:transform 0.3s cubic-bezier(0.2,0.9,0.3,1.2), box-shadow 0.3s ease;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  position:relative;
+}
+.demo-source-card:active{
+  transform:scale(0.97);
+}
+.demo-source-card.scaled{
+  transform:scale(1.03);
+  box-shadow:0 8px 40px rgba(0,0,0,0.18);
+  z-index:20;
+  border-radius:14px;
+}
+.demo-card-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:10px;
+}
+.demo-card-icon{
+  width:44px;height:44px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+.demo-card-title{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:15px;font-weight:600;color:#000;
+}
+.demo-card-subtitle{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:12px;color:var(--ios-gray);
+  margin-top:1px;
+}
+.demo-card-body{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--text-2);line-height:1.5;
+}
+.demo-hint{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:11px;color:var(--ios-gray2);text-align:center;
+  margin-top:8px;
+}
+
+/* ─── Blur Overlay ─── */
+.blur-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  z-index:15;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.25s ease;
+}
+.blur-overlay.visible{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* ─── Context Menu ─── */
+.ctx-menu{
+  position:absolute;
+  z-index:30;
+  min-width:240px;
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:saturate(180%) blur(40px);
+  -webkit-backdrop-filter:saturate(180%) blur(40px);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 12px 48px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(0,0,0,0.08);
+  opacity:0;
+  transform:scale(0.7);
+  transform-origin:top center;
+  transition:opacity 0.2s ease, transform 0.25s cubic-bezier(0.2,0.9,0.3,1.1);
+  pointer-events:none;
+}
+.ctx-menu.visible{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+.ctx-menu-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;font-weight:400;
+  color:#000;
+  cursor:pointer;
+  transition:background 0.1s ease;
+  position:relative;
+}
+.ctx-menu-item:hover{
+  background:rgba(0,122,255,0.12);
+}
+.ctx-menu-item:active{
+  background:var(--ios-blue);
+  color:#fff;
+}
+.ctx-menu-item:active .ctx-icon{
+  color:#fff;
+}
+.ctx-menu-item.destructive{
+  color:var(--ios-red);
+}
+.ctx-menu-item.destructive:active{
+  background:var(--ios-red);
+  color:#fff;
+}
+.ctx-menu-item.destructive .ctx-icon{
+  color:var(--ios-red);
+}
+.ctx-menu-item.destructive:active .ctx-icon{
+  color:#fff;
+}
+.ctx-icon{
+  font-size:17px;color:var(--text);
+  display:flex;align-items:center;
+  font-weight:400;
+}
+.ctx-separator{
+  height:0.5px;
+  background:var(--ios-separator);
+  margin:0 0;
+}
+.ctx-group-separator{
+  height:7px;
+  background:rgba(0,0,0,0.04);
+  border-top:0.5px solid var(--ios-separator);
+  border-bottom:0.5px solid var(--ios-separator);
+}
+/* Submenu indicator */
+.ctx-submenu-arrow{
+  font-size:12px;color:var(--ios-gray);margin-left:8px;
+}
+/* Submenu flyout */
+.ctx-submenu{
+  position:absolute;
+  left:calc(100% + 4px);top:0;
+  min-width:200px;
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:saturate(180%) blur(40px);
+  -webkit-backdrop-filter:saturate(180%) blur(40px);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 12px 48px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(0,0,0,0.08);
+  opacity:0;
+  transform:scale(0.8) translateX(-8px);
+  transition:opacity 0.15s ease, transform 0.2s cubic-bezier(0.2,0.9,0.3,1.1);
+  pointer-events:none;
+}
+.ctx-submenu.visible{
+  opacity:1;
+  transform:scale(1) translateX(0);
+  pointer-events:auto;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="context-menus.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Context Menus
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Context Menus</h1>
+<p class="page-desc">iOS Context Menu를 직접 체험해보세요. 카드를 클릭하면 롱프레스 효과와 함께 Context Menu가 나타납니다. 컨트롤 패널에서 속성을 변경하면 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Context Menus</div>
+
+        <!-- Demo Card 1 -->
+        <div class="screen-section">
+          <div class="screen-section-title">Tap to Preview</div>
+          <div class="demo-source-card" id="demoCard1" onclick="showContextMenu(event, 'demoCard1')">
+            <div class="demo-card-header">
+              <div class="demo-card-icon" style="background:rgba(0,122,255,0.12);color:var(--ios-blue);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+              </div>
+              <div>
+                <div class="demo-card-title">Project Proposal.pdf</div>
+                <div class="demo-card-subtitle">2.4 MB &middot; Modified today</div>
+              </div>
+            </div>
+            <div class="demo-card-body">
+              Q4 product roadmap and feature prioritization document for the mobile team.
+            </div>
+          </div>
+          <div class="demo-hint">Tap the card to show context menu</div>
+        </div>
+
+        <!-- Demo Card 2 -->
+        <div class="screen-section">
+          <div class="screen-section-title">Another Example</div>
+          <div class="demo-source-card" id="demoCard2" onclick="showContextMenu(event, 'demoCard2')">
+            <div class="demo-card-header">
+              <div class="demo-card-icon" style="background:rgba(255,149,0,0.12);color:var(--ios-orange);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+              </div>
+              <div>
+                <div class="demo-card-title">Screenshot 2024.png</div>
+                <div class="demo-card-subtitle">856 KB &middot; Yesterday</div>
+              </div>
+            </div>
+            <div class="demo-card-body">
+              App design mockup for the new onboarding flow with updated illustrations.
+            </div>
+          </div>
+          <div class="demo-hint">Tap the card to show context menu</div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- Blur Overlay -->
+      <div class="blur-overlay" id="blurOverlay" onclick="dismissContextMenu()"></div>
+
+      <!-- Context Menu -->
+      <div class="ctx-menu" id="ctxMenu"></div>
+
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 컨텍스트 메뉴가 부적절합니다</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>Use context menus for secondary actions</li>
+              <li>Keep the number of items concise (under 10)</li>
+              <li>Group related actions with dividers</li>
+              <li>Place destructive actions at the bottom</li>
+              <li>Use SF Symbols for recognizable icons</li>
+              <li>Include a preview when appropriate</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>Don't use context menus for primary actions</li>
+              <li>Don't put too many items in a single menu</li>
+              <li>Don't hide essential functionality only in context menus</li>
+              <li>Don't mix destructive with non-destructive without separation</li>
+              <li>Don't nest submenus more than one level deep</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <!-- Toggles -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Has Submenu</span>
+            <div class="toggle-switch" id="toggleSubmenu"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Has Destructive Action</span>
+            <div class="toggle-switch on" id="toggleDestructive"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Dividers</span>
+            <div class="toggle-switch on" id="toggleDividers"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  itemCount: 4,
+  hasSubmenu: false,
+  hasDestructive: true,
+  showDividers: true
+};
+
+let menuVisible = false;
+let activeCard = null;
+
+// ─── Menu Item Definitions ───
+const allItems = [
+  { label: 'Copy',       icon: 'doc.on.doc',       group: 'primary' },
+  { label: 'Share',      icon: 'square.and.arrow.up', group: 'primary' },
+  { label: 'Favorite',   icon: 'heart',             group: 'primary' },
+  { label: 'Move',       icon: 'folder',            group: 'secondary' },
+  { label: 'Rename',     icon: 'pencil',            group: 'secondary' },
+];
+
+const destructiveItem = { label: 'Delete', icon: 'trash', group: 'destructive', destructive: true };
+
+const submenuItems = [
+  { label: 'Message',    icon: 'message' },
+  { label: 'Mail',       icon: 'envelope' },
+  { label: 'AirDrop',    icon: 'airplayaudio' },
+];
+
+// ─── SF Symbol-style SVG icons ───
+function getIconSVG(name, color) {
+  const c = color || 'currentColor';
+  const icons = {
+    'doc.on.doc': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="12" height="16" rx="2"/><path d="M4 6h0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2"/></svg>',
+    'square.and.arrow.up': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><polyline points="8,8 12,4 16,8"/><line x1="12" y1="4" x2="12" y2="16"/></svg>',
+    'heart': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+    'folder': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+    'pencil': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+    'trash': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+    'message': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+    'envelope': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    'airplayaudio': '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H4a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-1"/><polygon points="12,15 17,21 7,21"/></svg>',
+    'chevron.right': '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,6 15,12 9,18"/></svg>',
+  };
+  return icons[name] || '';
+}
+
+// ─── Build Menu Items ───
+function buildMenuItems() {
+  const count = state.itemCount;
+  let items = allItems.slice(0, count);
+
+  return items;
+}
+
+// ─── Render Context Menu ───
+function renderContextMenu() {
+  const menu = document.getElementById('ctxMenu');
+  let html = '';
+
+  const items = buildMenuItems();
+  const hasDestructive = state.hasDestructive;
+  const showDividers = state.showDividers;
+  const hasSubmenu = state.hasSubmenu;
+
+  // Primary group
+  const primaryItems = items.filter(i => i.group === 'primary');
+  const secondaryItems = items.filter(i => i.group === 'secondary');
+
+  // Render primary items
+  primaryItems.forEach((item, idx) => {
+    // If this is "Share" and hasSubmenu, render as submenu trigger
+    if (item.label === 'Share' && hasSubmenu) {
+      html += '<div class="ctx-menu-item" onmouseenter="showSubmenu()" onmouseleave="hideSubmenuDelay()" onclick="toggleSubmenu(event)">';
+      html += '<span>' + item.label + '</span>';
+      html += '<span class="ctx-icon" style="display:flex;align-items:center;gap:2px;">' + getIconSVG(item.icon) + '<span class="ctx-submenu-arrow">' + getIconSVG('chevron.right', 'var(--ios-gray)') + '</span></span>';
+      // Submenu
+      html += '<div class="ctx-submenu" id="ctxSubmenu" onmouseenter="keepSubmenu()" onmouseleave="hideSubmenuDelay()">';
+      submenuItems.forEach((sub, si) => {
+        html += '<div class="ctx-menu-item">';
+        html += '<span>' + sub.label + '</span>';
+        html += '<span class="ctx-icon">' + getIconSVG(sub.icon) + '</span>';
+        html += '</div>';
+        if (si < submenuItems.length - 1) {
+          html += '<div class="ctx-separator"></div>';
+        }
+      });
+      html += '</div>';
+      html += '</div>';
+    } else {
+      html += '<div class="ctx-menu-item">';
+      html += '<span>' + item.label + '</span>';
+      html += '<span class="ctx-icon">' + getIconSVG(item.icon) + '</span>';
+      html += '</div>';
+    }
+    if (idx < primaryItems.length - 1) {
+      html += '<div class="ctx-separator"></div>';
+    }
+  });
+
+  // Divider between primary and secondary
+  if (secondaryItems.length > 0 && showDividers) {
+    html += '<div class="ctx-group-separator"></div>';
+  } else if (secondaryItems.length > 0) {
+    html += '<div class="ctx-separator"></div>';
+  }
+
+  // Secondary items
+  secondaryItems.forEach((item, idx) => {
+    html += '<div class="ctx-menu-item">';
+    html += '<span>' + item.label + '</span>';
+    html += '<span class="ctx-icon">' + getIconSVG(item.icon) + '</span>';
+    html += '</div>';
+    if (idx < secondaryItems.length - 1) {
+      html += '<div class="ctx-separator"></div>';
+    }
+  });
+
+  // Destructive
+  if (hasDestructive) {
+    if (showDividers) {
+      html += '<div class="ctx-group-separator"></div>';
+    } else {
+      html += '<div class="ctx-separator"></div>';
+    }
+    html += '<div class="ctx-menu-item destructive">';
+    html += '<span>' + destructiveItem.label + '</span>';
+    html += '<span class="ctx-icon">' + getIconSVG(destructiveItem.icon, 'var(--ios-red)') + '</span>';
+    html += '</div>';
+  }
+
+  menu.innerHTML = html;
+}
+
+// ─── Show Context Menu ───
+function showContextMenu(event, cardId) {
+  event.stopPropagation();
+  if (menuVisible) {
+    dismissContextMenu();
+    return;
+  }
+
+  activeCard = document.getElementById(cardId);
+  const menu = document.getElementById('ctxMenu');
+  const overlay = document.getElementById('blurOverlay');
+  const screenContent = document.getElementById('screenContent');
+
+  // Build and render menu
+  renderContextMenu();
+
+  // Scale the source card
+  activeCard.classList.add('scaled');
+
+  // Show blur overlay
+  overlay.classList.add('visible');
+
+  // Position the menu below the card
+  const cardRect = activeCard.getBoundingClientRect();
+  const screenRect = screenContent.getBoundingClientRect();
+  const iPhoneScreen = activeCard.closest('.iphone-screen');
+  const iPhoneRect = iPhoneScreen.getBoundingClientRect();
+
+  // Calculate position relative to the iPhone screen
+  const cardBottom = cardRect.bottom - iPhoneRect.top;
+  const cardLeft = cardRect.left - iPhoneRect.left;
+  const cardCenterX = cardLeft + cardRect.width / 2;
+
+  // Center menu horizontally under the card
+  const menuWidth = 240;
+  let menuLeft = cardCenterX - menuWidth / 2;
+
+  // Clamp within screen
+  if (menuLeft < 12) menuLeft = 12;
+  if (menuLeft + menuWidth > 367) menuLeft = 367 - menuWidth;
+
+  let menuTop = cardBottom + 8;
+  // If it would go too far down, position above the card
+  if (menuTop + 200 > iPhoneRect.height - 40) {
+    menuTop = (cardRect.top - iPhoneRect.top) - 200 - 8;
+    menu.style.transformOrigin = 'bottom center';
+  } else {
+    menu.style.transformOrigin = 'top center';
+  }
+
+  menu.style.top = menuTop + 'px';
+  menu.style.left = menuLeft + 'px';
+
+  // Animate in
+  requestAnimationFrame(() => {
+    menu.classList.add('visible');
+  });
+
+  menuVisible = true;
+}
+
+// ─── Dismiss Context Menu ───
+function dismissContextMenu() {
+  if (!menuVisible) return;
+
+  const menu = document.getElementById('ctxMenu');
+  const overlay = document.getElementById('blurOverlay');
+
+  menu.classList.remove('visible');
+  overlay.classList.remove('visible');
+
+  if (activeCard) {
+    activeCard.classList.remove('scaled');
+    activeCard = null;
+  }
+
+  // Hide submenu
+  const sub = document.getElementById('ctxSubmenu');
+  if (sub) sub.classList.remove('visible');
+
+  menuVisible = false;
+}
+
+// ─── Submenu handling ───
+let submenuTimeout = null;
+
+function showSubmenu() {
+  clearTimeout(submenuTimeout);
+  const sub = document.getElementById('ctxSubmenu');
+  if (sub) {
+    // Position submenu to the left if it would overflow
+    const menu = document.getElementById('ctxMenu');
+    const menuRect = menu.getBoundingClientRect();
+    const iPhoneScreen = menu.closest('.iphone-screen');
+    const iPhoneRect = iPhoneScreen.getBoundingClientRect();
+
+    if (menuRect.right + 200 > iPhoneRect.right) {
+      sub.style.left = 'auto';
+      sub.style.right = 'calc(100% + 4px)';
+    }
+
+    sub.classList.add('visible');
+  }
+}
+
+function keepSubmenu() {
+  clearTimeout(submenuTimeout);
+}
+
+function hideSubmenuDelay() {
+  submenuTimeout = setTimeout(() => {
+    const sub = document.getElementById('ctxSubmenu');
+    if (sub) sub.classList.remove('visible');
+  }, 200);
+}
+
+function toggleSubmenu(event) {
+  event.stopPropagation();
+  const sub = document.getElementById('ctxSubmenu');
+  if (sub) {
+    if (sub.classList.contains('visible')) {
+      sub.classList.remove('visible');
+    } else {
+      showSubmenu();
+    }
+  }
+}
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'itemCountOptions') state.itemCount = parseInt(opt.dataset.value);
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleSubmenu').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.hasSubmenu = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleDestructive').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.hasDestructive = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleDividers').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showDividers = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  // If menu is visible, re-render it
+  if (menuVisible) {
+    renderContextMenu();
+  }
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const items = buildMenuItems();
+  const hasDestructive = state.hasDestructive;
+  const hasSubmenu = state.hasSubmenu;
+  const showDividers = state.showDividers;
+
+  let code = '';
+  code += '<span class="type">Image</span>(<span class="str">"document"</span>)\n';
+  code += '    .<span class="func">contextMenu</span> {\n';
+
+  // Primary items
+  const primaryItems = items.filter(i => i.group === 'primary');
+  const secondaryItems = items.filter(i => i.group === 'secondary');
+
+  primaryItems.forEach(item => {
+    if (item.label === 'Share' && hasSubmenu) {
+      code += '        <span class="type">Menu</span>(<span class="str">"Share"</span>) {\n';
+      submenuItems.forEach(sub => {
+        code += '            <span class="type">Button</span>(<span class="str">"' + sub.label + '"</span>,\n';
+        code += '                   systemImage: <span class="str">"' + sub.icon + '"</span>) { }\n';
+      });
+      code += '        } icon: {\n';
+      code += '            <span class="type">Image</span>(systemName: <span class="str">"' + item.icon + '"</span>)\n';
+      code += '        }\n';
+    } else {
+      code += '        <span class="type">Button</span> {\n';
+      code += '            <span class="comment">// ' + item.label.toLowerCase() + ' action</span>\n';
+      code += '        } label: {\n';
+      code += '            <span class="type">Label</span>(<span class="str">"' + item.label + '"</span>,\n';
+      code += '                  systemImage: <span class="str">"' + item.icon + '"</span>)\n';
+      code += '        }\n';
+    }
+  });
+
+  // Divider
+  if (secondaryItems.length > 0 && showDividers) {
+    code += '\n        <span class="type">Divider</span>()\n\n';
+  }
+
+  // Secondary items
+  secondaryItems.forEach(item => {
+    code += '        <span class="type">Button</span> {\n';
+    code += '            <span class="comment">// ' + item.label.toLowerCase() + ' action</span>\n';
+    code += '        } label: {\n';
+    code += '            <span class="type">Label</span>(<span class="str">"' + item.label + '"</span>,\n';
+    code += '                  systemImage: <span class="str">"' + item.icon + '"</span>)\n';
+    code += '        }\n';
+  });
+
+  // Destructive
+  if (hasDestructive) {
+    if (showDividers) {
+      code += '\n        <span class="type">Divider</span>()\n\n';
+    }
+    code += '        <span class="type">Button</span>(role: .<span class="prop">destructive</span>) {\n';
+    code += '            <span class="comment">// delete action</span>\n';
+    code += '        } label: {\n';
+    code += '            <span class="type">Label</span>(<span class="str">"Delete"</span>,\n';
+    code += '                  systemImage: <span class="str">"trash"</span>)\n';
+    code += '        }\n';
+  }
+
+  code += '    }';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── Click outside to dismiss ───
+document.addEventListener('click', function(e) {
+  if (menuVisible && !e.target.closest('.ctx-menu') && !e.target.closest('.demo-source-card')) {
+    dismissContextMenu();
+  }
+});
+
+// Initial render
+updateCode();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Context Menus</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Items</div>
+          <div class="screen-card"><div style="background:#fff;padding:4px 0;border-radius:14px;font-size:11px;font-family:-apple-system,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.15);max-height:140px;overflow-y:auto"><div style="padding:6px 12px;color:#000">Action 1</div><div style="padding:6px 12px;color:#000">Action 2</div><div style="padding:6px 12px;color:#000">Action 3</div><div style="padding:6px 12px;color:#000">Action 4</div><div style="padding:6px 12px;color:#000">Action 5</div><div style="padding:6px 12px;color:#000">Action 6</div><div style="padding:6px 12px;color:#000">Action 7</div><div style="padding:6px 12px;color:#000">Action 8</div><div style="padding:6px 12px;color:#000">Action 9</div><div style="padding:6px 12px;color:#000">Action 10</div><div style="padding:6px 12px;color:#000">Action 11</div><div style="padding:6px 12px;color:#000">Action 12</div><div style="padding:6px 12px;color:#000">Action 13</div><div style="padding:6px 12px;color:#000">Action 14</div><div style="padding:6px 12px;color:#000">Action 15</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.itemCount >= 6; }, ko: "6개 이상의 메뉴 항목은 과합니다. 그룹핑하거나 줄이세요", en: "6+ menu items is excessive. Group or reduce them" },
+    { check: function(){ return !state.showDividers && state.itemCount >= 4; }, ko: "4개 이상의 항목에는 divider로 그룹을 나누세요", en: "Use dividers to group 4+ items" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

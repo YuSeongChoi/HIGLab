@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratings &amp; Reviews — HIG Playground | HIG Lab</title>
+<meta name="description" content="평점과 리뷰 패턴을 인터랙티브하게 체험해보세요. 별점, 엄지, 숫자 등 다양한 평가 방식을 비교합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;--accent:#0071e3;--border:#d2d2d7;--radius:16px;--ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;--ios-purple:#AF52DE;--ios-teal:#5AC8FA;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;--ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;--ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12)}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:24px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-card{background:var(--ios-card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.control-slider{display:flex;align-items:center;gap:12px}
+.control-slider input[type=range]{flex:1;accent-color:var(--accent)}
+.control-slider .slider-value{font-size:14px;font-weight:700;color:var(--accent);min-width:32px;text-align:center}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;position:relative;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+
+/* Rating styles */
+.app-icon{width:80px;height:80px;border-radius:18px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.app-name{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:20px;font-weight:700;color:#000;margin-top:8px}
+.app-subtitle{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;color:var(--ios-gray);margin-top:2px}
+.rating-display{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:12px}
+.rating-big{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:48px;font-weight:800;color:#000;line-height:1}
+.rating-stars{display:flex;gap:4px;font-size:24px;cursor:pointer}
+.rating-stars .star{color:var(--ios-gray4);transition:color .15s}.rating-stars .star.filled{color:#FF9500}
+.rating-stars .star.half{position:relative;color:var(--ios-gray4)}.rating-stars .star.half::before{content:'★';position:absolute;left:0;overflow:hidden;width:50%;color:#FF9500}
+.rating-count{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px;color:var(--ios-gray)}
+.thumbs-container{display:flex;gap:24px;margin-top:8px}
+.thumb-btn{font-size:36px;cursor:pointer;opacity:0.4;transition:all .2s;border:none;background:none}.thumb-btn.active{opacity:1;transform:scale(1.15)}
+.numeric-rating{display:flex;gap:6px;margin-top:8px}
+.numeric-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--ios-gray4);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;font-weight:700;color:var(--ios-gray);cursor:pointer;transition:all .15s;background:none}
+.numeric-btn.active{background:var(--ios-orange);border-color:var(--ios-orange);color:#fff}
+.review-prompt{width:100%;padding:16px;background:rgba(0,122,255,0.06);border-radius:12px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;margin-top:12px}
+.review-prompt-title{font-size:15px;font-weight:600;color:#000;margin-bottom:4px}
+.review-prompt-msg{font-size:13px;color:var(--ios-gray);margin-bottom:12px}
+.review-prompt-stars{display:flex;gap:8px;justify-content:center;font-size:32px;color:var(--ios-gray4)}
+.review-prompt .star{cursor:pointer;transition:color .15s}.review-prompt .star.filled{color:#FF9500}
+.review-prompt-custom{border:2px dashed var(--ios-red);background:rgba(255,59,48,0.04)}
+.bar-chart{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.bar-row{display:flex;align-items:center;gap:6px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12px;color:var(--ios-gray)}
+.bar-row .bar-label{width:14px;text-align:right}
+.bar-row .bar-track{flex:1;height:6px;background:var(--ios-gray5);border-radius:3px;overflow:hidden}
+.bar-row .bar-fill{height:100%;background:var(--ios-gray);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="header"><div class="header-inner">
+  <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+  <div class="nav"><a href="../index.html">HIG Playground</a><a href="../../index.html">Home</a></div>
+</div></div>
+
+<div class="breadcrumb"><a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Ratings &amp; Reviews</div>
+<h1 class="page-title">Ratings &amp; Reviews</h1>
+<p class="page-desc">평점과 리뷰 요청 패턴을 인터랙티브하게 체험해보세요</p>
+
+<div class="playground-layout">
+  <div class="iphone-frame"><div class="iphone-screen">
+    <div class="dynamic-island"></div>
+    <div class="status-bar"><span>9:41</span><div class="status-bar-right"><span>&#9679;&#9679;&#9679;&#9679;</span><span>WiFi</span><span>&#128267;</span></div></div>
+    <div class="screen-content" id="screenContent">
+      <div class="screen-nav-title">App Rating</div>
+      <!-- App Info -->
+      <div class="screen-section">
+        <div class="screen-card" style="align-items:center">
+          <div class="app-icon">&#127912;</div>
+          <div class="app-name">Creative Studio</div>
+          <div class="app-subtitle">Photo &amp; Video Editor</div>
+          <div class="rating-display">
+            <div class="rating-big" id="ratingBig">4.3</div>
+            <div id="ratingWidget"></div>
+            <div class="rating-count" id="ratingCount">12,847 ratings</div>
+          </div>
+          <!-- Bar chart -->
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div></div>
+            <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:18%"></div></div></div>
+            <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:7%"></div></div></div>
+            <div class="bar-row"><span class="bar-label">2</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div></div>
+            <div class="bar-row"><span class="bar-label">1</span><div class="bar-track"><div class="bar-fill" style="width:4%"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Review Prompt -->
+      <div class="screen-section" id="promptSection">
+        <div class="screen-section-title">Review Prompt</div>
+        <div class="review-prompt" id="reviewPrompt">
+          <div class="review-prompt-title" id="promptTitle">Enjoying Creative Studio?</div>
+          <div class="review-prompt-msg" id="promptMsg">Tap a star to rate it on the App Store.</div>
+          <div class="review-prompt-stars" id="promptStars"></div>
+        </div>
+      </div>
+    </div>
+    <div class="hig-warning" id="higWarning"></div>
+    <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+  </div></div>
+
+  <div class="right-panel">
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card"><h4>&#10003; 이렇게 하세요</h4><ul>
+            <li>성공적 경험 후 자연스럽게 리뷰 요청</li>
+            <li>SKStoreReviewController 시스템 API 사용</li>
+            <li>5점 척도로 직관적 평가 제공</li>
+            <li>리뷰 수를 표시하여 신뢰도 확보</li>
+          </ul></div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card"><h4>&#10007; 이렇게 하지 마세요</h4><ul>
+            <li>앱 시작 직후 리뷰 요청</li>
+            <li>커스텀 리뷰 프롬프트로 사용자 유도</li>
+            <li>과도한 척도 (7점, 10점) 사용</li>
+            <li>리뷰 수 없이 평점만 표시</li>
+          </ul><p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p></div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">Ratings and reviews help people make informed decisions. Use the system review prompt API for higher response rates and a consistent experience.</p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews" class="guideline-link" target="_blank">Apple HIG: Ratings and Reviews &rarr;</a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>Rating Style 평점 스타일</label>
+          <div class="control-options" id="ratingStyleOptions">
+            <div class="control-option active" data-value="stars">&#11088; Stars</div>
+            <div class="control-option" data-value="thumbs">&#128077; Thumbs</div>
+            <div class="control-option" data-value="numeric">&#128290; Numeric</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Max Rating 최대 점수: <strong id="maxLabel">5</strong></label>
+          <div class="control-slider">
+            <input type="range" id="maxSlider" min="3" max="10" value="5">
+            <span class="slider-value" id="maxValue">5</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Prompt Timing 요청 시점</label>
+          <div class="control-options" id="promptTimingOptions">
+            <div class="control-option active" data-value="afterSuccess">After Success</div>
+            <div class="control-option" data-value="immediate">Immediate</div>
+            <div class="control-option" data-value="delayed">Delayed</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle"><span class="control-toggle-label">반점 허용 (Half Stars)</span><div class="toggle-switch" id="toggleHalf"></div></div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle"><span class="control-toggle-label">리뷰 수 표시</span><div class="toggle-switch on" id="toggleCount"></div></div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle"><span class="control-toggle-label">커스텀 프롬프트</span><div class="toggle-switch" id="toggleCustom"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header"><span>SwiftUI Code</span><button class="copy-btn" onclick="copyCode()">Copy</button></div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+var state = {
+  ratingStyle: 'stars',
+  maxStars: 5,
+  allowHalf: false,
+  showCount: true,
+  promptTiming: 'afterSuccess',
+  customPrompt: false
+};
+var isDontMode = false;
+var selectedRating = 0;
+
+// Controls
+document.getElementById('ratingStyleOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    this.parentNode.querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+    opt.classList.add('active'); state.ratingStyle = opt.dataset.value; selectedRating = 0; updatePreview();
+  });
+});
+document.getElementById('promptTimingOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    this.parentNode.querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+    opt.classList.add('active'); state.promptTiming = opt.dataset.value; updatePreview();
+  });
+});
+document.getElementById('maxSlider').addEventListener('input', function() {
+  state.maxStars = parseInt(this.value);
+  document.getElementById('maxLabel').textContent = this.value;
+  document.getElementById('maxValue').textContent = this.value;
+  selectedRating = 0; updatePreview();
+});
+document.getElementById('toggleHalf').addEventListener('click', function() { this.classList.toggle('on'); state.allowHalf = this.classList.contains('on'); updatePreview(); });
+document.getElementById('toggleCount').addEventListener('click', function() { this.classList.toggle('on'); state.showCount = this.classList.contains('on'); updatePreview(); });
+document.getElementById('toggleCustom').addEventListener('click', function() { this.classList.toggle('on'); state.customPrompt = this.classList.contains('on'); updatePreview(); });
+
+function buildStars(container, max, interactive) {
+  var html = '<div class="rating-stars" style="font-size:' + (interactive ? '32' : '24') + 'px">';
+  for (var i = 1; i <= max; i++) {
+    html += '<span class="star" data-val="' + i + '" onclick="rateStar(' + i + ')">★</span>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  highlightStars(container, selectedRating);
+}
+function highlightStars(container, val) {
+  container.querySelectorAll('.star').forEach(function(s) {
+    var v = parseInt(s.dataset.val);
+    s.classList.toggle('filled', v <= val);
+  });
+}
+function rateStar(val) { selectedRating = val; updatePreview(); }
+
+function buildThumbs(container) {
+  container.innerHTML = '<div class="thumbs-container"><button class="thumb-btn' + (selectedRating === 1 ? ' active' : '') + '" onclick="selectedRating=1;updatePreview()">&#128077;</button><button class="thumb-btn' + (selectedRating === 2 ? ' active' : '') + '" onclick="selectedRating=2;updatePreview()">&#128078;</button></div>';
+}
+function buildNumeric(container, max) {
+  var html = '<div class="numeric-rating">';
+  for (var i = 1; i <= max; i++) {
+    html += '<div class="numeric-btn' + (i === selectedRating ? ' active' : '') + '" onclick="selectedRating=' + i + ';updatePreview()">' + i + '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  // Reset to good defaults
+  state.promptTiming = 'afterSuccess'; state.maxStars = 5; state.customPrompt = false; state.showCount = true;
+  document.getElementById('maxSlider').value = 5; document.getElementById('maxLabel').textContent = '5'; document.getElementById('maxValue').textContent = '5';
+  document.getElementById('toggleCustom').classList.remove('on');
+  document.getElementById('toggleCount').classList.add('on');
+  document.getElementById('promptTimingOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+  document.querySelector('#promptTimingOptions [data-value="afterSuccess"]').classList.add('active');
+  updatePreview();
+}
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  state.promptTiming = 'immediate'; state.maxStars = 10; state.customPrompt = true; state.showCount = false;
+  document.getElementById('maxSlider').value = 10; document.getElementById('maxLabel').textContent = '10'; document.getElementById('maxValue').textContent = '10';
+  document.getElementById('toggleCustom').classList.add('on');
+  document.getElementById('toggleCount').classList.remove('on');
+  document.getElementById('promptTimingOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+  document.querySelector('#promptTimingOptions [data-value="immediate"]').classList.add('active');
+  updatePreview();
+}
+
+var higRules = [
+  { check: function() { return state.promptTiming === 'immediate'; }, msg: '앱 시작 직후 리뷰 요청은 사용자를 귀찮게 합니다' },
+  { check: function() { return state.maxStars > 5; }, msg: '5점 초과 척도는 사용자가 구분하기 어렵습니다' },
+  { check: function() { return state.customPrompt; }, msg: '시스템 리뷰 요청 API를 사용하면 더 높은 응답률을 얻습니다' },
+  { check: function() { return !state.showCount; }, msg: '리뷰 수를 표시하지 않으면 평점의 신뢰도가 낮아 보입니다' }
+];
+
+function checkHigViolations() {
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) { try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {} }
+  if (violations.length > 0) {
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) { return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.msg + '</span></div>'; }).join('');
+    var w = document.getElementById('higWarning'); if (w) { w.textContent = violations[0].msg; w.classList.add('show'); }
+  } else {
+    badge.className = 'hig-live-badge ok'; badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning'); if (w) w.classList.remove('show');
+  }
+}
+
+function updatePreview() {
+  var widget = document.getElementById('ratingWidget');
+  if (state.ratingStyle === 'stars') buildStars(widget, state.maxStars, false);
+  else if (state.ratingStyle === 'thumbs') buildThumbs(widget);
+  else buildNumeric(widget, state.maxStars);
+
+  document.getElementById('ratingCount').style.display = state.showCount ? '' : 'none';
+
+  // Prompt
+  var prompt = document.getElementById('reviewPrompt');
+  prompt.className = 'review-prompt' + (state.customPrompt ? ' review-prompt-custom' : '');
+  var pTitle = document.getElementById('promptTitle');
+  var pMsg = document.getElementById('promptMsg');
+  if (state.customPrompt) {
+    pTitle.textContent = '⚠️ Custom Prompt';
+    pMsg.textContent = 'Please give us 5 stars! We really need it!';
+  } else if (state.promptTiming === 'immediate') {
+    pTitle.textContent = 'Rate Us Now!';
+    pMsg.textContent = 'You just opened the app. Rate us immediately!';
+  } else if (state.promptTiming === 'delayed') {
+    pTitle.textContent = 'Enjoying Creative Studio?';
+    pMsg.textContent = 'You\'ve been using the app for a while. Would you like to rate?';
+  } else {
+    pTitle.textContent = 'Enjoying Creative Studio?';
+    pMsg.textContent = 'Tap a star to rate it on the App Store.';
+  }
+
+  // Prompt stars
+  var ps = document.getElementById('promptStars');
+  var psHtml = '';
+  for (var i = 1; i <= Math.min(state.maxStars, 5); i++) psHtml += '<span class="star" style="cursor:pointer;color:var(--ios-gray4)">★</span>';
+  ps.innerHTML = psHtml;
+
+  updateCode();
+  checkHigViolations();
+}
+
+function updateCode() {
+  var c = '';
+  c += '<span class="comment">// Ratings & Reviews</span>\n';
+  c += '<span class="kw">import</span> <span class="type">StoreKit</span>\n\n';
+  c += '<span class="kw">struct</span> <span class="type">RatingView</span>: <span class="type">View</span> {\n';
+  if (state.customPrompt) {
+    c += '    <span class="comment">// ⚠️ Custom prompt — consider using system API</span>\n';
+    c += '    <span class="kw">@State private var</span> <span class="prop">showPrompt</span> = <span class="prop">true</span>\n\n';
+  }
+  c += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  c += '        <span class="type">VStack</span> {\n';
+  if (state.ratingStyle === 'stars') {
+    c += '            <span class="comment">// ' + state.maxStars + '-star rating</span>\n';
+    c += '            <span class="type">HStack</span> {\n';
+    c += '                <span class="type">ForEach</span>(<span class="prop">1</span>...<span class="prop">' + state.maxStars + '</span>, <span class="prop">id</span>: \\.<span class="prop">self</span>) { i <span class="kw">in</span>\n';
+    c += '                    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"star.fill"</span>)\n';
+    c += '                        .<span class="func">foregroundStyle</span>(.<span class="prop">orange</span>)\n';
+    c += '                }\n';
+    c += '            }\n';
+  } else if (state.ratingStyle === 'thumbs') {
+    c += '            <span class="type">HStack</span>(<span class="prop">spacing</span>: <span class="prop">24</span>) {\n';
+    c += '                <span class="type">Button</span> { } <span class="prop">label</span>: {\n';
+    c += '                    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"hand.thumbsup.fill"</span>)\n';
+    c += '                }\n';
+    c += '                <span class="type">Button</span> { } <span class="prop">label</span>: {\n';
+    c += '                    <span class="type">Image</span>(<span class="prop">systemName</span>: <span class="str">"hand.thumbsdown.fill"</span>)\n';
+    c += '                }\n';
+    c += '            }\n';
+  } else {
+    c += '            <span class="comment">// Numeric rating 1-' + state.maxStars + '</span>\n';
+    c += '            <span class="type">HStack</span> {\n';
+    c += '                <span class="type">ForEach</span>(<span class="prop">1</span>...<span class="prop">' + state.maxStars + '</span>, <span class="prop">id</span>: \\.<span class="prop">self</span>) { n <span class="kw">in</span>\n';
+    c += '                    <span class="type">Button</span>(<span class="str">"\\(n)"</span>) { }\n';
+    c += '                }\n';
+    c += '            }\n';
+  }
+  if (!state.customPrompt) {
+    c += '\n            <span class="comment">// System review prompt</span>\n';
+    c += '            .<span class="func">onAppear</span> {\n';
+    c += '                <span class="kw">if let</span> <span class="prop">scene</span> = <span class="type">UIApplication</span>.<span class="prop">shared</span>\n';
+    c += '                    .<span class="prop">connectedScenes</span>.<span class="func">first</span> <span class="kw">as?</span> <span class="type">UIWindowScene</span> {\n';
+    c += '                    <span class="type">SKStoreReviewController</span>\n';
+    c += '                        .<span class="func">requestReview</span>(<span class="prop">in</span>: <span class="prop">scene</span>)\n';
+    c += '                }\n';
+    c += '            }\n';
+  }
+  c += '        }\n';
+  c += '    }\n}';
+  document.getElementById('codePreview').innerHTML = c;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn'); btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+updatePreview();
+</script>
+</body>
+</html>

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Wells — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS ColorPicker interactively in the browser. Wheel, Grid, Spectrum 스타일과 불투명도 조절을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Color Well Styles ─── */
+.color-well-swatch{
+  width:80px;height:80px;border-radius:50%;
+  border:3px solid rgba(0,0,0,0.1);
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  transition:all 0.3s ease;
+  cursor:pointer;
+}
+.color-well-swatch:hover{transform:scale(1.05)}
+.color-well-swatch:active{transform:scale(0.95)}
+
+.color-well-label{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:15px;font-weight:500;color:#1d1d1f;
+  margin-top:4px;
+}
+.color-well-hex{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--ios-gray);
+  font-variant-numeric:tabular-nums;
+}
+
+/* Color Wheel */
+.color-wheel-container{
+  position:relative;width:200px;height:200px;
+}
+.color-wheel-canvas{
+  width:200px;height:200px;border-radius:50%;
+  cursor:crosshair;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+.wheel-indicator{
+  position:absolute;width:20px;height:20px;
+  border:3px solid #fff;border-radius:50%;
+  box-shadow:0 1px 4px rgba(0,0,0,0.3);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  transition:left 0.1s, top 0.1s;
+}
+
+/* Color Grid */
+.color-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:6px;
+  width:100%;
+}
+.color-grid-cell{
+  aspect-ratio:1;border-radius:8px;cursor:pointer;
+  transition:all 0.15s;border:2px solid transparent;
+}
+.color-grid-cell:hover{transform:scale(1.1)}
+.color-grid-cell.selected{border-color:#000;box-shadow:0 0 0 2px #fff,0 0 0 4px #000}
+
+/* Spectrum Bar */
+.spectrum-bar{
+  width:100%;height:32px;border-radius:8px;
+  cursor:crosshair;position:relative;
+  box-shadow:0 1px 4px rgba(0,0,0,0.1);
+}
+.spectrum-thumb{
+  position:absolute;top:-4px;width:12px;height:40px;
+  background:#fff;border-radius:6px;
+  border:2px solid rgba(0,0,0,0.2);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  pointer-events:none;
+  transform:translateX(-50%);
+  transition:left 0.1s;
+}
+
+/* Opacity Slider */
+.opacity-slider-track{
+  width:100%;height:24px;border-radius:12px;
+  position:relative;cursor:pointer;
+  border:1px solid rgba(0,0,0,0.1);
+}
+.opacity-slider-track-bg{
+  position:absolute;inset:0;border-radius:12px;
+  background:repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50%/12px 12px;
+}
+.opacity-slider-track-color{
+  position:absolute;inset:0;border-radius:12px;
+}
+.opacity-slider-thumb{
+  position:absolute;top:-2px;width:16px;height:28px;
+  background:#fff;border-radius:8px;
+  border:2px solid rgba(0,0,0,0.15);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  pointer-events:none;
+  transform:translateX(-50%);
+}
+.opacity-label{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;color:var(--ios-gray);
+  text-align:center;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.en.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="color-wells.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.en.html">HIG Playground</a> &rarr; Color Wells
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Color Wells</h1>
+<p class="page-desc">iOS ColorPicker의 다양한 styles interactively. Wheel, Grid, Spectrum 모드와 불투명도 조절을 인터랙티브하게 조작할 수 있습니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Color Picker</div>
+
+        <!-- Selected Color Display -->
+        <div class="screen-section">
+          <div class="screen-section-title">Selected Color</div>
+          <div class="screen-card">
+            <div class="color-well-swatch" id="mainSwatch" style="background:#007AFF"></div>
+            <div class="color-well-label" id="colorLabel">Blue</div>
+            <div class="color-well-hex" id="colorHex">#007AFF</div>
+          </div>
+        </div>
+
+        <!-- Wheel Picker -->
+        <div class="screen-section" id="wheelSection">
+          <div class="screen-section-title">Color Wheel</div>
+          <div class="screen-card">
+            <div class="color-wheel-container">
+              <canvas class="color-wheel-canvas" id="colorWheel" width="200" height="200"></canvas>
+              <div class="wheel-indicator" id="wheelIndicator" style="left:150px;top:100px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid Picker -->
+        <div class="screen-section" id="gridSection" style="display:none">
+          <div class="screen-section-title">Color Grid</div>
+          <div class="screen-card">
+            <div class="color-grid" id="colorGrid"></div>
+          </div>
+        </div>
+
+        <!-- Spectrum Picker -->
+        <div class="screen-section" id="spectrumSection" style="display:none">
+          <div class="screen-section-title">Spectrum</div>
+          <div class="screen-card">
+            <div class="spectrum-bar" id="spectrumBar" style="background:linear-gradient(to right,#ff0000,#ff8800,#ffff00,#00ff00,#0088ff,#0000ff,#8800ff,#ff0088)">
+              <div class="spectrum-thumb" id="spectrumThumb" style="left:30%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opacity Slider -->
+        <div class="screen-section" id="opacitySection" style="display:none">
+          <div class="screen-section-title">Opacity</div>
+          <div class="screen-card">
+            <div class="opacity-slider-track" id="opacityTrack">
+              <div class="opacity-slider-track-bg"></div>
+              <div class="opacity-slider-track-color" id="opacityTrackColor"></div>
+              <div class="opacity-slider-thumb" id="opacityThumb" style="left:100%"></div>
+            </div>
+            <div class="opacity-label" id="opacityLabel">100%</div>
+          </div>
+        </div>
+
+        <!-- Color Swatches Row -->
+        <div class="screen-section">
+          <div class="screen-section-title">Recent Colors</div>
+          <div class="screen-card" style="flex-direction:row;gap:10px;justify-content:center;flex-wrap:wrap">
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#007AFF" data-color="#007AFF"></div>
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#34C759" data-color="#34C759"></div>
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#FF9500" data-color="#FF9500"></div>
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#FF3B30" data-color="#FF3B30"></div>
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#AF52DE" data-color="#AF52DE"></div>
+            <div class="color-well-swatch recent-swatch" style="width:40px;height:40px;background:#5AC8FA" data-color="#5AC8FA"></div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG Violation: Color picker is hard to use</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — Try It Yourself</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — Good Example</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — Bad Example</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; Do This</h4>
+            <ul>
+              <li>Use system ColorPicker for consistent experience</li>
+              <li>Show the currently selected color clearly</li>
+              <li>Provide opacity control when transparency is needed</li>
+              <li>Include recently used colors for quick access</li>
+              <li>Support multiple selection modes (wheel, grid, spectrum)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; Don't Do This</h4>
+            <ul>
+              <li>Don't build a custom color picker when system one suffices</li>
+              <li>Don't limit color options without good reason</li>
+              <li>Don't forget to show hex/RGB values for precision</li>
+              <li>Don't ignore accessibility — ensure sufficient contrast</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 See the bad pattern in the iPhone preview above</p>
+          </div>
+        </div>
+        <!-- Preset Color -->
+        <div class="control-group">
+          <label>Preset Color</label>
+          <div class="color-options" id="colorOptions">
+            <div class="color-swatch active" data-color="#007AFF" data-name="Blue" style="background:#007AFF" title="Blue"></div>
+            <div class="color-swatch" data-color="#34C759" data-name="Green" style="background:#34C759" title="Green"></div>
+            <div class="color-swatch" data-color="#FF9500" data-name="Orange" style="background:#FF9500" title="Orange"></div>
+            <div class="color-swatch" data-color="#FF3B30" data-name="Red" style="background:#FF3B30" title="Red"></div>
+            <div class="color-swatch" data-color="#AF52DE" data-name="Purple" style="background:#AF52DE" title="Purple"></div>
+            <div class="color-swatch" data-color="#5AC8FA" data-name="Teal" style="background:#5AC8FA" title="Teal"></div>
+          </div>
+        </div>
+        <!-- Opacity Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Supports Opacity</span>
+            <div class="toggle-switch" id="toggleOpacity"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  style: 'wheel',
+  color: '#007AFF',
+  colorName: 'Blue',
+  opacity: 1.0,
+  supportsOpacity: false
+};
+
+// ─── Draw Color Wheel ───
+function drawColorWheel() {
+  const canvas = document.getElementById('colorWheel');
+  const ctx = canvas.getContext('2d');
+  const cx = 100, cy = 100, radius = 98;
+
+  for (let angle = 0; angle < 360; angle++) {
+    const startAngle = (angle - 1) * Math.PI / 180;
+    const endAngle = (angle + 1) * Math.PI / 180;
+    const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(1, 'hsl(' + angle + ',100%,50%)');
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+  }
+}
+
+// ─── Build Color Grid ───
+function buildColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = '';
+  const colors = [
+    '#FF3B30','#FF6961','#FF9500','#FFCC00','#FFEB3B','#CDDC39',
+    '#34C759','#4CAF50','#00BCD4','#5AC8FA','#007AFF','#2196F3',
+    '#AF52DE','#9C27B0','#E91E63','#FF4081','#795548','#8D6E63',
+    '#8E8E93','#AEAEB2','#C7C7CC','#D1D1D6','#E5E5EA','#000000',
+    '#FF2D55','#FF6B6B','#FFA726','#FFD54F','#AED581','#81C784',
+    '#4DD0E1','#64B5F6','#7986CB','#BA68C8','#F06292','#FFFFFF'
+  ];
+  colors.forEach(c => {
+    const cell = document.createElement('div');
+    cell.className = 'color-grid-cell';
+    cell.style.background = c;
+    if (c === '#FFFFFF') cell.style.border = '1px solid #ddd';
+    if (c === state.color) cell.classList.add('selected');
+    cell.addEventListener('click', () => {
+      state.color = c;
+      state.colorName = c;
+      document.querySelectorAll('.color-grid-cell').forEach(el => el.classList.remove('selected'));
+      cell.classList.add('selected');
+      updatePreview();
+    });
+    grid.appendChild(cell);
+  });
+}
+
+// ─── Spectrum Interaction ───
+function initSpectrum() {
+  const bar = document.getElementById('spectrumBar');
+  let dragging = false;
+
+  function updateFromEvent(e) {
+    const rect = bar.getBoundingClientRect();
+    let x = (e.clientX || e.touches[0].clientX) - rect.left;
+    x = Math.max(0, Math.min(x, rect.width));
+    const pct = x / rect.width;
+    document.getElementById('spectrumThumb').style.left = (pct * 100) + '%';
+    const hue = pct * 360;
+    state.color = hslToHex(hue, 100, 50);
+    state.colorName = state.color;
+    updatePreview();
+  }
+
+  bar.addEventListener('mousedown', e => { dragging = true; updateFromEvent(e); });
+  bar.addEventListener('touchstart', e => { dragging = true; updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mousemove', e => { if (dragging) updateFromEvent(e); });
+  document.addEventListener('touchmove', e => { if (dragging) updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('touchend', () => dragging = false);
+}
+
+// ─── Wheel Interaction ───
+function initWheel() {
+  const canvas = document.getElementById('colorWheel');
+  let dragging = false;
+  const cx = 100, cy = 100, radius = 98;
+
+  function updateFromEvent(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = 200 / rect.width;
+    const scaleY = 200 / rect.height;
+    let x = ((e.clientX || e.touches[0].clientX) - rect.left) * scaleX;
+    let y = ((e.clientY || e.touches[0].clientY) - rect.top) * scaleY;
+    const dx = x - cx, dy = y - cy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist <= radius) {
+      const angle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+      const sat = (dist / radius) * 100;
+      state.color = hslToHex(angle, sat, 50);
+      state.colorName = state.color;
+      const indicator = document.getElementById('wheelIndicator');
+      indicator.style.left = x + 'px';
+      indicator.style.top = y + 'px';
+      indicator.style.background = state.color;
+      updatePreview();
+    }
+  }
+
+  canvas.addEventListener('mousedown', e => { dragging = true; updateFromEvent(e); });
+  canvas.addEventListener('touchstart', e => { dragging = true; updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mousemove', e => { if (dragging) updateFromEvent(e); });
+  document.addEventListener('touchmove', e => { if (dragging) updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('touchend', () => dragging = false);
+}
+
+// ─── Opacity Interaction ───
+function initOpacity() {
+  const track = document.getElementById('opacityTrack');
+  let dragging = false;
+
+  function updateFromEvent(e) {
+    const rect = track.getBoundingClientRect();
+    let x = (e.clientX || e.touches[0].clientX) - rect.left;
+    x = Math.max(0, Math.min(x, rect.width));
+    const pct = x / rect.width;
+    state.opacity = pct;
+    document.getElementById('opacityThumb').style.left = (pct * 100) + '%';
+    document.getElementById('opacityLabel').textContent = Math.round(pct * 100) + '%';
+    updatePreview();
+  }
+
+  track.addEventListener('mousedown', e => { dragging = true; updateFromEvent(e); });
+  track.addEventListener('touchstart', e => { dragging = true; updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mousemove', e => { if (dragging) updateFromEvent(e); });
+  document.addEventListener('touchmove', e => { if (dragging) updateFromEvent(e); }, {passive:true});
+  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('touchend', () => dragging = false);
+}
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Color Swatches ───
+document.querySelectorAll('#colorOptions .color-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    document.querySelectorAll('#colorOptions .color-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    state.color = swatch.dataset.color;
+    state.colorName = swatch.dataset.name;
+    state.opacity = 1.0;
+    if (state.supportsOpacity) {
+      document.getElementById('opacityThumb').style.left = '100%';
+      document.getElementById('opacityLabel').textContent = '100%';
+    }
+    updatePreview();
+  });
+});
+
+// ─── Recent Swatches ───
+document.querySelectorAll('.recent-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    state.color = swatch.dataset.color;
+    state.colorName = swatch.dataset.color;
+    updatePreview();
+  });
+});
+
+// ─── Opacity Toggle ───
+document.getElementById('toggleOpacity').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.supportsOpacity = this.classList.contains('on');
+  if (!state.supportsOpacity) {
+    state.opacity = 1.0;
+  }
+  updatePreview();
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  // Show/hide picker sections
+  document.getElementById('wheelSection').style.display = state.style === 'wheel' ? 'block' : 'none';
+  document.getElementById('gridSection').style.display = state.style === 'grid' ? 'block' : 'none';
+  document.getElementById('spectrumSection').style.display = state.style === 'spectrum' ? 'block' : 'none';
+  document.getElementById('opacitySection').style.display = state.supportsOpacity ? 'block' : 'none';
+
+  // Update main swatch
+  const swatch = document.getElementById('mainSwatch');
+  const r = parseInt(state.color.slice(1,3),16);
+  const g = parseInt(state.color.slice(3,5),16);
+  const b = parseInt(state.color.slice(5,7),16);
+  swatch.style.background = 'rgba(' + r + ',' + g + ',' + b + ',' + state.opacity + ')';
+
+  // Update labels
+  document.getElementById('colorLabel').textContent = state.colorName;
+  const alphaHex = state.opacity < 1 ? ' (' + Math.round(state.opacity * 100) + '%)' : '';
+  document.getElementById('colorHex').textContent = state.color.toUpperCase() + alphaHex;
+
+  // Update opacity track color
+  if (state.supportsOpacity) {
+    const trackColor = document.getElementById('opacityTrackColor');
+    trackColor.style.background = 'linear-gradient(to right, rgba(' + r + ',' + g + ',' + b + ',0), rgba(' + r + ',' + g + ',' + b + ',1))';
+  }
+
+  // Rebuild grid selection
+  if (state.style === 'grid') {
+    document.querySelectorAll('.color-grid-cell').forEach(cell => {
+      cell.classList.toggle('selected', rgbToHex(cell.style.backgroundColor) === state.color.toLowerCase());
+    });
+  }
+
+  updateCode();
+}
+
+function rgbToHex(rgb) {
+  if (rgb.startsWith('#')) return rgb.toLowerCase();
+  const match = rgb.match(/\d+/g);
+  if (!match) return '';
+  return '#' + match.slice(0,3).map(x => parseInt(x).toString(16).padStart(2,'0')).join('');
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const colorMap = {
+    '#007AFF': '.blue',
+    '#34C759': '.green',
+    '#FF9500': '.orange',
+    '#FF3B30': '.red',
+    '#AF52DE': '.purple',
+    '#5AC8FA': '.cyan'
+  };
+  const swiftColor = colorMap[state.color] || ('Color(hex: "' + state.color + '")');
+
+  let code = '<span class="kw">@State private var</span> <span class="prop">selectedColor</span>: <span class="type">Color</span> = <span class="prop">' + swiftColor + '</span>\n\n';
+  code += '<span class="kw">ColorPicker</span>(<span class="str">"Choose Color"</span>,\n';
+  code += '            selection: <span class="prop">$selectedColor</span>';
+  if (state.supportsOpacity) {
+    code += ',\n            supportsOpacity: <span class="prop">true</span>';
+  } else {
+    code += ',\n            supportsOpacity: <span class="prop">false</span>';
+  }
+  code += ')';
+
+  if (state.opacity < 1 && state.supportsOpacity) {
+    code += '\n.<span class="func">opacity</span>(<span class="prop">' + state.opacity.toFixed(2) + '</span>)';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = l - c / 2;
+  let r, g, b;
+  if (h < 60) { r = c; g = x; b = 0; }
+  else if (h < 120) { r = x; g = c; b = 0; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  r = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+  g = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+  b = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+  return '#' + r + g + b;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── Init ───
+drawColorWheel();
+buildColorGrid();
+initWheel();
+initSpectrum();
+initOpacity();
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Color Picker</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Tiny Color Target</div>
+          <div class="screen-card"><div style="background:#fff;padding:20px;border-radius:14px;text-align:center"><div style="width:16px;height:16px;border-radius:50%;background:#007AFF;margin:0 auto;border:1px solid #E5E5EA"></div><p style="font-size:10px;color:#8E8E93;margin-top:12px">Hard to tap 16px color picker</p></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.supportsOpacity && state.opacity < 0.3; }, ko: "Very low opacity makes the selected color hard to see", en: "Very low opacity makes the selected color hard to see" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ Following HIG guidelines correctly</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

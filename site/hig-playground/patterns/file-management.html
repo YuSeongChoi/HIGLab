@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Management — HIG Playground | HIG Lab</title>
+<meta name="description" content="파일 관리 패턴을 인터랙티브하게 체험해보세요. 리스트, 그리드, 컬럼 뷰와 정렬, 클라우드 동기화 등을 비교합니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;--accent:#0071e3;--border:#d2d2d7;--radius:16px;--ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;--ios-purple:#AF52DE;--ios-teal:#5AC8FA;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;--ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;--ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12)}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:24px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+
+/* File browser styles */
+.file-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.file-toolbar-left{display:flex;gap:8px;align-items:center}
+.file-toolbar-btn{padding:4px 8px;border:none;background:none;font-size:16px;cursor:pointer;color:var(--ios-blue);border-radius:6px}
+.file-toolbar-btn:active{background:rgba(0,122,255,0.1)}
+.file-toolbar-btn.active-view{background:rgba(0,122,255,0.15)}
+.sort-badge{font-size:11px;font-weight:600;color:var(--ios-blue);padding:2px 8px;background:rgba(0,122,255,0.1);border-radius:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.file-list-item{display:flex;align-items:center;padding:10px 14px;background:var(--ios-card);font-family:-apple-system,BlinkMacSystemFont,sans-serif;border-bottom:0.5px solid var(--ios-separator)}
+.file-list-item:first-child{border-radius:14px 14px 0 0}
+.file-list-item:last-child{border-radius:0 0 14px 14px;border-bottom:none}
+.file-list-item .file-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:12px;flex-shrink:0}
+.file-list-item .file-info{flex:1;min-width:0}
+.file-list-item .file-name{font-size:15px;font-weight:500;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-list-item .file-meta{font-size:12px;color:var(--ios-gray);display:flex;gap:8px;align-items:center}
+.file-list-item .file-cloud{font-size:14px;color:var(--ios-blue);margin-left:8px}
+.file-list-item .file-tag{width:10px;height:10px;border-radius:50%;margin-left:6px;flex-shrink:0}
+.file-list-item .file-select{width:22px;height:22px;border-radius:50%;border:2px solid var(--ios-gray3);margin-right:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.file-list-item .file-select.checked{background:var(--ios-blue);border-color:var(--ios-blue)}
+.file-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.file-grid-item{display:flex;flex-direction:column;align-items:center;padding:12px 8px;background:var(--ios-card);border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}
+.file-grid-item .grid-icon{font-size:36px;margin-bottom:6px}
+.file-grid-item .grid-name{font-size:11px;font-weight:500;color:#000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.file-grid-item .grid-cloud{font-size:10px;color:var(--ios-blue)}
+.multi-select-toolbar{display:flex;justify-content:space-around;padding:10px 0;background:var(--ios-card);border-radius:14px;margin-top:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.ms-action{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--ios-blue);cursor:pointer;border:none;background:none;padding:6px 12px}
+.ms-action .ms-icon{font-size:20px}
+.preview-card{background:var(--ios-card);border-radius:14px;padding:16px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;margin-top:12px}
+.preview-card .preview-icon{font-size:48px;margin-bottom:8px}
+.preview-card .preview-name{font-size:15px;font-weight:600;color:#000}
+.preview-card .preview-detail{font-size:12px;color:var(--ios-gray)}
+</style>
+</head>
+<body>
+
+<div class="header"><div class="header-inner">
+  <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+  <div class="nav"><a href="../index.html">HIG Playground</a><a href="../../index.html">Home</a></div>
+</div></div>
+
+<div class="breadcrumb"><a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; File Management</div>
+<h1 class="page-title">File Management</h1>
+<p class="page-desc">파일 관리 패턴을 인터랙티브하게 체험해보세요</p>
+
+<div class="playground-layout">
+  <div class="iphone-frame"><div class="iphone-screen">
+    <div class="dynamic-island"></div>
+    <div class="status-bar"><span>9:41</span><div class="status-bar-right"><span>&#9679;&#9679;&#9679;&#9679;</span><span>WiFi</span><span>&#128267;</span></div></div>
+    <div class="screen-content" id="screenContent">
+      <div class="screen-nav-title">Files</div>
+      <div class="file-toolbar" id="fileToolbar">
+        <div class="file-toolbar-left">
+          <button class="file-toolbar-btn active-view" id="viewListBtn" onclick="setView('list')" title="List">&#9776;</button>
+          <button class="file-toolbar-btn" id="viewGridBtn" onclick="setView('grid')" title="Grid">&#9638;</button>
+        </div>
+        <span class="sort-badge" id="sortBadge">Name ↑</span>
+      </div>
+      <div id="fileContainer"></div>
+      <div id="previewSection"></div>
+      <div id="multiSelectToolbar"></div>
+      <div style="height:20px"></div>
+    </div>
+    <div class="hig-warning" id="higWarning"></div>
+    <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+  </div></div>
+
+  <div class="right-panel">
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card"><h4>&#10003; 이렇게 하세요</h4><ul>
+            <li>리스트/그리드 뷰 전환 제공</li>
+            <li>정렬 옵션을 명확히 표시</li>
+            <li>클라우드 동기화 상태 표시</li>
+            <li>다중 선택 시 일괄 작업 툴바 제공</li>
+          </ul></div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card"><h4>&#10007; 이렇게 하지 마세요</h4><ul>
+            <li>그리드 뷰에서 파일 유형 아이콘 누락</li>
+            <li>정렬 옵션 숨기기</li>
+            <li>클라우드 동기화 상태 미표시</li>
+            <li>다중 선택만 되고 작업 불가</li>
+          </ul><p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p></div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">File management should feel intuitive and efficient. Provide clear visual cues for file types, sync status, and available actions. Support multiple view styles and sorting options.</p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/file-management" class="guideline-link" target="_blank">Apple HIG: File Management &rarr;</a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>View Style 보기 방식</label>
+          <div class="control-options" id="viewStyleOptions">
+            <div class="control-option active" data-value="list">&#9776; List</div>
+            <div class="control-option" data-value="grid">&#9638; Grid</div>
+            <div class="control-option" data-value="column">&#9707; Column</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Sort 정렬</label>
+          <div class="control-options" id="sortOptions">
+            <div class="control-option active" data-value="name">Name</div>
+            <div class="control-option" data-value="date">Date</div>
+            <div class="control-option" data-value="size">Size</div>
+            <div class="control-option" data-value="type">Type</div>
+          </div>
+        </div>
+        <div class="control-group"><div class="control-toggle"><span class="control-toggle-label">미리보기 표시</span><div class="toggle-switch on" id="togglePreview"></div></div></div>
+        <div class="control-group"><div class="control-toggle"><span class="control-toggle-label">다중 선택 모드</span><div class="toggle-switch" id="toggleMultiSelect"></div></div></div>
+        <div class="control-group"><div class="control-toggle"><span class="control-toggle-label">클라우드 동기화</span><div class="toggle-switch on" id="toggleCloud"></div></div></div>
+        <div class="control-group"><div class="control-toggle"><span class="control-toggle-label">태그 지원</span><div class="toggle-switch on" id="toggleTags"></div></div></div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header"><span>SwiftUI Code</span><button class="copy-btn" onclick="copyCode()">Copy</button></div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+var state = {
+  viewStyle: 'list',
+  sortBy: 'name',
+  showPreview: true,
+  multiSelect: false,
+  cloudSync: true,
+  tagSupport: true
+};
+var isDontMode = false;
+
+var files = [
+  { name:'Documents', type:'folder', icon:'&#128193;', size:'—', date:'Dec 15', color:null, cloud:true },
+  { name:'Photos', type:'folder', icon:'&#128193;', size:'—', date:'Dec 14', color:'#FF9500', cloud:true },
+  { name:'Presentation.key', type:'keynote', icon:'&#128202;', size:'12.4 MB', date:'Dec 13', color:'#007AFF', cloud:true },
+  { name:'Report.pdf', type:'pdf', icon:'&#128196;', size:'3.2 MB', date:'Dec 12', color:'#FF3B30', cloud:false },
+  { name:'Budget.xlsx', type:'excel', icon:'&#128200;', size:'1.8 MB', date:'Dec 11', color:'#34C759', cloud:true },
+  { name:'Notes.txt', type:'text', icon:'&#128221;', size:'24 KB', date:'Dec 10', color:null, cloud:false },
+  { name:'Sketch.png', type:'image', icon:'&#127912;', size:'5.6 MB', date:'Dec 9', color:'#AF52DE', cloud:true },
+  { name:'Song.mp3', type:'audio', icon:'&#127925;', size:'8.1 MB', date:'Dec 8', color:'#FF2D55', cloud:true }
+];
+
+// Controls
+document.getElementById('viewStyleOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    this.parentNode.querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+    opt.classList.add('active'); state.viewStyle = opt.dataset.value; updatePreview();
+  });
+});
+document.getElementById('sortOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    this.parentNode.querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+    opt.classList.add('active'); state.sortBy = opt.dataset.value; updatePreview();
+  });
+});
+document.getElementById('togglePreview').addEventListener('click', function() { this.classList.toggle('on'); state.showPreview = this.classList.contains('on'); updatePreview(); });
+document.getElementById('toggleMultiSelect').addEventListener('click', function() { this.classList.toggle('on'); state.multiSelect = this.classList.contains('on'); updatePreview(); });
+document.getElementById('toggleCloud').addEventListener('click', function() { this.classList.toggle('on'); state.cloudSync = this.classList.contains('on'); updatePreview(); });
+document.getElementById('toggleTags').addEventListener('click', function() { this.classList.toggle('on'); state.tagSupport = this.classList.contains('on'); updatePreview(); });
+
+function setView(v) { state.viewStyle = v; document.getElementById('viewStyleOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')}); document.querySelector('#viewStyleOptions [data-value="'+v+'"]').classList.add('active'); updatePreview(); }
+
+function getSortedFiles() {
+  var sorted = files.slice();
+  if (state.sortBy === 'name') sorted.sort(function(a,b){return a.name.localeCompare(b.name)});
+  else if (state.sortBy === 'date') sorted.sort(function(a,b){return b.date.localeCompare(a.date)});
+  else if (state.sortBy === 'size') sorted.sort(function(a,b){return (parseFloat(b.size)||0)-(parseFloat(a.size)||0)});
+  else if (state.sortBy === 'type') sorted.sort(function(a,b){return a.type.localeCompare(b.type)});
+  return sorted;
+}
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  state = { viewStyle:'list', sortBy:'name', showPreview:true, multiSelect:false, cloudSync:true, tagSupport:true };
+  document.getElementById('togglePreview').classList.add('on');
+  document.getElementById('toggleMultiSelect').classList.remove('on');
+  document.getElementById('toggleCloud').classList.add('on');
+  document.getElementById('toggleTags').classList.add('on');
+  document.getElementById('viewStyleOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+  document.querySelector('#viewStyleOptions [data-value="list"]').classList.add('active');
+  document.getElementById('sortOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+  document.querySelector('#sortOptions [data-value="name"]').classList.add('active');
+  updatePreview();
+}
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  state = { viewStyle:'grid', sortBy:'name', showPreview:false, multiSelect:true, cloudSync:false, tagSupport:false };
+  document.getElementById('togglePreview').classList.remove('on');
+  document.getElementById('toggleMultiSelect').classList.add('on');
+  document.getElementById('toggleCloud').classList.remove('on');
+  document.getElementById('toggleTags').classList.remove('on');
+  document.getElementById('viewStyleOptions').querySelectorAll('.control-option').forEach(function(o){o.classList.remove('active')});
+  document.querySelector('#viewStyleOptions [data-value="grid"]').classList.add('active');
+  updatePreview();
+}
+
+var higRules = [
+  { check: function() { return state.viewStyle === 'grid' && !state.tagSupport; }, msg: '그리드 뷰에서 파일 유형 아이콘이 없으면 구분이 어렵습니다' },
+  { check: function() { return state.sortBy === 'name' && !state.showPreview; }, msg: '정렬 옵션을 제공하면 파일 탐색이 쉬워집니다' },
+  { check: function() { return !state.cloudSync; }, msg: '클라우드 동기화 상태를 표시하지 않으면 사용자가 혼란을 느낍니다' },
+  { check: function() { return state.multiSelect; }, msg: '다중 선택 모드에는 일괄 작업 툴바가 필요합니다' }
+];
+
+function checkHigViolations() {
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) { try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {} }
+  if (violations.length > 0) {
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) { return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.msg + '</span></div>'; }).join('');
+    var w = document.getElementById('higWarning'); if (w) { w.textContent = violations[0].msg; w.classList.add('show'); }
+  } else {
+    badge.className = 'hig-live-badge ok'; badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning'); if (w) w.classList.remove('show');
+  }
+}
+
+function updatePreview() {
+  var sorted = getSortedFiles();
+  var container = document.getElementById('fileContainer');
+  var sortLabels = { name:'Name ↑', date:'Date ↓', size:'Size ↓', type:'Type ↑' };
+  document.getElementById('sortBadge').textContent = sortLabels[state.sortBy] || state.sortBy;
+
+  // View buttons
+  document.getElementById('viewListBtn').className = 'file-toolbar-btn' + (state.viewStyle === 'list' ? ' active-view' : '');
+  document.getElementById('viewGridBtn').className = 'file-toolbar-btn' + (state.viewStyle === 'grid' ? ' active-view' : '');
+
+  if (state.viewStyle === 'list' || state.viewStyle === 'column') {
+    var html = '<div>';
+    sorted.forEach(function(f) {
+      html += '<div class="file-list-item">';
+      if (state.multiSelect) html += '<div class="file-select">&#10003;</div>';
+      html += '<div class="file-icon" style="background:rgba(0,122,255,0.08)">' + f.icon + '</div>';
+      html += '<div class="file-info"><div class="file-name">' + f.name + '</div><div class="file-meta"><span>' + f.size + '</span><span>' + f.date + '</span></div></div>';
+      if (state.cloudSync && f.cloud) html += '<span class="file-cloud">&#9729;</span>';
+      if (state.tagSupport && f.color) html += '<span class="file-tag" style="background:' + f.color + '"></span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    var html = '<div class="file-grid">';
+    sorted.forEach(function(f) {
+      html += '<div class="file-grid-item">';
+      if (state.multiSelect) html += '<div class="file-select" style="position:absolute;top:4px;left:4px;width:18px;height:18px;font-size:10px">&#10003;</div>';
+      html += '<div class="grid-icon">' + f.icon + '</div>';
+      html += '<div class="grid-name">' + f.name + '</div>';
+      if (state.cloudSync && f.cloud) html += '<div class="grid-cloud">&#9729;</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  // Preview
+  var previewSection = document.getElementById('previewSection');
+  if (state.showPreview) {
+    previewSection.innerHTML = '<div class="preview-card"><div class="preview-icon">&#128196;</div><div class="preview-name">Report.pdf</div><div class="preview-detail">3.2 MB · PDF Document · Dec 12</div></div>';
+  } else {
+    previewSection.innerHTML = '';
+  }
+
+  // Multi-select toolbar
+  var msToolbar = document.getElementById('multiSelectToolbar');
+  if (state.multiSelect) {
+    msToolbar.innerHTML = '<div class="multi-select-toolbar"><button class="ms-action"><span class="ms-icon">&#128193;</span>Move</button><button class="ms-action"><span class="ms-icon">&#128203;</span>Copy</button><button class="ms-action"><span class="ms-icon">&#128279;</span>Share</button><button class="ms-action"><span class="ms-icon">&#128465;</span>Delete</button></div>';
+  } else {
+    msToolbar.innerHTML = '';
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+function updateCode() {
+  var c = '';
+  c += '<span class="kw">struct</span> <span class="type">FileBrowserView</span>: <span class="type">View</span> {\n';
+  c += '    <span class="kw">@State private var</span> <span class="prop">files</span>: [<span class="type">FileItem</span>] = []\n';
+  c += '    <span class="kw">@State private var</span> <span class="prop">sortOrder</span>: <span class="type">SortOrder</span> = .<span class="prop">' + state.sortBy + '</span>\n';
+  if (state.multiSelect) c += '    <span class="kw">@State private var</span> <span class="prop">selection</span> = <span class="type">Set</span>&lt;<span class="type">FileItem</span>.<span class="type">ID</span>&gt;()\n';
+  c += '\n    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  c += '        <span class="type">NavigationStack</span> {\n';
+  if (state.viewStyle === 'list') {
+    c += '            <span class="type">List</span>(' + (state.multiSelect ? '<span class="prop">selection</span>: <span class="prop">$selection</span>' : '') + ') {\n';
+    c += '                <span class="type">ForEach</span>(<span class="prop">files</span>) { file <span class="kw">in</span>\n';
+    c += '                    <span class="type">FileRowView</span>(<span class="prop">file</span>: file)\n';
+    c += '                }\n';
+    c += '            }\n';
+  } else {
+    c += '            <span class="type">ScrollView</span> {\n';
+    c += '                <span class="type">LazyVGrid</span>(\n';
+    c += '                    <span class="prop">columns</span>: [<span class="type">GridItem</span>(.<span class="prop">adaptive</span>(\n';
+    c += '                        <span class="prop">minimum</span>: <span class="prop">100</span>))]\n';
+    c += '                ) {\n';
+    c += '                    <span class="type">ForEach</span>(<span class="prop">files</span>) { file <span class="kw">in</span>\n';
+    c += '                        <span class="type">FileGridItemView</span>(<span class="prop">file</span>: file)\n';
+    c += '                    }\n';
+    c += '                }\n';
+    c += '            }\n';
+  }
+  c += '            .<span class="func">navigationTitle</span>(<span class="str">"Files"</span>)\n';
+  c += '            .<span class="func">toolbar</span> {\n';
+  c += '                <span class="type">Menu</span>(<span class="str">"Sort"</span>) {\n';
+  c += '                    <span class="type">Picker</span>(<span class="str">"Sort"</span>,\n';
+  c += '                        <span class="prop">selection</span>: <span class="prop">$sortOrder</span>) {\n';
+  c += '                        <span class="type">ForEach</span>(<span class="type">SortOrder</span>.<span class="prop">allCases</span>) { s <span class="kw">in</span>\n';
+  c += '                            <span class="type">Text</span>(s.<span class="prop">rawValue</span>)\n';
+  c += '                        }\n';
+  c += '                    }\n';
+  c += '                }\n';
+  if (state.multiSelect) {
+    c += '                <span class="type">EditButton</span>()\n';
+  }
+  c += '            }\n';
+  c += '        }\n';
+  c += '    }\n}';
+  document.getElementById('codePreview').innerHTML = c;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn'); btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+updatePreview();
+</script>
+</body>
+</html>
