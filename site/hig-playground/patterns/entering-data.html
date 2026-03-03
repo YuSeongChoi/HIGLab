@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entering Data — HIG Playground | HIG Lab</title>
+<meta name="description" content="데이터 입력 폼의 다양한 패턴과 검증 방식을 체험해보세요. 키보드 타입, 자동 수정, 입력 검증, 플레이스홀더 스타일을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── iOS Form Fields ─── */
+.ios-form-group{
+  width:100%;
+}
+.ios-form-label{
+  font-size:13px;font-weight:600;color:var(--ios-gray);
+  margin-bottom:4px;display:block;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  padding-left:2px;
+}
+.ios-form-field{
+  width:100%;
+  position:relative;
+}
+.ios-text-field{
+  width:100%;
+  padding:12px 14px;
+  font-size:16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--ios-bg);
+  border:1.5px solid var(--ios-gray4);
+  border-radius:12px;
+  color:#000;
+  outline:none;
+  transition:all .2s;
+  -webkit-appearance:none;
+}
+.ios-text-field::placeholder{
+  color:var(--ios-gray2);
+}
+.ios-text-field:focus{
+  border-color:var(--ios-blue);
+  background:#fff;
+}
+.ios-text-field.valid{
+  border-color:var(--ios-green);
+}
+.ios-text-field.invalid{
+  border-color:var(--ios-red);
+}
+.ios-textarea{
+  width:100%;
+  padding:12px 14px;
+  font-size:16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--ios-bg);
+  border:1.5px solid var(--ios-gray4);
+  border-radius:12px;
+  color:#000;
+  outline:none;
+  transition:all .2s;
+  -webkit-appearance:none;
+  resize:none;
+  min-height:72px;
+}
+.ios-textarea::placeholder{
+  color:var(--ios-gray2);
+}
+.ios-textarea:focus{
+  border-color:var(--ios-blue);
+  background:#fff;
+}
+.field-validation{
+  position:absolute;
+  right:12px;top:50%;transform:translateY(-50%);
+  font-size:16px;
+  display:none;
+}
+.field-validation.show{display:block}
+.field-error-msg{
+  font-size:11px;color:var(--ios-red);
+  margin-top:4px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  display:none;
+}
+.field-error-msg.show{display:block}
+
+/* Floating Label */
+.floating-label-wrap{
+  position:relative;
+}
+.floating-label-wrap .ios-text-field{
+  padding-top:22px;padding-bottom:6px;
+}
+.floating-label-wrap .float-label{
+  position:absolute;
+  top:14px;left:14px;
+  font-size:16px;color:var(--ios-gray2);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  pointer-events:none;
+  transition:all .2s;
+}
+.floating-label-wrap .float-label.up{
+  top:6px;
+  font-size:11px;
+  color:var(--ios-blue);
+  font-weight:600;
+}
+
+/* Keyboard Indicator */
+.keyboard-indicator{
+  width:100%;
+  background:#D1D3D9;
+  border-radius:0 0 40px 40px;
+  padding:8px 12px 4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  flex-shrink:0;
+}
+.keyboard-indicator-label{
+  text-align:center;
+  font-size:11px;font-weight:600;
+  color:#555;
+  padding:4px 0 2px;
+}
+.keyboard-row{
+  display:flex;gap:4px;justify-content:center;margin-bottom:4px;
+}
+.keyboard-key{
+  background:#fff;
+  border-radius:5px;
+  font-size:13px;font-weight:500;
+  padding:6px 0;
+  text-align:center;
+  flex:1;
+  max-width:32px;
+  box-shadow:0 1px 0 rgba(0,0,0,0.25);
+  color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.keyboard-key.space{max-width:160px;flex:4}
+.keyboard-key.action{background:var(--ios-blue);color:#fff;max-width:60px;flex:2;font-size:12px}
+.keyboard-key.special{background:#ADB3BC;color:#000;max-width:42px;flex:1.3}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Entering Data
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Entering Data</h1>
+<p class="page-desc">데이터 입력 폼의 다양한 패턴과 검증 방식을 체험해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Profile</div>
+
+        <!-- Name Field -->
+        <div class="screen-section">
+          <div class="ios-form-group">
+            <label class="ios-form-label" id="labelName">Name</label>
+            <div class="ios-form-field" id="fieldName">
+              <div id="wrapName">
+                <input type="text" class="ios-text-field" id="inputName" placeholder="Enter your name" value="John Appleseed">
+              </div>
+              <span class="field-validation" id="validName"></span>
+            </div>
+            <div class="field-error-msg" id="errorName">이름을 입력해주세요</div>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="screen-section">
+          <div class="ios-form-group">
+            <label class="ios-form-label" id="labelEmail">Email</label>
+            <div class="ios-form-field" id="fieldEmail">
+              <div id="wrapEmail">
+                <input type="text" class="ios-text-field" id="inputEmail" placeholder="email@example.com" value="john@apple.com">
+              </div>
+              <span class="field-validation" id="validEmail"></span>
+            </div>
+            <div class="field-error-msg" id="errorEmail">올바른 이메일 형식이 아닙니다</div>
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="screen-section">
+          <div class="ios-form-group">
+            <label class="ios-form-label" id="labelPhone">Phone</label>
+            <div class="ios-form-field" id="fieldPhone">
+              <div id="wrapPhone">
+                <input type="text" class="ios-text-field" id="inputPhone" placeholder="010-0000-0000" value="010-1234-5678">
+              </div>
+              <span class="field-validation" id="validPhone"></span>
+            </div>
+            <div class="field-error-msg" id="errorPhone">올바른 전화번호 형식이 아닙니다</div>
+          </div>
+        </div>
+
+        <!-- Notes Field -->
+        <div class="screen-section">
+          <div class="ios-form-group">
+            <label class="ios-form-label" id="labelNotes">Notes</label>
+            <div class="ios-form-field" id="fieldNotes">
+              <div id="wrapNotes">
+                <textarea class="ios-textarea" id="inputNotes" placeholder="Add notes here..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+      </div>
+
+      <!-- Keyboard Indicator -->
+      <div class="keyboard-indicator" id="keyboardIndicator">
+        <div class="keyboard-indicator-label" id="keyboardLabel">Default Keyboard</div>
+        <div class="keyboard-row">
+          <div class="keyboard-key" id="kbKey1">Q</div>
+          <div class="keyboard-key" id="kbKey2">W</div>
+          <div class="keyboard-key" id="kbKey3">E</div>
+          <div class="keyboard-key" id="kbKey4">R</div>
+          <div class="keyboard-key" id="kbKey5">T</div>
+          <div class="keyboard-key" id="kbKey6">Y</div>
+          <div class="keyboard-key" id="kbKey7">U</div>
+          <div class="keyboard-key" id="kbKey8">I</div>
+          <div class="keyboard-key" id="kbKey9">O</div>
+          <div class="keyboard-key" id="kbKey10">P</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="keyboard-key" id="kbKey11">A</div>
+          <div class="keyboard-key" id="kbKey12">S</div>
+          <div class="keyboard-key" id="kbKey13">D</div>
+          <div class="keyboard-key" id="kbKey14">F</div>
+          <div class="keyboard-key" id="kbKey15">G</div>
+          <div class="keyboard-key" id="kbKey16">H</div>
+          <div class="keyboard-key" id="kbKey17">J</div>
+          <div class="keyboard-key" id="kbKey18">K</div>
+          <div class="keyboard-key" id="kbKey19">L</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="keyboard-key special">&#8679;</div>
+          <div class="keyboard-key" id="kbKey20">Z</div>
+          <div class="keyboard-key" id="kbKey21">X</div>
+          <div class="keyboard-key" id="kbKey22">C</div>
+          <div class="keyboard-key" id="kbKey23">V</div>
+          <div class="keyboard-key" id="kbKey24">B</div>
+          <div class="keyboard-key" id="kbKey25">N</div>
+          <div class="keyboard-key" id="kbKey26">M</div>
+          <div class="keyboard-key special">&#9003;</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="keyboard-key special" id="kbToggle">123</div>
+          <div class="keyboard-key space">space</div>
+          <div class="keyboard-key action" id="kbAction">return</div>
+        </div>
+      </div>
+
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>적절한 키보드 타입을 사용하세요 (이메일 필드에는 email 키보드, 전화번호에는 phone 키보드)</li>
+              <li>인라인 검증으로 즉각적인 피드백을 제공하세요</li>
+              <li>명확한 플레이스홀더 텍스트를 제공하세요</li>
+              <li>자동 완성 및 자동 수정을 활용하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>모든 입력에 기본 키보드를 사용하지 마세요</li>
+              <li>제출 후에만 오류를 표시하지 마세요</li>
+              <li>플레이스홀더를 레이블 대체로 사용하지 마세요</li>
+              <li>불필요한 입력 필드를 추가하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iOS provides specialized keyboard types for different input contexts.
+          Use <strong>.emailAddress</strong> for email fields, <strong>.phonePad</strong> for phone numbers,
+          and <strong>.URL</strong> for web addresses. Combine with <strong>textContentType</strong> to enable
+          autofill suggestions and improve the data entry experience.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/entering-data" class="guideline-link" target="_blank">
+          Apple HIG: Entering Data &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Keyboard Type -->
+        <div class="control-group">
+          <label>Keyboard Type</label>
+          <div class="control-options" id="keyboardTypeOptions">
+            <div class="control-option active" data-value="default">Default</div>
+            <div class="control-option" data-value="email">Email</div>
+            <div class="control-option" data-value="number">Number</div>
+            <div class="control-option" data-value="url">URL</div>
+          </div>
+        </div>
+        <!-- Auto-correction -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Auto-correction</span>
+            <div class="toggle-switch on" id="toggleAutoCorrection"></div>
+          </div>
+        </div>
+        <!-- Input Validation -->
+        <div class="control-group">
+          <label>Input Validation</label>
+          <div class="control-options" id="validationOptions">
+            <div class="control-option active" data-value="none">None</div>
+            <div class="control-option" data-value="inline">Inline</div>
+            <div class="control-option" data-value="onSubmit">On Submit</div>
+          </div>
+        </div>
+        <!-- Placeholder Style -->
+        <div class="control-group">
+          <label>Placeholder Style</label>
+          <div class="control-options" id="placeholderOptions">
+            <div class="control-option active" data-value="default">Default</div>
+            <div class="control-option" data-value="floating">Floating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  keyboardType: 'default',
+  autoCorrection: true,
+  validation: 'none',
+  placeholderStyle: 'default'
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'keyboardTypeOptions') state.keyboardType = opt.dataset.value;
+      if (group.id === 'validationOptions') state.validation = opt.dataset.value;
+      if (group.id === 'placeholderOptions') state.placeholderStyle = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggle ───
+document.getElementById('toggleAutoCorrection').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.autoCorrection = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+// Store original screen content
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="screen-nav-title">Sign Up</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Name" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Email" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Phone Number" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Address Line 1" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Address Line 2" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="City" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Zip Code" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="ios-form-group">' +
+      '<div class="ios-form-field">' +
+        '<input type="text" class="ios-text-field" placeholder="Notes" style="border-color:var(--ios-gray4)" disabled>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div style="text-align:center;padding:8px 0 4px">' +
+    '<span style="font-size:11px;color:var(--ios-red);font-family:-apple-system,sans-serif;font-weight:600">' +
+      'No labels, no validation, generic keyboard, unnecessary fields' +
+    '</span>' +
+  '</div>' +
+
+  '<div style="height:12px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').textContent = '\u26A0\uFE0F HIG \uC704\uBC18: \uC774 \uD328\uD134\uC740 \uAD8C\uC7A5\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4';
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  var nameField = document.getElementById('inputName');
+  var emailField = document.getElementById('inputEmail');
+  var phoneField = document.getElementById('inputPhone');
+  var notesField = document.getElementById('inputNotes');
+
+  if (!nameField) return;
+
+  // --- Keyboard indicator ---
+  updateKeyboard();
+
+  // --- Placeholder Style ---
+  updatePlaceholderStyle();
+
+  // --- Validation ---
+  updateValidation();
+
+  // --- Code Preview ---
+  updateCode();
+}
+
+function updateKeyboard() {
+  var label = document.getElementById('keyboardLabel');
+  var keys = [];
+  var row1, row2, row3Bottom;
+
+  switch(state.keyboardType) {
+    case 'email':
+      label.textContent = 'Email Keyboard';
+      row1 = ['Q','W','E','R','T','Y','U','I','O','P'];
+      row2 = ['A','S','D','F','G','H','J','K','L'];
+      row3Bottom = ['Z','X','C','V','B','N','M'];
+      document.getElementById('kbToggle').textContent = '123';
+      document.getElementById('kbAction').textContent = 'go';
+      break;
+    case 'number':
+      label.textContent = 'Number Pad';
+      row1 = ['1','2','3','4','5','6','7','8','9','0'];
+      row2 = ['-','/',':',';','(',')','$','&','@'];
+      row3Bottom = ['.',',','?','!','\'','"','#'];
+      document.getElementById('kbToggle').textContent = 'ABC';
+      document.getElementById('kbAction').textContent = 'done';
+      break;
+    case 'url':
+      label.textContent = 'URL Keyboard';
+      row1 = ['Q','W','E','R','T','Y','U','I','O','P'];
+      row2 = ['A','S','D','F','G','H','J','K','L'];
+      row3Bottom = ['Z','X','C','V','B','N','M'];
+      document.getElementById('kbToggle').textContent = '.com';
+      document.getElementById('kbAction').textContent = 'go';
+      break;
+    default:
+      label.textContent = 'Default Keyboard';
+      row1 = ['Q','W','E','R','T','Y','U','I','O','P'];
+      row2 = ['A','S','D','F','G','H','J','K','L'];
+      row3Bottom = ['Z','X','C','V','B','N','M'];
+      document.getElementById('kbToggle').textContent = '123';
+      document.getElementById('kbAction').textContent = 'return';
+      break;
+  }
+
+  for (var i = 0; i < row1.length; i++) {
+    var el = document.getElementById('kbKey' + (i + 1));
+    if (el) el.textContent = row1[i];
+  }
+  for (var i = 0; i < row2.length; i++) {
+    var el = document.getElementById('kbKey' + (i + 11));
+    if (el) el.textContent = row2[i];
+  }
+  for (var i = 0; i < row3Bottom.length; i++) {
+    var el = document.getElementById('kbKey' + (i + 20));
+    if (el) el.textContent = row3Bottom[i];
+  }
+}
+
+function updatePlaceholderStyle() {
+  var fields = [
+    { id: 'Name', wrap: 'wrapName', input: 'inputName', placeholder: 'Enter your name', value: 'John Appleseed' },
+    { id: 'Email', wrap: 'wrapEmail', input: 'inputEmail', placeholder: 'email@example.com', value: 'john@apple.com' },
+    { id: 'Phone', wrap: 'wrapPhone', input: 'inputPhone', placeholder: '010-0000-0000', value: '010-1234-5678' },
+    { id: 'Notes', wrap: 'wrapNotes', input: 'inputNotes', placeholder: 'Add notes here...', value: '' }
+  ];
+
+  fields.forEach(function(f) {
+    var label = document.getElementById('label' + f.id);
+    var wrap = document.getElementById(f.wrap);
+    var input = document.getElementById(f.input);
+    if (!label || !wrap || !input) return;
+
+    if (state.placeholderStyle === 'floating') {
+      label.style.display = 'none';
+      var isTextarea = input.tagName === 'TEXTAREA';
+      if (isTextarea) {
+        wrap.innerHTML = '<div class="floating-label-wrap">' +
+          '<textarea class="ios-textarea" id="' + f.input + '" placeholder=" " style="padding-top:22px;padding-bottom:6px">' + (f.value || '') + '</textarea>' +
+          '<span class="float-label' + (f.value ? ' up' : '') + '">' + f.placeholder + '</span>' +
+          '</div>';
+      } else {
+        wrap.innerHTML = '<div class="floating-label-wrap">' +
+          '<input type="text" class="ios-text-field" id="' + f.input + '" placeholder=" " value="' + f.value + '">' +
+          '<span class="float-label' + (f.value ? ' up' : '') + '">' + f.placeholder + '</span>' +
+          '</div>';
+      }
+
+      // Re-attach floating events
+      var newInput = document.getElementById(f.input);
+      if (newInput) {
+        newInput.addEventListener('focus', function() {
+          var fl = this.parentElement.querySelector('.float-label');
+          if (fl) fl.classList.add('up');
+        });
+        newInput.addEventListener('blur', function() {
+          var fl = this.parentElement.querySelector('.float-label');
+          if (fl && !this.value) fl.classList.remove('up');
+        });
+      }
+    } else {
+      label.style.display = 'block';
+      var isTextarea = f.id === 'Notes';
+      if (isTextarea) {
+        wrap.innerHTML = '<textarea class="ios-textarea" id="' + f.input + '" placeholder="' + f.placeholder + '">' + (f.value || '') + '</textarea>';
+      } else {
+        wrap.innerHTML = '<input type="text" class="ios-text-field" id="' + f.input + '" placeholder="' + f.placeholder + '" value="' + f.value + '">';
+      }
+    }
+  });
+
+  // Re-apply validation after placeholder style change
+  updateValidation();
+}
+
+function updateValidation() {
+  var validName = document.getElementById('validName');
+  var validEmail = document.getElementById('validEmail');
+  var validPhone = document.getElementById('validPhone');
+  var errorName = document.getElementById('errorName');
+  var errorEmail = document.getElementById('errorEmail');
+  var errorPhone = document.getElementById('errorPhone');
+  var inputName = document.getElementById('inputName');
+  var inputEmail = document.getElementById('inputEmail');
+  var inputPhone = document.getElementById('inputPhone');
+
+  if (!validName || !inputName) return;
+
+  // Reset all
+  validName.className = 'field-validation';
+  validName.textContent = '';
+  validEmail.className = 'field-validation';
+  validEmail.textContent = '';
+  validPhone.className = 'field-validation';
+  validPhone.textContent = '';
+  errorName.className = 'field-error-msg';
+  errorEmail.className = 'field-error-msg';
+  errorPhone.className = 'field-error-msg';
+  inputName.className = inputName.className.replace(/ valid| invalid/g, '');
+  inputEmail.className = inputEmail.className.replace(/ valid| invalid/g, '');
+  inputPhone.className = inputPhone.className.replace(/ valid| invalid/g, '');
+
+  if (state.validation === 'inline') {
+    // Name: has value = valid
+    if (inputName.value.trim()) {
+      validName.textContent = '\u2705';
+      validName.className = 'field-validation show';
+      inputName.classList.add('valid');
+    } else {
+      validName.textContent = '\u274C';
+      validName.className = 'field-validation show';
+      inputName.classList.add('invalid');
+      errorName.className = 'field-error-msg show';
+    }
+
+    // Email: check @ format
+    var emailVal = inputEmail.value.trim();
+    if (emailVal && emailVal.indexOf('@') > 0 && emailVal.indexOf('.') > emailVal.indexOf('@')) {
+      validEmail.textContent = '\u2705';
+      validEmail.className = 'field-validation show';
+      inputEmail.classList.add('valid');
+    } else {
+      validEmail.textContent = '\u274C';
+      validEmail.className = 'field-validation show';
+      inputEmail.classList.add('invalid');
+      errorEmail.className = 'field-error-msg show';
+    }
+
+    // Phone: check number-like
+    var phoneVal = inputPhone.value.trim();
+    if (phoneVal && phoneVal.replace(/[-\s]/g, '').length >= 10) {
+      validPhone.textContent = '\u2705';
+      validPhone.className = 'field-validation show';
+      inputPhone.classList.add('valid');
+    } else {
+      validPhone.textContent = '\u274C';
+      validPhone.className = 'field-validation show';
+      inputPhone.classList.add('invalid');
+      errorPhone.className = 'field-error-msg show';
+    }
+  } else if (state.validation === 'onSubmit') {
+    // Show a subtle "submit to validate" indicator
+    validName.textContent = '\u2014';
+    validName.className = 'field-validation show';
+    validName.style.color = 'var(--ios-gray)';
+    validEmail.textContent = '\u2014';
+    validEmail.className = 'field-validation show';
+    validEmail.style.color = 'var(--ios-gray)';
+    validPhone.textContent = '\u2014';
+    validPhone.className = 'field-validation show';
+    validPhone.style.color = 'var(--ios-gray)';
+  } else {
+    // Reset colors from onSubmit state
+    validName.style.color = '';
+    validEmail.style.color = '';
+    validPhone.style.color = '';
+  }
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var keyboardMap = {
+    'default': '',
+    'email': '\n        .<span class="func">keyboardType</span>(.<span class="prop">emailAddress</span>)',
+    'number': '\n        .<span class="func">keyboardType</span>(.<span class="prop">numberPad</span>)',
+    'url': '\n        .<span class="func">keyboardType</span>(.<span class="prop">URL</span>)'
+  };
+
+  var contentTypeForKeyboard = {
+    'default': '',
+    'email': '\n        .<span class="func">textContentType</span>(.<span class="prop">emailAddress</span>)',
+    'number': '\n        .<span class="func">textContentType</span>(.<span class="prop">telephoneNumber</span>)',
+    'url': '\n        .<span class="func">textContentType</span>(.<span class="prop">URL</span>)'
+  };
+
+  var autoCorrectLine = '';
+  if (!state.autoCorrection) {
+    autoCorrectLine = '\n        .<span class="func">autocorrectionDisabled</span>(<span class="prop">true</span>)';
+  }
+
+  var code = '<span class="kw">struct</span> <span class="type">ProfileForm</span>: <span class="type">View</span> {\n';
+  code += '    <span class="kw">@State private var</span> name = <span class="str">""</span>\n';
+  code += '    <span class="kw">@State private var</span> email = <span class="str">""</span>\n';
+  code += '    <span class="kw">@State private var</span> phone = <span class="str">""</span>\n';
+  code += '    <span class="kw">@State private var</span> notes = <span class="str">""</span>\n\n';
+  code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">Form</span> {\n';
+
+  // Name field
+  code += '            <span class="type">TextField</span>(<span class="str">"Name"</span>, text: <span class="prop">$name</span>)\n';
+  code += '                .<span class="func">textContentType</span>(.<span class="prop">name</span>)';
+  code += autoCorrectLine;
+  code += '\n';
+
+  // Email field
+  code += '            <span class="type">TextField</span>(<span class="str">"Email"</span>, text: <span class="prop">$email</span>)';
+  if (state.keyboardType === 'email') {
+    code += keyboardMap['email'];
+    code += contentTypeForKeyboard['email'];
+  } else {
+    code += keyboardMap[state.keyboardType];
+    if (contentTypeForKeyboard[state.keyboardType]) {
+      code += contentTypeForKeyboard[state.keyboardType];
+    }
+  }
+  code += autoCorrectLine;
+  code += '\n';
+
+  // Phone field
+  code += '            <span class="type">TextField</span>(<span class="str">"Phone"</span>, text: <span class="prop">$phone</span>)\n';
+  code += '                .<span class="func">keyboardType</span>(.<span class="prop">phonePad</span>)\n';
+  code += '                .<span class="func">textContentType</span>(.<span class="prop">telephoneNumber</span>)';
+  code += '\n';
+
+  // Notes field
+  if (state.placeholderStyle === 'floating') {
+    code += '            <span class="type">TextField</span>(<span class="str">"Notes"</span>, text: <span class="prop">$notes</span>, prompt: <span class="type">Text</span>(<span class="str">"Add notes..."</span>))';
+  } else {
+    code += '            <span class="type">TextField</span>(<span class="str">"Notes"</span>, text: <span class="prop">$notes</span>, axis: .<span class="prop">vertical</span>)';
+  }
+  code += autoCorrectLine;
+  code += '\n';
+
+  code += '        }\n';
+
+  // Validation modifier
+  if (state.validation === 'inline') {
+    code += '        .<span class="func">onChange</span>(of: email) { <span class="comment">_, newValue</span> <span class="kw">in</span>\n';
+    code += '            <span class="comment">// Inline validation</span>\n';
+    code += '            isEmailValid = newValue.<span class="func">contains</span>(<span class="str">"@"</span>)\n';
+    code += '        }\n';
+  } else if (state.validation === 'onSubmit') {
+    code += '        .<span class="func">onSubmit</span> {\n';
+    code += '            <span class="comment">// Validate all fields on submit</span>\n';
+    code += '            <span class="func">validateForm</span>()\n';
+    code += '        }\n';
+  }
+
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.keyboardType === 'default'; },
+    ko: '\uC774\uBA54\uC77C \uD544\uB4DC\uC5D0\uB294 \uC774\uBA54\uC77C \uD0A4\uBCF4\uB4DC \uD0C0\uC785\uC744 \uC0AC\uC6A9\uD558\uC138\uC694',
+    en: 'Use email keyboard type for email fields'
+  },
+  {
+    check: function() { return state.validation === 'none'; },
+    ko: '\uC785\uB825 \uAC80\uC99D\uC774 \uC5C6\uC73C\uBA74 \uC0AC\uC6A9\uC790\uAC00 \uC798\uBABB\uB41C \uB370\uC774\uD130\uB97C \uC81C\uCD9C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4',
+    en: 'Without input validation, users may submit incorrect data'
+  },
+  {
+    check: function() { return state.placeholderStyle === 'default' && state.validation === 'inline'; },
+    ko: '\uC778\uB77C\uC778 \uAC80\uC99D \uC2DC \uD50C\uB85C\uD305 \uB808\uC774\uBE14\uC744 \uC0AC\uC6A9\uD558\uBA74 \uC785\uB825 \uC911\uC5D0\uB3C4 \uD544\uB4DC\uBA85\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4',
+    en: 'Use floating labels with inline validation so field names remain visible during input'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">\u26A0\uFE0F</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '\u26A0\uFE0F ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">\u2705 HIG \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview for HIG checking
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial render
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

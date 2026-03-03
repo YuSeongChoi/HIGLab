@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offering Help — HIG Playground | HIG Lab</title>
+<meta name="description" content="도움말 제공의 다양한 방식과 타이밍을 체험해보세요. Tooltip, Coach Mark, TipKit, Help Button 등 iOS 도움말 패턴을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Help UI Elements ─── */
+
+/* iOS Navigation Bar */
+.ios-nav-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0 12px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.ios-nav-bar .nav-title{
+  font-size:17px;font-weight:600;color:#000;
+}
+.ios-nav-bar .nav-btn{
+  font-size:17px;font-weight:400;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.ios-nav-bar .help-btn{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(0,122,255,0.12);
+  color:var(--ios-blue);font-size:15px;font-weight:700;
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Target element (the thing help points to) */
+.help-target-area{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  gap:12px;width:100%;
+}
+.target-button{
+  padding:10px 24px;border-radius:12px;
+  background:var(--ios-blue);color:#fff;
+  font-size:15px;font-weight:600;
+  border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  position:relative;z-index:2;
+}
+.target-row{
+  display:flex;gap:12px;align-items:center;
+  width:100%;justify-content:center;
+}
+.target-icon-btn{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(0,122,255,0.1);
+  color:var(--ios-blue);font-size:20px;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:2;
+}
+.target-label{
+  font-size:14px;color:var(--text-2);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Tooltip Bubble */
+.tooltip-bubble{
+  position:absolute;z-index:5;
+  background:#333;color:#fff;
+  padding:8px 14px;border-radius:10px;
+  font-size:13px;font-weight:500;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  animation:tooltipFadeIn .3s ease;
+}
+.tooltip-bubble::after{
+  content:'';position:absolute;
+  width:10px;height:10px;
+  background:#333;
+  transform:rotate(45deg);
+}
+/* Arrow positions */
+.tooltip-bubble.pos-top{bottom:calc(100% + 12px);left:50%;transform:translateX(-50%)}
+.tooltip-bubble.pos-top::after{bottom:-5px;left:50%;margin-left:-5px}
+.tooltip-bubble.pos-bottom{top:calc(100% + 12px);left:50%;transform:translateX(-50%)}
+.tooltip-bubble.pos-bottom::after{top:-5px;left:50%;margin-left:-5px}
+.tooltip-bubble.pos-leading{right:calc(100% + 12px);top:50%;transform:translateY(-50%)}
+.tooltip-bubble.pos-leading::after{right:-5px;top:50%;margin-top:-5px}
+.tooltip-bubble.pos-trailing{left:calc(100% + 12px);top:50%;transform:translateY(-50%)}
+.tooltip-bubble.pos-trailing::after{left:-5px;top:50%;margin-top:-5px}
+
+@keyframes tooltipFadeIn{
+  from{opacity:0;transform:translateX(-50%) translateY(4px)}
+  to{opacity:1;transform:translateX(-50%) translateY(0)}
+}
+
+/* Coach Mark */
+.coach-mark-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.55);z-index:3;
+  border-radius:36px;
+  animation:coachFadeIn .3s ease;
+}
+@keyframes coachFadeIn{from{opacity:0}to{opacity:1}}
+.coach-spotlight{
+  position:absolute;z-index:4;
+  border:3px solid #fff;border-radius:16px;
+  box-shadow:0 0 0 3000px rgba(0,0,0,0.55);
+  animation:spotlightPulse 2s infinite;
+}
+@keyframes spotlightPulse{
+  0%,100%{box-shadow:0 0 0 3000px rgba(0,0,0,0.55)}
+  50%{box-shadow:0 0 0 3000px rgba(0,0,0,0.5)}
+}
+.coach-card{
+  position:absolute;z-index:5;
+  background:#fff;border-radius:14px;
+  padding:16px;width:260px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  animation:coachCardSlide .3s ease;
+}
+@keyframes coachCardSlide{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.coach-card .coach-title{
+  font-size:15px;font-weight:700;color:#000;margin-bottom:4px;
+}
+.coach-card .coach-desc{
+  font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:12px;
+}
+.coach-card .coach-action{
+  font-size:14px;font-weight:600;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.coach-card .coach-step{
+  font-size:11px;color:var(--ios-gray);margin-bottom:8px;
+}
+
+/* TipKit Inline */
+.tipkit-inline{
+  background:#fff;border-radius:14px;
+  padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.08);
+  border:1px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  position:relative;
+  width:100%;
+  animation:tipkitSlideIn .3s ease;
+}
+@keyframes tipkitSlideIn{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.tipkit-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(0,122,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.tipkit-content{flex:1;min-width:0}
+.tipkit-content .tip-title{
+  font-size:14px;font-weight:600;color:#000;margin-bottom:2px;
+}
+.tipkit-content .tip-desc{
+  font-size:12px;color:var(--text-2);line-height:1.4;margin-bottom:8px;
+}
+.tipkit-content .tip-actions{display:flex;gap:12px}
+.tipkit-content .tip-action{
+  font-size:13px;font-weight:600;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.tipkit-close{
+  position:absolute;top:8px;right:10px;
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(0,0,0,0.06);color:var(--ios-gray);
+  font-size:12px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Help Sheet Overlay */
+.help-sheet-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  background:#fff;border-radius:20px 20px 0 0;
+  z-index:15;
+  padding:20px 16px 40px;
+  box-shadow:0 -4px 30px rgba(0,0,0,0.15);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  animation:sheetSlideUp .3s ease;
+  max-height:70%;
+  overflow-y:auto;
+}
+@keyframes sheetSlideUp{
+  from{transform:translateY(100%)}
+  to{transform:translateY(0)}
+}
+.help-sheet-overlay .sheet-handle{
+  width:36px;height:5px;border-radius:3px;
+  background:var(--ios-gray4);
+  margin:0 auto 16px;
+}
+.help-sheet-overlay .sheet-title{
+  font-size:20px;font-weight:700;color:#000;margin-bottom:4px;
+}
+.help-sheet-overlay .sheet-subtitle{
+  font-size:13px;color:var(--text-2);margin-bottom:16px;
+}
+.help-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--ios-separator);
+}
+.help-item:last-child{border-bottom:none}
+.help-item-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(0,122,255,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.help-item-text .help-item-title{
+  font-size:14px;font-weight:600;color:#000;margin-bottom:2px;
+}
+.help-item-text .help-item-desc{
+  font-size:12px;color:var(--text-2);line-height:1.4;
+}
+
+/* Dismiss button for tooltip */
+.dismiss-x{
+  display:inline-block;margin-left:8px;
+  font-size:11px;opacity:0.7;cursor:pointer;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Offering Help
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Offering Help</h1>
+<p class="page-desc">도움말 제공의 다양한 방식과 타이밍을 체험해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="ios-nav-bar" id="navBar">
+          <span class="nav-btn" style="visibility:hidden">Back</span>
+          <span class="nav-title">My App</span>
+          <button class="help-btn" id="helpNavBtn" style="visibility:hidden">?</button>
+        </div>
+
+        <!-- Tooltip Mode -->
+        <div id="modeTooltip">
+          <div class="screen-section">
+            <div class="screen-section-title">Feature Discovery</div>
+            <div class="screen-card">
+              <div class="help-target-area" id="tooltipTarget">
+                <div class="target-row">
+                  <button class="target-icon-btn" id="tooltipAnchor">&#9997;</button>
+                  <span class="target-label">Compose</span>
+                </div>
+                <div class="tooltip-bubble pos-top" id="tooltipBubble">
+                  Tap to create a new message<span class="dismiss-x" id="tooltipDismiss">&times;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="screen-section">
+            <div class="screen-section-title">Another Feature</div>
+            <div class="screen-card">
+              <div class="help-target-area">
+                <button class="target-button">Share</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coach Mark Mode -->
+        <div id="modeCoachMark" style="display:none">
+          <div class="screen-section">
+            <div class="screen-section-title">Guided Tour</div>
+            <div class="screen-card" id="coachTargetCard" style="position:relative;min-height:200px;justify-content:flex-start;padding-top:24px">
+              <div class="target-row" id="coachTargetRow">
+                <button class="target-icon-btn" id="coachAnchor">&#128269;</button>
+                <span class="target-label">Search</span>
+              </div>
+              <div style="margin-top:16px;width:100%">
+                <div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:80%;margin-bottom:8px"></div>
+                <div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:60%;margin-bottom:8px"></div>
+                <div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:70%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="screen-section">
+            <div class="screen-section-title">Content</div>
+            <div class="screen-card" style="opacity:0.4">
+              <div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:90%;margin-bottom:8px"></div>
+              <div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:75%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TipKit Mode -->
+        <div id="modeTipKit" style="display:none">
+          <div class="screen-section">
+            <div class="screen-section-title">Inline Tips</div>
+            <div class="tipkit-inline" id="tipkitCard">
+              <div class="tipkit-icon">&#128279;</div>
+              <div class="tipkit-content">
+                <div class="tip-title">Share with Friends</div>
+                <div class="tip-desc">Tap the share button to send this item to your contacts via AirDrop, Messages, or Mail.</div>
+                <div class="tip-actions">
+                  <button class="tip-action">Learn More</button>
+                </div>
+              </div>
+              <button class="tipkit-close" id="tipkitClose">&times;</button>
+            </div>
+          </div>
+          <div class="screen-section">
+            <div class="screen-section-title">Your Content</div>
+            <div class="screen-card">
+              <div class="help-target-area">
+                <button class="target-button">Share</button>
+              </div>
+            </div>
+          </div>
+          <div class="screen-section">
+            <div class="screen-section-title">Recent Items</div>
+            <div class="screen-card" style="gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;width:100%">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--ios-gray5);flex-shrink:0"></div>
+                <div style="flex:1"><div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:70%;margin-bottom:6px"></div><div style="height:8px;background:var(--ios-gray6);border-radius:4px;width:50%"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;width:100%">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--ios-gray5);flex-shrink:0"></div>
+                <div style="flex:1"><div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:60%;margin-bottom:6px"></div><div style="height:8px;background:var(--ios-gray6);border-radius:4px;width:40%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Help Button Mode -->
+        <div id="modeHelpButton" style="display:none">
+          <div class="screen-section">
+            <div class="screen-section-title">Settings</div>
+            <div class="screen-card" style="gap:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 0;border-bottom:1px solid var(--ios-separator)">
+                <span style="font-size:15px;font-family:-apple-system,sans-serif">Notifications</span>
+                <span style="font-size:13px;color:var(--ios-gray);font-family:-apple-system,sans-serif">On &rsaquo;</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 0;border-bottom:1px solid var(--ios-separator)">
+                <span style="font-size:15px;font-family:-apple-system,sans-serif">Privacy</span>
+                <span style="font-size:13px;color:var(--ios-gray);font-family:-apple-system,sans-serif">&rsaquo;</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 0">
+                <span style="font-size:15px;font-family:-apple-system,sans-serif">Storage</span>
+                <span style="font-size:13px;color:var(--ios-gray);font-family:-apple-system,sans-serif">12.4 GB &rsaquo;</span>
+              </div>
+            </div>
+          </div>
+          <div class="screen-section">
+            <div class="screen-section-title">Account</div>
+            <div class="screen-card" style="gap:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 0;border-bottom:1px solid var(--ios-separator)">
+                <span style="font-size:15px;font-family:-apple-system,sans-serif">Profile</span>
+                <span style="font-size:13px;color:var(--ios-gray);font-family:-apple-system,sans-serif">&rsaquo;</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 0">
+                <span style="font-size:15px;font-family:-apple-system,sans-serif">Sign Out</span>
+                <span style="font-size:13px;color:var(--ios-red);font-family:-apple-system,sans-serif"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- Coach Mark Card (absolute positioned over screen) -->
+      <div class="coach-card" id="coachCard" style="display:none">
+        <div class="coach-step">Step 1 of 3</div>
+        <div class="coach-title">Search Anything</div>
+        <div class="coach-desc">Use the search button to quickly find items, contacts, and settings across the app.</div>
+        <button class="coach-action">Next</button>
+      </div>
+
+      <!-- Help Sheet (for helpButton mode) -->
+      <div class="help-sheet-overlay" id="helpSheet" style="display:none">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Help</div>
+        <div class="sheet-subtitle">How can we help you today?</div>
+        <div class="help-item">
+          <div class="help-item-icon">&#128276;</div>
+          <div class="help-item-text">
+            <div class="help-item-title">Managing Notifications</div>
+            <div class="help-item-desc">Learn how to customize which notifications you receive and when.</div>
+          </div>
+        </div>
+        <div class="help-item">
+          <div class="help-item-icon">&#128274;</div>
+          <div class="help-item-text">
+            <div class="help-item-title">Privacy Settings</div>
+            <div class="help-item-desc">Control what data is shared and manage your privacy preferences.</div>
+          </div>
+        </div>
+        <div class="help-item">
+          <div class="help-item-icon">&#128190;</div>
+          <div class="help-item-text">
+            <div class="help-item-title">Storage Management</div>
+            <div class="help-item-desc">Free up space by managing cached data and downloaded files.</div>
+          </div>
+        </div>
+        <div class="help-item">
+          <div class="help-item-icon">&#128100;</div>
+          <div class="help-item-text">
+            <div class="help-item-title">Account & Profile</div>
+            <div class="help-item-desc">Update your profile information and manage your account settings.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>관련 기능 <strong>근처에</strong> 맥락에 맞는 도움말을 표시하세요</li>
+              <li>사용자가 <strong>쉽게 닫을 수 있도록</strong> 해주세요</li>
+              <li>적절한 <strong>타이밍</strong>에 팁을 보여주세요</li>
+              <li>점진적 공개를 위해 <strong>TipKit</strong>을 활용하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>매 화면 실행마다 도움말을 표시하지 마세요</li>
+              <li>도움말 오버레이로 사용자 인터랙션을 차단하지 마세요</li>
+              <li>도움말 텍스트에 전문 용어를 사용하지 마세요</li>
+              <li>닫은 후에도 같은 팁을 반복 표시하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iOS offers multiple ways to provide contextual help: <strong>Tooltips</strong> for brief hints,
+          <strong>Coach Marks</strong> for guided tours,
+          <strong>TipKit</strong> for smart progressive disclosure, and
+          <strong>Help Buttons</strong> for on-demand assistance.
+          Choose the approach that best matches the complexity of the information.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/offering-help" class="guideline-link" target="_blank">
+          Apple HIG: Offering Help &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Help Type -->
+        <div class="control-group">
+          <label>Help Type</label>
+          <div class="control-options" id="helpTypeOptions">
+            <div class="control-option active" data-value="tooltip">Tooltip</div>
+            <div class="control-option" data-value="coachMark">Coach Mark</div>
+            <div class="control-option" data-value="tipKit">TipKit</div>
+            <div class="control-option" data-value="helpButton">Help Button</div>
+          </div>
+        </div>
+        <!-- Trigger -->
+        <div class="control-group">
+          <label>Trigger</label>
+          <div class="control-options" id="triggerOptions">
+            <div class="control-option active" data-value="automatic">Automatic</div>
+            <div class="control-option" data-value="onTap">On Tap</div>
+            <div class="control-option" data-value="contextual">Contextual</div>
+          </div>
+        </div>
+        <!-- Dismissible Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Dismissible</span>
+            <div class="toggle-switch on" id="toggleDismissible"></div>
+          </div>
+        </div>
+        <!-- Position -->
+        <div class="control-group">
+          <label>Position</label>
+          <div class="control-options" id="positionOptions">
+            <div class="control-option active" data-value="top">Top</div>
+            <div class="control-option" data-value="bottom">Bottom</div>
+            <div class="control-option" data-value="leading">Leading</div>
+            <div class="control-option" data-value="trailing">Trailing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  helpType: 'tooltip',
+  trigger: 'automatic',
+  dismissible: true,
+  position: 'top'
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'helpTypeOptions') state.helpType = opt.dataset.value;
+      if (group.id === 'triggerOptions') state.trigger = opt.dataset.value;
+      if (group.id === 'positionOptions') state.position = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggle ───
+document.getElementById('toggleDismissible').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.dismissible = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="ios-nav-bar"><span class="nav-btn" style="visibility:hidden">Back</span><span class="nav-title">My App</span><span style="visibility:hidden">?</span></div>'
+  + '<div class="screen-section">'
+  + '  <div class="screen-section-title" style="color:#FF3B30">Multiple Overlapping Tooltips</div>'
+  + '  <div class="screen-card" style="position:relative;min-height:160px">'
+  + '    <div class="target-row">'
+  + '      <button class="target-icon-btn">&#9997;</button>'
+  + '      <span class="target-label">Compose</span>'
+  + '    </div>'
+  + '    <div style="position:absolute;top:8px;left:20px;background:#333;color:#fff;padding:6px 10px;border-radius:8px;font-size:11px;font-family:-apple-system,sans-serif;z-index:3;white-space:nowrap">Tap to write</div>'
+  + '    <div style="position:absolute;top:8px;right:20px;background:#333;color:#fff;padding:6px 10px;border-radius:8px;font-size:11px;font-family:-apple-system,sans-serif;z-index:3;white-space:nowrap">New message</div>'
+  + '    <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:6px 10px;border-radius:8px;font-size:11px;font-family:-apple-system,sans-serif;z-index:3;white-space:nowrap">Click here!</div>'
+  + '  </div>'
+  + '</div>'
+  + '<div class="screen-section">'
+  + '  <div class="screen-section-title" style="color:#FF3B30">Undismissible Modal Help</div>'
+  + '  <div class="screen-card" style="position:relative;min-height:120px;overflow:hidden">'
+  + '    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2;display:flex;align-items:center;justify-content:center;border-radius:14px">'
+  + '      <div style="background:#fff;border-radius:12px;padding:16px;width:85%;text-align:center;font-family:-apple-system,sans-serif">'
+  + '        <div style="font-size:14px;font-weight:700;margin-bottom:4px">Welcome!</div>'
+  + '        <div style="font-size:12px;color:#6e6e73;line-height:1.4">This is an important message you cannot dismiss. Please read all the instructions carefully before proceeding with the application workflow.</div>'
+  + '      </div>'
+  + '    </div>'
+  + '    <div style="opacity:0.3;padding:10px;font-size:13px;color:var(--text-2)">Content hidden behind modal...</div>'
+  + '  </div>'
+  + '</div>'
+  + '<div class="screen-section">'
+  + '  <div class="screen-section-title" style="color:#FF3B30">Jargon-Filled Tooltip</div>'
+  + '  <div class="screen-card">'
+  + '    <div class="help-target-area" style="position:relative">'
+  + '      <button class="target-button">Sync</button>'
+  + '      <div style="position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 12px;border-radius:8px;font-size:11px;font-family:-apple-system,sans-serif;z-index:3;width:220px;text-align:center;line-height:1.3">Initiates a bi-directional delta sync via WebSocket protocol with conflict resolution using CRDT merge strategy</div>'
+  + '    </div>'
+  + '  </div>'
+  + '</div>'
+  + '<div class="screen-section">'
+  + '  <div class="screen-section-title" style="color:#FF3B30">Help Blocking Content</div>'
+  + '  <div class="screen-card" style="position:relative;min-height:100px">'
+  + '    <div style="width:100%"><div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:80%;margin-bottom:8px"></div><div style="height:10px;background:var(--ios-gray5);border-radius:5px;width:60%"></div></div>'
+  + '    <div style="position:absolute;top:10px;left:10px;right:10px;background:rgba(0,122,255,0.95);color:#fff;padding:12px;border-radius:10px;font-size:12px;font-family:-apple-system,sans-serif;z-index:2;text-align:center;line-height:1.4">'
+  + '      <strong>Did you know?</strong><br>This helpful tip is covering all your content and there is no way to close it. Enjoy reading!'
+  + '    </div>'
+  + '  </div>'
+  + '</div>'
+  + '<div style="height:20px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  var w = document.getElementById('higWarning');
+  w.textContent = 'HIG: 도움말은 사용자 경험을 방해하지 않아야 합니다';
+  w.classList.add('show');
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  // Hide all modes
+  var modes = ['modeTooltip', 'modeCoachMark', 'modeTipKit', 'modeHelpButton'];
+  modes.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  // Hide overlays
+  var coachCard = document.getElementById('coachCard');
+  var helpSheet = document.getElementById('helpSheet');
+  var helpNavBtn = document.getElementById('helpNavBtn');
+  if (coachCard) coachCard.style.display = 'none';
+  if (helpSheet) helpSheet.style.display = 'none';
+  if (helpNavBtn) helpNavBtn.style.visibility = 'hidden';
+
+  // Show active mode
+  switch (state.helpType) {
+    case 'tooltip':
+      showTooltipMode();
+      break;
+    case 'coachMark':
+      showCoachMarkMode();
+      break;
+    case 'tipKit':
+      showTipKitMode();
+      break;
+    case 'helpButton':
+      showHelpButtonMode();
+      break;
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+function showTooltipMode() {
+  var mode = document.getElementById('modeTooltip');
+  if (!mode) return;
+  mode.style.display = 'block';
+
+  var bubble = document.getElementById('tooltipBubble');
+  if (!bubble) return;
+
+  // Update position
+  bubble.className = 'tooltip-bubble pos-' + state.position;
+
+  // Update dismissible
+  var dismissX = document.getElementById('tooltipDismiss');
+  if (dismissX) {
+    dismissX.style.display = state.dismissible ? 'inline' : 'none';
+  }
+
+  // Trigger visual
+  if (state.trigger === 'onTap') {
+    bubble.style.opacity = '0.5';
+    bubble.title = 'Tap the icon to reveal';
+  } else {
+    bubble.style.opacity = '1';
+    bubble.title = '';
+  }
+}
+
+function showCoachMarkMode() {
+  var mode = document.getElementById('modeCoachMark');
+  if (!mode) return;
+  mode.style.display = 'block';
+
+  var coachCard = document.getElementById('coachCard');
+  if (!coachCard) return;
+  coachCard.style.display = 'block';
+
+  // Position the coach card based on state.position
+  coachCard.style.left = '16px';
+  coachCard.style.right = 'auto';
+  coachCard.style.top = 'auto';
+  coachCard.style.bottom = 'auto';
+  coachCard.style.width = '260px';
+
+  switch (state.position) {
+    case 'top':
+      coachCard.style.top = '120px';
+      coachCard.style.left = '50%';
+      coachCard.style.transform = 'translateX(-50%)';
+      break;
+    case 'bottom':
+      coachCard.style.bottom = '140px';
+      coachCard.style.left = '50%';
+      coachCard.style.transform = 'translateX(-50%)';
+      break;
+    case 'leading':
+      coachCard.style.top = '200px';
+      coachCard.style.left = '16px';
+      coachCard.style.transform = 'none';
+      break;
+    case 'trailing':
+      coachCard.style.top = '200px';
+      coachCard.style.right = '16px';
+      coachCard.style.left = 'auto';
+      coachCard.style.transform = 'none';
+      break;
+  }
+}
+
+function showTipKitMode() {
+  var mode = document.getElementById('modeTipKit');
+  if (!mode) return;
+  mode.style.display = 'block';
+
+  var tipkitCard = document.getElementById('tipkitCard');
+  if (!tipkitCard) return;
+
+  // Show/hide close button based on dismissible
+  var closeBtn = document.getElementById('tipkitClose');
+  if (closeBtn) {
+    closeBtn.style.display = state.dismissible ? 'flex' : 'none';
+  }
+}
+
+function showHelpButtonMode() {
+  var mode = document.getElementById('modeHelpButton');
+  if (!mode) return;
+  mode.style.display = 'block';
+
+  var helpNavBtn = document.getElementById('helpNavBtn');
+  if (helpNavBtn) helpNavBtn.style.visibility = 'visible';
+
+  var helpSheet = document.getElementById('helpSheet');
+  if (helpSheet) {
+    // Show the sheet automatically for demo
+    if (state.trigger === 'automatic') {
+      helpSheet.style.display = 'block';
+    } else {
+      helpSheet.style.display = 'none';
+    }
+  }
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+  switch (state.helpType) {
+    case 'tooltip':
+      code = '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Compose"</span>) { }\n';
+      code += '            .<span class="func">popoverTip</span>(<span class="type">ComposeTip</span>()';
+      if (state.position !== 'top') {
+        var edgeMap = { bottom: '.bottom', leading: '.leading', trailing: '.trailing' };
+        code += ',\n                arrowEdge: <span class="prop">' + edgeMap[state.position] + '</span>';
+      }
+      code += ')\n';
+      code += '    }\n';
+      code += '}\n\n';
+      code += '<span class="kw">struct</span> <span class="type">ComposeTip</span>: <span class="type">Tip</span> {\n';
+      code += '    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">Text</span> {\n';
+      code += '        <span class="type">Text</span>(<span class="str">"Create New Message"</span>)\n';
+      code += '    }\n';
+      code += '    <span class="kw">var</span> <span class="prop">message</span>: <span class="type">Text</span>? {\n';
+      code += '        <span class="type">Text</span>(<span class="str">"Tap to create a new message"</span>)\n';
+      code += '    }\n';
+      code += '}';
+      break;
+
+    case 'coachMark':
+      code = '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> showCoachMark = <span class="prop">true</span>\n\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Search"</span>) { }\n';
+      code += '            .<span class="func">overlay</span> {\n';
+      code += '                <span class="kw">if</span> showCoachMark {\n';
+      code += '                    <span class="type">CoachMarkView</span>(\n';
+      code += '                        title: <span class="str">"Search Anything"</span>,\n';
+      code += '                        message: <span class="str">"Find items quickly"</span>,\n';
+      code += '                        onDismiss: {\n';
+      code += '                            showCoachMark = <span class="prop">false</span>\n';
+      code += '                        }\n';
+      code += '                    )\n';
+      code += '                }\n';
+      code += '            }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+
+    case 'tipKit':
+      code = '<span class="kw">import</span> <span class="type">TipKit</span>\n\n';
+      code += '<span class="kw">struct</span> <span class="type">ShareTip</span>: <span class="type">Tip</span> {\n';
+      code += '    <span class="kw">var</span> <span class="prop">title</span>: <span class="type">Text</span> {\n';
+      code += '        <span class="type">Text</span>(<span class="str">"Share with Friends"</span>)\n';
+      code += '    }\n';
+      code += '    <span class="kw">var</span> <span class="prop">message</span>: <span class="type">Text</span>? {\n';
+      code += '        <span class="type">Text</span>(<span class="str">"Tap to share this item"</span>)\n';
+      code += '    }\n';
+      code += '    <span class="kw">var</span> <span class="prop">image</span>: <span class="type">Image</span>? {\n';
+      code += '        <span class="type">Image</span>(systemName: <span class="str">"link"</span>)\n';
+      code += '    }\n';
+      if (state.trigger === 'contextual') {
+        code += '\n    <span class="kw">var</span> <span class="prop">rules</span>: [<span class="type">Rule</span>] {\n';
+        code += '        <span class="comment">// Show after user visits 3 times</span>\n';
+        code += '        #<span class="type">Rule</span>(<span class="prop">Self</span>.$viewCount) {\n';
+        code += '            $0 >= <span class="prop">3</span>\n';
+        code += '        }\n';
+        code += '    }\n';
+      }
+      code += '}\n\n';
+      code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">var</span> <span class="prop">shareTip</span> = <span class="type">ShareTip</span>()\n\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">VStack</span> {\n';
+      code += '            <span class="type">TipView</span>(shareTip)\n';
+      code += '            <span class="type">Button</span>(<span class="str">"Share"</span>) { }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+
+    case 'helpButton':
+      code = '<span class="kw">struct</span> <span class="type">SettingsView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> showHelp = <span class="prop">false</span>\n\n';
+      code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">NavigationStack</span> {\n';
+      code += '            <span class="type">List</span> {\n';
+      code += '                <span class="comment">// settings content</span>\n';
+      code += '            }\n';
+      code += '            .<span class="func">toolbar</span> {\n';
+      code += '                <span class="type">ToolbarItem</span>(placement: <span class="prop">.navigationBarTrailing</span>) {\n';
+      code += '                    <span class="type">Button</span> {\n';
+      code += '                        showHelp = <span class="prop">true</span>\n';
+      code += '                    } label: {\n';
+      code += '                        <span class="type">Image</span>(systemName: <span class="str">"questionmark.circle"</span>)\n';
+      code += '                    }\n';
+      code += '                }\n';
+      code += '            }\n';
+      code += '            .<span class="func">sheet</span>(isPresented: <span class="prop">$showHelp</span>) {\n';
+      code += '                <span class="type">HelpView</span>()\n';
+      code += '            }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.trigger === 'automatic' && !state.dismissible; },
+    ko: '자동 트리거 도움말은 반드시 닫기 가능해야 합니다',
+    en: 'Automatic trigger help must be dismissible'
+  },
+  {
+    check: function() { return state.helpType === 'coachMark' && state.trigger === 'contextual'; },
+    ko: 'Coach Mark는 자동 또는 첫 사용 시 표시하는 것이 적절합니다',
+    en: 'Coach Marks should appear automatically or on first use'
+  },
+  {
+    check: function() { return state.helpType === 'helpButton' && state.position === 'bottom'; },
+    ko: '도움말 버튼은 상단 네비게이션 바에 위치해야 합니다',
+    en: 'Help button should be in the top navigation bar'
+  }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Show warning on iPhone
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// ─── Help Button Click Handler ───
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'helpNavBtn') {
+    var sheet = document.getElementById('helpSheet');
+    if (sheet) {
+      sheet.style.display = sheet.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+});
+
+// ─── Initial render ───
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

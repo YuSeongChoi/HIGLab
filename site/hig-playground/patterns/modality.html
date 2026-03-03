@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modality — HIG Playground | HIG Lab</title>
+<meta name="description" content="모달 프레젠테이션의 종류와 닫기 방식을 브라우저에서 직접 체험해보세요. Sheet, Full Screen, Alert, Popover 스타일을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+  position:relative;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── iOS Button (for the trigger) ─── */
+.ios-btn{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-weight:600;
+  border:none;cursor:pointer;
+  transition:all 0.15s ease;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
+  font-size:17px;padding:12px 24px;border-radius:14px;min-height:50px;width:100%;
+  background:var(--ios-blue);color:#fff;
+}
+.ios-btn:active{transform:scale(0.96);opacity:0.7}
+
+/* ─── Modal Overlay ─── */
+.modal-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  z-index:20;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.3s ease;
+}
+.modal-overlay.visible{
+  pointer-events:auto;
+  opacity:1;
+}
+.modal-dim{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.4);
+  transition:opacity 0.3s ease;
+}
+.modal-dim.no-dim{
+  background:transparent;
+}
+
+/* ─── Sheet Modal ─── */
+.modal-sheet{
+  position:absolute;left:0;right:0;bottom:0;
+  background:#fff;
+  border-radius:14px 14px 0 0;
+  transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  transform:translateY(100%);
+  display:flex;flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.modal-overlay.visible .modal-sheet{
+  transform:translateY(0);
+}
+.modal-sheet.detent-medium{
+  height:55%;
+}
+.modal-sheet.detent-large{
+  height:88%;
+}
+.sheet-handle{
+  width:36px;height:5px;
+  background:rgba(0,0,0,0.15);border-radius:3px;
+  margin:8px auto 0;
+  flex-shrink:0;
+}
+.sheet-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 8px;
+  flex-shrink:0;
+}
+.sheet-header-title{
+  font-size:17px;font-weight:600;color:#000;
+}
+.sheet-close-btn{
+  font-size:14px;font-weight:600;color:var(--ios-blue);
+  background:none;border:none;cursor:pointer;
+  padding:4px 8px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.sheet-body{
+  flex:1;padding:16px;overflow-y:auto;
+  font-size:15px;color:#333;line-height:1.6;
+}
+.sheet-body-item{
+  padding:14px 0;
+  border-bottom:0.5px solid var(--ios-separator);
+  display:flex;align-items:center;gap:12px;
+}
+.sheet-body-item:last-child{border-bottom:none}
+.sheet-body-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+
+/* ─── FullScreen Modal ─── */
+.modal-fullscreen{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:#fff;
+  transition:transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  transform:translateY(100%);
+  display:flex;flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  border-radius:0;
+}
+.modal-overlay.visible .modal-fullscreen{
+  transform:translateY(0);
+}
+.fullscreen-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:56px 16px 12px;
+  flex-shrink:0;
+}
+.fullscreen-title{
+  font-size:17px;font-weight:600;color:#000;
+}
+.fullscreen-close{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(0,0,0,0.06);
+  display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;
+  font-size:14px;color:#666;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.fullscreen-body{
+  flex:1;padding:16px;overflow-y:auto;
+  font-size:15px;color:#333;line-height:1.6;
+}
+.fullscreen-hero{
+  width:100%;height:180px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.fullscreen-hero span{font-size:48px}
+
+/* ─── Alert Modal ─── */
+.modal-alert-container{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;
+}
+.modal-alert{
+  background:rgba(242,242,247,0.97);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-radius:14px;
+  width:100%;max-width:270px;
+  text-align:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:transform 0.25s cubic-bezier(0.32,0.72,0,1), opacity 0.25s ease;
+  transform:scale(1.1);
+  opacity:0;
+  overflow:hidden;
+}
+.modal-overlay.visible .modal-alert{
+  transform:scale(1);
+  opacity:1;
+}
+.alert-content{
+  padding:20px 16px 16px;
+}
+.alert-title{
+  font-size:17px;font-weight:600;color:#000;
+  margin-bottom:4px;
+}
+.alert-message{
+  font-size:13px;color:#666;line-height:1.4;
+}
+.alert-actions{
+  border-top:0.5px solid rgba(60,60,67,0.12);
+  display:flex;
+}
+.alert-actions.stacked{
+  flex-direction:column;
+}
+.alert-action{
+  flex:1;
+  padding:11px 8px;
+  font-size:17px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:none;border:none;cursor:pointer;
+  color:var(--ios-blue);
+  font-weight:400;
+  transition:background 0.1s;
+}
+.alert-action:active{
+  background:rgba(0,0,0,0.05);
+}
+.alert-action.bold{
+  font-weight:600;
+}
+.alert-action.destructive{
+  color:var(--ios-red);
+}
+.alert-actions:not(.stacked) .alert-action + .alert-action{
+  border-left:0.5px solid rgba(60,60,67,0.12);
+}
+.alert-actions.stacked .alert-action + .alert-action{
+  border-top:0.5px solid rgba(60,60,67,0.12);
+}
+
+/* ─── Popover Modal ─── */
+.modal-popover-wrapper{
+  position:absolute;left:50%;bottom:0;
+  transform:translateX(-50%);
+  width:100%;height:100%;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:260px;
+}
+.modal-popover{
+  background:#fff;
+  border-radius:14px;
+  width:220px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.2),0 0 0 0.5px rgba(0,0,0,0.08);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:transform 0.2s cubic-bezier(0.32,0.72,0,1), opacity 0.2s ease;
+  transform:scale(0.8) translateY(10px);
+  opacity:0;
+  position:relative;
+  overflow:hidden;
+}
+.modal-overlay.visible .modal-popover{
+  transform:scale(1) translateY(0);
+  opacity:1;
+}
+.popover-arrow{
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:16px;height:8px;
+  overflow:hidden;
+}
+.popover-arrow::after{
+  content:'';display:block;
+  width:12px;height:12px;
+  background:#fff;
+  transform:rotate(45deg);
+  margin:-8px auto 0;
+  box-shadow:0 0 4px rgba(0,0,0,0.1);
+}
+.popover-body{
+  padding:12px 0;
+}
+.popover-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  font-size:15px;color:#000;
+  cursor:pointer;
+  transition:background 0.1s;
+}
+.popover-item:active{background:rgba(0,0,0,0.05)}
+.popover-item-icon{
+  font-size:16px;width:20px;text-align:center;
+}
+.popover-separator{
+  height:0.5px;background:var(--ios-separator);
+  margin:4px 16px;
+}
+
+/* ─── Dismiss Indicator ─── */
+.dismiss-indicator{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  font-size:11px;font-weight:600;color:rgba(255,255,255,0.8);
+  background:rgba(0,0,0,0.5);
+  padding:4px 12px;border-radius:20px;
+  white-space:nowrap;z-index:25;
+  display:none;
+}
+.modal-overlay.visible .dismiss-indicator{
+  display:block;
+  animation:fadeInUp 0.4s 0.3s both;
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateX(-50%) translateY(8px)}
+  to{opacity:1;transform:translateX(-50%) translateY(0)}
+}
+
+/* ─── App Content Below Button ─── */
+.app-list-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;
+  border-bottom:0.5px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.app-list-item:last-child{border-bottom:none}
+.app-list-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.app-list-text{flex:1}
+.app-list-text .title{font-size:15px;font-weight:500;color:#000}
+.app-list-text .subtitle{font-size:13px;color:var(--ios-gray);margin-top:1px}
+.app-list-chevron{color:var(--ios-gray3);font-size:14px}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:30;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Modality
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Modality</h1>
+<p class="page-desc">모달 프레젠테이션의 종류와 닫기 방식을 체험해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">My App</div>
+
+        <!-- Present Modal Button -->
+        <div class="screen-section">
+          <div class="screen-section-title">Presentation</div>
+          <div class="screen-card">
+            <button class="ios-btn" id="presentBtn" onclick="presentModal()">Present Modal</button>
+          </div>
+        </div>
+
+        <!-- App content below -->
+        <div class="screen-section">
+          <div class="screen-section-title">Recent Items</div>
+          <div class="screen-card" style="padding:4px 16px">
+            <div class="app-list-item">
+              <div class="app-list-icon" style="background:rgba(0,122,255,0.12)">&#128196;</div>
+              <div class="app-list-text">
+                <div class="title">Project Proposal</div>
+                <div class="subtitle">Updated 2 hours ago</div>
+              </div>
+              <span class="app-list-chevron">&#8250;</span>
+            </div>
+            <div class="app-list-item">
+              <div class="app-list-icon" style="background:rgba(52,199,89,0.12)">&#128202;</div>
+              <div class="app-list-text">
+                <div class="title">Q4 Report</div>
+                <div class="subtitle">Updated yesterday</div>
+              </div>
+              <span class="app-list-chevron">&#8250;</span>
+            </div>
+            <div class="app-list-item">
+              <div class="app-list-icon" style="background:rgba(255,149,0,0.12)">&#128247;</div>
+              <div class="app-list-text">
+                <div class="title">Design Assets</div>
+                <div class="subtitle">Updated 3 days ago</div>
+              </div>
+              <span class="app-list-chevron">&#8250;</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- Modal Overlay -->
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dim" id="modalDim" onclick="handleDimTap()"></div>
+
+        <!-- Sheet -->
+        <div class="modal-sheet detent-medium" id="modalSheet" style="display:none">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <span class="sheet-header-title">Options</span>
+            <button class="sheet-close-btn" id="sheetCloseBtn" onclick="dismissModal()">Done</button>
+          </div>
+          <div class="sheet-body">
+            <div class="sheet-body-item">
+              <div class="sheet-body-icon" style="background:rgba(0,122,255,0.12)">&#9998;</div>
+              <span style="font-size:15px">Edit Item</span>
+            </div>
+            <div class="sheet-body-item">
+              <div class="sheet-body-icon" style="background:rgba(52,199,89,0.12)">&#128229;</div>
+              <span style="font-size:15px">Save to Files</span>
+            </div>
+            <div class="sheet-body-item">
+              <div class="sheet-body-icon" style="background:rgba(255,149,0,0.12)">&#128279;</div>
+              <span style="font-size:15px">Copy Link</span>
+            </div>
+            <div class="sheet-body-item">
+              <div class="sheet-body-icon" style="background:rgba(175,82,222,0.12)">&#128228;</div>
+              <span style="font-size:15px">Share</span>
+            </div>
+            <div class="sheet-body-item">
+              <div class="sheet-body-icon" style="background:rgba(255,59,48,0.12)">&#128465;</div>
+              <span style="font-size:15px;color:var(--ios-red)">Delete</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FullScreen -->
+        <div class="modal-fullscreen" id="modalFullscreen" style="display:none">
+          <div class="fullscreen-header">
+            <span class="fullscreen-title">New Document</span>
+            <button class="fullscreen-close" id="fullscreenCloseBtn" onclick="dismissModal()">&#10005;</button>
+          </div>
+          <div class="fullscreen-body">
+            <div class="fullscreen-hero"><span>&#128196;</span></div>
+            <p style="font-size:17px;font-weight:600;margin-bottom:8px">Create New Document</p>
+            <p style="font-size:15px;color:#666;margin-bottom:20px">Start with a blank canvas or choose a template to get started quickly.</p>
+            <div class="screen-card" style="gap:0;padding:0">
+              <div class="app-list-item" style="padding:14px 16px">
+                <div class="app-list-icon" style="background:rgba(0,122,255,0.12);width:36px;height:36px;border-radius:8px">&#128196;</div>
+                <div class="app-list-text">
+                  <div class="title">Blank Document</div>
+                  <div class="subtitle">Start from scratch</div>
+                </div>
+                <span class="app-list-chevron">&#8250;</span>
+              </div>
+              <div class="app-list-item" style="padding:14px 16px">
+                <div class="app-list-icon" style="background:rgba(52,199,89,0.12);width:36px;height:36px;border-radius:8px">&#128203;</div>
+                <div class="app-list-text">
+                  <div class="title">From Template</div>
+                  <div class="subtitle">Choose a template</div>
+                </div>
+                <span class="app-list-chevron">&#8250;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert -->
+        <div class="modal-alert-container" id="modalAlertContainer" style="display:none">
+          <div class="modal-alert" id="modalAlert">
+            <div class="alert-content">
+              <div class="alert-title">Discard Changes?</div>
+              <div class="alert-message">You have unsaved changes. Are you sure you want to discard them?</div>
+            </div>
+            <div class="alert-actions stacked">
+              <button class="alert-action destructive" onclick="dismissModal()">Discard</button>
+              <button class="alert-action bold" onclick="dismissModal()">Keep Editing</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popover -->
+        <div class="modal-popover-wrapper" id="modalPopoverWrapper" style="display:none">
+          <div class="modal-popover" id="modalPopover">
+            <div class="popover-body">
+              <div class="popover-item" onclick="dismissModal()">
+                <span class="popover-item-icon">&#128203;</span>
+                <span>Copy</span>
+              </div>
+              <div class="popover-item" onclick="dismissModal()">
+                <span class="popover-item-icon">&#128228;</span>
+                <span>Share</span>
+              </div>
+              <div class="popover-separator"></div>
+              <div class="popover-item" onclick="dismissModal()">
+                <span class="popover-item-icon">&#9734;</span>
+                <span>Favorite</span>
+              </div>
+              <div class="popover-item" onclick="dismissModal()">
+                <span class="popover-item-icon">&#128465;</span>
+                <span style="color:var(--ios-red)">Delete</span>
+              </div>
+            </div>
+            <div class="popover-arrow"></div>
+          </div>
+        </div>
+
+        <!-- Dismiss Method Indicator -->
+        <div class="dismiss-indicator" id="dismissIndicator"></div>
+      </div>
+
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines &#8212; 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do &#8212; 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't &#8212; 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>단순한 작업에는 <strong>Sheet</strong>를 사용하세요</li>
+              <li>몰입이 필요한 작업에는 <strong>Full Screen</strong>을 사용하세요</li>
+              <li>명확한 닫기 방법을 항상 제공하세요</li>
+              <li>중요한 결정에만 <strong>Alert</strong>을 사용하세요</li>
+              <li>적절한 <strong>Detent</strong>로 콘텐츠에 맞는 높이를 설정하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>모든 화면 전환에 모달을 사용하지 마세요</li>
+              <li>닫기 버튼 없이 모달을 표시하지 마세요</li>
+              <li>중첩 모달 (modal on modal)을 사용하지 마세요</li>
+              <li>경미한 정보에 Full Screen을 사용하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          iOS는 네 가지 모달 프레젠테이션 방식을 제공합니다:
+          <strong>Sheet</strong>는 간단한 작업에,
+          <strong>Full Screen Cover</strong>는 몰입이 필요한 작업에,
+          <strong>Alert</strong>는 중요한 결정에,
+          <strong>Popover</strong>는 맥락적 옵션에 사용합니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/modality" class="guideline-link" target="_blank">
+          Apple HIG: Modality &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Modal Type -->
+        <div class="control-group">
+          <label>Modal Type</label>
+          <div class="control-options" id="modalTypeOptions">
+            <div class="control-option active" data-value="sheet">Sheet</div>
+            <div class="control-option" data-value="fullScreen">Full Screen</div>
+            <div class="control-option" data-value="alert">Alert</div>
+            <div class="control-option" data-value="popover">Popover</div>
+          </div>
+        </div>
+        <!-- Detent -->
+        <div class="control-group" id="detentGroup">
+          <label>Detent</label>
+          <div class="control-options" id="detentOptions">
+            <div class="control-option active" data-value="medium">Medium</div>
+            <div class="control-option" data-value="large">Large</div>
+          </div>
+        </div>
+        <!-- Dismiss Method -->
+        <div class="control-group">
+          <label>Dismiss Method</label>
+          <div class="control-options" id="dismissOptions">
+            <div class="control-option active" data-value="button">Button</div>
+            <div class="control-option" data-value="swipe">Swipe</div>
+            <div class="control-option" data-value="tap">Tap Outside</div>
+          </div>
+        </div>
+        <!-- Dim Background -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Dim Background</span>
+            <div class="toggle-switch on" id="toggleDim"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  modalType: 'sheet',
+  detent: 'medium',
+  dismissMethod: 'button',
+  dimBackground: true
+};
+
+var isDontMode = false;
+var modalVisible = false;
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'modalTypeOptions') state.modalType = opt.dataset.value;
+      if (group.id === 'detentOptions') state.detent = opt.dataset.value;
+      if (group.id === 'dismissOptions') state.dismissMethod = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggle ───
+document.getElementById('toggleDim').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.dimBackground = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  // Show/hide detent group based on modalType
+  var detentGroup = document.getElementById('detentGroup');
+  if (state.modalType === 'sheet') {
+    detentGroup.style.display = '';
+  } else {
+    detentGroup.style.display = 'none';
+  }
+
+  // Update button label
+  var labels = {
+    sheet: 'Present Sheet',
+    fullScreen: 'Present Full Screen',
+    alert: 'Show Alert',
+    popover: 'Show Popover'
+  };
+  var btn = document.getElementById('presentBtn');
+  if (btn) btn.textContent = labels[state.modalType] || 'Present Modal';
+
+  // If modal is currently visible, update it live
+  if (modalVisible) {
+    showCurrentModal();
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Present Modal ───
+function presentModal() {
+  if (isDontMode) return;
+  modalVisible = true;
+  showCurrentModal();
+}
+
+function showCurrentModal() {
+  var overlay = document.getElementById('modalOverlay');
+  var dim = document.getElementById('modalDim');
+  var sheet = document.getElementById('modalSheet');
+  var fullscreen = document.getElementById('modalFullscreen');
+  var alertContainer = document.getElementById('modalAlertContainer');
+  var popoverWrapper = document.getElementById('modalPopoverWrapper');
+  var indicator = document.getElementById('dismissIndicator');
+
+  // Hide all modals first
+  sheet.style.display = 'none';
+  fullscreen.style.display = 'none';
+  alertContainer.style.display = 'none';
+  popoverWrapper.style.display = 'none';
+
+  // Dim
+  if (state.dimBackground) {
+    dim.classList.remove('no-dim');
+  } else {
+    dim.classList.add('no-dim');
+  }
+
+  // Show correct modal
+  switch (state.modalType) {
+    case 'sheet':
+      sheet.style.display = '';
+      sheet.className = 'modal-sheet detent-' + state.detent;
+      // Show/hide close button based on dismiss method
+      var closeBtn = document.getElementById('sheetCloseBtn');
+      closeBtn.style.display = (state.dismissMethod === 'button') ? '' : 'none';
+      break;
+    case 'fullScreen':
+      fullscreen.style.display = '';
+      var fsClose = document.getElementById('fullscreenCloseBtn');
+      fsClose.style.display = (state.dismissMethod === 'button') ? '' : 'none';
+      break;
+    case 'alert':
+      alertContainer.style.display = '';
+      break;
+    case 'popover':
+      popoverWrapper.style.display = '';
+      break;
+  }
+
+  // Dismiss indicator
+  var dismissTexts = {
+    button: 'Tap button to dismiss',
+    swipe: 'Swipe down to dismiss',
+    tap: 'Tap outside to dismiss'
+  };
+  indicator.textContent = dismissTexts[state.dismissMethod] || '';
+  if (state.modalType === 'alert') {
+    indicator.style.display = 'none';
+  }
+
+  // Trigger animation
+  overlay.classList.remove('visible');
+  void overlay.offsetWidth; // force reflow
+  overlay.classList.add('visible');
+}
+
+// ─── Dismiss Modal ───
+function dismissModal() {
+  var overlay = document.getElementById('modalOverlay');
+  overlay.classList.remove('visible');
+  modalVisible = false;
+  // Reset after transition
+  setTimeout(function() {
+    if (!modalVisible) {
+      document.getElementById('modalSheet').style.display = 'none';
+      document.getElementById('modalFullscreen').style.display = 'none';
+      document.getElementById('modalAlertContainer').style.display = 'none';
+      document.getElementById('modalPopoverWrapper').style.display = 'none';
+    }
+  }, 400);
+}
+
+// ─── Handle Dim Tap ───
+function handleDimTap() {
+  if (state.dismissMethod === 'tap') {
+    dismissModal();
+  }
+}
+
+// ─── Swipe to dismiss for sheet ───
+(function() {
+  var sheet = document.getElementById('modalSheet');
+  var startY = 0;
+  var currentY = 0;
+  var dragging = false;
+
+  sheet.addEventListener('touchstart', function(e) {
+    if (state.dismissMethod !== 'swipe') return;
+    startY = e.touches[0].clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  });
+
+  sheet.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+    var diff = currentY - startY;
+    if (diff > 0) {
+      sheet.style.transform = 'translateY(' + diff + 'px)';
+    }
+  });
+
+  sheet.addEventListener('touchend', function() {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    var diff = currentY - startY;
+    if (diff > 80) {
+      dismissModal();
+    } else {
+      sheet.style.transform = '';
+    }
+    currentY = 0;
+    startY = 0;
+  });
+
+  // Mouse drag for desktop
+  sheet.addEventListener('mousedown', function(e) {
+    if (state.dismissMethod !== 'swipe') return;
+    startY = e.clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+
+    function onMove(ev) {
+      currentY = ev.clientY;
+      var diff = currentY - startY;
+      if (diff > 0) {
+        sheet.style.transform = 'translateY(' + diff + 'px)';
+      }
+    }
+    function onUp() {
+      dragging = false;
+      sheet.style.transition = '';
+      var diff = currentY - startY;
+      if (diff > 80) {
+        dismissModal();
+      } else {
+        sheet.style.transform = '';
+      }
+      currentY = 0;
+      startY = 0;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  // Swipe for fullscreen
+  var fs = document.getElementById('modalFullscreen');
+  fs.addEventListener('touchstart', function(e) {
+    if (state.dismissMethod !== 'swipe') return;
+    startY = e.touches[0].clientY;
+    dragging = true;
+    fs.style.transition = 'none';
+  });
+  fs.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+    var diff = currentY - startY;
+    if (diff > 0) {
+      fs.style.transform = 'translateY(' + diff + 'px)';
+    }
+  });
+  fs.addEventListener('touchend', function() {
+    if (!dragging) return;
+    dragging = false;
+    fs.style.transition = '';
+    var diff = currentY - startY;
+    if (diff > 120) {
+      dismissModal();
+    } else {
+      fs.style.transform = '';
+    }
+    currentY = 0;
+    startY = 0;
+  });
+})();
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+  switch (state.modalType) {
+    case 'sheet':
+      code = '<span class="comment">// Sheet presentation</span>\n';
+      code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> <span class="prop">showSheet</span> = <span class="kw">false</span>\n\n';
+      code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Present Sheet"</span>) {\n';
+      code += '            <span class="prop">showSheet</span> = <span class="kw">true</span>\n';
+      code += '        }\n';
+      code += '        .<span class="func">sheet</span>(<span class="prop">isPresented</span>: <span class="prop">$showSheet</span>) {\n';
+      code += '            <span class="type">DetailView</span>()\n';
+      if (state.detent === 'medium') {
+        code += '                .<span class="func">presentationDetents</span>([.<span class="prop">medium</span>, .<span class="prop">large</span>])\n';
+      } else {
+        code += '                .<span class="func">presentationDetents</span>([.<span class="prop">large</span>])\n';
+      }
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+    case 'fullScreen':
+      code = '<span class="comment">// Full Screen Cover</span>\n';
+      code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> <span class="prop">showCover</span> = <span class="kw">false</span>\n\n';
+      code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Present Full Screen"</span>) {\n';
+      code += '            <span class="prop">showCover</span> = <span class="kw">true</span>\n';
+      code += '        }\n';
+      code += '        .<span class="func">fullScreenCover</span>(<span class="prop">isPresented</span>: <span class="prop">$showCover</span>) {\n';
+      code += '            <span class="type">NavigationStack</span> {\n';
+      code += '                <span class="type">DetailView</span>()\n';
+      code += '                    .<span class="func">toolbar</span> {\n';
+      code += '                        <span class="type">ToolbarItem</span>(<span class="prop">placement</span>: .<span class="prop">topBarTrailing</span>) {\n';
+      code += '                            <span class="type">Button</span>(<span class="str">"Close"</span>) {\n';
+      code += '                                <span class="prop">showCover</span> = <span class="kw">false</span>\n';
+      code += '                            }\n';
+      code += '                        }\n';
+      code += '                    }\n';
+      code += '            }\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+    case 'alert':
+      code = '<span class="comment">// Alert dialog</span>\n';
+      code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> <span class="prop">showAlert</span> = <span class="kw">false</span>\n\n';
+      code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Show Alert"</span>) {\n';
+      code += '            <span class="prop">showAlert</span> = <span class="kw">true</span>\n';
+      code += '        }\n';
+      code += '        .<span class="func">alert</span>(<span class="str">"Discard Changes?"</span>,\n';
+      code += '               <span class="prop">isPresented</span>: <span class="prop">$showAlert</span>) {\n';
+      code += '            <span class="type">Button</span>(<span class="str">"Discard"</span>, <span class="prop">role</span>: .<span class="prop">destructive</span>) { }\n';
+      code += '            <span class="type">Button</span>(<span class="str">"Keep Editing"</span>, <span class="prop">role</span>: .<span class="prop">cancel</span>) { }\n';
+      code += '        } <span class="prop">message</span>: {\n';
+      code += '            <span class="type">Text</span>(<span class="str">"You have unsaved changes."</span>)\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+    case 'popover':
+      code = '<span class="comment">// Popover presentation</span>\n';
+      code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+      code += '    <span class="kw">@State private var</span> <span class="prop">showPopover</span> = <span class="kw">false</span>\n\n';
+      code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+      code += '        <span class="type">Button</span>(<span class="str">"Show Popover"</span>) {\n';
+      code += '            <span class="prop">showPopover</span> = <span class="kw">true</span>\n';
+      code += '        }\n';
+      code += '        .<span class="func">popover</span>(<span class="prop">isPresented</span>: <span class="prop">$showPopover</span>) {\n';
+      code += '            <span class="type">PopoverContent</span>()\n';
+      code += '                .<span class="func">presentationCompactAdaptation</span>(.<span class="prop">popover</span>)\n';
+      code += '        }\n';
+      code += '    }\n';
+      code += '}';
+      break;
+  }
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+// ─── Copy Code ───
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '\
+  <div class="screen-nav-title" style="font-size:22px">My App</div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">Nested Modals (Bad)</div>\
+    <div class="screen-card" style="position:relative;min-height:420px;background:#e8e8ed;overflow:hidden;padding:0">\
+      <!-- Outer modal -->\
+      <div style="position:absolute;bottom:0;left:0;right:0;height:85%;background:#fff;border-radius:14px 14px 0 0;padding:16px;box-shadow:0 -2px 20px rgba(0,0,0,0.1)">\
+        <div style="width:36px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;margin:0 auto 12px"></div>\
+        <div style="font-size:15px;font-weight:600;margin-bottom:12px;font-family:-apple-system,sans-serif">Settings</div>\
+        <div style="font-size:13px;color:#666;font-family:-apple-system,sans-serif;margin-bottom:12px">No close button visible</div>\
+        <!-- Inner modal stacked -->\
+        <div style="position:absolute;bottom:0;left:0;right:0;height:70%;background:#f8f8f8;border-radius:14px 14px 0 0;padding:16px;box-shadow:0 -2px 20px rgba(0,0,0,0.1)">\
+          <div style="width:36px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;margin:0 auto 12px"></div>\
+          <div style="font-size:15px;font-weight:600;margin-bottom:8px;font-family:-apple-system,sans-serif;color:#FF3B30">Another Modal</div>\
+          <div style="font-size:12px;color:#999;font-family:-apple-system,sans-serif;margin-bottom:12px">Stacked on top - confusing!</div>\
+          <!-- Third modal -->\
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60%;background:#fff;border-radius:14px 14px 0 0;padding:16px;box-shadow:0 -2px 20px rgba(0,0,0,0.15)">\
+            <div style="width:36px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;margin:0 auto 12px"></div>\
+            <div style="font-size:15px;font-weight:600;margin-bottom:8px;font-family:-apple-system,sans-serif;color:#FF3B30">Yet Another Modal!</div>\
+            <div style="font-size:12px;color:#999;font-family:-apple-system,sans-serif">3 modals deep - terrible UX</div>\
+            <div style="margin-top:16px;padding:12px;background:rgba(255,59,48,0.1);border-radius:10px;font-size:11px;color:#FF3B30;font-family:-apple-system,sans-serif;text-align:center">\
+              No close buttons anywhere!<br>User is trapped.\
+            </div>\
+          </div>\
+        </div>\
+      </div>\
+    </div>\
+  </div>\
+  <div class="screen-section">\
+    <div class="screen-section-title" style="color:#FF3B30">FullScreen for Simple Info</div>\
+    <div class="screen-card" style="position:relative;min-height:120px;background:#fff;overflow:hidden">\
+      <div style="font-size:13px;color:#FF3B30;font-weight:600;font-family:-apple-system,sans-serif;text-align:center">\
+        Full Screen Cover used just to show:<br>\
+        <span style="font-size:24px;display:block;margin:8px 0">Version 1.0.0</span>\
+        <span style="font-size:12px;color:#999">This should be a simple label, not a modal</span>\
+      </div>\
+    </div>\
+  </div>\
+  <div style="height:20px"></div>\
+';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  modalVisible = false;
+  document.getElementById('modalOverlay').classList.remove('visible');
+  // Re-bind present button
+  var btn = document.getElementById('presentBtn');
+  if (btn) {
+    btn.onclick = presentModal;
+  }
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  var w = document.getElementById('higWarning');
+  w.textContent = 'HIG: 중첩 모달과 닫기 버튼 누락은 권장되지 않습니다';
+  w.classList.add('show');
+  modalVisible = false;
+  document.getElementById('modalOverlay').classList.remove('visible');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.modalType === 'fullScreen' && state.dismissMethod === 'swipe'; },
+    ko: "Full Screen 모달에서 스와이프 닫기는 의도치 않은 종료를 유발할 수 있습니다"
+  },
+  {
+    check: function() { return !state.dimBackground && state.modalType === 'alert'; },
+    ko: "Alert은 배경 딤이 없으면 중요한 결정임을 인지하기 어렵습니다"
+  },
+  {
+    check: function() { return state.modalType === 'popover' && state.detent !== 'medium'; },
+    ko: "Popover는 Detent 설정과 무관합니다. Sheet에서만 의미가 있습니다"
+  },
+  {
+    check: function() { return state.dismissMethod === 'tap' && state.modalType === 'alert'; },
+    ko: "Alert은 외부 탭으로 닫으면 안 됩니다. 명시적 버튼으로 닫아야 합니다"
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Show iPhone warning with first violation
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Initial render
+updatePreview();
+updateCode();
+setTimeout(checkHigViolations, 100);
+
+// Auto-present modal on load for demonstration
+setTimeout(function() {
+  if (!isDontMode) presentModal();
+}, 600);
+</script>
+</body>
+</html>

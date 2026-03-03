@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding — HIG Playground | HIG Lab</title>
+<meta name="description" content="온보딩 플로우의 다양한 스타일을 체험해보세요. Pages, Overlay, Tips 스타일과 다양한 옵션을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* --- Reset & Variables --- */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* --- Header --- */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* --- Breadcrumb --- */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* --- Page Layout --- */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* --- iPhone Frame --- */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:0;
+  -webkit-overflow-scrolling:touch;
+  position:relative;
+}
+.screen-content::-webkit-scrollbar{display:none}
+
+/* --- Onboarding Styles --- */
+.onboarding-container{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+
+/* Pages Style */
+.onboarding-pages{
+  flex:1;position:relative;overflow:hidden;
+}
+.onboarding-page{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;text-align:center;
+  transition:all 0.4s ease;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.onboarding-page.slide-left{transform:translateX(-100%);opacity:0}
+.onboarding-page.slide-right{transform:translateX(100%);opacity:0}
+.onboarding-page.active{transform:translateX(0);opacity:1}
+.onboarding-page.fade-left{transform:translateX(0);opacity:0}
+.onboarding-page.fade-right{transform:translateX(0);opacity:0}
+.onboarding-page.scale-left{transform:scale(0.8);opacity:0}
+.onboarding-page.scale-right{transform:scale(0.8);opacity:0}
+
+.onboarding-icon{
+  font-size:72px;margin-bottom:24px;
+  animation:iconFloat 3s ease-in-out infinite;
+}
+@keyframes iconFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+.onboarding-title{
+  font-size:24px;font-weight:700;color:#000;
+  margin-bottom:12px;letter-spacing:-0.5px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.onboarding-desc{
+  font-size:15px;color:var(--ios-gray);line-height:1.6;
+  max-width:280px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Page Indicators */
+.onboarding-footer{
+  flex-shrink:0;padding:0 32px 16px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.page-indicator{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:20px;
+}
+.page-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ios-gray4);
+  cursor:pointer;transition:all 0.3s ease;
+}
+.page-dot.active{
+  background:var(--ios-blue);width:24px;border-radius:4px;
+}
+.page-number{
+  font-size:13px;font-weight:600;color:var(--ios-gray);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.page-progress-bar{
+  width:160px;height:4px;background:var(--ios-gray5);
+  border-radius:2px;overflow:hidden;
+}
+.page-progress-fill{
+  height:100%;background:var(--ios-blue);
+  border-radius:2px;transition:width 0.3s ease;
+}
+
+.onboarding-btn{
+  width:100%;padding:14px;border-radius:14px;
+  background:var(--ios-blue);color:#fff;
+  font-size:17px;font-weight:600;border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:all 0.15s ease;
+}
+.onboarding-btn:active{transform:scale(0.97);opacity:0.8}
+.skip-btn{
+  position:absolute;top:8px;right:20px;z-index:5;
+  background:none;border:none;
+  font-size:15px;font-weight:500;color:var(--ios-blue);
+  cursor:pointer;padding:8px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.skip-btn:hover{opacity:0.7}
+
+/* Overlay Style */
+.overlay-app-content{
+  width:100%;height:100%;position:relative;
+  background:var(--ios-bg);
+}
+.overlay-fake-app{
+  padding:16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.overlay-fake-nav{
+  font-size:28px;font-weight:700;color:#000;
+  margin-bottom:16px;letter-spacing:-0.5px;
+}
+.overlay-fake-card{
+  background:var(--ios-card);border-radius:14px;
+  padding:14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+}
+.overlay-fake-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.overlay-fake-text{flex:1}
+.overlay-fake-title{font-size:15px;font-weight:600;color:#000}
+.overlay-fake-sub{font-size:12px;color:var(--ios-gray);margin-top:2px}
+.overlay-fake-tab{
+  position:absolute;bottom:40px;left:0;right:0;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(20px);
+  border-top:0.5px solid var(--ios-separator);
+  display:flex;justify-content:space-around;
+  padding:8px 0 4px;
+}
+.overlay-fake-tab-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:10px;color:var(--ios-gray);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.overlay-fake-tab-item.active-tab{color:var(--ios-blue)}
+.overlay-fake-tab-item span{font-size:22px}
+
+.overlay-dim{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.6);z-index:2;
+  transition:opacity 0.3s ease;
+}
+.overlay-callout{
+  position:absolute;z-index:3;
+  background:#fff;border-radius:14px;
+  padding:14px 16px;max-width:240px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:all 0.4s ease;
+}
+.overlay-callout.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+.overlay-callout-title{font-size:15px;font-weight:700;color:#000;margin-bottom:4px}
+.overlay-callout-desc{font-size:13px;color:var(--ios-gray);line-height:1.5}
+.overlay-callout-arrow{
+  position:absolute;width:0;height:0;
+  border-left:8px solid transparent;border-right:8px solid transparent;
+}
+.overlay-callout-arrow.top{
+  top:-8px;left:30px;
+  border-bottom:8px solid #fff;
+}
+.overlay-callout-arrow.bottom{
+  bottom:-8px;left:30px;
+  border-top:8px solid #fff;
+}
+.overlay-next-btn{
+  margin-top:10px;padding:6px 16px;border-radius:8px;
+  background:var(--ios-blue);color:#fff;
+  font-size:13px;font-weight:600;border:none;cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.overlay-next-btn:active{opacity:0.7}
+.overlay-highlight{
+  position:absolute;z-index:2;
+  border:2px solid var(--ios-blue);border-radius:16px;
+  box-shadow:0 0 0 4000px rgba(0,0,0,0.55);
+  transition:all 0.4s ease;
+}
+
+/* Tips Style */
+.tips-app-content{
+  width:100%;height:100%;position:relative;
+  background:var(--ios-bg);
+  overflow-y:auto;
+}
+.tip-card{
+  margin:8px 16px;padding:12px 14px;
+  background:#fff;border-radius:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);
+  border:1px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  position:relative;
+  animation:tipAppear 0.3s ease;
+}
+@keyframes tipAppear{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.tip-card::before{
+  content:'';position:absolute;top:-6px;left:24px;
+  width:12px;height:12px;background:#fff;
+  border:1px solid var(--ios-separator);
+  border-right:none;border-bottom:none;
+  transform:rotate(45deg);
+}
+.tip-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.tip-icon{
+  width:28px;height:28px;border-radius:7px;
+  background:var(--ios-blue);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.tip-title{font-size:14px;font-weight:700;color:#000}
+.tip-desc{font-size:13px;color:var(--ios-gray);line-height:1.5;padding-left:36px}
+.tip-close{
+  position:absolute;top:10px;right:12px;
+  background:none;border:none;
+  font-size:16px;color:var(--ios-gray3);cursor:pointer;
+}
+.tip-actions{
+  display:flex;gap:12px;padding-left:36px;margin-top:8px;
+}
+.tip-action{
+  font-size:13px;font-weight:600;color:var(--ios-blue);
+  cursor:pointer;background:none;border:none;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* --- Right Panel --- */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* --- Controls Panel --- */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* --- Guidelines Section --- */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* --- Interactive Do/Don't --- */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* --- Code Preview --- */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* --- Footer --- */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* --- Mobile iPhone Scale --- */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* --- Realtime HIG Violation Warnings --- */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Onboarding
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Onboarding</h1>
+<p class="page-desc">온보딩 플로우의 다양한 스타일을 체험해보세요. 컨트롤 패널에서 속성을 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <!-- Dynamically rendered -->
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>핵심 기능 <strong>3-5개만</strong> 소개하세요</li>
+              <li><strong>Skip 버튼</strong>을 항상 제공하세요</li>
+              <li>앱의 <strong>가치를 빠르게</strong> 전달하세요</li>
+              <li><strong>인터랙티브한 안내</strong>를 활용하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>너무 많은 페이지로 온보딩 길게 늘리기</li>
+              <li>Skip 없이 강제 진행</li>
+              <li>텍스트 위주의 설명</li>
+              <li>매 실행마다 온보딩 반복</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          온보딩은 앱의 첫인상을 결정합니다. <strong>Pages</strong> 스타일로 핵심 기능을 소개하고,
+          <strong>Overlay</strong>로 실제 UI 위에 안내하며,
+          <strong>Tips</strong> (TipKit)로 맥락에 맞는 도움을 제공하세요.
+          사용자가 언제든 건너뛸 수 있도록 Skip 버튼을 반드시 제공하세요.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/onboarding" class="guideline-link" target="_blank">
+          Apple HIG: Onboarding &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Style -->
+        <div class="control-group">
+          <label>Style</label>
+          <div class="control-options" id="styleOptions">
+            <div class="control-option active" data-value="pages">Pages</div>
+            <div class="control-option" data-value="overlay">Overlay</div>
+            <div class="control-option" data-value="tips">Tips</div>
+          </div>
+        </div>
+        <!-- Page Count -->
+        <div class="control-group">
+          <label>Page Count</label>
+          <div class="control-options" id="pageCountOptions">
+            <div class="control-option" data-value="2">2</div>
+            <div class="control-option active" data-value="3">3</div>
+            <div class="control-option" data-value="4">4</div>
+            <div class="control-option" data-value="5">5</div>
+          </div>
+        </div>
+        <!-- Show Skip Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Skip</span>
+            <div class="toggle-switch on" id="toggleSkip"></div>
+          </div>
+        </div>
+        <!-- Page Indicator -->
+        <div class="control-group">
+          <label>Page Indicator</label>
+          <div class="control-options" id="indicatorOptions">
+            <div class="control-option active" data-value="dots">Dots</div>
+            <div class="control-option" data-value="numbers">Numbers</div>
+            <div class="control-option" data-value="progress">Progress</div>
+          </div>
+        </div>
+        <!-- Animation -->
+        <div class="control-group">
+          <label>Animation</label>
+          <div class="control-options" id="animationOptions">
+            <div class="control-option active" data-value="slide">Slide</div>
+            <div class="control-option" data-value="fade">Fade</div>
+            <div class="control-option" data-value="scale">Scale</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// --- State ---
+var state = {
+  style: 'pages',
+  pageCount: 3,
+  showSkip: true,
+  indicatorStyle: 'dots',
+  animation: 'slide'
+};
+
+var currentPage = 0;
+var isDontMode = false;
+
+// --- Onboarding Data ---
+var onboardingPages = [
+  { icon: '&#11088;', emoji: '&#11088;', title: 'Welcome', desc: '앱에 오신 것을 환영합니다. 새로운 경험을 시작해보세요.' },
+  { icon: '&#10084;&#65039;', emoji: '&#10084;&#65039;', title: 'Favorites', desc: '관심 있는 콘텐츠를 저장하고 나만의 컬렉션을 만드세요.' },
+  { icon: '&#9989;', emoji: '&#9989;', title: 'Get Started', desc: '모든 준비가 완료되었습니다. 지금 바로 시작하세요!' },
+  { icon: '&#128276;', emoji: '&#128276;', title: 'Notifications', desc: '중요한 업데이트를 놓치지 않도록 알림을 설정하세요.' },
+  { icon: '&#128274;', emoji: '&#128274;', title: 'Privacy', desc: '당신의 데이터는 안전하게 보호됩니다.' }
+];
+
+var overlaySteps = [
+  { title: 'Home Feed', desc: '최신 콘텐츠를 한눈에 확인하세요.', top: 70, left: 16, highlightTop: 56, highlightLeft: 12, highlightW: 343, highlightH: 60 },
+  { title: 'Quick Actions', desc: '자주 쓰는 기능에 빠르게 접근하세요.', top: 200, left: 16, highlightTop: 120, highlightLeft: 12, highlightW: 343, highlightH: 74 },
+  { title: 'Navigation', desc: '하단 탭으로 다른 섹션으로 이동하세요.', top: 480, left: 16, highlightTop: 630, highlightLeft: 0, highlightW: 367, highlightH: 50, arrowDir: 'bottom' },
+  { title: 'Search', desc: '원하는 콘텐츠를 검색으로 빠르게 찾으세요.', top: 200, left: 50, highlightTop: 120, highlightLeft: 60, highlightW: 250, highlightH: 74 },
+  { title: 'Settings', desc: '앱 설정을 원하는 대로 커스터마이즈하세요.', top: 300, left: 16, highlightTop: 200, highlightLeft: 12, highlightW: 343, highlightH: 74 }
+];
+
+var tipsData = [
+  { icon: '&#128161;', title: 'Swipe to Refresh', desc: '아래로 당겨서 피드를 새로고침하세요.', action: 'Try it' },
+  { icon: '&#127775;', title: 'Favorite Items', desc: '하트를 눌러 관심 항목을 저장하세요.', action: 'Got it' },
+  { icon: '&#128269;', title: 'Quick Search', desc: 'Spotlight 검색으로 원하는 콘텐츠를 찾으세요.', action: 'Try it' },
+  { icon: '&#128247;', title: 'Share Content', desc: '공유 버튼으로 친구에게 전달하세요.', action: 'Got it' },
+  { icon: '&#9881;&#65039;', title: 'Customize', desc: '설정에서 테마와 알림을 변경하세요.', action: 'Open Settings' }
+];
+
+// --- Control Options ---
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      if (group.id === 'pageCountOptions') state.pageCount = parseInt(opt.dataset.value);
+      if (group.id === 'indicatorOptions') state.indicatorStyle = opt.dataset.value;
+      if (group.id === 'animationOptions') state.animation = opt.dataset.value;
+      currentPage = 0;
+      updatePreview();
+    });
+  });
+});
+
+// --- Toggle ---
+document.getElementById('toggleSkip').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showSkip = this.classList.contains('on');
+  updatePreview();
+});
+
+// --- Render Functions ---
+function renderPagesStyle() {
+  var pages = onboardingPages.slice(0, state.pageCount);
+  var html = '<div class="onboarding-container">';
+
+  // Skip button
+  if (state.showSkip) {
+    html += '<button class="skip-btn" onclick="handleSkip()">Skip</button>';
+  }
+
+  // Pages
+  html += '<div class="onboarding-pages" id="onboardingPages">';
+  for (var i = 0; i < pages.length; i++) {
+    var cls = 'onboarding-page';
+    if (i === currentPage) cls += ' active';
+    else if (i < currentPage) cls += ' ' + state.animation + '-left';
+    else cls += ' ' + state.animation + '-right';
+    html += '<div class="' + cls + '" data-index="' + i + '">';
+    html += '<div class="onboarding-icon">' + pages[i].icon + '</div>';
+    html += '<div class="onboarding-title">' + pages[i].title + '</div>';
+    html += '<div class="onboarding-desc">' + pages[i].desc + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Footer
+  html += '<div class="onboarding-footer">';
+  html += renderIndicator(pages.length);
+  var btnText = currentPage === pages.length - 1 ? 'Get Started' : 'Continue';
+  html += '<button class="onboarding-btn" onclick="nextPage()">' + btnText + '</button>';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function renderIndicator(total) {
+  var html = '<div class="page-indicator">';
+  if (state.indicatorStyle === 'dots') {
+    for (var i = 0; i < total; i++) {
+      var active = i === currentPage ? ' active' : '';
+      html += '<div class="page-dot' + active + '" onclick="goToPage(' + i + ')"></div>';
+    }
+  } else if (state.indicatorStyle === 'numbers') {
+    html += '<span class="page-number">' + (currentPage + 1) + ' / ' + total + '</span>';
+  } else if (state.indicatorStyle === 'progress') {
+    var pct = ((currentPage + 1) / total) * 100;
+    html += '<div class="page-progress-bar"><div class="page-progress-fill" style="width:' + pct + '%"></div></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderOverlayStyle() {
+  var steps = overlaySteps.slice(0, state.pageCount);
+  var step = steps[currentPage] || steps[0];
+  var arrowDir = step.arrowDir || 'top';
+
+  var html = '<div class="onboarding-container">';
+
+  // Skip button
+  if (state.showSkip) {
+    html += '<button class="skip-btn" style="z-index:5;color:#fff" onclick="handleSkip()">Skip</button>';
+  }
+
+  // Fake app content
+  html += '<div class="overlay-app-content">';
+  html += '<div class="overlay-fake-app">';
+  html += '<div class="overlay-fake-nav">Home</div>';
+
+  var cardColors = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF3B30'];
+  var cardTitles = ['Recent Items', 'Quick Actions', 'Favorites', 'Trending', 'Settings'];
+  var cardDescs = ['3 new updates', '5 shortcuts', '12 saved items', '8 popular', 'Customize app'];
+  var cardIcons = ['&#128196;', '&#9889;', '&#11088;', '&#128293;', '&#9881;&#65039;'];
+  for (var i = 0; i < 5; i++) {
+    html += '<div class="overlay-fake-card">';
+    html += '<div class="overlay-fake-icon" style="background:' + cardColors[i] + '20;color:' + cardColors[i] + '">' + cardIcons[i] + '</div>';
+    html += '<div class="overlay-fake-text">';
+    html += '<div class="overlay-fake-title">' + cardTitles[i] + '</div>';
+    html += '<div class="overlay-fake-sub">' + cardDescs[i] + '</div>';
+    html += '</div></div>';
+  }
+  html += '</div>';
+
+  // Tab bar
+  html += '<div class="overlay-fake-tab">';
+  var tabs = [{icon:'&#127968;', label:'Home', active:true},{icon:'&#128269;', label:'Search', active:false},{icon:'&#10133;', label:'New', active:false},{icon:'&#128276;', label:'Alerts', active:false},{icon:'&#128100;', label:'Profile', active:false}];
+  for (var t = 0; t < tabs.length; t++) {
+    html += '<div class="overlay-fake-tab-item' + (tabs[t].active ? ' active-tab' : '') + '">';
+    html += '<span>' + tabs[t].icon + '</span>' + tabs[t].label + '</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+
+  // Overlay dim
+  html += '<div class="overlay-dim" id="overlayDim"></div>';
+
+  // Highlight
+  html += '<div class="overlay-highlight" id="overlayHighlight" style="top:' + step.highlightTop + 'px;left:' + step.highlightLeft + 'px;width:' + step.highlightW + 'px;height:' + step.highlightH + 'px"></div>';
+
+  // Callout
+  html += '<div class="overlay-callout" id="overlayCallout" style="top:' + step.top + 'px;left:' + step.left + 'px">';
+  html += '<div class="overlay-callout-arrow ' + arrowDir + '"></div>';
+  html += '<div class="overlay-callout-title">' + step.title + '</div>';
+  html += '<div class="overlay-callout-desc">' + step.desc + '</div>';
+  html += renderIndicator(steps.length);
+  var btnLabel = currentPage === steps.length - 1 ? 'Done' : 'Next';
+  html += '<button class="overlay-next-btn" onclick="nextPage()">' + btnLabel + '</button>';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function renderTipsStyle() {
+  var tips = tipsData.slice(0, state.pageCount);
+
+  var html = '<div class="onboarding-container">';
+
+  // Skip button
+  if (state.showSkip) {
+    html += '<button class="skip-btn" onclick="handleSkip()">Skip All Tips</button>';
+  }
+
+  // Fake app with tips
+  html += '<div class="tips-app-content">';
+  html += '<div class="overlay-fake-app">';
+  html += '<div class="overlay-fake-nav">Home</div>';
+
+  var cardColors = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF3B30'];
+  var cardTitles = ['Recent Items', 'Quick Actions', 'Favorites', 'Trending', 'Settings'];
+  var cardDescs = ['3 new updates', '5 shortcuts', '12 saved items', '8 popular', 'Customize app'];
+  var cardIcons = ['&#128196;', '&#9889;', '&#11088;', '&#128293;', '&#9881;&#65039;'];
+
+  for (var i = 0; i < 5; i++) {
+    // Insert tip before corresponding card
+    if (i < tips.length && i === currentPage) {
+      html += '<div class="tip-card" id="tipCard' + i + '">';
+      html += '<button class="tip-close" onclick="dismissTip(' + i + ')">&#10005;</button>';
+      html += '<div class="tip-header">';
+      html += '<div class="tip-icon">' + tips[i].icon + '</div>';
+      html += '<div class="tip-title">' + tips[i].title + '</div>';
+      html += '</div>';
+      html += '<div class="tip-desc">' + tips[i].desc + '</div>';
+      html += '<div class="tip-actions">';
+      html += '<button class="tip-action" onclick="nextPage()">' + tips[i].action + '</button>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    html += '<div class="overlay-fake-card">';
+    html += '<div class="overlay-fake-icon" style="background:' + cardColors[i] + '20;color:' + cardColors[i] + '">' + cardIcons[i] + '</div>';
+    html += '<div class="overlay-fake-text">';
+    html += '<div class="overlay-fake-title">' + cardTitles[i] + '</div>';
+    html += '<div class="overlay-fake-sub">' + cardDescs[i] + '</div>';
+    html += '</div></div>';
+  }
+
+  html += '</div>';
+
+  // Indicator at bottom
+  html += '<div style="padding:12px 16px;text-align:center">';
+  html += renderIndicator(tips.length);
+  html += '</div>';
+
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function renderDontMode() {
+  var html = '<div class="onboarding-container">';
+  // No skip button - violation!
+
+  html += '<div class="onboarding-pages" id="onboardingPages">';
+
+  // 7 text-heavy pages with no illustrations
+  var dontPages = [
+    { title: 'Terms of Service', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.' },
+    { title: 'Privacy Policy', text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.' },
+    { title: 'Data Collection', text: 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.' },
+    { title: 'Feature One Details', text: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.' },
+    { title: 'Feature Two Details', text: 'Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi.' },
+    { title: 'Feature Three Details', text: 'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.' },
+    { title: 'Finally Ready!', text: 'Ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.' }
+  ];
+
+  for (var i = 0; i < dontPages.length; i++) {
+    var cls = 'onboarding-page';
+    if (i === currentPage) cls += ' active';
+    else if (i < currentPage) cls += ' slide-left';
+    else cls += ' slide-right';
+    html += '<div class="' + cls + '" data-index="' + i + '" style="justify-content:flex-start;padding-top:60px">';
+    html += '<div style="font-size:11px;color:#FF3B30;font-weight:700;font-family:-apple-system,sans-serif;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Page ' + (i+1) + ' of 7</div>';
+    html += '<div class="onboarding-title" style="font-size:20px;margin-bottom:8px">' + dontPages[i].title + '</div>';
+    html += '<div class="onboarding-desc" style="font-size:12px;text-align:left;max-width:300px;line-height:1.5">' + dontPages[i].text + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Footer - no skip, mandatory next
+  html += '<div class="onboarding-footer">';
+  // Dots indicator for 7 pages
+  html += '<div class="page-indicator">';
+  for (var i = 0; i < dontPages.length; i++) {
+    var active = i === currentPage ? ' active' : '';
+    html += '<div class="page-dot' + active + '" style="width:6px;height:6px' + (i === currentPage ? ';width:16px' : '') + '" onclick="goToPage(' + i + ')"></div>';
+  }
+  html += '</div>';
+  var btnText = currentPage === dontPages.length - 1 ? 'I Agree & Continue' : 'Next (Required)';
+  html += '<button class="onboarding-btn" style="background:#FF3B30" onclick="nextPage()">' + btnText + '</button>';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+// --- Navigation ---
+function goToPage(index) {
+  if (isDontMode) {
+    var max = 7;
+  } else {
+    var max = state.pageCount;
+  }
+  if (index < 0 || index >= max) return;
+  currentPage = index;
+  renderScreen();
+}
+
+function nextPage() {
+  var max;
+  if (isDontMode) {
+    max = 7;
+  } else {
+    max = state.pageCount;
+  }
+  if (currentPage < max - 1) {
+    currentPage++;
+    renderScreen();
+  } else {
+    // Last page - show completion
+    currentPage = 0;
+    renderScreen();
+  }
+}
+
+function dismissTip(index) {
+  nextPage();
+}
+
+function handleSkip() {
+  currentPage = 0;
+  renderScreen();
+}
+
+// --- Render Screen ---
+function renderScreen() {
+  var content = document.getElementById('screenContent');
+  if (isDontMode) {
+    content.innerHTML = renderDontMode();
+  } else if (state.style === 'pages') {
+    content.innerHTML = renderPagesStyle();
+  } else if (state.style === 'overlay') {
+    content.innerHTML = renderOverlayStyle();
+  } else if (state.style === 'tips') {
+    content.innerHTML = renderTipsStyle();
+  }
+}
+
+// --- Update Preview ---
+function updatePreview() {
+  renderScreen();
+  updateCode();
+  checkHigViolations();
+}
+
+// --- Update Code ---
+function updateCode() {
+  var code = '';
+  if (state.style === 'pages') {
+    code += '<span class="comment">// Onboarding — Pages Style</span>\n';
+    code += '<span class="kw">struct</span> <span class="type">OnboardingView</span>: <span class="type">View</span> {\n';
+    code += '    @<span class="type">State</span> <span class="kw">private var</span> currentPage = <span class="prop">0</span>\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">TabView</span>(selection: <span class="prop">$currentPage</span>) {\n';
+
+    var icons = ['star.fill', 'heart.fill', 'checkmark.circle', 'bell.fill', 'lock.shield'];
+    var titles = ['Welcome', 'Features', 'Get Started', 'Notifications', 'Privacy'];
+    for (var i = 0; i < state.pageCount; i++) {
+      code += '            <span class="type">OnboardingPage</span>(\n';
+      code += '                icon: <span class="str">"' + icons[i] + '"</span>,\n';
+      code += '                title: <span class="str">"' + titles[i] + '"</span>\n';
+      code += '            )\n';
+      code += '            .<span class="func">tag</span>(<span class="prop">' + i + '</span>)\n';
+    }
+
+    code += '        }\n';
+    code += '        .<span class="func">tabViewStyle</span>(.<span class="prop">page</span>)\n';
+    code += '        .<span class="func">indexViewStyle</span>(\n';
+    code += '            .<span class="func">page</span>(backgroundDisplayMode: .<span class="prop">always</span>)\n';
+    code += '        )\n';
+
+    if (state.showSkip) {
+      code += '        .<span class="func">overlay</span>(alignment: .<span class="prop">topTrailing</span>) {\n';
+      code += '            <span class="type">Button</span>(<span class="str">"Skip"</span>) {\n';
+      code += '                <span class="comment">// dismiss onboarding</span>\n';
+      code += '            }\n';
+      code += '            .<span class="func">padding</span>()\n';
+      code += '        }\n';
+    }
+
+    if (state.animation === 'fade') {
+      code += '        .<span class="func">animation</span>(.<span class="prop">easeInOut</span>, value: currentPage)\n';
+    } else if (state.animation === 'scale') {
+      code += '        .<span class="func">transition</span>(.<span class="prop">scale</span>.<span class="func">combined</span>(with: .<span class="prop">opacity</span>))\n';
+    }
+
+    code += '    }\n';
+    code += '}';
+  } else if (state.style === 'overlay') {
+    code += '<span class="comment">// Onboarding — Overlay / Coach Marks</span>\n';
+    code += '<span class="kw">struct</span> <span class="type">CoachMarkOverlay</span>: <span class="type">View</span> {\n';
+    code += '    @<span class="type">State</span> <span class="kw">private var</span> step = <span class="prop">0</span>\n';
+    code += '    <span class="kw">let</span> totalSteps = <span class="prop">' + state.pageCount + '</span>\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">ZStack</span> {\n';
+    code += '            <span class="comment">// App content underneath</span>\n';
+    code += '            <span class="type">ContentView</span>()\n\n';
+    code += '            <span class="comment">// Semi-transparent overlay</span>\n';
+    code += '            <span class="type">Color</span>.<span class="prop">black</span>\n';
+    code += '                .<span class="func">opacity</span>(<span class="prop">0.6</span>)\n';
+    code += '                .<span class="func">ignoresSafeArea</span>()\n\n';
+    code += '            <span class="comment">// Callout bubble</span>\n';
+    code += '            <span class="type">CoachCallout</span>(\n';
+    code += '                step: step,\n';
+    code += '                onNext: { step += <span class="prop">1</span> },\n';
+    code += '                onSkip: { <span class="comment">/* dismiss */</span> }\n';
+    code += '            )\n';
+
+    if (state.animation === 'fade') {
+      code += '            .<span class="func">animation</span>(.<span class="prop">easeInOut</span>, value: step)\n';
+    } else {
+      code += '            .<span class="func">transition</span>(.<span class="prop">move</span>(edge: .<span class="prop">trailing</span>))\n';
+    }
+
+    code += '        }\n';
+    code += '    }\n';
+    code += '}';
+  } else if (state.style === 'tips') {
+    code += '<span class="comment">// Onboarding — TipKit Style</span>\n';
+    code += '<span class="kw">import</span> <span class="type">TipKit</span>\n\n';
+    code += '<span class="kw">struct</span> <span class="type">SwipeRefreshTip</span>: <span class="type">Tip</span> {\n';
+    code += '    <span class="kw">var</span> title: <span class="type">Text</span> {\n';
+    code += '        <span class="type">Text</span>(<span class="str">"Swipe to Refresh"</span>)\n';
+    code += '    }\n';
+    code += '    <span class="kw">var</span> message: <span class="type">Text</span>? {\n';
+    code += '        <span class="type">Text</span>(<span class="str">"Pull down to refresh your feed."</span>)\n';
+    code += '    }\n';
+    code += '    <span class="kw">var</span> image: <span class="type">Image</span>? {\n';
+    code += '        <span class="type">Image</span>(systemName: <span class="str">"arrow.clockwise"</span>)\n';
+    code += '    }\n';
+    code += '}\n\n';
+    code += '<span class="kw">struct</span> <span class="type">ContentView</span>: <span class="type">View</span> {\n';
+    code += '    <span class="kw">let</span> tip = <span class="type">SwipeRefreshTip</span>()\n\n';
+    code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+    code += '        <span class="type">List</span> {\n';
+    code += '            <span class="type">TipView</span>(tip)\n';
+    code += '            <span class="comment">// ... list content</span>\n';
+    code += '        }\n';
+    code += '    }\n';
+    code += '}';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+// --- Copy Code ---
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// --- Do/Don't Interactive ---
+var originalScreenRender = null;
+
+function showDoState() {
+  isDontMode = false;
+  currentPage = 0;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  currentPage = 0;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('higWarning').textContent = '⚠️ HIG 위반: 7페이지 텍스트 온보딩, Skip 없음';
+  document.getElementById('higWarning').classList.add('show');
+  renderScreen();
+}
+
+// --- Realtime HIG Violation Detection ---
+var higRules = [
+  {
+    check: function() { return state.pageCount > 4; },
+    ko: '온보딩 페이지가 5개 이상이면 사용자가 이탈할 확률이 높아집니다'
+  },
+  {
+    check: function() { return !state.showSkip; },
+    ko: 'Skip 버튼이 없으면 사용자가 반복 방문 시 불편합니다'
+  },
+  {
+    check: function() { return state.style === 'overlay' && state.pageCount > 3; },
+    ko: '오버레이 스타일은 3개 이하의 핵심 기능 안내에 적합합니다'
+  },
+  {
+    check: function() { return state.animation === 'scale' && state.style === 'pages'; },
+    ko: '페이지 전환에 Scale 애니메이션은 어색할 수 있습니다. Slide를 권장합니다'
+  }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">&#9989; HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into control clicks for immediate check
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// --- Initial Render ---
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

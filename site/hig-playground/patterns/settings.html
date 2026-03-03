@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — HIG Playground | HIG Lab</title>
+<meta name="description" content="설정 화면의 구성과 컨트롤 배치를 확인해보세요. 섹션 구성, 토글 스타일, 검색, 푸터를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;
+  --accent:#0071e3;--border:#d2d2d7;--radius:16px;
+  --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;
+  --ios-purple:#AF52DE;--ios-teal:#5AC8FA;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12);
+}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:20px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section-footer{font-size:12px;color:var(--ios-gray);padding:6px 16px 0;line-height:1.4;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-card{background:var(--ios-card);border-radius:14px;padding:0;overflow:hidden}
+.settings-row{display:flex;align-items:center;padding:11px 16px;min-height:44px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;position:relative}
+.settings-row+.settings-row{border-top:0.5px solid var(--ios-separator)}
+.settings-row .row-icon{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-right:12px;flex-shrink:0;color:#fff}
+.settings-row .row-label{flex:1;font-size:16px;color:#000;font-weight:400}
+.settings-row .row-detail{font-size:16px;color:var(--ios-gray);margin-right:6px}
+.settings-row .row-chevron{font-size:14px;color:var(--ios-gray3);font-weight:600}
+.settings-row .row-checkmark{font-size:16px;color:var(--ios-blue);font-weight:700;margin-left:8px}
+.ios-switch{width:51px;height:31px;background:var(--ios-gray5);border-radius:16px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.ios-switch.on{background:var(--ios-green)}
+.ios-switch::after{content:'';position:absolute;top:2px;left:2px;width:27px;height:27px;background:#fff;border-radius:50%;transition:transform .25s cubic-bezier(.54,1.6,.5,1);box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+.ios-switch.on::after{transform:translateX(20px)}
+.settings-search{margin-bottom:16px}
+.settings-search-bar{display:flex;align-items:center;background:rgba(118,118,128,0.12);border-radius:10px;padding:8px 10px;gap:6px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.settings-search-bar .search-icon{font-size:15px;color:var(--ios-gray);flex-shrink:0}
+.settings-search-bar .search-text{font-size:16px;color:var(--ios-gray2);flex:1}
+.settings-destructive{background:var(--ios-card);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.settings-destructive-btn{display:flex;align-items:center;justify-content:center;padding:12px 16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;color:var(--ios-red);font-weight:400;cursor:pointer;min-height:44px}
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.slider-group{display:flex;align-items:center;gap:12px}
+.slider-group input[type=range]{flex:1;accent-color:var(--ios-blue)}
+.slider-value{font-size:13px;color:var(--text-2);font-weight:600;min-width:36px;text-align:right}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;position:relative;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Settings
+</div>
+
+<h1 class="page-title">Settings</h1>
+<p class="page-desc">설정 화면의 구성과 컨트롤 배치를 확인해보세요. 섹션 구성, 토글 스타일, 검색, 푸터를 인터랙티브하게 조작할 수 있습니다.</p>
+
+<div class="playground-layout">
+
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent"></div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>관련 설정을 논리적 섹션으로 그룹화하세요</li>
+              <li>토글에는 Switch를 사용하여 현재 상태를 명확히 보여주세요</li>
+              <li>파괴적 액션(로그아웃, 계정 삭제)은 다른 설정과 분리하세요</li>
+              <li>섹션 푸터로 설정의 의미를 설명하세요</li>
+              <li>설정이 많을 때는 검색 기능을 제공하세요</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>모든 설정을 하나의 섹션에 넣지 마세요</li>
+              <li>토글이 많을 때 체크마크를 사용하지 마세요 (상태 파악이 어려움)</li>
+              <li>파괴적 액션을 일반 설정 사이에 배치하지 마세요</li>
+              <li>섹션 설명 없이 기술 용어만 나열하지 마세요</li>
+              <li>관련 없는 설정을 같은 그룹에 혼합하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          iOS Settings screens use <strong>Form</strong> with grouped <strong>Section</strong> elements.
+          Use <strong>Toggle</strong> for binary on/off choices, navigation links for sub-screens,
+          and separate destructive actions into their own section at the bottom.
+          Add <strong>searchable</strong> when the settings list is long.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/settings" class="guideline-link" target="_blank">
+          Apple HIG: Settings &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Search Bar Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">검색 바 표시</span>
+            <div class="toggle-switch on" id="toggleShowSearch"></div>
+          </div>
+        </div>
+        <!-- Section Grouping Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">섹션 그룹화</span>
+            <div class="toggle-switch on" id="toggleGroupSections"></div>
+          </div>
+        </div>
+        <!-- Footer Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">푸터 설명 표시</span>
+            <div class="toggle-switch on" id="toggleShowFooter"></div>
+          </div>
+        </div>
+        <!-- Toggle Style -->
+        <div class="control-group">
+          <label>Toggle Style</label>
+          <div class="control-options" id="toggleStyleOptions">
+            <div class="control-option active" data-value="switch">Switch</div>
+            <div class="control-option" data-value="checkmark">Checkmark</div>
+          </div>
+        </div>
+        <!-- Row Count Slider -->
+        <div class="control-group">
+          <label>설정 항목 수: <span id="rowCountLabel">5</span></label>
+          <div class="slider-group">
+            <input type="range" id="rowCountSlider" min="3" max="15" step="1" value="5">
+          </div>
+        </div>
+        <!-- Icons Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">아이콘 표시</span>
+            <div class="toggle-switch on" id="toggleShowIcons"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+// ─── State ───
+var state = {
+  showSearch: true,
+  groupSections: true,
+  showFooter: true,
+  toggleStyle: 'switch',
+  rowCount: 5,
+  showIcons: true
+};
+
+var isDontMode = false;
+
+// ─── All available settings rows ───
+var allRows = [
+  { icon: '&#9992;&#65039;', iconBg: '#FF9500', label: 'Airplane Mode', type: 'toggle', section: 'General', footer: 'Airplane Mode를 켜면 모든 무선 연결이 비활성화됩니다.' },
+  { icon: '&#128246;', iconBg: '#007AFF', label: 'Wi-Fi', type: 'detail', detail: 'Home', section: 'General', footer: '' },
+  { icon: '&#9765;', iconBg: '#007AFF', label: 'Bluetooth', type: 'detail', detail: 'On', section: 'General', footer: '' },
+  { icon: '&#128276;', iconBg: '#FF3B30', label: 'Notifications', type: 'toggle', section: 'Notifications', footer: '알림 설정으로 앱별 알림 스타일과 소리를 관리할 수 있습니다.' },
+  { icon: '&#128264;', iconBg: '#FF2D55', label: 'Sounds', type: 'toggle', section: 'Notifications', footer: '' },
+  { icon: '&#127769;', iconBg: '#5856D6', label: 'Dark Mode', type: 'toggle', section: 'Display', footer: '텍스트 크기와 디스플레이 설정을 조절하여 가독성을 개선할 수 있습니다.' },
+  { icon: '&#128291;', iconBg: '#007AFF', label: 'Text Size', type: 'detail', detail: 'Medium', section: 'Display', footer: '' },
+  { icon: '&#66;', iconBg: '#000000', label: 'Bold Text', type: 'toggle', section: 'Display', footer: '' },
+  { icon: '&#128205;', iconBg: '#007AFF', label: 'Location Services', type: 'detail', detail: 'On', section: 'Privacy', footer: '위치 서비스와 추적 설정으로 개인 정보를 보호할 수 있습니다.' },
+  { icon: '&#128065;', iconBg: '#FF9500', label: 'Tracking', type: 'toggle', section: 'Privacy', footer: '' },
+  { icon: '&#128200;', iconBg: '#34C759', label: 'Analytics', type: 'toggle', section: 'Privacy', footer: '' },
+  { icon: '&#128225;', iconBg: '#34C759', label: 'Cellular', type: 'chevron', section: 'General', footer: '' },
+  { icon: '&#128308;', iconBg: '#FF3B30', label: 'Badges', type: 'toggle', section: 'Notifications', footer: '' },
+  { icon: '&#128274;', iconBg: '#007AFF', label: 'Face ID', type: 'chevron', section: 'Privacy', footer: '' },
+  { icon: '&#127916;', iconBg: '#5856D6', label: 'Screen Time', type: 'chevron', section: 'General', footer: '' }
+];
+
+// Toggle states for interactive switches
+var toggleStates = {};
+allRows.forEach(function(r) {
+  if (r.type === 'toggle') toggleStates[r.label] = false;
+});
+toggleStates['Notifications'] = true;
+toggleStates['Sounds'] = true;
+
+// ─── Controls Binding ───
+function bindToggle(id, key) {
+  document.getElementById(id).addEventListener('click', function() {
+    this.classList.toggle('on');
+    state[key] = this.classList.contains('on');
+    updatePreview();
+  });
+}
+bindToggle('toggleShowSearch', 'showSearch');
+bindToggle('toggleGroupSections', 'groupSections');
+bindToggle('toggleShowFooter', 'showFooter');
+bindToggle('toggleShowIcons', 'showIcons');
+
+document.querySelectorAll('#toggleStyleOptions .control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.querySelectorAll('#toggleStyleOptions .control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.toggleStyle = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+document.getElementById('rowCountSlider').addEventListener('input', function() {
+  state.rowCount = parseInt(this.value);
+  document.getElementById('rowCountLabel').textContent = state.rowCount;
+  updatePreview();
+});
+
+// ─── Don't Mode ───
+var dontScreenHTML =
+  '<div class="screen-nav-title">Settings</div>' +
+  '<div class="screen-section">' +
+    '<div class="screen-card">' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Airplane Mode</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Wi-Fi</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Bluetooth</div><span style="font-size:13px;color:var(--ios-gray)"></span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Notifications</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Dark Mode</div><span style="font-size:13px;color:var(--ios-gray)"></span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Sounds</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Location Services</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Tracking</div><span style="font-size:13px;color:var(--ios-gray)"></span></div>' +
+      '<div class="settings-row" style="border-top:0.5px solid var(--ios-separator)"><div class="row-label" style="font-size:16px;color:var(--ios-red);text-align:center;font-weight:400">Delete Account</div></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Analytics</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Bold Text</div><span style="font-size:13px;color:var(--ios-gray)"></span></div>' +
+      '<div class="settings-row"><div class="row-label" style="font-size:16px;color:#000">Text Size</div><span style="font-size:13px;color:var(--ios-gray)">&#10003;</span></div>' +
+    '</div>' +
+  '</div>' +
+  '<div style="text-align:center;padding:8px 0 4px"><span style="font-size:11px;color:var(--ios-red);font-family:-apple-system,sans-serif;font-weight:600">No grouping, checkmarks for toggles, destructive inline, no icons</span></div>' +
+  '<div style="height:12px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').textContent = '⚠️ HIG 위반: 이 패턴은 권장되지 않습니다';
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Build Row HTML ───
+function buildRowHTML(row) {
+  var html = '<div class="settings-row">';
+  if (state.showIcons) {
+    html += '<div class="row-icon" style="background:' + row.iconBg + '">' + row.icon + '</div>';
+  }
+  html += '<div class="row-label">' + row.label + '</div>';
+  if (row.type === 'toggle') {
+    if (state.toggleStyle === 'switch') {
+      var isOn = toggleStates[row.label];
+      html += '<div class="ios-switch' + (isOn ? ' on' : '') + '" data-toggle-key="' + row.label + '"></div>';
+    } else {
+      if (toggleStates[row.label]) {
+        html += '<span class="row-checkmark">&#10003;</span>';
+      }
+    }
+  } else if (row.type === 'detail') {
+    html += '<span class="row-detail">' + row.detail + '</span>';
+    html += '<span class="row-chevron">&#8250;</span>';
+  } else if (row.type === 'chevron') {
+    html += '<span class="row-chevron">&#8250;</span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  var visibleRows = allRows.slice(0, state.rowCount);
+  var content = document.getElementById('screenContent');
+  var html = '<div class="screen-nav-title">Settings</div>';
+
+  // Search bar
+  if (state.showSearch) {
+    html += '<div class="settings-search"><div class="settings-search-bar">';
+    html += '<span class="search-icon">&#128269;</span>';
+    html += '<span class="search-text">Search</span>';
+    html += '</div></div>';
+  }
+
+  if (state.groupSections) {
+    // Group rows by section
+    var sections = {};
+    var sectionOrder = [];
+    var sectionFooters = {};
+    visibleRows.forEach(function(row) {
+      if (!sections[row.section]) {
+        sections[row.section] = [];
+        sectionOrder.push(row.section);
+      }
+      sections[row.section].push(row);
+      if (row.footer) sectionFooters[row.section] = row.footer;
+    });
+
+    sectionOrder.forEach(function(sectionName) {
+      html += '<div class="screen-section">';
+      html += '<div class="screen-section-title">' + sectionName + '</div>';
+      html += '<div class="screen-card">';
+      sections[sectionName].forEach(function(row) { html += buildRowHTML(row); });
+      html += '</div>';
+      if (state.showFooter && sectionFooters[sectionName]) {
+        html += '<div class="screen-section-footer">' + sectionFooters[sectionName] + '</div>';
+      }
+      html += '</div>';
+    });
+  } else {
+    // Flat list, no grouping
+    html += '<div class="screen-section">';
+    html += '<div class="screen-card">';
+    visibleRows.forEach(function(row) { html += buildRowHTML(row); });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Sign Out button
+  html += '<div class="settings-destructive"><div class="settings-destructive-btn">Sign Out</div></div>';
+  html += '<div style="height:20px"></div>';
+
+  content.innerHTML = html;
+
+  // Bind switch events
+  content.querySelectorAll('.ios-switch').forEach(function(sw) {
+    sw.addEventListener('click', function() {
+      var key = this.dataset.toggleKey;
+      toggleStates[key] = !toggleStates[key];
+      this.classList.toggle('on');
+    });
+  });
+
+  // Bind checkmark toggle events
+  if (state.toggleStyle === 'checkmark') {
+    content.querySelectorAll('.settings-row').forEach(function(row) {
+      var label = row.querySelector('.row-label');
+      if (!label) return;
+      var foundKey = null;
+      visibleRows.forEach(function(r) {
+        if (r.type === 'toggle' && r.label === label.textContent) foundKey = r.label;
+      });
+      if (foundKey) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function() {
+          toggleStates[foundKey] = !toggleStates[foundKey];
+          updatePreview();
+        });
+      }
+    });
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var visibleRows = allRows.slice(0, state.rowCount);
+  var code = '';
+  code += '<span class="kw">struct</span> <span class="type">SettingsView</span>: <span class="type">View</span> {\n';
+
+  // State vars for toggles
+  var toggleRows = visibleRows.filter(function(r) { return r.type === 'toggle'; });
+  toggleRows.forEach(function(r) {
+    var varName = r.label.replace(/\s+/g, '').charAt(0).toLowerCase() + r.label.replace(/\s+/g, '').slice(1);
+    code += '    <span class="kw">@State private var</span> ' + varName + ' = <span class="prop">false</span>\n';
+  });
+
+  if (state.showSearch) {
+    code += '    <span class="kw">@State private var</span> searchText = <span class="str">""</span>\n';
+  }
+
+  code += '\n    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">NavigationStack</span> {\n';
+  code += '            <span class="type">Form</span> {\n';
+
+  if (state.groupSections) {
+    var sections = {};
+    var sectionOrder = [];
+    var sectionFooters = {};
+    visibleRows.forEach(function(row) {
+      if (!sections[row.section]) { sections[row.section] = []; sectionOrder.push(row.section); }
+      sections[row.section].push(row);
+      if (row.footer) sectionFooters[row.section] = row.footer;
+    });
+
+    sectionOrder.forEach(function(sectionName) {
+      if (state.showFooter && sectionFooters[sectionName]) {
+        code += '                <span class="type">Section</span> {\n';
+      } else {
+        code += '                <span class="type">Section</span>(<span class="str">"' + sectionName + '"</span>) {\n';
+      }
+      sections[sectionName].forEach(function(row) {
+        var varName = row.label.replace(/\s+/g, '').charAt(0).toLowerCase() + row.label.replace(/\s+/g, '').slice(1);
+        if (row.type === 'toggle') {
+          code += '                    <span class="type">Toggle</span>(<span class="str">"' + row.label + '"</span>, isOn: <span class="prop">$' + varName + '</span>)';
+          if (state.toggleStyle === 'checkmark') code += '\n                        .<span class="func">toggleStyle</span>(.<span class="prop">button</span>)';
+          code += '\n';
+        } else {
+          code += '                    <span class="type">NavigationLink</span>(<span class="str">"' + row.label + '"</span>) { <span class="type">' + row.label.replace(/\s+/g, '') + 'View</span>() }\n';
+        }
+      });
+      if (state.showFooter && sectionFooters[sectionName]) {
+        code += '                } header: {\n';
+        code += '                    <span class="type">Text</span>(<span class="str">"' + sectionName + '"</span>)\n';
+        code += '                } footer: {\n';
+        code += '                    <span class="type">Text</span>(<span class="str">"' + sectionFooters[sectionName] + '"</span>)\n';
+        code += '                }\n';
+      } else {
+        code += '                }\n';
+      }
+    });
+  } else {
+    code += '                <span class="type">Section</span> {\n';
+    visibleRows.forEach(function(row) {
+      var varName = row.label.replace(/\s+/g, '').charAt(0).toLowerCase() + row.label.replace(/\s+/g, '').slice(1);
+      if (row.type === 'toggle') {
+        code += '                    <span class="type">Toggle</span>(<span class="str">"' + row.label + '"</span>, isOn: <span class="prop">$' + varName + '</span>)\n';
+      } else {
+        code += '                    <span class="type">NavigationLink</span>(<span class="str">"' + row.label + '"</span>) { <span class="type">' + row.label.replace(/\s+/g, '') + 'View</span>() }\n';
+      }
+    });
+    code += '                }\n';
+  }
+
+  // Sign out section
+  code += '                <span class="type">Section</span> {\n';
+  code += '                    <span class="type">Button</span>(role: .<span class="prop">destructive</span>) {\n';
+  code += '                        <span class="func">signOut</span>()\n';
+  code += '                    } label: {\n';
+  code += '                        <span class="type">Text</span>(<span class="str">"Sign Out"</span>)\n';
+  code += '                            .<span class="func">frame</span>(maxWidth: .<span class="prop">infinity</span>)\n';
+  code += '                    }\n';
+  code += '                }\n';
+
+  code += '            }\n';
+  code += '            .<span class="func">navigationTitle</span>(<span class="str">"Settings"</span>)\n';
+  if (state.showSearch) {
+    code += '            .<span class="func">searchable</span>(text: <span class="prop">$searchText</span>)\n';
+  }
+  code += '        }\n';
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return !state.showSearch && state.rowCount >= 10; },
+    ko: '항목이 많으면 검색 기능을 제공하세요'
+  },
+  {
+    check: function() { return !state.groupSections; },
+    ko: '설정을 그룹화하지 않으면 사용자가 원하는 항목을 찾기 어렵습니다'
+  },
+  {
+    check: function() { return !state.showFooter; },
+    ko: '토글 설정에는 설명 텍스트(footer)가 필요합니다'
+  },
+  {
+    check: function() { return state.toggleStyle === 'checkmark'; },
+    ko: '이진 설정에는 Switch가 적합합니다. Checkmark는 선택 목록용입니다'
+  }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// ─── Initial Render ───
+updatePreview();
+</script>
+</body>
+</html>
