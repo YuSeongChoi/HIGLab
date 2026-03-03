@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS 접근성 설정이 앱 UI에 미치는 영향을 직접 확인해보세요">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{grid-template-columns:1fr;justify-items:center}
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;background:#000;border-radius:44px;padding:4px;
+  position:sticky;top:72px;
+  box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;background:var(--ios-bg);border-radius:40px;
+  overflow:hidden;position:relative;display:flex;flex-direction:column;
+}
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;background:#000;border-radius:20px;z-index:10;
+}
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:font-size 0.3s ease;
+}
+.screen-section{margin-bottom:20px}
+.screen-section-title{
+  font-size:13px;font-weight:600;color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Settings row */
+.settings-row{
+  background:var(--ios-card);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:17px;color:#000;
+  transition:all 0.3s ease;
+}
+.settings-row:first-child{border-radius:14px 14px 0 0}
+.settings-row:last-child{border-radius:0 0 14px 14px}
+.settings-row:only-child{border-radius:14px}
+.settings-row + .settings-row{border-top:0.5px solid var(--ios-separator)}
+.settings-row-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.settings-icon{
+  width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#fff;flex-shrink:0;
+}
+.settings-label{font-weight:400;transition:all 0.3s ease}
+.settings-value{font-size:15px;color:var(--ios-gray);display:flex;align-items:center;gap:4px}
+.ios-toggle{
+  width:51px;height:31px;border-radius:16px;position:relative;
+  transition:background 0.3s;
+}
+.ios-toggle.on{background:var(--ios-green)}
+.ios-toggle.off{background:var(--ios-gray3)}
+.ios-toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:27px;height:27px;background:#fff;border-radius:50%;
+  transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.ios-toggle.on::after{transform:translateX(20px)}
+
+/* VoiceOver label */
+.vo-label{
+  display:none;position:absolute;bottom:-22px;left:0;right:0;
+  background:rgba(0,0,0,0.8);color:#fff;font-size:10px;
+  padding:2px 6px;border-radius:4px;text-align:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.vo-visible .vo-label{display:block}
+.vo-item{position:relative}
+
+/* Banner */
+.settings-banner{
+  background:var(--ios-card);border-radius:14px;padding:16px;
+  display:flex;align-items:center;gap:12px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:all 0.3s ease;
+}
+.banner-icon{font-size:32px}
+.banner-text h3{font-size:15px;font-weight:600;margin-bottom:2px;transition:all 0.3s ease}
+.banner-text p{font-size:13px;color:var(--ios-gray);transition:all 0.3s ease}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{
+  display:block;font-size:12px;font-weight:700;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;
+  cursor:pointer;position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;
+  background:#fff;border-radius:50%;transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines ─── */
+.guidelines{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;
+  color:#cdd6f4;overflow-x:auto;white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+.copy-btn{
+  font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+@media(max-width:860px){
+  .iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}
+}
+@media(max-width:420px){
+  .iphone-frame{transform:scale(0.65);margin-bottom:-220px}
+}
+
+/* ─── Realtime HIG Violations ─── */
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Dynamic Type size indicator */
+.size-indicator{
+  display:inline-block;padding:2px 8px;border-radius:6px;
+  background:var(--ios-blue);color:#fff;font-size:11px;font-weight:700;
+  margin-left:8px;vertical-align:middle;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Accessibility
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Accessibility</h1>
+<p class="page-desc">iOS 접근성 설정이 앱 UI에 미치는 영향을 직접 확인해보세요. Dynamic Type, Bold Text, Reduce Motion 등을 컨트롤 패널에서 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines</div>
+      <div class="guidelines-body">
+        <div class="do-dont">
+          <div class="do-card">
+            <h4>&#10003; Do</h4>
+            <ul>
+              <li>Dynamic Type을 지원하여 사용자가 원하는 텍스트 크기 사용</li>
+              <li>모든 인터랙티브 요소에 접근성 레이블 제공</li>
+              <li>최소 44pt 탭 영역 확보</li>
+              <li>색상만으로 정보를 전달하지 않기</li>
+              <li>Reduce Motion 설정 시 애니메이션 대체</li>
+            </ul>
+          </div>
+          <div class="dont-card">
+            <h4>&#10007; Don't</h4>
+            <ul>
+              <li>고정 폰트 크기를 사용하지 마세요</li>
+              <li>접근성 레이블을 생략하지 마세요</li>
+              <li>낮은 대비의 텍스트를 사용하지 마세요</li>
+              <li>Reduce Motion을 무시하지 마세요</li>
+              <li>자동 재생 애니메이션을 제어 불가로 두지 마세요</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note">
+          iOS의 접근성 기능은 모든 사용자가 앱을 사용할 수 있게 합니다.
+          <strong>Dynamic Type</strong>은 텍스트 크기를, <strong>Bold Text</strong>는 가독성을,
+          <strong>Reduce Motion</strong>은 모션에 민감한 사용자를 지원합니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/accessibility" class="guideline-link" target="_blank">
+          Apple HIG: Accessibility &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Dynamic Type Size -->
+        <div class="control-group">
+          <label>Dynamic Type Size <span class="size-indicator" id="sizeIndicator">Default</span></label>
+          <div class="control-options" id="typeOptions">
+            <div class="control-option" data-value="xSmall">xS</div>
+            <div class="control-option" data-value="small">S</div>
+            <div class="control-option" data-value="medium">M</div>
+            <div class="control-option active" data-value="large">Default</div>
+            <div class="control-option" data-value="xLarge">xL</div>
+            <div class="control-option" data-value="xxLarge">xxL</div>
+            <div class="control-option" data-value="xxxLarge">xxxL</div>
+            <div class="control-option" data-value="ax1">AX1</div>
+            <div class="control-option" data-value="ax2">AX2</div>
+            <div class="control-option" data-value="ax3">AX3</div>
+            <div class="control-option" data-value="ax5">AX5</div>
+          </div>
+        </div>
+        <!-- Bold Text -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Bold Text</span>
+            <div class="toggle-switch" id="toggleBold"></div>
+          </div>
+        </div>
+        <!-- Reduce Motion -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Reduce Motion</span>
+            <div class="toggle-switch" id="toggleMotion"></div>
+          </div>
+        </div>
+        <!-- Increase Contrast -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Increase Contrast</span>
+            <div class="toggle-switch" id="toggleContrast"></div>
+          </div>
+        </div>
+        <!-- VoiceOver Labels -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">VoiceOver Labels</span>
+            <div class="toggle-switch" id="toggleVoiceOver"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  typeSize: 'large',
+  bold: false,
+  reduceMotion: false,
+  increaseContrast: false,
+  voiceOver: false
+};
+
+// ─── Type Scale Map ───
+var typeScales = {
+  xSmall:   { title: 22, body: 13, caption: 10, label: 11, factor: 0.76 },
+  small:    { title: 24, body: 14, caption: 11, label: 12, factor: 0.82 },
+  medium:   { title: 26, body: 15, caption: 12, label: 13, factor: 0.88 },
+  large:    { title: 28, body: 17, caption: 12, label: 14, factor: 1.0 },
+  xLarge:   { title: 30, body: 19, caption: 14, label: 16, factor: 1.12 },
+  xxLarge:  { title: 32, body: 21, caption: 16, label: 18, factor: 1.24 },
+  xxxLarge: { title: 34, body: 23, caption: 17, label: 19, factor: 1.35 },
+  ax1:      { title: 38, body: 28, caption: 22, label: 24, factor: 1.65 },
+  ax2:      { title: 43, body: 33, caption: 25, label: 28, factor: 1.94 },
+  ax3:      { title: 48, body: 38, caption: 29, label: 32, factor: 2.24 },
+  ax5:      { title: 58, body: 48, caption: 35, label: 40, factor: 2.82 }
+};
+
+// ─── Control Options ───
+document.querySelectorAll('#typeOptions .control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.querySelectorAll('#typeOptions .control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.typeSize = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleBold').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.bold = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleMotion').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.reduceMotion = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleContrast').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.increaseContrast = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleVoiceOver').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.voiceOver = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  var scale = typeScales[state.typeSize];
+  var boldWeight = state.bold ? '700' : '400';
+  var boldTitleWeight = state.bold ? '900' : '700';
+  var contrastBg = state.increaseContrast ? '#000' : '#1d1d1f';
+  var contrastGray = state.increaseContrast ? '#555' : 'var(--ios-gray)';
+  var contrastBorder = state.increaseContrast ? '1px solid #333' : '0.5px solid var(--ios-separator)';
+  var voClass = state.voiceOver ? ' vo-visible' : '';
+  var transition = state.reduceMotion ? 'none' : 'all 0.3s ease';
+
+  document.getElementById('sizeIndicator').textContent = state.typeSize;
+
+  var html = '';
+
+  // Nav title
+  html += '<div class="screen-nav-title" style="font-size:' + scale.title + 'px;font-weight:' + boldTitleWeight + ';transition:' + transition + '">Settings</div>';
+
+  // Banner
+  html += '<div class="settings-banner' + voClass + '" style="transition:' + transition + '">';
+  html += '<div class="banner-icon">&#9824;&#65039;</div>';
+  html += '<div class="banner-text">';
+  html += '<h3 style="font-size:' + scale.body + 'px;font-weight:' + boldTitleWeight + ';color:' + contrastBg + ';transition:' + transition + '">Apple ID</h3>';
+  html += '<p style="font-size:' + scale.caption + 'px;color:' + contrastGray + ';transition:' + transition + '">iCloud, Media & Purchases</p>';
+  html += '</div>';
+  if (state.voiceOver) html += '<div class="vo-label">Button: Apple ID, iCloud, Media & Purchases</div>';
+  html += '</div>';
+
+  html += '<div style="height:16px"></div>';
+
+  // Section: General
+  html += '<div class="screen-section">';
+  html += '<div class="screen-section-title" style="font-size:' + scale.caption + 'px;font-weight:' + (state.bold ? '700' : '600') + ';color:' + contrastGray + '">GENERAL</div>';
+
+  var rows = [
+    { icon: '&#9881;&#65039;', bg: '#8E8E93', label: 'General', value: '', voLabel: 'General settings' },
+    { icon: '&#128276;', bg: '#FF3B30', label: 'Notifications', value: '', voLabel: 'Notifications settings' },
+    { icon: '&#128267;', bg: '#34C759', label: 'Battery', value: '87%', voLabel: 'Battery, 87 percent' },
+    { icon: '&#128246;', bg: '#007AFF', label: 'Privacy', value: '', voLabel: 'Privacy & Security settings' }
+  ];
+
+  rows.forEach(function(row, i) {
+    var borderRadius = '';
+    if (i === 0) borderRadius = 'border-radius:14px 14px 0 0;';
+    if (i === rows.length - 1) borderRadius = 'border-radius:0 0 14px 14px;';
+    var borderTop = i > 0 ? 'border-top:' + contrastBorder + ';' : '';
+
+    html += '<div class="settings-row vo-item' + voClass + '" style="' + borderRadius + borderTop + 'transition:' + transition + '">';
+    html += '<div class="settings-row-left">';
+    html += '<div class="settings-icon" style="background:' + row.bg + '">' + row.icon + '</div>';
+    html += '<span class="settings-label" style="font-size:' + scale.body + 'px;font-weight:' + boldWeight + ';color:' + contrastBg + ';transition:' + transition + '">' + row.label + '</span>';
+    html += '</div>';
+    if (row.value) {
+      html += '<div class="settings-value" style="font-size:' + scale.caption + 'px;color:' + contrastGray + '">' + row.value + ' &#8250;</div>';
+    } else {
+      html += '<div class="settings-value" style="color:' + contrastGray + '">&#8250;</div>';
+    }
+    if (state.voiceOver) html += '<div class="vo-label">' + row.voLabel + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Section: Accessibility
+  html += '<div class="screen-section">';
+  html += '<div class="screen-section-title" style="font-size:' + scale.caption + 'px;font-weight:' + (state.bold ? '700' : '600') + ';color:' + contrastGray + '">ACCESSIBILITY</div>';
+
+  var accRows = [
+    { icon: '&#9855;', bg: '#007AFF', label: 'Display & Text', toggle: false, voLabel: 'Display & Text Size settings' },
+    { icon: '&#128064;', bg: '#AF52DE', label: 'VoiceOver', toggle: true, toggleOn: state.voiceOver, voLabel: 'VoiceOver, ' + (state.voiceOver ? 'on' : 'off') },
+    { icon: '&#127916;', bg: '#FF9500', label: 'Motion', toggle: true, toggleOn: state.reduceMotion, voLabel: 'Reduce Motion, ' + (state.reduceMotion ? 'on' : 'off') }
+  ];
+
+  accRows.forEach(function(row, i) {
+    var borderRadius = '';
+    if (i === 0) borderRadius = 'border-radius:14px 14px 0 0;';
+    if (i === accRows.length - 1) borderRadius = 'border-radius:0 0 14px 14px;';
+    var borderTop = i > 0 ? 'border-top:' + contrastBorder + ';' : '';
+
+    html += '<div class="settings-row vo-item' + voClass + '" style="' + borderRadius + borderTop + 'transition:' + transition + '">';
+    html += '<div class="settings-row-left">';
+    html += '<div class="settings-icon" style="background:' + row.bg + '">' + row.icon + '</div>';
+    html += '<span class="settings-label" style="font-size:' + scale.body + 'px;font-weight:' + boldWeight + ';color:' + contrastBg + ';transition:' + transition + '">' + row.label + '</span>';
+    html += '</div>';
+    if (row.toggle) {
+      html += '<div class="ios-toggle ' + (row.toggleOn ? 'on' : 'off') + '" style="width:51px;height:31px"></div>';
+    } else {
+      html += '<div class="settings-value" style="color:' + contrastGray + '">&#8250;</div>';
+    }
+    if (state.voiceOver) html += '<div class="vo-label">' + row.voLabel + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Info card
+  html += '<div class="screen-section">';
+  html += '<div style="background:var(--ios-card);border-radius:14px;padding:14px 16px;transition:' + transition + '">';
+  html += '<p style="font-size:' + scale.caption + 'px;color:' + contrastGray + ';line-height:1.5;font-weight:' + boldWeight + ';font-family:-apple-system,BlinkMacSystemFont,sans-serif;transition:' + transition + '">';
+  html += 'Accessibility features help everyone use their device. Adjust text size, motion, and contrast to match your needs.';
+  html += '</p></div></div>';
+
+  html += '<div style="height:20px"></div>';
+
+  document.getElementById('screenContent').innerHTML = html;
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var code = '';
+  code += '<span class="kw">struct</span> <span class="type">SettingsView</span>: <span class="type">View</span> {\n';
+  code += '    <span class="kw">@Environment</span>(\\.<span class="prop">dynamicTypeSize</span>) <span class="kw">var</span> typeSize\n';
+  code += '    <span class="kw">@Environment</span>(\\.<span class="prop">legibilityWeight</span>) <span class="kw">var</span> weight\n';
+
+  if (state.reduceMotion) {
+    code += '    <span class="kw">@Environment</span>(\\.<span class="prop">accessibilityReduceMotion</span>) <span class="kw">var</span> reduceMotion\n';
+  }
+  if (state.increaseContrast) {
+    code += '    <span class="kw">@Environment</span>(\\.<span class="prop">colorSchemeContrast</span>) <span class="kw">var</span> contrast\n';
+  }
+
+  code += '\n    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">List</span> {\n';
+  code += '            <span class="type">Section</span>(<span class="str">"General"</span>) {\n';
+  code += '                <span class="type">Label</span>(<span class="str">"General"</span>, systemImage: <span class="str">"gear"</span>)\n';
+  code += '                <span class="type">Label</span>(<span class="str">"Notifications"</span>, systemImage: <span class="str">"bell.badge"</span>)\n';
+  code += '            }\n';
+
+  if (state.voiceOver) {
+    code += '            .<span class="func">accessibilityLabel</span>(<span class="str">"General settings"</span>)\n';
+  }
+
+  code += '        }\n';
+
+  if (state.bold) {
+    code += '        .<span class="func">font</span>(.<span class="prop">body</span>.<span class="func">bold</span>())\n';
+  }
+  if (state.typeSize !== 'large') {
+    code += '        .<span class="func">dynamicTypeSize</span>(.<span class="prop">' + state.typeSize + '</span>)\n';
+  }
+  if (state.reduceMotion) {
+    code += '        .<span class="func">animation</span>(reduceMotion ? .<span class="prop">none</span> : .<span class="prop">default</span>)\n';
+  }
+
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  { check: function() { return state.typeSize.startsWith('ax') && !state.bold; }, ko: "Accessibility 크기에서는 Bold Text를 함께 사용하면 가독성이 향상됩니다" },
+  { check: function() { return !state.voiceOver && state.typeSize.startsWith('ax'); }, ko: "큰 Dynamic Type 사용자는 종종 VoiceOver도 함께 사용합니다" },
+  { check: function() { return state.increaseContrast && !state.bold; }, ko: "대비 증가와 Bold Text를 함께 사용하면 가독성이 크게 향상됩니다" }
+];
+
+function checkHigViolations() {
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG TIP' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">&#9989; HIG 가이드라인을 준수하고 있습니다</div>';
+  }
+}
+
+// Initial render
+updatePreview();
+</script>
+</body>
+</html>

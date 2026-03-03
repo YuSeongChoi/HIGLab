@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collaboration — HIG Playground | HIG Lab</title>
+<meta name="description" content="실시간 협업 UI의 참여자 표시와 권한 관리를 확인해보세요. 아바타, 도트, 커서 스타일과 권한 수준을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Collaboration Styles ─── */
+.collab-avatars{
+  display:flex;align-items:center;gap:0;
+  justify-content:center;
+}
+.collab-avatar{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;font-weight:700;color:#fff;
+  margin-left:-8px;position:relative;
+  box-shadow:0 1px 4px rgba(0,0,0,0.12);
+}
+.collab-avatar:first-child{margin-left:0}
+.collab-avatar .online-dot{
+  position:absolute;bottom:0;right:0;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--ios-green);border:2px solid #fff;
+}
+
+.collab-dot{
+  width:14px;height:14px;border-radius:50%;
+  display:inline-block;margin:0 4px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.15);
+}
+
+.collab-cursor{
+  display:inline-flex;align-items:flex-end;gap:2px;
+  margin:0 6px;
+}
+.collab-cursor-icon{
+  width:14px;height:18px;position:relative;
+}
+.collab-cursor-icon svg{width:14px;height:18px}
+.collab-cursor-label{
+  font-size:9px;font-weight:700;color:#fff;
+  padding:2px 6px;border-radius:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  white-space:nowrap;
+  transform:translateY(-2px);
+}
+
+.doc-preview{
+  width:100%;background:var(--ios-gray6);
+  border-radius:10px;padding:14px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;line-height:1.6;color:#333;
+  position:relative;
+}
+.doc-line{
+  padding:3px 0;border-left:3px solid transparent;
+  padding-left:8px;margin-bottom:2px;
+  border-radius:2px;
+}
+.doc-line.editing{
+  background:rgba(0,122,255,0.06);
+  border-left-color:var(--ios-blue);
+}
+.doc-cursor-line{
+  display:inline-block;width:2px;height:14px;
+  animation:cursorBlink 1s step-end infinite;
+  vertical-align:text-bottom;margin-left:1px;
+}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+.permission-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:10px;
+  font-size:14px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.permission-badge.perm-view{
+  background:rgba(142,142,147,0.15);color:var(--ios-gray);
+}
+.permission-badge.perm-edit{
+  background:rgba(0,122,255,0.12);color:var(--ios-blue);
+}
+.permission-badge.perm-admin{
+  background:rgba(175,82,222,0.12);color:var(--ios-purple);
+}
+
+.activity-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.activity-text{
+  font-size:12px;color:#333;line-height:1.4;flex:1;
+}
+.activity-time{
+  font-size:11px;color:var(--ios-gray);flex-shrink:0;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Collaboration
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Collaboration</h1>
+<p class="page-desc">실시간 협업 UI의 참여자 표시와 권한 관리를 확인해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Shared Document</div>
+
+        <!-- Collaborators -->
+        <div class="screen-section">
+          <div class="screen-section-title">Collaborators</div>
+          <div class="screen-card" id="collaboratorsCard">
+            <div class="collab-avatars" id="collabAvatars"></div>
+          </div>
+        </div>
+
+        <!-- Document -->
+        <div class="screen-section">
+          <div class="screen-section-title">Document</div>
+          <div class="screen-card" style="align-items:stretch">
+            <div class="doc-preview" id="docPreview"></div>
+          </div>
+        </div>
+
+        <!-- Permissions -->
+        <div class="screen-section">
+          <div class="screen-section-title">Permissions</div>
+          <div class="screen-card">
+            <div id="permissionDisplay"></div>
+          </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="screen-section" id="activitySection" style="display:none">
+          <div class="screen-section-title">Activity Feed</div>
+          <div class="screen-card" style="align-items:stretch" id="activityCard"></div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>협업자의 존재감(presence)을 명확하게 표시하세요</li>
+              <li>각 협업자에게 구별되는 색상을 사용하세요</li>
+              <li>권한 수준을 눈에 띄게 표시하세요</li>
+              <li>실시간 활동 피드백을 제공하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>너무 많은 존재감 표시로 화면을 압도하지 마세요</li>
+              <li>권한 정보를 숨기지 마세요</li>
+              <li>모호한 협업 상태를 사용하지 마세요</li>
+              <li>동기화 중 문서 편집을 차단하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          Collaboration features should clearly communicate <strong>who is present</strong>,
+          <strong>what permissions</strong> they have, and <strong>what actions</strong> are happening in real time.
+          Use ShareLink with collaboration styles for seamless sharing experiences.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing" class="guideline-link" target="_blank">
+          Apple HIG: Collaboration and sharing &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Collaborator Count -->
+        <div class="control-group">
+          <label>Collaborator Count</label>
+          <div class="control-options" id="countOptions">
+            <div class="control-option" data-value="1">1</div>
+            <div class="control-option" data-value="2">2</div>
+            <div class="control-option active" data-value="3">3</div>
+            <div class="control-option" data-value="4">4</div>
+            <div class="control-option" data-value="5">5</div>
+          </div>
+        </div>
+        <!-- Presence Style -->
+        <div class="control-group">
+          <label>Presence Style</label>
+          <div class="control-options" id="presenceOptions">
+            <div class="control-option active" data-value="avatar">Avatar</div>
+            <div class="control-option" data-value="dot">Dot</div>
+            <div class="control-option" data-value="cursor">Cursor</div>
+          </div>
+        </div>
+        <!-- Permission Level -->
+        <div class="control-group">
+          <label>Permission Level</label>
+          <div class="control-options" id="permissionOptions">
+            <div class="control-option" data-value="view">View</div>
+            <div class="control-option active" data-value="edit">Edit</div>
+            <div class="control-option" data-value="admin">Admin</div>
+          </div>
+        </div>
+        <!-- Toggle: Show Activity Feed -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Activity Feed</span>
+            <div class="toggle-switch" id="toggleActivity"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  collaboratorCount: 3,
+  presenceStyle: 'avatar',
+  permission: 'edit',
+  showActivityFeed: false
+};
+
+// ─── Collaborator Data ───
+var collaborators = [
+  { name: 'You', initials: 'Y', color: '#007AFF' },
+  { name: 'Alex', initials: 'A', color: '#FF9500' },
+  { name: 'Sam', initials: 'S', color: '#34C759' },
+  { name: 'Kim', initials: 'K', color: '#AF52DE' },
+  { name: 'Lee', initials: 'L', color: '#FF3B30' }
+];
+
+var activityData = [
+  { name: 'Alex', action: 'edited paragraph 2', time: 'just now', color: '#FF9500' },
+  { name: 'Sam', action: 'added a comment', time: '2m ago', color: '#34C759' },
+  { name: 'Kim', action: 'joined the document', time: '5m ago', color: '#AF52DE' },
+  { name: 'Lee', action: 'changed permissions', time: '8m ago', color: '#FF3B30' },
+  { name: 'You', action: 'created the document', time: '1h ago', color: '#007AFF' }
+];
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'countOptions') state.collaboratorCount = parseInt(opt.dataset.value);
+      if (group.id === 'presenceOptions') state.presenceStyle = opt.dataset.value;
+      if (group.id === 'permissionOptions') state.permission = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleActivity').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showActivityFeed = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Build Collaborators Display ───
+function buildCollaboratorsHTML() {
+  var count = state.collaboratorCount;
+  var style = state.presenceStyle;
+  var html = '';
+
+  if (style === 'avatar') {
+    html += '<div class="collab-avatars">';
+    for (var i = 0; i < count; i++) {
+      var c = collaborators[i];
+      html += '<div class="collab-avatar" style="background:' + c.color + '">';
+      html += c.initials;
+      html += '<span class="online-dot"></span>';
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '<div style="font-size:12px;color:var(--ios-gray);margin-top:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' + count + ' collaborator' + (count > 1 ? 's' : '') + ' online</div>';
+  } else if (style === 'dot') {
+    html += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center">';
+    for (var i = 0; i < count; i++) {
+      var c = collaborators[i];
+      html += '<div style="display:flex;align-items:center;gap:4px">';
+      html += '<span class="collab-dot" style="background:' + c.color + '"></span>';
+      html += '<span style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#333">' + c.name + '</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  } else if (style === 'cursor') {
+    html += '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center">';
+    for (var i = 0; i < count; i++) {
+      var c = collaborators[i];
+      html += '<div class="collab-cursor">';
+      html += '<div class="collab-cursor-icon"><svg viewBox="0 0 14 18" fill="none"><path d="M1 1L5.5 16L7.5 10L13 8L1 1Z" fill="' + c.color + '" stroke="#fff" stroke-width="1.2"/></svg></div>';
+      html += '<span class="collab-cursor-label" style="background:' + c.color + '">' + c.name + '</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  return html;
+}
+
+// ─── Build Document Preview ───
+function buildDocumentHTML() {
+  var count = state.collaboratorCount;
+  var permission = state.permission;
+  var html = '';
+
+  var lines = [
+    'Project Overview',
+    'This document outlines the key goals',
+    'and milestones for Q2 2026.',
+    '',
+    'Key Objectives:',
+    '1. Launch new collaboration features',
+    '2. Improve real-time sync performance',
+    '3. Add granular permission controls'
+  ];
+
+  html += '<div class="doc-preview">';
+  for (var i = 0; i < lines.length; i++) {
+    var isEditing = (count > 1 && i === 1);
+    var hasRemoteCursor = (count > 2 && i === 5);
+    html += '<div class="doc-line' + (isEditing ? ' editing' : '') + '">';
+    html += lines[i];
+    if (isEditing && permission !== 'view') {
+      html += '<span class="doc-cursor-line" style="background:' + collaborators[1].color + '"></span>';
+    }
+    if (hasRemoteCursor && permission !== 'view') {
+      html += '<span class="doc-cursor-line" style="background:' + collaborators[2].color + '"></span>';
+    }
+    html += '</div>';
+  }
+  if (permission === 'view') {
+    html += '<div style="text-align:center;margin-top:12px;padding:8px;background:rgba(142,142,147,0.1);border-radius:8px;font-size:11px;color:var(--ios-gray);font-family:-apple-system,BlinkMacSystemFont,sans-serif">View only &mdash; editing disabled</div>';
+  }
+  html += '</div>';
+
+  return html;
+}
+
+// ─── Build Permission Display ───
+function buildPermissionHTML() {
+  var perm = state.permission;
+  var permLabels = { view: 'View Only', edit: 'Can Edit', admin: 'Admin' };
+  var permIcons = { view: '&#128065;', edit: '&#9998;', admin: '&#128081;' };
+  var permClass = 'perm-' + perm;
+
+  var html = '<div class="permission-badge ' + permClass + '">';
+  html += '<span>' + permIcons[perm] + '</span>';
+  html += '<span>' + permLabels[perm] + '</span>';
+  html += '</div>';
+
+  return html;
+}
+
+// ─── Build Activity Feed ───
+function buildActivityHTML() {
+  var count = state.collaboratorCount;
+  var html = '';
+  var visibleActivities = activityData.slice(0, count);
+
+  for (var i = 0; i < visibleActivities.length; i++) {
+    var a = visibleActivities[i];
+    html += '<div class="activity-item">';
+    html += '<span class="activity-dot" style="background:' + a.color + '"></span>';
+    html += '<span class="activity-text"><strong>' + a.name + '</strong> ' + a.action + '</span>';
+    html += '<span class="activity-time">' + a.time + '</span>';
+    html += '</div>';
+  }
+
+  return html;
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  // Update collaborators card
+  document.getElementById('collabAvatars').innerHTML = buildCollaboratorsHTML();
+
+  // Update document preview
+  document.getElementById('docPreview').innerHTML = buildDocumentHTML();
+
+  // Update permissions display
+  document.getElementById('permissionDisplay').innerHTML = buildPermissionHTML();
+
+  // Update activity feed
+  var activitySection = document.getElementById('activitySection');
+  if (state.showActivityFeed) {
+    activitySection.style.display = 'block';
+    document.getElementById('activityCard').innerHTML = buildActivityHTML();
+  } else {
+    activitySection.style.display = 'none';
+  }
+
+  // Update code preview
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var permMap = { view: '.readOnly', edit: '.readWrite', admin: '.readWrite' };
+  var styleMap = { avatar: '.automatic', dot: '.minimal', cursor: '.prominent' };
+
+  var code = '<span class="kw">ShareLink</span>(item: document) {\n';
+  code += '    <span class="type">Label</span>(<span class="str">"Share"</span>, systemImage: <span class="str">"person.badge.plus"</span>)\n';
+  code += '}\n';
+  code += '.<span class="func">collaborationStyle</span>(<span class="prop">' + styleMap[state.presenceStyle] + '</span>)\n';
+  code += '.<span class="func">defaultPermissions</span>(<span class="prop">' + permMap[state.permission] + '</span>)';
+
+  if (state.collaboratorCount > 1) {
+    code += '\n\n<span class="comment">// Collaborator presence</span>\n';
+    code += '<span class="kw">ForEach</span>(collaborators) { person <span class="kw">in</span>\n';
+    if (state.presenceStyle === 'avatar') {
+      code += '    <span class="type">CollaboratorAvatar</span>(person)\n';
+      code += '        .<span class="func">presenceStyle</span>(<span class="prop">.avatar</span>)';
+    } else if (state.presenceStyle === 'dot') {
+      code += '    <span class="type">Circle</span>()\n';
+      code += '        .<span class="func">fill</span>(person.<span class="prop">color</span>)\n';
+      code += '        .<span class="func">frame</span>(width: <span class="prop">12</span>, height: <span class="prop">12</span>)';
+    } else {
+      code += '    <span class="type">CursorIndicator</span>(person)\n';
+      code += '        .<span class="func">presenceStyle</span>(<span class="prop">.cursor</span>)';
+    }
+    code += '\n}';
+  }
+
+  if (state.showActivityFeed) {
+    code += '\n\n<span class="comment">// Activity feed</span>\n';
+    code += '<span class="type">List</span>(activities) { activity <span class="kw">in</span>\n';
+    code += '    <span class="type">ActivityRow</span>(activity)\n';
+    code += '}';
+  }
+
+  if (state.permission === 'admin') {
+    code += '\n\n<span class="comment">// Admin controls</span>\n';
+    code += '.<span class="func">toolbar</span> {\n';
+    code += '    <span class="type">Button</span>(<span class="str">"Manage Access"</span>) {\n';
+    code += '        showPermissions = <span class="prop">true</span>\n';
+    code += '    }\n';
+    code += '}';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+// Store original screen content
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="screen-nav-title">Shared Document</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">Too Many Avatars</div>' +
+    '<div class="screen-card">' +
+      '<div class="collab-avatars">' +
+        '<div class="collab-avatar" style="background:#007AFF;width:32px;height:32px;font-size:12px;margin-left:0">Y</div>' +
+        '<div class="collab-avatar" style="background:#FF9500;width:32px;height:32px;font-size:12px;margin-left:-14px">A</div>' +
+        '<div class="collab-avatar" style="background:#34C759;width:32px;height:32px;font-size:12px;margin-left:-14px">S</div>' +
+        '<div class="collab-avatar" style="background:#AF52DE;width:32px;height:32px;font-size:12px;margin-left:-14px">K</div>' +
+        '<div class="collab-avatar" style="background:#FF3B30;width:32px;height:32px;font-size:12px;margin-left:-14px">L</div>' +
+        '<div class="collab-avatar" style="background:#5AC8FA;width:32px;height:32px;font-size:12px;margin-left:-14px">M</div>' +
+        '<div class="collab-avatar" style="background:#8E8E93;width:32px;height:32px;font-size:12px;margin-left:-14px">J</div>' +
+        '<div class="collab-avatar" style="background:#AEAEB2;width:32px;height:32px;font-size:12px;margin-left:-14px">P</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--ios-red);margin-top:6px;font-family:-apple-system,sans-serif">8 overlapping avatars — hard to distinguish</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">Hidden Permissions</div>' +
+    '<div class="screen-card">' +
+      '<div class="doc-preview" style="opacity:0.6">' +
+        '<div class="doc-line">Project Overview</div>' +
+        '<div class="doc-line">This document outlines the key goals</div>' +
+        '<div class="doc-line">and milestones for Q2 2026.</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--ios-red);margin-top:6px;font-family:-apple-system,sans-serif">No permission indicator — users don\'t know if they can edit</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">Confusing Sync State</div>' +
+    '<div class="screen-card">' +
+      '<div style="width:100%;text-align:center;padding:20px 0">' +
+        '<div style="font-size:36px;margin-bottom:8px;animation:spin 1s linear infinite">&#8635;</div>' +
+        '<div style="font-size:13px;color:var(--ios-gray);font-family:-apple-system,sans-serif">Syncing...</div>' +
+        '<div style="font-size:11px;color:var(--ios-red);margin-top:8px;font-family:-apple-system,sans-serif">Blocking UI during sync — users cannot edit</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">No Activity Feed</div>' +
+    '<div class="screen-card">' +
+      '<div style="width:100%;text-align:center;padding:16px 0;color:var(--ios-gray);font-size:13px;font-family:-apple-system,sans-serif">' +
+        'No way to see what others are doing<br>' +
+        '<span style="font-size:11px;color:var(--ios-red)">Users feel disconnected from collaborators</span>' +
+      '</div>' +
+    '</div>' +
+  '</div>' +
+
+  '<style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>' +
+
+  '<div style="height:20px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  // Re-bind the dynamic elements
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').textContent = 'HIG: This collaboration pattern is not recommended';
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// Initial render
+updatePreview();
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.collaboratorCount > 4; },
+    ko: '4명 이상의 협업자 표시는 UI를 혼잡하게 만듭니다',
+    en: 'More than 4 collaborator indicators can clutter the UI'
+  },
+  {
+    check: function() { return state.presenceStyle === 'dot' && state.permission === 'admin'; },
+    ko: '관리자 권한에는 명확한 아바타 표시가 필요합니다',
+    en: 'Admin permissions require clear avatar indicators'
+  },
+  {
+    check: function() { return !state.showActivityFeed && state.collaboratorCount >= 3; },
+    ko: '다수 협업자가 있을 때는 활동 피드가 필요합니다',
+    en: 'Activity feed is needed when multiple collaborators are present'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;&#65039;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '\u26A0\uFE0F ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">\u2705 HIG \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

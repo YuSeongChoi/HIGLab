@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Notifications — HIG Playground | HIG Lab</title>
+<meta name="description" content="알림 표시 스타일과 그룹핑 방식을 체험해보세요. Banner, Alert, Badge, Lock Screen 스타일을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;
+  --accent:#0071e3;--border:#d2d2d7;--radius:16px;
+  --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;
+  --ios-purple:#AF52DE;--ios-teal:#5AC8FA;--ios-gray:#8E8E93;--ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;--ios-gray4:#D1D1D6;--ios-gray5:#E5E5EA;--ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12);
+}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:24px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-card{background:var(--ios-card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+
+/* Notification styles */
+.notif-banner{background:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 2px 12px rgba(0,0,0,0.12);font-family:-apple-system,BlinkMacSystemFont,sans-serif;animation:bannerSlide .3s ease}
+@keyframes bannerSlide{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.notif-icon{width:36px;height:36px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.notif-body{flex:1;min-width:0}
+.notif-app{font-size:11px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.3px}
+.notif-title{font-size:14px;font-weight:600;color:#000;margin-top:1px}
+.notif-text{font-size:13px;color:#333;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notif-time{font-size:11px;color:var(--ios-gray);flex-shrink:0}
+.notif-actions{display:flex;gap:8px;margin-top:8px}
+.notif-action-btn{flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif}
+.notif-action-btn.primary{background:var(--ios-blue);color:#fff}
+.notif-action-btn.secondary{background:var(--ios-gray5);color:var(--ios-blue)}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--ios-red);color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px;font-family:-apple-system,sans-serif}
+.notif-group-header{font-size:12px;font-weight:600;color:var(--ios-gray);padding:4px 0;font-family:-apple-system,sans-serif}
+.notif-group-stack{position:relative;margin-bottom:8px}
+.notif-group-stack .notif-banner:nth-child(2){transform:scale(0.97);margin-top:-6px;opacity:0.7}
+.notif-group-stack .notif-banner:nth-child(3){transform:scale(0.94);margin-top:-6px;opacity:0.4}
+.lock-screen-bg{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:14px;padding:20px 16px;min-height:300px;display:flex;flex-direction:column;align-items:center;color:#fff;font-family:-apple-system,sans-serif}
+.lock-time{font-size:64px;font-weight:200;letter-spacing:-2px}
+.lock-date{font-size:16px;font-weight:400;opacity:0.8;margin-bottom:20px}
+.lock-notif{background:rgba(255,255,255,0.15);backdrop-filter:blur(20px);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;width:100%;margin-bottom:8px}
+.lock-notif .notif-title,.lock-notif .notif-text{color:#fff}
+.lock-notif .notif-app{color:rgba(255,255,255,0.6)}
+.app-icon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:8px}
+.app-icon-wrapper{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.app-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.app-icon-label{font-size:10px;color:#000;font-family:-apple-system,sans-serif;text-align:center}
+.sound-wave{display:flex;align-items:center;gap:2px;height:20px;margin-top:4px}
+.sound-wave span{width:3px;background:var(--ios-blue);border-radius:2px;animation:soundPulse 0.8s ease infinite}
+.sound-wave span:nth-child(1){height:8px;animation-delay:0s}
+.sound-wave span:nth-child(2){height:14px;animation-delay:0.1s}
+.sound-wave span:nth-child(3){height:20px;animation-delay:0.2s}
+.sound-wave span:nth-child(4){height:14px;animation-delay:0.3s}
+.sound-wave span:nth-child(5){height:8px;animation-delay:0.4s}
+@keyframes soundPulse{0%,100%{transform:scaleY(0.5)}50%{transform:scaleY(1)}}
+.critical-banner{border:2px solid var(--ios-red);background:rgba(255,59,48,0.05)}
+.critical-label{font-size:10px;font-weight:700;color:var(--ios-red);text-transform:uppercase;letter-spacing:0.5px}
+
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;position:relative;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Managing Notifications
+</div>
+
+<h1 class="page-title">Managing Notifications</h1>
+<p class="page-desc">알림 표시 스타일과 그룹핑 방식을 체험해보세요. Banner, Alert, Badge, Lock Screen 스타일을 인터랙티브하게 조작할 수 있습니다.</p>
+
+<div class="playground-layout">
+
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Notifications</div>
+
+        <div class="screen-section" id="bannerSection">
+          <div class="screen-section-title">Banner Notification</div>
+          <div id="notifArea" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
+        <div class="screen-section" id="badgeSection" style="display:none">
+          <div class="screen-section-title">App Badges</div>
+          <div class="screen-card">
+            <div class="app-icon-grid" id="badgeGrid"></div>
+          </div>
+        </div>
+
+        <div class="screen-section" id="lockSection" style="display:none">
+          <div class="screen-section-title">Lock Screen</div>
+          <div id="lockArea"></div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>알림을 의미 있는 정보 전달에만 사용하세요</li>
+              <li>그룹핑으로 알림 과부하를 방지하세요</li>
+              <li>사용자가 알림 타이밍을 제어할 수 있게 하세요</li>
+              <li>Critical 알림은 즉각 조치가 필요한 경우만 사용하세요</li>
+              <li>알림 액션 버튼으로 빠른 응답을 지원하세요</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>마케팅 목적으로 알림을 남용하지 마세요</li>
+              <li>중요하지 않은 정보에 Alert 스타일을 쓰지 마세요</li>
+              <li>그룹핑 없이 대량의 알림을 보내지 마세요</li>
+              <li>Critical 알림을 일반 알림에 사용하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          Notifications should provide timely, relevant information. Use <strong>banners</strong> for brief updates,
+          <strong>alerts</strong> for important actions, <strong>badges</strong> for counts, and
+          <strong>lock screen</strong> for at-a-glance info. Group notifications to reduce clutter.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/managing-notifications" class="guideline-link" target="_blank">
+          Apple HIG: Managing Notifications &rarr;
+        </a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>Style</label>
+          <div class="control-options" id="styleOptions">
+            <div class="control-option active" data-value="banner">Banner</div>
+            <div class="control-option" data-value="alert">Alert</div>
+            <div class="control-option" data-value="badge">Badge</div>
+            <div class="control-option" data-value="lock-screen">Lock Screen</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Group Style</label>
+          <div class="control-options" id="groupOptions">
+            <div class="control-option active" data-value="automatic">Automatic</div>
+            <div class="control-option" data-value="byApp">By App</div>
+            <div class="control-option" data-value="off">Off</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Actions</span>
+            <div class="toggle-switch" id="toggleActions"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Sound</span>
+            <div class="toggle-switch on" id="toggleSound"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Critical Alert</span>
+            <div class="toggle-switch" id="toggleCritical"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+// ─── State ───
+let state = {
+  style: 'banner',
+  group: 'automatic',
+  showActions: false,
+  sound: true,
+  critical: false
+};
+
+let isDontMode = false;
+
+const notifications = [
+  { app: 'Messages', icon: '💬', iconBg: '#34C759', title: 'John Appleseed', text: 'Hey! Are you free for coffee today?', time: '2m ago' },
+  { app: 'Mail', icon: '✉️', iconBg: '#007AFF', title: 'Weekly Report', text: 'Your team performance summary is ready', time: '15m ago' },
+  { app: 'Calendar', icon: '📅', iconBg: '#FF3B30', title: 'Meeting in 30 min', text: 'Design Review — Conference Room B', time: '28m ago' },
+  { app: 'Messages', icon: '💬', iconBg: '#34C759', title: 'Sarah Kim', text: 'The presentation looks great! 🎉', time: '35m ago' },
+  { app: 'News', icon: '📰', iconBg: '#FF9500', title: 'Breaking News', text: 'Apple announces new developer tools at WWDC', time: '1h ago' }
+];
+
+const appIcons = [
+  { name: 'Messages', icon: '💬', bg: '#34C759', badge: 3 },
+  { name: 'Mail', icon: '✉️', bg: '#007AFF', badge: 12 },
+  { name: 'Phone', icon: '📱', bg: '#34C759', badge: 2 },
+  { name: 'Calendar', icon: '📅', bg: '#FF3B30', badge: 0 },
+  { name: 'Photos', icon: '🖼️', bg: '#FF9500', badge: 0 },
+  { name: 'Settings', icon: '⚙️', bg: '#8E8E93', badge: 1 },
+  { name: 'News', icon: '📰', bg: '#FF9500', badge: 5 },
+  { name: 'Music', icon: '🎵', bg: '#FF2D55', badge: 0 }
+];
+
+// ─── Control Bindings ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      if (group.id === 'groupOptions') state.group = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+document.getElementById('toggleActions').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showActions = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleSound').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.sound = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleCritical').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.critical = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Render Functions ───
+function renderBanner(notif, isAlert) {
+  var cls = state.critical ? 'notif-banner critical-banner' : 'notif-banner';
+  var html = '<div class="' + cls + '">';
+  html += '<div class="notif-icon" style="background:' + notif.iconBg + '">' + notif.icon + '</div>';
+  html += '<div class="notif-body">';
+  if (state.critical) html += '<div class="critical-label">Critical Alert</div>';
+  html += '<div class="notif-app">' + notif.app + ' · ' + notif.time + '</div>';
+  html += '<div class="notif-title">' + notif.title + '</div>';
+  html += '<div class="notif-text">' + notif.text + '</div>';
+  if (state.sound) html += '<div class="sound-wave"><span></span><span></span><span></span><span></span><span></span></div>';
+  if (state.showActions) {
+    html += '<div class="notif-actions">';
+    html += '<button class="notif-action-btn primary">Reply</button>';
+    html += '<button class="notif-action-btn secondary">Dismiss</button>';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function renderGrouped(notifs) {
+  var html = '';
+  if (state.group === 'automatic') {
+    var groups = {};
+    notifs.forEach(function(n) {
+      if (!groups[n.app]) groups[n.app] = [];
+      groups[n.app].push(n);
+    });
+    Object.keys(groups).forEach(function(app) {
+      var g = groups[app];
+      html += '<div class="notif-group-header">' + app + ' (' + g.length + ')</div>';
+      if (g.length > 1) {
+        html += '<div class="notif-group-stack">';
+        g.slice(0, 2).forEach(function(n) { html += renderBanner(n, false); });
+        html += '</div>';
+      } else {
+        html += renderBanner(g[0], false);
+      }
+    });
+  } else if (state.group === 'byApp') {
+    var grouped = {};
+    notifs.forEach(function(n) {
+      if (!grouped[n.app]) grouped[n.app] = [];
+      grouped[n.app].push(n);
+    });
+    Object.keys(grouped).forEach(function(app) {
+      var g = grouped[app];
+      html += '<div class="notif-group-header">' + app + ' — ' + g.length + ' notifications</div>';
+      html += '<div class="notif-group-stack">';
+      html += renderBanner(g[0], false);
+      if (g.length > 1) html += '<div style="text-align:center;font-size:11px;color:var(--ios-gray);padding:4px">+ ' + (g.length - 1) + ' more</div>';
+      html += '</div>';
+    });
+  } else {
+    notifs.forEach(function(n) { html += renderBanner(n, false); });
+  }
+  return html;
+}
+
+function renderBadgeGrid() {
+  var html = '';
+  appIcons.forEach(function(a) {
+    html += '<div class="app-icon-wrapper">';
+    html += '<div class="app-icon" style="background:' + a.bg + '">' + a.icon + '</div>';
+    if (a.badge > 0) html += '<div class="notif-badge">' + a.badge + '</div>';
+    html += '<div class="app-icon-label">' + a.name + '</div>';
+    html += '</div>';
+  });
+  return html;
+}
+
+function renderLockScreen() {
+  var html = '<div class="lock-screen-bg">';
+  html += '<div class="lock-time">9:41</div>';
+  html += '<div class="lock-date">Monday, March 2</div>';
+  var items = state.group === 'off' ? notifications : notifications.slice(0, 3);
+  if (state.group === 'automatic' || state.group === 'byApp') {
+    var groups = {};
+    items.forEach(function(n) {
+      if (!groups[n.app]) groups[n.app] = [];
+      groups[n.app].push(n);
+    });
+    Object.keys(groups).forEach(function(app) {
+      var g = groups[app];
+      html += '<div class="lock-notif">';
+      html += '<div class="notif-icon" style="background:' + g[0].iconBg + ';width:28px;height:28px;border-radius:7px;font-size:14px">' + g[0].icon + '</div>';
+      html += '<div class="notif-body">';
+      html += '<div class="notif-app">' + app + (g.length > 1 ? ' · ' + g.length + ' notifications' : '') + '</div>';
+      html += '<div class="notif-title" style="color:#fff">' + g[0].title + '</div>';
+      html += '<div class="notif-text" style="color:rgba(255,255,255,0.7)">' + g[0].text + '</div>';
+      html += '</div></div>';
+    });
+  } else {
+    items.forEach(function(n) {
+      html += '<div class="lock-notif">';
+      html += '<div class="notif-icon" style="background:' + n.iconBg + ';width:28px;height:28px;border-radius:7px;font-size:14px">' + n.icon + '</div>';
+      html += '<div class="notif-body">';
+      html += '<div class="notif-app">' + n.app + ' · ' + n.time + '</div>';
+      html += '<div class="notif-title" style="color:#fff">' + n.title + '</div>';
+      html += '<div class="notif-text" style="color:rgba(255,255,255,0.7)">' + n.text + '</div>';
+      html += '</div></div>';
+    });
+  }
+  html += '</div>';
+  return html;
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+  var bannerSec = document.getElementById('bannerSection');
+  var badgeSec = document.getElementById('badgeSection');
+  var lockSec = document.getElementById('lockSection');
+  var notifArea = document.getElementById('notifArea');
+  var badgeGrid = document.getElementById('badgeGrid');
+  var lockArea = document.getElementById('lockArea');
+
+  bannerSec.style.display = 'none';
+  badgeSec.style.display = 'none';
+  lockSec.style.display = 'none';
+
+  if (state.style === 'banner' || state.style === 'alert') {
+    bannerSec.style.display = 'block';
+    bannerSec.querySelector('.screen-section-title').textContent = state.style === 'alert' ? 'Alert Notification' : 'Banner Notification';
+    notifArea.innerHTML = renderGrouped(notifications);
+  } else if (state.style === 'badge') {
+    badgeSec.style.display = 'block';
+    badgeGrid.innerHTML = renderBadgeGrid();
+  } else if (state.style === 'lock-screen') {
+    lockSec.style.display = 'block';
+    lockArea.innerHTML = renderLockScreen();
+  }
+
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Code ───
+function updateCode() {
+  var el = document.getElementById('codePreview');
+  var code = '';
+  if (state.style === 'banner' || state.style === 'alert') {
+    code += '<span class="kw">import</span> <span class="type">UserNotifications</span>\n\n';
+    code += '<span class="kw">let</span> content = <span class="type">UNMutableNotificationContent</span>()\n';
+    code += 'content.<span class="prop">title</span> = <span class="str">"John Appleseed"</span>\n';
+    code += 'content.<span class="prop">body</span> = <span class="str">"Hey! Are you free for coffee?"</span>\n';
+    if (state.sound) {
+      code += 'content.<span class="prop">sound</span> = .<span class="func">default</span>\n';
+    }
+    if (state.critical) {
+      code += 'content.<span class="prop">sound</span> = .<span class="func">defaultCritical</span>\n';
+      code += 'content.<span class="prop">interruptionLevel</span> = .<span class="prop">critical</span>\n';
+    }
+    if (state.group !== 'off') {
+      code += 'content.<span class="prop">threadIdentifier</span> = <span class="str">"messages-thread"</span>\n';
+    }
+    if (state.showActions) {
+      code += '\n<span class="kw">let</span> reply = <span class="type">UNNotificationAction</span>(\n';
+      code += '    identifier: <span class="str">"reply"</span>,\n';
+      code += '    title: <span class="str">"Reply"</span>\n)\n';
+      code += '<span class="kw">let</span> category = <span class="type">UNNotificationCategory</span>(\n';
+      code += '    identifier: <span class="str">"message"</span>,\n';
+      code += '    actions: [reply],\n';
+      code += '    intentIdentifiers: []\n)\n';
+    }
+    code += '\n<span class="kw">let</span> trigger = <span class="type">UNTimeIntervalNotificationTrigger</span>(\n';
+    code += '    timeInterval: <span class="prop">5</span>, repeats: <span class="prop">false</span>\n)\n';
+    code += '<span class="kw">let</span> request = <span class="type">UNNotificationRequest</span>(\n';
+    code += '    identifier: <span class="str">"msg-1"</span>,\n';
+    code += '    content: content, trigger: trigger\n)';
+  } else if (state.style === 'badge') {
+    code += '<span class="kw">import</span> <span class="type">UIKit</span>\n\n';
+    code += '<span class="comment">// Set badge count</span>\n';
+    code += '<span class="type">UNUserNotificationCenter</span>.<span class="func">current</span>()\n';
+    code += '    .<span class="func">setBadgeCount</span>(<span class="prop">3</span>) { error <span class="kw">in</span>\n';
+    code += '        <span class="kw">if let</span> error {\n';
+    code += '            <span class="func">print</span>(<span class="str">"Badge error: \\(error)"</span>)\n';
+    code += '        }\n';
+    code += '    }';
+  } else {
+    code += '<span class="comment">// Lock screen notifications use the same</span>\n';
+    code += '<span class="comment">// UNNotificationContent API.</span>\n';
+    code += '<span class="comment">// Grouping is controlled via threadIdentifier.</span>\n\n';
+    code += '<span class="kw">let</span> content = <span class="type">UNMutableNotificationContent</span>()\n';
+    code += 'content.<span class="prop">title</span> = <span class="str">"Meeting in 30 min"</span>\n';
+    code += 'content.<span class="prop">body</span> = <span class="str">"Design Review — Room B"</span>\n';
+    if (state.group !== 'off') {
+      code += 'content.<span class="prop">threadIdentifier</span> = <span class="str">"calendar"</span>\n';
+    }
+    if (state.group === 'byApp') {
+      code += 'content.<span class="prop">summaryArgument</span> = <span class="str">"Calendar"</span>\n';
+    }
+    code += 'content.<span class="prop">sound</span> = .<span class="func">default</span>';
+  }
+  el.innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't ───
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="screen-nav-title">Notifications</div>'
+  + '<div class="screen-section"><div class="screen-section-title" style="color:#FF3B30">❌ Too Many Ungrouped</div>'
+  + '<div style="display:flex;flex-direction:column;gap:6px">'
+  + '<div class="notif-banner"><div class="notif-icon" style="background:#FF9500">📰</div><div class="notif-body"><div class="notif-app">News · 1m</div><div class="notif-title">Article 1</div><div class="notif-text">Check out this story...</div></div></div>'
+  + '<div class="notif-banner"><div class="notif-icon" style="background:#FF9500">📰</div><div class="notif-body"><div class="notif-app">News · 2m</div><div class="notif-title">Article 2</div><div class="notif-text">Another story...</div></div></div>'
+  + '<div class="notif-banner"><div class="notif-icon" style="background:#FF9500">📰</div><div class="notif-body"><div class="notif-app">News · 3m</div><div class="notif-title">Article 3</div><div class="notif-text">Yet another...</div></div></div>'
+  + '<div class="notif-banner"><div class="notif-icon" style="background:#FF9500">📰</div><div class="notif-body"><div class="notif-app">News · 4m</div><div class="notif-title">Article 4</div><div class="notif-text">More news...</div></div></div>'
+  + '</div></div>'
+  + '<div class="screen-section"><div class="screen-section-title" style="color:#FF3B30">❌ Critical for Marketing</div>'
+  + '<div class="notif-banner critical-banner"><div class="notif-icon" style="background:#AF52DE">🛍️</div><div class="notif-body"><div class="critical-label">Critical Alert</div><div class="notif-app">Shop · Now</div><div class="notif-title">50% OFF SALE!</div><div class="notif-text">Don\'t miss our biggest sale of the year!</div></div></div></div>'
+  + '<div class="screen-section"><div class="screen-section-title" style="color:#FF3B30">❌ No Sound Info</div>'
+  + '<div class="notif-banner"><div class="notif-icon" style="background:#34C759">💬</div><div class="notif-body"><div class="notif-app">Messages</div><div class="notif-title">Unknown Sender</div><div class="notif-text">You have a new message from an unknown contact with no preview available</div></div></div></div>'
+  + '<div style="height:20px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+  document.getElementById('higWarning').textContent = '⚠️ HIG 위반: 알림을 마케팅에 남용하지 마세요';
+}
+
+// ─── HIG Violations ───
+var higRules = [
+  { check: function() { return state.critical && state.style === 'banner'; }, ko: 'Critical Alert는 긴급 상황에만 사용하세요. 일반 배너에는 부적절합니다' },
+  { check: function() { return state.group === 'off' && state.style !== 'badge'; }, ko: '알림 그룹핑을 끄면 사용자가 알림에 압도당할 수 있습니다' },
+  { check: function() { return state.critical && !state.sound; }, ko: 'Critical Alert는 반드시 소리와 함께 표시되어야 합니다' },
+  { check: function() { return state.showActions && state.style === 'badge'; }, ko: 'Badge 스타일에는 액션 버튼이 표시되지 않습니다' }
+];
+
+function checkHigViolations() {
+  if (isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  var violations = [];
+  higRules.forEach(function(rule) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  });
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+updatePreview();
+</script>
+</body>
+</html>

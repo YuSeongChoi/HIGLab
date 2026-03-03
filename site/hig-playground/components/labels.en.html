@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labels — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Label의 아이콘과 텍스트 조합 styles interactively. Change properties in the control panel to see them reflected on the iPhone screen instantly.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:0;
+  overflow:hidden;
+}
+
+/* ─── Label Items ─── */
+.label-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  border-bottom:0.5px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:all 0.2s ease;
+}
+.label-item:last-child{border-bottom:none}
+.label-icon{
+  font-size:20px;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:7px;
+  color:#fff;flex-shrink:0;
+}
+.label-text{font-size:16px;font-weight:400;color:#000}
+
+/* Size variations */
+.label-item.size-small .label-icon{font-size:14px;width:24px;height:24px;border-radius:5px}
+.label-item.size-small .label-text{font-size:13px}
+.label-item.size-small{padding:10px 16px;gap:8px}
+
+.label-item.size-regular .label-icon{font-size:20px;width:32px;height:32px;border-radius:7px}
+.label-item.size-regular .label-text{font-size:16px}
+
+.label-item.size-large .label-icon{font-size:26px;width:40px;height:40px;border-radius:9px}
+.label-item.size-large .label-text{font-size:18px;font-weight:500}
+.label-item.size-large{padding:16px 16px;gap:14px}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.en.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="labels.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.en.html">HIG Playground</a> &rarr; Labels
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Labels</h1>
+<p class="page-desc">iOS Label의 아이콘과 텍스트 조합 styles interactively. Change properties in the control panel to see them reflected on the iPhone screen instantly.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Labels</div>
+
+        <!-- Label List -->
+        <div class="screen-section">
+          <div class="screen-section-title">Items</div>
+          <div class="screen-card" id="labelList">
+            <div class="label-item size-regular demo-label" data-icon="&#9733;" data-text="Favorites">
+              <div class="label-icon" style="background:#007AFF">&#9733;</div>
+              <span class="label-text">Favorites</span>
+            </div>
+            <div class="label-item size-regular demo-label" data-icon="&#8595;" data-text="Downloads">
+              <div class="label-icon" style="background:#007AFF">&#8595;</div>
+              <span class="label-text">Downloads</span>
+            </div>
+            <div class="label-item size-regular demo-label" data-icon="&#9881;" data-text="Settings">
+              <div class="label-icon" style="background:#007AFF">&#9881;</div>
+              <span class="label-text">Settings</span>
+            </div>
+            <div class="label-item size-regular demo-label" data-icon="&#9993;" data-text="Messages">
+              <div class="label-icon" style="background:#007AFF">&#9993;</div>
+              <span class="label-text">Messages</span>
+            </div>
+            <div class="label-item size-regular demo-label" data-icon="&#128197;" data-text="Calendar">
+              <div class="label-icon" style="background:#007AFF">&#128197;</div>
+              <span class="label-text">Calendar</span>
+            </div>
+            <div class="label-item size-regular demo-label" data-icon="&#128247;" data-text="Photos">
+              <div class="label-icon" style="background:#007AFF">&#128247;</div>
+              <span class="label-text">Photos</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG Violation: Labels cause confusion</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — Try It Yourself</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — Good Example</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — Bad Example</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; Do This</h4>
+            <ul>
+              <li>Pair icons with text for clarity</li>
+              <li>Use SF Symbols for consistent iconography</li>
+              <li>Use semantic label styles (.titleAndIcon, .titleOnly, .iconOnly)</li>
+              <li>Ensure icons and text are visually aligned</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; Don't Do This</h4>
+            <ul>
+              <li>Don't use ambiguous icons without text labels</li>
+              <li>Don't mix icon styles (SF Symbols with custom icons)</li>
+              <li>Don't use too many colors in label icons</li>
+              <li>Don't make labels too complex with multiple lines</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 See the bad pattern in the iPhone preview above</p>
+          </div>
+        </div>
+        <!-- Icon Position -->
+        <div class="control-group">
+          <label>Icon Position</label>
+          <div class="control-options" id="iconPositionOptions">
+            <div class="control-option active" data-value="leading">Leading</div>
+            <div class="control-option" data-value="trailing">Trailing</div>
+          </div>
+        </div>
+        <!-- Size -->
+        <div class="control-group">
+          <label>Size</label>
+          <div class="control-options" id="sizeOptions">
+            <div class="control-option" data-value="small">Small</div>
+            <div class="control-option active" data-value="regular">Regular</div>
+            <div class="control-option" data-value="large">Large</div>
+          </div>
+        </div>
+        <!-- Color -->
+        <div class="control-group">
+          <label>Color</label>
+          <div class="color-options" id="colorOptions">
+            <div class="color-swatch active" data-color="#007AFF" style="background:#007AFF" title="Blue"></div>
+            <div class="color-swatch" data-color="#34C759" style="background:#34C759" title="Green"></div>
+            <div class="color-swatch" data-color="#FF9500" style="background:#FF9500" title="Orange"></div>
+            <div class="color-swatch" data-color="#AF52DE" style="background:#AF52DE" title="Purple"></div>
+            <div class="color-swatch" data-color="#FF3B30" style="background:#FF3B30" title="Red"></div>
+            <div class="color-swatch" data-color="#8E8E93" style="background:#8E8E93" title="Gray"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"><span class="kw">Label</span>(<span class="str">"Favorites"</span>, <span class="prop">systemImage</span>: <span class="str">"star.fill"</span>)
+    .<span class="func">labelStyle</span>(.<span class="prop">titleAndIcon</span>)
+    .<span class="func">font</span>(.<span class="prop">body</span>)
+    .<span class="func">foregroundStyle</span>(.<span class="prop">blue</span>)</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  labelStyle: 'titleAndIcon',
+  iconPosition: 'leading',
+  size: 'regular',
+  color: '#007AFF'
+};
+
+// ─── SF Symbol mapping for code preview ───
+const labelData = [
+  { icon: '\u2733', text: 'Favorites', sfSymbol: 'star.fill' },
+  { icon: '\u2193', text: 'Downloads', sfSymbol: 'arrow.down.circle.fill' },
+  { icon: '\u2699', text: 'Settings', sfSymbol: 'gearshape.fill' },
+  { icon: '\u2709', text: 'Messages', sfSymbol: 'envelope.fill' },
+  { icon: '\uD83D\uDCC5', text: 'Calendar', sfSymbol: 'calendar' },
+  { icon: '\uD83D\uDCF7', text: 'Photos', sfSymbol: 'camera.fill' }
+];
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'labelStyleOptions') state.labelStyle = opt.dataset.value;
+      if (group.id === 'iconPositionOptions') state.iconPosition = opt.dataset.value;
+      if (group.id === 'sizeOptions') state.size = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Color Swatches ───
+document.querySelectorAll('.color-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    state.color = swatch.dataset.color;
+    updatePreview();
+  });
+});
+
+// ─── Update Preview ───
+function updatePreview() {
+  const labels = document.querySelectorAll('.demo-label');
+
+  labels.forEach(label => {
+    const iconEl = label.querySelector('.label-icon');
+    const textEl = label.querySelector('.label-text');
+
+    // Size
+    label.classList.remove('size-small', 'size-regular', 'size-large');
+    label.classList.add('size-' + state.size);
+
+    // Color
+    iconEl.style.background = state.color;
+
+    // Label Style
+    switch (state.labelStyle) {
+      case 'titleAndIcon':
+        iconEl.style.display = 'flex';
+        textEl.style.display = 'inline';
+        break;
+      case 'titleOnly':
+        iconEl.style.display = 'none';
+        textEl.style.display = 'inline';
+        break;
+      case 'iconOnly':
+        iconEl.style.display = 'flex';
+        textEl.style.display = 'none';
+        break;
+    }
+
+    // Icon Position
+    if (state.iconPosition === 'trailing') {
+      label.style.flexDirection = 'row-reverse';
+      label.style.justifyContent = 'space-between';
+    } else {
+      label.style.flexDirection = 'row';
+      label.style.justifyContent = 'flex-start';
+    }
+  });
+
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const styleMap = {
+    titleAndIcon: '.titleAndIcon',
+    titleOnly: '.titleOnly',
+    iconOnly: '.iconOnly'
+  };
+  const fontMap = {
+    small: '.caption',
+    regular: '.body',
+    large: '.title3'
+  };
+  const colorMap = {
+    '#007AFF': '.blue',
+    '#34C759': '.green',
+    '#FF9500': '.orange',
+    '#AF52DE': '.purple',
+    '#FF3B30': '.red',
+    '#8E8E93': '.gray'
+  };
+
+  let code = '<span class="kw">Label</span>(<span class="str">"Favorites"</span>, <span class="prop">systemImage</span>: <span class="str">"star.fill"</span>)\n';
+  code += '    .<span class="func">labelStyle</span>(<span class="prop">' + styleMap[state.labelStyle] + '</span>)\n';
+  code += '    .<span class="func">font</span>(<span class="prop">' + fontMap[state.size] + '</span>)\n';
+  code += '    .<span class="func">foregroundStyle</span>(<span class="prop">' + (colorMap[state.color] || '.blue') + '</span>)';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// Initial render
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Labels</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Ambiguous Icons</div>
+          <div class="screen-card"><div style="background:#fff;padding:16px;border-radius:14px;display:flex;gap:20px;justify-content:center;font-size:24px">🔧 ⚙️ 🛠️ ⚡</div><p style="font-size:10px;color:#8E8E93;text-align:center;margin-top:8px">Only similar icons listed without text</p></div>
+        </div>
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Mismatched Icons</div>
+          <div class="screen-card"><div style="background:#fff;padding:16px;border-radius:14px;font-size:14px;font-family:-apple-system,sans-serif"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">🗑️ Save Document</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">📤 Delete Account</div><div style="display:flex;align-items:center;gap:8px">✅ Cancel</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.labelStyle === 'iconOnly' && state.size === 'small'; }, ko: "Small icon-only labels are hard to understand", en: "Small icon-only labels are hard to understand" },
+    { check: function(){ return state.labelStyle === 'iconOnly'; }, ko: "Icon-only labels can be ambiguous. Include text for clarity", en: "Icon-only labels can be ambiguous. Include text for clarity" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ Following HIG guidelines correctly</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

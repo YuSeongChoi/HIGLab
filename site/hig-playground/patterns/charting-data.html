@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charting Data — HIG Playground | HIG Lab</title>
+<meta name="description" content="차트 데이터를 효과적으로 표현하는 HIG 패턴을 직접 체험해보세요. Bar, Line, Pie, Donut 차트를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{grid-template-columns:1fr;justify-items:center}
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;background:#000;border-radius:44px;padding:4px;
+  position:sticky;top:72px;
+  box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;background:var(--ios-bg);border-radius:40px;
+  overflow:hidden;position:relative;display:flex;flex-direction:column;
+}
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;background:#000;border-radius:20px;z-index:10;
+}
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:16px}
+.screen-section-title{
+  font-size:13px;font-weight:600;color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);border-radius:14px;padding:16px;
+  display:flex;flex-direction:column;gap:12px;align-items:center;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;
+  cursor:pointer;position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;
+  background:#fff;border-radius:50%;transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* Slider */
+.control-slider{display:flex;align-items:center;gap:12px}
+.control-slider input[type=range]{
+  flex:1;-webkit-appearance:none;height:4px;border-radius:2px;
+  background:var(--border);outline:none;
+}
+.control-slider input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:#fff;border:2px solid var(--ios-blue);cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,0.15);
+}
+.control-slider .slider-value{
+  font-size:14px;font-weight:700;color:var(--accent);min-width:24px;text-align:center;
+}
+
+/* ─── Guidelines / Do-Don't ─── */
+.guidelines{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;
+  text-align:center;transition:all .2s;background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* ─── HIG Warning ─── */
+.hig-warning{
+  display:none;position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ─── Violations ─── */
+.hig-violations{margin-top:0;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease;
+}
+.hig-violation-item.info{
+  background:rgba(255,149,0,0.08);border:1px solid rgba(255,149,0,0.2);color:#FF9500;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+  color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;
+  color:#cdd6f4;overflow-x:auto;white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+.copy-btn{
+  font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Chart Styles ─── */
+.chart-container{width:100%;min-height:200px;position:relative}
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:160px;padding-top:10px}
+.bar-chart .bar{
+  flex:1;border-radius:4px 4px 0 0;transition:height 0.5s ease;position:relative;min-width:8px;
+}
+.bar-chart .bar-label{
+  position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+  font-size:8px;color:var(--ios-gray);white-space:nowrap;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.bar-chart .bar-value{
+  position:absolute;top:-16px;left:50%;transform:translateX(-50%);
+  font-size:8px;font-weight:600;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.chart-grid{
+  position:absolute;top:0;left:0;right:0;bottom:24px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  pointer-events:none;
+}
+.chart-grid-line{border-bottom:1px dashed rgba(0,0,0,0.08);width:100%}
+.chart-legend{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;justify-content:center;
+}
+.chart-legend-item{
+  display:flex;align-items:center;gap:4px;font-size:9px;color:var(--ios-gray);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.chart-legend-dot{width:8px;height:8px;border-radius:2px}
+.line-chart-svg{width:100%;height:160px}
+.pie-chart-container{width:150px;height:150px;border-radius:50%;position:relative;margin:0 auto}
+.donut-hole{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:70px;height:70px;border-radius:50%;background:var(--ios-card);
+}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+@media(max-width:860px){
+  .iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}
+}
+@media(max-width:420px){
+  .iphone-frame{transform:scale(0.65);margin-bottom:-220px}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Charting Data
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Charting Data</h1>
+<p class="page-desc">차트 데이터를 효과적으로 표현하는 패턴을 직접 체험해보세요. 차트 유형, 데이터 포인트, 라벨, 범례 등을 조작하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Charts</div>
+        <div class="screen-section">
+          <div class="screen-section-title" id="chartTypeLabel">Bar Chart</div>
+          <div class="screen-card" id="chartCard">
+            <div class="chart-container" id="chartContainer"></div>
+          </div>
+        </div>
+        <div class="screen-section" id="legendSection">
+          <div class="screen-card" style="padding:10px 12px">
+            <div class="chart-legend" id="chartLegend"></div>
+          </div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">📊 HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>✓ 이렇게 하세요</h4>
+            <ul>
+              <li>데이터 포인트를 <strong>5~7개</strong> 이내로 유지</li>
+              <li>Pie 차트는 <strong>5개 이하</strong> 항목에 사용</li>
+              <li>항상 <strong>라벨과 범례</strong>를 포함</li>
+              <li>시스템 색상을 활용하여 <strong>접근성</strong> 확보</li>
+              <li>애니메이션으로 <strong>데이터 변화</strong>를 표현</li>
+              <li>차트 유형에 맞는 <strong>색상 대비</strong> 사용</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>✗ 이렇게 하지 마세요</h4>
+            <ul>
+              <li>❌ 10개 이상의 데이터 포인트로 차트 과밀화</li>
+              <li>❌ Pie 차트에 7개 이상 항목 사용</li>
+              <li>❌ 라벨이나 범례 없이 차트 표시</li>
+              <li>❌ Pie 차트에 단색 계열 색상 사용</li>
+              <li>❌ 애니메이션 없이 데이터 전환</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 컨트롤을 조작하여 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          Apple의 Swift Charts 프레임워크는 데이터를 명확하고 아름답게 시각화합니다.
+          차트는 데이터의 의미를 전달하는 것이 핵심이며, 과도한 정보는 오히려 가독성을 해칩니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/charts" class="guideline-link" target="_blank">
+          Apple HIG: Charts &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">⚙️ Controls</div>
+      <div class="controls-body">
+        <!-- Chart Type -->
+        <div class="control-group">
+          <label>차트 유형</label>
+          <div class="control-options" id="chartTypeOptions">
+            <div class="control-option active" data-value="bar">Bar</div>
+            <div class="control-option" data-value="line">Line</div>
+            <div class="control-option" data-value="pie">Pie</div>
+            <div class="control-option" data-value="donut">Donut</div>
+          </div>
+        </div>
+        <!-- Data Points -->
+        <div class="control-group">
+          <label>데이터 포인트</label>
+          <div class="control-slider">
+            <input type="range" id="dataPointsSlider" min="2" max="15" value="5">
+            <span class="slider-value" id="dataPointsValue">5</span>
+          </div>
+        </div>
+        <!-- Toggles -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">라벨 표시</span>
+            <div class="toggle-switch on" id="toggleLabels"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">범례 표시</span>
+            <div class="toggle-switch on" id="toggleLegend"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">그리드 표시</span>
+            <div class="toggle-switch on" id="toggleGrid"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">애니메이션</span>
+            <div class="toggle-switch on" id="toggleAnimate"></div>
+          </div>
+        </div>
+        <!-- Color Scheme -->
+        <div class="control-group">
+          <label>색상 스킴</label>
+          <div class="control-options" id="colorSchemeOptions">
+            <div class="control-option active" data-value="system">System</div>
+            <div class="control-option" data-value="monochrome">Monochrome</div>
+            <div class="control-option" data-value="colorful">Colorful</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel">
+      <div class="controls-header"><span class="hig-live-badge ok" id="violationBadge"><span class="dot"></span> HIG OK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList">
+          <div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+let state = {
+  chartType: 'bar',
+  dataPoints: 5,
+  showLabels: true,
+  showLegend: true,
+  showGrid: true,
+  animateChart: true,
+  colorScheme: 'system'
+};
+
+// ─── Sample Data ───
+const categoryNames = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+let sampleData = [];
+
+function generateData() {
+  sampleData = [];
+  for (let i = 0; i < state.dataPoints; i++) {
+    sampleData.push({ name: categoryNames[i], value: Math.floor(Math.random() * 80) + 20 });
+  }
+}
+generateData();
+
+// ─── Colors ───
+function getColors(n) {
+  const system = ['#007AFF','#34C759','#FF9500','#FF3B30','#AF52DE','#5AC8FA','#FF2D55','#FFCC00','#00C7BE','#30B0C7','#32D74B','#FF6482','#BF5AF2','#AC8E68','#64D2FF'];
+  const mono = [];
+  for (let i = 0; i < n; i++) { const l = 30 + Math.round((i / Math.max(n-1,1)) * 50); mono.push('hsl(210,' + 10 + '%,' + l + '%)'); }
+  const colorful = ['#FF2D55','#FF9500','#FFCC00','#34C759','#007AFF','#AF52DE','#5AC8FA','#FF6482','#00C7BE','#BF5AF2','#32D74B','#FF3B30','#30B0C7','#AC8E68','#64D2FF'];
+  if (state.colorScheme === 'monochrome') return mono;
+  if (state.colorScheme === 'colorful') return colorful.slice(0, n);
+  return system.slice(0, n);
+}
+
+// ─── Render Chart ───
+function renderChart() {
+  const container = document.getElementById('chartContainer');
+  const legendEl = document.getElementById('chartLegend');
+  const legendSection = document.getElementById('legendSection');
+  const typeLabel = document.getElementById('chartTypeLabel');
+  const colors = getColors(state.dataPoints);
+  const maxVal = Math.max(...sampleData.map(d => d.value));
+  const anim = state.animateChart;
+
+  const typeNames = { bar: 'Bar Chart', line: 'Line Chart', pie: 'Pie Chart', donut: 'Donut Chart' };
+  typeLabel.textContent = typeNames[state.chartType];
+
+  // Grid
+  let gridHTML = '';
+  if (state.showGrid && (state.chartType === 'bar' || state.chartType === 'line')) {
+    gridHTML = '<div class="chart-grid">' + Array(5).fill('<div class="chart-grid-line"></div>').join('') + '</div>';
+  }
+
+  if (state.chartType === 'bar') {
+    let bars = sampleData.map(function(d, i) {
+      const h = (d.value / maxVal) * 140;
+      const style = anim ? 'height:0px;background:' + colors[i] : 'height:' + h + 'px;background:' + colors[i];
+      let label = state.showLabels ? '<span class="bar-label">' + d.name + '</span><span class="bar-value">' + d.value + '</span>' : '';
+      return '<div class="bar" style="' + style + '" data-h="' + h + '">' + label + '</div>';
+    }).join('');
+    container.innerHTML = gridHTML + '<div class="bar-chart" style="margin-bottom:' + (state.showLabels ? '24px' : '0') + '">' + bars + '</div>';
+    if (anim) {
+      setTimeout(function() {
+        container.querySelectorAll('.bar').forEach(function(b) { b.style.height = b.dataset.h + 'px'; });
+      }, 50);
+    }
+  } else if (state.chartType === 'line') {
+    const w = 310, h = 160, padX = 10, padY = 10;
+    const stepX = (w - padX * 2) / Math.max(state.dataPoints - 1, 1);
+    let points = sampleData.map(function(d, i) {
+      return { x: padX + i * stepX, y: padY + (1 - d.value / maxVal) * (h - padY * 2) };
+    });
+    let pathD = points.map(function(p, i) { return (i === 0 ? 'M' : 'L') + p.x + ',' + p.y; }).join(' ');
+    // Fill area
+    let areaD = pathD + ' L' + points[points.length-1].x + ',' + (h - padY) + ' L' + points[0].x + ',' + (h - padY) + ' Z';
+    let labels = '';
+    if (state.showLabels) {
+      labels = points.map(function(p, i) {
+        return '<text x="' + p.x + '" y="' + (p.y - 8) + '" text-anchor="middle" font-size="8" fill="#000" font-weight="600">' + sampleData[i].value + '</text>' +
+               '<text x="' + p.x + '" y="' + (h - 1) + '" text-anchor="middle" font-size="8" fill="#8E8E93">' + sampleData[i].name + '</text>';
+      }).join('');
+    }
+    let dots = points.map(function(p, i) {
+      return '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="' + colors[0] + '" stroke="#fff" stroke-width="2"/>';
+    }).join('');
+    let gridSVG = '';
+    if (state.showGrid) {
+      for (let g = 0; g < 5; g++) {
+        const gy = padY + g * ((h - padY * 2) / 4);
+        gridSVG += '<line x1="' + padX + '" y1="' + gy + '" x2="' + (w - padX) + '" y2="' + gy + '" stroke="rgba(0,0,0,0.06)" stroke-dasharray="4"/>';
+      }
+    }
+    const lineLen = anim ? ' stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:drawLine 1s ease forwards"' : '';
+    container.innerHTML = '<svg class="line-chart-svg" viewBox="0 0 ' + w + ' ' + h + '">' +
+      gridSVG +
+      '<path d="' + areaD + '" fill="' + colors[0] + '" opacity="0.1"/>' +
+      '<path d="' + pathD + '" fill="none" stroke="' + colors[0] + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"' + lineLen + '/>' +
+      dots + labels + '</svg>' +
+      (anim ? '<style>@keyframes drawLine{to{stroke-dashoffset:0}}</style>' : '');
+  } else if (state.chartType === 'pie' || state.chartType === 'donut') {
+    const total = sampleData.reduce(function(s, d) { return s + d.value; }, 0);
+    // Use conic-gradient for pie
+    let gradParts = [], cumPct = 0;
+    sampleData.forEach(function(d, i) {
+      const pct = (d.value / total) * 100;
+      gradParts.push(colors[i] + ' ' + cumPct + '% ' + (cumPct + pct) + '%');
+      cumPct += pct;
+    });
+    const gradient = 'conic-gradient(' + gradParts.join(', ') + ')';
+    const hole = state.chartType === 'donut' ? '<div class="donut-hole"></div>' : '';
+    let labelHTML = '';
+    if (state.showLabels) {
+      // Show percentage labels around the pie
+      cumPct = 0;
+      labelHTML = '<div style="position:absolute;top:50%;left:50%;width:0;height:0">';
+      sampleData.forEach(function(d, i) {
+        const pct = (d.value / total) * 100;
+        const midAngle = (cumPct + pct / 2) / 100 * 2 * Math.PI - Math.PI / 2;
+        const r = 90;
+        const lx = Math.cos(midAngle) * r;
+        const ly = Math.sin(midAngle) * r;
+        labelHTML += '<span style="position:absolute;left:' + lx + 'px;top:' + ly + 'px;transform:translate(-50%,-50%);font-size:8px;font-weight:700;color:#000;text-shadow:0 0 3px #fff,0 0 3px #fff">' + Math.round(pct) + '%</span>';
+        cumPct += pct;
+      });
+      labelHTML += '</div>';
+    }
+    const animStyle = anim ? 'animation:spinIn 0.6s ease;' : '';
+    container.innerHTML = '<div class="pie-chart-container" style="background:' + gradient + ';' + animStyle + '">' + hole + labelHTML + '</div>' +
+      (anim ? '<style>@keyframes spinIn{from{transform:rotate(-90deg);opacity:0}to{transform:rotate(0);opacity:1}}</style>' : '');
+  }
+
+  // Legend
+  if (state.showLegend) {
+    legendSection.style.display = '';
+    legendEl.innerHTML = sampleData.map(function(d, i) {
+      return '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:' + colors[i] + '"></div>' + d.name + '</div>';
+    }).join('');
+  } else {
+    legendSection.style.display = 'none';
+  }
+}
+
+// ─── HIG Rules ───
+const higRules = [
+  {
+    check: function() { return state.dataPoints > 10; },
+    msg: '데이터가 과하면 가독성이 떨어집니다',
+    level: 'warning'
+  },
+  {
+    check: function() { return (state.chartType === 'pie' || state.chartType === 'donut') && state.dataPoints >= 7; },
+    msg: 'Pie 차트는 5개 이하 항목에 적합합니다',
+    level: 'warning'
+  },
+  {
+    check: function() { return !state.showLabels; },
+    msg: '라벨 없으면 데이터를 해석할 수 없습니다',
+    level: 'warning'
+  },
+  {
+    check: function() { return !state.showLegend && state.dataPoints > 1; },
+    msg: '범례가 없으면 데이터 시리즈를 구분할 수 없습니다',
+    level: 'warning'
+  },
+  {
+    check: function() { return state.colorScheme === 'monochrome' && (state.chartType === 'pie' || state.chartType === 'donut'); },
+    msg: 'Pie 차트에서 단색 계열은 조각을 구분하기 어렵습니다',
+    level: 'warning'
+  },
+  {
+    check: function() { return !state.animateChart; },
+    msg: '차트 애니메이션은 데이터 변화를 이해하는 데 도움됩니다',
+    level: 'info'
+  }
+];
+
+function checkHigViolations() {
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  const warning = document.getElementById('higWarning');
+
+  const violations = higRules.filter(function(r) { try { return r.check(); } catch(e) { return false; } });
+
+  if (violations.length > 0) {
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      const cls = v.level === 'info' ? 'hig-violation-item info' : 'hig-violation-item';
+      const icon = v.level === 'info' ? 'ℹ️' : '⚠️';
+      return '<div class="' + cls + '"><span class="v-icon">' + icon + '</span><span class="v-text">' + v.msg + '</span></div>';
+    }).join('');
+    // Show first warning on iPhone
+    const firstWarn = violations.find(function(v) { return v.level === 'warning'; }) || violations[0];
+    warning.textContent = '⚠️ ' + firstWarn.msg;
+    warning.classList.add('show');
+  } else {
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    warning.classList.remove('show');
+  }
+}
+
+// ─── Update Code Preview ───
+function updateCode() {
+  const markMap = { bar: 'BarMark', line: 'LineMark', pie: 'SectorMark', donut: 'SectorMark' };
+  const mark = markMap[state.chartType];
+  const isPie = state.chartType === 'pie' || state.chartType === 'donut';
+
+  let code = '<span class="kw">import</span> <span class="type">Charts</span>\n\n';
+  code += '<span class="kw">struct</span> <span class="type">ChartView</span>: <span class="type">View</span> {\n';
+  code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">Chart</span> {\n';
+  code += '            <span class="kw">ForEach</span>(data) { item <span class="kw">in</span>\n';
+
+  if (isPie) {
+    code += '                <span class="type">' + mark + '</span>(\n';
+    code += '                    angle: .<span class="func">value</span>(<span class="str">"Value"</span>, item.value)\n';
+    code += '                )\n';
+    if (state.showLabels) {
+      code += '                .<span class="func">annotation</span>(position: .overlay) {\n';
+      code += '                    <span class="type">Text</span>(<span class="str">"\\(item.value)"</span>)\n';
+      code += '                }\n';
+    }
+    if (state.chartType === 'donut') {
+      code += '                .<span class="func">innerRadius</span>(.<span class="prop">ratio</span>(0.5))\n';
+    }
+  } else if (state.chartType === 'line') {
+    code += '                <span class="type">LineMark</span>(\n';
+    code += '                    x: .<span class="func">value</span>(<span class="str">"Category"</span>, item.name),\n';
+    code += '                    y: .<span class="func">value</span>(<span class="str">"Value"</span>, item.value)\n';
+    code += '                )\n';
+    if (state.showLabels) {
+      code += '                .<span class="func">symbol</span>(.<span class="prop">circle</span>)\n';
+    }
+  } else {
+    code += '                <span class="type">BarMark</span>(\n';
+    code += '                    x: .<span class="func">value</span>(<span class="str">"Category"</span>, item.name),\n';
+    code += '                    y: .<span class="func">value</span>(<span class="str">"Value"</span>, item.value)\n';
+    code += '                )\n';
+    if (state.showLabels) {
+      code += '                .<span class="func">annotation</span>(position: .top) {\n';
+      code += '                    <span class="type">Text</span>(<span class="str">"\\(item.value)"</span>)\n';
+      code += '                }\n';
+    }
+  }
+
+  code += '            }\n';
+  code += '        }\n';
+
+  if (!state.showGrid && !isPie) {
+    code += '        .<span class="func">chartXAxis</span> { <span class="type">AxisMarks</span>(values: .automatic) }\n';
+    code += '        .<span class="func">chartYAxis</span>(.hidden)\n';
+  }
+  if (!state.showLegend) {
+    code += '        .<span class="func">chartLegend</span>(.hidden)\n';
+  }
+  if (state.animateChart) {
+    code += '        .<span class="func">chartAnimate</span>()\n';
+  }
+  if (state.colorScheme === 'monochrome') {
+    code += '        <span class="comment">// Monochrome color scheme</span>\n';
+    code += '        .<span class="func">foregroundStyle</span>(.<span class="prop">gray</span>)\n';
+  } else if (state.colorScheme === 'colorful') {
+    code += '        <span class="comment">// Colorful custom palette</span>\n';
+    code += '        .<span class="func">chartForegroundStyleScale</span>(...)\n';
+  }
+
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Full Update ───
+function updatePreview() {
+  renderChart();
+  updateCode();
+  checkHigViolations();
+}
+
+// ─── Control Bindings ───
+// Chart type options
+document.getElementById('chartTypeOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.getElementById('chartTypeOptions').querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.chartType = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+// Color scheme options
+document.getElementById('colorSchemeOptions').querySelectorAll('.control-option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    document.getElementById('colorSchemeOptions').querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+    opt.classList.add('active');
+    state.colorScheme = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+// Data points slider
+document.getElementById('dataPointsSlider').addEventListener('input', function() {
+  state.dataPoints = parseInt(this.value);
+  document.getElementById('dataPointsValue').textContent = state.dataPoints;
+  generateData();
+  updatePreview();
+});
+
+// Toggles
+function bindToggle(id, key) {
+  document.getElementById(id).addEventListener('click', function() {
+    this.classList.toggle('on');
+    state[key] = this.classList.contains('on');
+    updatePreview();
+  });
+}
+bindToggle('toggleLabels', 'showLabels');
+bindToggle('toggleLegend', 'showLegend');
+bindToggle('toggleGrid', 'showGrid');
+bindToggle('toggleAnimate', 'animateChart');
+
+// ─── Do/Don't ───
+let isDontMode = false;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  // Reset to good defaults
+  state.chartType = 'bar'; state.dataPoints = 5; state.showLabels = true;
+  state.showLegend = true; state.showGrid = true; state.animateChart = true;
+  state.colorScheme = 'system';
+  syncControlsToState();
+  generateData();
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  // Set bad defaults
+  state.chartType = 'pie'; state.dataPoints = 12; state.showLabels = false;
+  state.showLegend = false; state.showGrid = false; state.animateChart = false;
+  state.colorScheme = 'monochrome';
+  syncControlsToState();
+  generateData();
+  updatePreview();
+}
+
+function syncControlsToState() {
+  // Chart type
+  document.getElementById('chartTypeOptions').querySelectorAll('.control-option').forEach(function(o) {
+    o.classList.toggle('active', o.dataset.value === state.chartType);
+  });
+  // Color scheme
+  document.getElementById('colorSchemeOptions').querySelectorAll('.control-option').forEach(function(o) {
+    o.classList.toggle('active', o.dataset.value === state.colorScheme);
+  });
+  // Slider
+  document.getElementById('dataPointsSlider').value = state.dataPoints;
+  document.getElementById('dataPointsValue').textContent = state.dataPoints;
+  // Toggles
+  document.getElementById('toggleLabels').classList.toggle('on', state.showLabels);
+  document.getElementById('toggleLegend').classList.toggle('on', state.showLegend);
+  document.getElementById('toggleGrid').classList.toggle('on', state.showGrid);
+  document.getElementById('toggleAnimate').classList.toggle('on', state.animateChart);
+}
+
+// ─── Initial Render ───
+updatePreview();
+</script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIG Playground — Interactive iOS Components | HIG Lab</title>
+<meta name="description" content="Apple Human Interface Guidelines의 iOS 컴포넌트를 브라우저에서 직접 체험해보세요. iPhone 목업 안에서 40개 컴포넌트를 인터랙티브하게 조작할 수 있습니다.">
+<meta property="og:title" content="HIG Playground — Interactive iOS Components">
+<meta property="og:description" content="Apple HIG UI 컴포넌트를 브라우저에서 직접 체험해보세요.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HIG Lab">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fafafa;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --tag-bg:#f5f5f7;
+  --green:#34c759;
+  --orange:#ff9500;
+  --purple:#af52de;
+  --red:#ff3b30;
+  --radius:16px;
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+.nav a.active-nav{color:var(--accent);font-weight:700}
+
+.hero{
+  text-align:center;padding:80px 24px 60px;
+  max-width:720px;margin:0 auto;
+}
+.hero h1{
+  font-size:clamp(32px,5vw,48px);
+  font-weight:900;letter-spacing:-2px;
+  line-height:1.15;margin-bottom:16px;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,#007AFF,#5856D6,#AF52DE);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{
+  font-size:17px;color:var(--text-2);
+  line-height:1.7;max-width:540px;margin:0 auto 24px;
+}
+.hero-stats{
+  display:flex;justify-content:center;gap:40px;
+}
+.stat-num{font-size:28px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--text-2);font-weight:500}
+
+.container{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.category-section{margin-bottom:48px}
+.category-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.category-icon{font-size:28px}
+.category-title{font-size:22px;font-weight:800}
+.category-count{font-size:13px;color:var(--text-2);margin-left:auto}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  text-decoration:none;color:inherit;
+  transition:all .2s;
+  display:block;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  text-decoration:none;
+}
+.card-gradient{
+  height:90px;
+  display:flex;align-items:center;justify-content:center;
+}
+.card-gradient .icon{font-size:36px}
+.card-body{padding:14px 16px 16px}
+.card-status{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+.card-status.done{color:var(--green)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.card-desc{font-size:12px;color:var(--text-2);line-height:1.5}
+
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">Home</a>
+      <a href="index.html" class="active-nav">HIG Playground</a>
+      <a href="../roadmap.html">Roadmap</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="index.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>iOS Components,<br><em>Interactive Playground</em></h1>
+  <p>Apple Human Interface Guidelines의 UI 컴포넌트를 iPhone 목업 안에서 직접 체험해보세요. 스타일, 크기, 색상을 바꿔보며 HIG 원칙을 익힐 수 있습니다.</p>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">40</div>
+      <div class="stat-label">Components</div>
+    </div>
+    <div>
+      <div class="stat-num">8</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div>
+      <div class="stat-num">&#8734;</div>
+      <div class="stat-label">Combinations</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══════════ Content ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📄</span>
+      <span class="category-title">Content</span>
+      <span class="category-count">4 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/charts.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5E5CE6,#BF5AF2)"><div class="icon">📊</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Charts</div><div class="card-desc">Bar, Line, Area, Pie 차트 타입과 색상 스킴 체험</div></div>
+      </a>
+      <a href="components/image-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF6482,#FF375F)"><div class="icon">🖼️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Image Views</div><div class="card-desc">contentMode, aspectRatio, clipShape 조절</div></div>
+      </a>
+      <a href="components/text-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">📝</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Text Views</div><div class="card-desc">Font 스타일, line limit, truncation, Dynamic Type</div></div>
+      </a>
+      <a href="components/web-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🌐</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Web Views</div><div class="card-desc">WKWebView 컨테이너와 nav bar, progress 표시</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Layout ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📐</span>
+      <span class="category-title">Layout</span>
+      <span class="category-count">7 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/collections.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9F0A,#FF6B00)"><div class="icon">🔲</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Collections</div><div class="card-desc">LazyVGrid/LazyHGrid 레이아웃과 컬럼 수 조절</div></div>
+      </a>
+      <a href="components/disclosure-groups.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">📂</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Disclosure Groups</div><div class="card-desc">Expandable/Collapsible 섹션과 중첩 레벨</div></div>
+      </a>
+      <a href="components/labels.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#5856D6)"><div class="icon">🏷️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Labels</div><div class="card-desc">SF Symbol + 텍스트 조합과 label 스타일</div></div>
+      </a>
+      <a href="components/lists.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">📋</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Lists</div><div class="card-desc">Plain/Inset Grouped 스타일과 swipe actions</div></div>
+      </a>
+      <a href="components/outline-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#636366)"><div class="icon">🌳</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Outline Views</div><div class="card-desc">계층형 트리 리스트와 expand/collapse</div></div>
+      </a>
+      <a href="components/split-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FFD60A,#FF9F0A)"><div class="icon">📱</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Split Views</div><div class="card-desc">NavigationSplitView의 sidebar + detail 레이아웃</div></div>
+      </a>
+      <a href="components/tables.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#0A84FF,#5E5CE6)"><div class="icon">📊</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Tables</div><div class="card-desc">다중 컬럼 정렬 가능한 테이블 뷰</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Menus and Actions ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📋</span>
+      <span class="category-title">Menus and Actions</span>
+      <span class="category-count">8 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/activity-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5856D6)"><div class="icon">📤</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Activity Views</div><div class="card-desc">ShareLink/UIActivityViewController 공유 시트</div></div>
+      </a>
+      <a href="components/buttons.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#007AFF,#5856D6)"><div class="icon">🔘</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Buttons</div><div class="card-desc">Filled, Tinted, Bordered, Plain 스타일 + 3가지 크기</div></div>
+      </a>
+      <a href="components/context-menus.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#636366)"><div class="icon">📌</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Context Menus</div><div class="card-desc">Long press 메뉴와 아이콘, divider 구성</div></div>
+      </a>
+      <a href="components/edit-menus.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">✂️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Edit Menus</div><div class="card-desc">Cut/Copy/Paste 편집 메뉴와 커스텀 액션</div></div>
+      </a>
+      <a href="components/menus.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE)"><div class="icon">📑</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Menus</div><div class="card-desc">Pull-down 메뉴와 아이콘, divider, destructive 항목</div></div>
+      </a>
+      <a href="components/pop-up-buttons.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🔽</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pop-Up Buttons</div><div class="card-desc">팝업 버튼의 선택 인디케이터와 스타일</div></div>
+      </a>
+      <a href="components/pull-down-buttons.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#5E5CE6)"><div class="icon">⬇️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pull-Down Buttons</div><div class="card-desc">Pull-down 버튼의 항목과 아이콘 구성</div></div>
+      </a>
+      <a href="components/toolbars.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🔧</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Toolbars</div><div class="card-desc">아이콘/텍스트/혼합 스타일 툴바와 배치</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Navigation and Search ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">🧭</span>
+      <span class="category-title">Navigation and Search</span>
+      <span class="category-count">5 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/navigation-bars.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#0A84FF,#5E5CE6)"><div class="icon">⬆️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Navigation Bars</div><div class="card-desc">Large/Inline 타이틀과 back/trailing 버튼 배치</div></div>
+      </a>
+      <a href="components/search-fields.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9F0A,#FFD60A)"><div class="icon">🔍</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Search Fields</div><div class="card-desc">검색 바, scope bar, 검색 제안 UI</div></div>
+      </a>
+      <a href="components/sidebars.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">📚</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sidebars</div><div class="card-desc">NavigationSplitView 사이드바와 섹션, 배지</div></div>
+      </a>
+      <a href="components/tab-bars.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🔖</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Tab Bars</div><div class="card-desc">3~5개 탭 구성과 badge, 선택 애니메이션</div></div>
+      </a>
+      <a href="components/scroll-views.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BDB76B,#8B8000)"><div class="icon">📜</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Scroll Views</div><div class="card-desc">Vertical/Horizontal 스크롤과 paging, indicators</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Presentation ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">🪟</span>
+      <span class="category-title">Presentation</span>
+      <span class="category-count">5 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/action-sheets.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF6B00,#FF9500)"><div class="icon">📃</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Action Sheets</div><div class="card-desc">Bottom sheet 스타일의 액션 목록과 cancel 버튼</div></div>
+      </a>
+      <a href="components/alerts.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF3B30,#FF6B6B)"><div class="icon">⚠️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Alerts</div><div class="card-desc">1~3 버튼 Alert과 destructive 액션 패턴</div></div>
+      </a>
+      <a href="components/page-controls.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#8E8E93,#AEAEB2)"><div class="icon">⚪</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Page Controls</div><div class="card-desc">페이지 인디케이터 dots와 스와이프 네비게이션</div></div>
+      </a>
+      <a href="components/popovers.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#BF5AF2,#5E5CE6)"><div class="icon">💬</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Popovers</div><div class="card-desc">Popover의 방향, 크기, dismiss 동작</div></div>
+      </a>
+      <a href="components/sheets.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5856D6,#AF52DE)"><div class="icon">📄</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sheets</div><div class="card-desc">Modal sheet의 detent 크기와 drag indicator</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Selection and Input ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">✏️</span>
+      <span class="category-title">Selection and Input</span>
+      <span class="category-count">8 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/color-wells.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF6482)"><div class="icon">🎨</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Color Wells</div><div class="card-desc">ColorPicker의 wheel/grid/spectrum 스타일</div></div>
+      </a>
+      <a href="components/date-pickers.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF6482)"><div class="icon">📅</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Date Pickers</div><div class="card-desc">Compact/Wheel/Graphical 스타일 비교</div></div>
+      </a>
+      <a href="components/pickers.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#64D2FF,#0A84FF)"><div class="icon">🎰</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Pickers</div><div class="card-desc">Wheel, Menu, Segmented, Inline 피커 스타일</div></div>
+      </a>
+      <a href="components/segmented-controls.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#5AC8FA,#007AFF)"><div class="icon">⊞</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Segmented Controls</div><div class="card-desc">2~5개 세그먼트의 선택 UI와 슬라이딩 애니메이션</div></div>
+      </a>
+      <a href="components/sliders.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#AF52DE,#5856D6)"><div class="icon">⚙️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Sliders</div><div class="card-desc">연속/단계 슬라이더와 최소/최대 아이콘 커스터마이징</div></div>
+      </a>
+      <a href="components/steppers.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">🔢</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Steppers</div><div class="card-desc">+/- 증감 컨트롤과 값 표시, 범위 설정</div></div>
+      </a>
+      <a href="components/text-fields.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FFD60A,#FF9F0A)"><div class="icon">✏️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Text Fields</div><div class="card-desc">Plain/Rounded 스타일과 keyboard type, secure field</div></div>
+      </a>
+      <a href="components/toggles.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#34C759,#30D158)"><div class="icon">🔀</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Toggles</div><div class="card-desc">iOS Switch 컨트롤의 on/off 애니메이션과 색상 커스터마이징</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════ Status ══════════ -->
+  <div class="category-section">
+    <div class="category-header">
+      <span class="category-icon">📈</span>
+      <span class="category-title">Status</span>
+      <span class="category-count">3 components</span>
+    </div>
+    <div class="grid">
+      <a href="components/activity-rings.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF375F,#FF2D55)"><div class="icon">⭕</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Activity Rings</div><div class="card-desc">동심원 진행 링과 애니메이션, 색상 커스터마이징</div></div>
+      </a>
+      <a href="components/gauges.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#30D158,#34C759)"><div class="icon">🌡️</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Gauges</div><div class="card-desc">Circular/Linear 게이지 인디케이터와 그라디언트</div></div>
+      </a>
+      <a href="components/progress-indicators.html" class="card">
+        <div class="card-gradient" style="background:linear-gradient(135deg,#FF9500,#FF6B00)"><div class="icon">⏳</div></div>
+        <div class="card-body"><div class="card-status done">LIVE</div><div class="card-title">Progress Indicators</div><div class="card-desc">ProgressView의 linear/circular 스타일과 진행률 조절</div></div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pickers — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Picker의 다양한 스타일을 브라우저에서 직접 체험해보세요. Wheel, Menu, Segmented, Inline 스타일과 항목 수를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-section{margin-bottom:24px}
+.screen-section-title{font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.screen-card{background:var(--ios-card);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* ─── Picker Styles ─── */
+/* Wheel Picker */
+.wheel-picker{
+  width:100%;height:180px;position:relative;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,black 30%,black 70%,transparent);
+  mask-image:linear-gradient(to bottom,transparent,black 30%,black 70%,transparent);
+}
+.wheel-picker-items{
+  position:absolute;width:100%;top:50%;
+  transition:transform 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.wheel-picker-item{
+  height:44px;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:20px;color:#000;
+  transform:translateY(-50%);
+  cursor:pointer;
+  transition:all 0.2s;
+  opacity:0.3;
+}
+.wheel-picker-item.selected{
+  opacity:1;font-weight:600;
+  transform:translateY(-50%) scale(1.05);
+}
+.wheel-highlight{
+  position:absolute;top:50%;left:8px;right:8px;
+  height:44px;transform:translateY(-50%);
+  background:rgba(120,120,128,0.12);
+  border-radius:10px;pointer-events:none;
+}
+
+/* Menu Picker */
+.menu-picker{
+  width:100%;
+}
+.menu-picker-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;background:var(--ios-card);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;
+}
+.menu-picker-label{color:#000;font-weight:400}
+.menu-picker-value{color:var(--ios-blue);font-weight:400;display:flex;align-items:center;gap:4px}
+.menu-picker-chevron{font-size:10px;color:var(--ios-gray3)}
+.menu-dropdown{
+  margin-top:4px;background:var(--ios-card);border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+}
+.menu-dropdown-item{
+  padding:12px 16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;color:#000;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:0.5px solid var(--ios-separator);
+  transition:background 0.15s;
+}
+.menu-dropdown-item:last-child{border-bottom:none}
+.menu-dropdown-item:hover{background:rgba(0,0,0,0.04)}
+.menu-dropdown-item.selected{color:var(--ios-blue)}
+.menu-dropdown-item.selected::after{content:'✓';color:var(--ios-blue);font-weight:600}
+
+/* Segmented Picker */
+.segmented-picker{
+  display:flex;background:rgba(120,120,128,0.12);
+  border-radius:9px;padding:2px;width:100%;
+  position:relative;
+}
+.segmented-item{
+  flex:1;padding:7px 12px;text-align:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:13px;font-weight:500;
+  color:#000;cursor:pointer;
+  border-radius:7px;position:relative;z-index:1;
+  transition:color 0.2s;
+}
+.segmented-slider{
+  position:absolute;top:2px;height:calc(100% - 4px);
+  background:#fff;border-radius:7px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.06);
+  transition:left 0.25s cubic-bezier(0.25,0.1,0.25,1),width 0.25s;
+  z-index:0;
+}
+
+/* Inline Picker */
+.inline-picker{
+  width:100%;
+}
+.inline-picker-item{
+  padding:11px 16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;color:#000;cursor:pointer;
+  border-bottom:0.5px solid var(--ios-separator);
+  display:flex;justify-content:space-between;align-items:center;
+  transition:background 0.15s;
+}
+.inline-picker-item:last-child{border-bottom:none}
+.inline-picker-item:hover{background:rgba(0,0,0,0.03)}
+.inline-picker-item.selected{color:var(--ios-blue)}
+.inline-picker-item.selected::after{content:'✓';color:var(--ios-blue);font-weight:600;font-size:17px}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* ─── Code Preview ─── */
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.en.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="pickers.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.en.html">HIG Playground</a> &rarr; Pickers
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Pickers</h1>
+<p class="page-desc">iOS Picker의 4가지 styles interactively. Wheel, Menu, Segmented, Inline 스타일과 항목 수를 컨트롤 패널에서 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Pickers</div>
+
+        <!-- Selection Display -->
+        <div class="screen-section">
+          <div class="screen-section-title">Selected</div>
+          <div class="screen-card">
+            <div style="font-family:-apple-system,sans-serif;font-size:17px;font-weight:600;color:var(--ios-blue)" id="selectedDisplay">San Francisco</div>
+          </div>
+        </div>
+
+        <!-- Picker Area -->
+        <div class="screen-section">
+          <div class="screen-section-title" id="pickerSectionTitle">Wheel Picker</div>
+          <div class="screen-card" id="pickerContainer"></div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG Violation: Improper picker usage</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — Try It Yourself</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — Good Example</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — Bad Example</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; Do This</h4>
+            <ul>
+              <li>Use wheel picker for short, predictable lists</li>
+              <li>Use segmented for 2-5 mutually exclusive options</li>
+              <li>Use menu picker to save vertical space</li>
+              <li>Pre-select a default value when possible</li>
+              <li>Keep picker items concise and scannable</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; Don't Do This</h4>
+            <ul>
+              <li>Don't use a wheel picker for very long lists</li>
+              <li>Don't use segmented for more than 5 items</li>
+              <li>Don't mix picker styles within the same form</li>
+              <li>Don't force users to scroll through many items without search</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 See the bad pattern in the iPhone preview above</p>
+          </div>
+        </div>
+        <!-- Item Count -->
+        <div class="control-group">
+          <label>Item Count</label>
+          <div class="control-options" id="countOptions">
+            <div class="control-option" data-value="3">3</div>
+            <div class="control-option active" data-value="5">5</div>
+            <div class="control-option" data-value="8">8</div>
+            <div class="control-option" data-value="12">12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+const allItems = [
+  'San Francisco','New York','Los Angeles','Chicago','Houston',
+  'Phoenix','Philadelphia','San Antonio','San Diego','Dallas',
+  'Austin','Seattle'
+];
+let state = {
+  style: 'wheel',
+  itemCount: 5,
+  selectedIndex: 0
+};
+
+function getItems() {
+  return allItems.slice(0, state.itemCount);
+}
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(group => {
+  group.querySelectorAll('.control-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.control-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      if (group.id === 'styleOptions') state.style = opt.dataset.value;
+      if (group.id === 'countOptions') state.itemCount = parseInt(opt.dataset.value);
+      if (state.selectedIndex >= state.itemCount) state.selectedIndex = 0;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Build Pickers ───
+function buildWheelPicker(items) {
+  const container = document.getElementById('pickerContainer');
+  container.innerHTML = '';
+  const wp = document.createElement('div');
+  wp.className = 'wheel-picker';
+
+  const highlight = document.createElement('div');
+  highlight.className = 'wheel-highlight';
+  wp.appendChild(highlight);
+
+  const itemsDiv = document.createElement('div');
+  itemsDiv.className = 'wheel-picker-items';
+  itemsDiv.id = 'wheelItems';
+
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'wheel-picker-item' + (i === state.selectedIndex ? ' selected' : '');
+    el.textContent = item;
+    el.addEventListener('click', () => {
+      state.selectedIndex = i;
+      updateWheelPosition(items);
+      updateSelectedDisplay();
+      updateCode();
+    });
+    itemsDiv.appendChild(el);
+  });
+
+  wp.appendChild(itemsDiv);
+  container.appendChild(wp);
+  updateWheelPosition(items);
+
+  // Touch/drag support
+  let startY = 0, startOffset = 0, dragging = false;
+  wp.addEventListener('touchstart', e => {
+    dragging = true;
+    startY = e.touches[0].clientY;
+    startOffset = state.selectedIndex;
+  }, {passive:true});
+  wp.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dy = startY - e.touches[0].clientY;
+    const steps = Math.round(dy / 44);
+    let newIdx = startOffset + steps;
+    newIdx = Math.max(0, Math.min(newIdx, items.length - 1));
+    if (newIdx !== state.selectedIndex) {
+      state.selectedIndex = newIdx;
+      updateWheelPosition(items);
+      updateSelectedDisplay();
+      updateCode();
+    }
+  }, {passive:true});
+  wp.addEventListener('touchend', () => dragging = false);
+}
+
+function updateWheelPosition(items) {
+  const itemsDiv = document.getElementById('wheelItems');
+  if (!itemsDiv) return;
+  const offset = -state.selectedIndex * 44;
+  itemsDiv.style.transform = 'translateY(' + offset + 'px)';
+  itemsDiv.querySelectorAll('.wheel-picker-item').forEach((el, i) => {
+    el.classList.toggle('selected', i === state.selectedIndex);
+  });
+}
+
+function buildMenuPicker(items) {
+  const container = document.getElementById('pickerContainer');
+  container.innerHTML = '';
+  const mp = document.createElement('div');
+  mp.className = 'menu-picker';
+
+  const row = document.createElement('div');
+  row.className = 'menu-picker-row';
+  row.style.borderRadius = '14px';
+  row.style.cursor = 'pointer';
+  row.innerHTML = '<span class="menu-picker-label">City</span><span class="menu-picker-value" id="menuValue">' + items[state.selectedIndex] + ' <span class="menu-picker-chevron">&#9660;</span></span>';
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'menu-dropdown';
+  dropdown.id = 'menuDropdown';
+  dropdown.style.display = 'none';
+
+  items.forEach((item, i) => {
+    const di = document.createElement('div');
+    di.className = 'menu-dropdown-item' + (i === state.selectedIndex ? ' selected' : '');
+    di.textContent = item;
+    di.addEventListener('click', () => {
+      state.selectedIndex = i;
+      dropdown.style.display = 'none';
+      updatePreview();
+    });
+    dropdown.appendChild(di);
+  });
+
+  row.addEventListener('click', () => {
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  mp.appendChild(row);
+  mp.appendChild(dropdown);
+  container.appendChild(mp);
+}
+
+function buildSegmentedPicker(items) {
+  const container = document.getElementById('pickerContainer');
+  container.innerHTML = '';
+  const sp = document.createElement('div');
+  sp.className = 'segmented-picker';
+
+  const slider = document.createElement('div');
+  slider.className = 'segmented-slider';
+  slider.id = 'segSlider';
+  sp.appendChild(slider);
+
+  const displayItems = items.slice(0, 5); // Max 5 for segmented
+  displayItems.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'segmented-item';
+    el.textContent = item.split(' ')[0]; // Use first word for space
+    el.addEventListener('click', () => {
+      state.selectedIndex = i;
+      updateSegmentedPosition(displayItems.length);
+      updateSelectedDisplay();
+      updateCode();
+    });
+    sp.appendChild(el);
+  });
+
+  container.appendChild(sp);
+  setTimeout(() => updateSegmentedPosition(displayItems.length), 10);
+}
+
+function updateSegmentedPosition(count) {
+  const slider = document.getElementById('segSlider');
+  if (!slider) return;
+  const width = 100 / count;
+  slider.style.width = 'calc(' + width + '% - 4px)';
+  slider.style.left = 'calc(' + (state.selectedIndex * width) + '% + 2px)';
+}
+
+function buildInlinePicker(items) {
+  const container = document.getElementById('pickerContainer');
+  container.innerHTML = '';
+  const ip = document.createElement('div');
+  ip.className = 'inline-picker';
+
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'inline-picker-item' + (i === state.selectedIndex ? ' selected' : '');
+    el.textContent = item;
+    el.addEventListener('click', () => {
+      state.selectedIndex = i;
+      ip.querySelectorAll('.inline-picker-item').forEach((it, idx) => {
+        it.classList.toggle('selected', idx === i);
+      });
+      updateSelectedDisplay();
+      updateCode();
+    });
+    ip.appendChild(el);
+  });
+
+  container.appendChild(ip);
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  const items = getItems();
+  const titles = {
+    wheel: 'Wheel Picker',
+    menu: 'Menu Picker',
+    segmented: 'Segmented Control',
+    inline: 'Inline Picker'
+  };
+  document.getElementById('pickerSectionTitle').textContent = titles[state.style];
+
+  switch (state.style) {
+    case 'wheel': buildWheelPicker(items); break;
+    case 'menu': buildMenuPicker(items); break;
+    case 'segmented': buildSegmentedPicker(items); break;
+    case 'inline': buildInlinePicker(items); break;
+  }
+
+  updateSelectedDisplay();
+  updateCode();
+}
+
+function updateSelectedDisplay() {
+  const items = getItems();
+  const displayItems = state.style === 'segmented' ? items.slice(0,5) : items;
+  const idx = Math.min(state.selectedIndex, displayItems.length - 1);
+  document.getElementById('selectedDisplay').textContent = displayItems[idx];
+}
+
+// ─── Update Code ───
+function updateCode() {
+  const items = getItems();
+  const displayItems = state.style === 'segmented' ? items.slice(0,5) : items;
+  const selected = displayItems[Math.min(state.selectedIndex, displayItems.length - 1)];
+
+  const styleMap = {
+    wheel: '.wheel',
+    menu: '.menu',
+    segmented: '.segmented',
+    inline: '.inline'
+  };
+
+  let code = '<span class="kw">@State private var</span> <span class="prop">selection</span> = <span class="str">"' + selected + '"</span>\n\n';
+  code += '<span class="kw">Picker</span>(<span class="str">"City"</span>, selection: <span class="prop">$selection</span>) {\n';
+
+  displayItems.forEach(item => {
+    code += '    <span class="type">Text</span>(<span class="str">"' + item + '"</span>).<span class="func">tag</span>(<span class="str">"' + item + '"</span>)\n';
+  });
+
+  code += '}\n';
+  code += '.<span class="func">pickerStyle</span>(<span class="prop">' + styleMap[state.style] + '</span>)';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── Init ───
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Pickers</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Items</div>
+          <div class="screen-card"><div style="background:#fff;padding:12px;border-radius:14px;font-size:11px;font-family:-apple-system,sans-serif;max-height:120px;overflow-y:auto"><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 1: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 2: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 3: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 4: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 5: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 6: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 7: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 8: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 9: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 10: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 11: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 12: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 13: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 14: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 15: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 16: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 17: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 18: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 19: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 20: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 21: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 22: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 23: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 24: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 25: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 26: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 27: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 28: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 29: Very long description text here</div><div style="padding:4px 0;border-bottom:1px solid #F2F2F7;color:#000">Option 30: Very long description text here</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+const higRules = [
+    { check: function(){ return state.itemCount >= 8 && state.style === 'wheel'; }, ko: "Wheel picker with 8+ items requires excessive scrolling", en: "Wheel picker with 8+ items requires excessive scrolling" },
+    { check: function(){ return state.itemCount <= 3 && state.style === 'wheel'; }, ko: "For 3 or fewer items, Segmented Control is more appropriate", en: "For 3 or fewer items, Segmented Control is more appropriate" }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  const violations = [];
+  for (const rule of higRules) {
+    try { if (rule.check()) violations.push(rule); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    // Also show iPhone warning
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ Following HIG guidelines correctly</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>
