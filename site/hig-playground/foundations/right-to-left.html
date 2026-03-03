@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Right to Left — HIG Playground | HIG Lab</title>
+<meta name="description" content="RTL(오른쪽에서 왼쪽) 레이아웃이 UI에 미치는 영향을 확인해보세요. LTR과 RTL 간의 레이아웃 전환을 인터랙티브하게 체험할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:375px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+
+/* ─── iOS Nav Bar ─── */
+.ios-navbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px 12px;
+  background:rgba(242,242,247,0.94);
+  backdrop-filter:blur(10px);
+  border-bottom:0.5px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.ios-navbar .nav-back{
+  font-size:17px;color:var(--ios-blue);cursor:pointer;
+  display:flex;align-items:center;gap:4px;font-weight:400;
+  min-width:60px;
+}
+.ios-navbar .nav-title{
+  font-size:17px;font-weight:600;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.ios-navbar .nav-action{
+  font-size:20px;color:var(--ios-blue);cursor:pointer;
+  min-width:60px;text-align:right;
+}
+
+/* ─── Message Row ─── */
+.message-list{padding:0}
+.message-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  border-bottom:0.5px solid var(--ios-separator);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  transition:all 0.3s ease;
+}
+.message-avatar{
+  width:48px;height:48px;border-radius:50%;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:600;color:#fff;
+}
+.message-body{flex:1;min-width:0}
+.message-name{
+  font-size:16px;font-weight:600;color:#000;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.message-preview{
+  font-size:14px;color:var(--ios-gray);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-top:2px;
+}
+.message-meta{
+  display:flex;flex-direction:column;align-items:flex-end;gap:4px;
+  flex-shrink:0;
+}
+.message-time{
+  font-size:14px;color:var(--ios-gray);
+  white-space:nowrap;
+}
+.message-chevron{
+  font-size:13px;color:var(--ios-gray3);
+}
+
+/* ─── RTL Styles ─── */
+.rtl-mode .ios-navbar{flex-direction:row-reverse}
+.rtl-mode .nav-back{flex-direction:row-reverse;min-width:60px;text-align:right}
+.rtl-mode .nav-action{text-align:left}
+.rtl-mode .message-row{flex-direction:row-reverse}
+.rtl-mode .message-body{text-align:right}
+.rtl-mode .message-meta{align-items:flex-start}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Right to Left
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Right to Left</h1>
+<p class="page-desc">RTL(오른쪽에서 왼쪽) 레이아웃이 UI에 미치는 영향을 확인해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <!-- iOS Nav Bar -->
+        <div class="ios-navbar" id="iosNavbar">
+          <div class="nav-back" id="navBack"><span id="backArrow">&#9664;</span> Back</div>
+          <div class="nav-title">Messages</div>
+          <div class="nav-action" id="navAction">&#9998;</div>
+        </div>
+        <!-- Message List -->
+        <div class="message-list" id="messageList">
+          <div class="message-row" data-index="0">
+            <div class="message-avatar" style="background:#007AFF">A</div>
+            <div class="message-body">
+              <div class="message-name" id="name0">Alex</div>
+              <div class="message-preview" id="preview0">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">2:30 PM</div>
+              <div class="message-chevron" id="chevron0">&rsaquo;</div>
+            </div>
+          </div>
+          <div class="message-row" data-index="1">
+            <div class="message-avatar" style="background:#34C759">S</div>
+            <div class="message-body">
+              <div class="message-name" id="name1">Sarah</div>
+              <div class="message-preview" id="preview1">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">1:15 PM</div>
+              <div class="message-chevron" id="chevron1">&rsaquo;</div>
+            </div>
+          </div>
+          <div class="message-row" data-index="2">
+            <div class="message-avatar" style="background:#FF9500">M</div>
+            <div class="message-body">
+              <div class="message-name" id="name2">Mohammed</div>
+              <div class="message-preview" id="preview2">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">12:00 PM</div>
+              <div class="message-chevron" id="chevron2">&rsaquo;</div>
+            </div>
+          </div>
+          <div class="message-row" data-index="3">
+            <div class="message-avatar" style="background:#AF52DE">L</div>
+            <div class="message-body">
+              <div class="message-name" id="name3">Layla</div>
+              <div class="message-preview" id="preview3">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">11:30 AM</div>
+              <div class="message-chevron" id="chevron3">&rsaquo;</div>
+            </div>
+          </div>
+          <div class="message-row" data-index="4">
+            <div class="message-avatar" style="background:#FF3B30">K</div>
+            <div class="message-body">
+              <div class="message-name" id="name4">Karim</div>
+              <div class="message-preview" id="preview4">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">9:45 AM</div>
+              <div class="message-chevron" id="chevron4">&rsaquo;</div>
+            </div>
+          </div>
+          <div class="message-row" data-index="5">
+            <div class="message-avatar" style="background:#5AC8FA">J</div>
+            <div class="message-body">
+              <div class="message-name" id="name5">Jenna</div>
+              <div class="message-preview" id="preview5">Hello</div>
+            </div>
+            <div class="message-meta">
+              <div class="message-time">Yesterday</div>
+              <div class="message-chevron" id="chevron5">&rsaquo;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li><strong>leading/trailing</strong>을 left/right 대신 사용하세요</li>
+              <li>방향성 아이콘(화살표, 셰브론)은 <strong>RTL에서 미러링</strong>하세요</li>
+              <li>실제 RTL 콘텐츠(아랍어, 히브리어)로 <strong>테스트</strong>하세요</li>
+              <li><strong>Auto Layout / SwiftUI</strong>를 사용하면 자동으로 플립됩니다</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>left/right 마진을 <strong>하드코딩</strong>하지 마세요</li>
+              <li>비대칭 아이콘의 <strong>미러링을 빠뜨리지</strong> 마세요</li>
+              <li>체크마크, 플러스 같은 <strong>비방향성 아이콘은 미러링하지</strong> 마세요</li>
+              <li>텍스트가 항상 왼쪽에서 오른쪽으로 흐른다고 <strong>가정하지</strong> 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          SwiftUI는 <strong>.environment(\.layoutDirection, .rightToLeft)</strong>로 RTL 레이아웃을 자동 지원합니다.
+          <strong>leading/trailing</strong> 기반의 레이아웃을 사용하면 별도 코드 변경 없이 RTL을 지원할 수 있습니다.
+          방향성 아이콘(chevron, arrow)은 RTL에서 자동으로 미러링됩니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/right-to-left" class="guideline-link" target="_blank">
+          Apple HIG: Right to Left &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Direction -->
+        <div class="control-group">
+          <label>Direction</label>
+          <div class="control-options" id="directionOptions">
+            <div class="control-option active" data-value="ltr">LTR (Left to Right)</div>
+            <div class="control-option" data-value="rtl">RTL (Right to Left)</div>
+          </div>
+        </div>
+        <!-- Mirror Icons -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Mirror Icons</span>
+            <div class="toggle-switch on" id="toggleMirrorIcons"></div>
+          </div>
+        </div>
+        <!-- Flip Navigation -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Flip Navigation</span>
+            <div class="toggle-switch on" id="toggleFlipNav"></div>
+          </div>
+        </div>
+        <!-- Text Sample -->
+        <div class="control-group">
+          <label>Text Sample</label>
+          <div class="control-options" id="textSampleOptions">
+            <div class="control-option" data-value="short">Short</div>
+            <div class="control-option active" data-value="medium">Medium</div>
+            <div class="control-option" data-value="long">Long</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── State ───
+var state = {
+  direction: 'ltr',
+  mirrorIcons: true,
+  flipNav: true,
+  textSample: 'medium'
+};
+
+// ─── Text Samples ───
+var textSamples = {
+  ltr: {
+    short: ['Hello', 'Hi there', 'Hey!', 'Thanks', 'Sure thing', 'Got it'],
+    medium: ['See you at the meeting tomorrow', 'Can you send me the file?', 'I will be there in 10 minutes', 'Let me check and get back to you', 'Happy birthday! Hope you have a great day', 'Sounds good, let us do it'],
+    long: ['I just finished reviewing the project proposal and I think we should discuss a few changes before the deadline', 'The new design looks amazing but we need to adjust the layout for smaller screens and test on more devices', 'Can we reschedule the meeting to next week? I have a conflict with another appointment on that day', 'I have been working on the new feature all week and it is almost ready for testing. Let me know when you want to review it', 'The team did an incredible job on this release. Every single feature works perfectly and the users are loving it', 'Please review the attached document and let me know your thoughts. We need to finalize this by end of day Friday']
+  },
+  rtl: {
+    short: ['\u0645\u0631\u062D\u0628\u0627', '\u0623\u0647\u0644\u0627', '\u0634\u0643\u0631\u0627', '\u062A\u0645\u0627\u0645', '\u0637\u064A\u0628', '\u062D\u0633\u0646\u0627'],
+    medium: ['\u0645\u0631\u062D\u0628\u0627 \u0628\u0643 \u0641\u064A \u062A\u0637\u0628\u064A\u0642\u0646\u0627', '\u0643\u064A\u0641 \u062D\u0627\u0644\u0643 \u0627\u0644\u064A\u0648\u0645\u061F', '\u0634\u0643\u0631\u0627 \u0639\u0644\u0649 \u0631\u0633\u0627\u0644\u062A\u0643', '\u0633\u0623\u0643\u0648\u0646 \u0647\u0646\u0627\u0643 \u0641\u064A \u0627\u0644\u0645\u0648\u0639\u062F', '\u0647\u0644 \u064A\u0645\u0643\u0646\u0643 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u064A\u061F', '\u0623\u0631\u0627\u0643 \u063A\u062F\u0627 \u0625\u0646 \u0634\u0627\u0621 \u0627\u0644\u0644\u0647'],
+    long: ['\u0647\u0630\u0627 \u0646\u0635 \u0637\u0648\u064A\u0644 \u0644\u0627\u062E\u062A\u0628\u0627\u0631 \u0643\u064A\u0641\u064A\u0629 \u0639\u0631\u0636 \u0627\u0644\u0646\u0635 \u0641\u064A \u0648\u0636\u0639 \u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631', '\u0644\u0642\u062F \u0627\u0646\u062A\u0647\u064A\u062A \u0645\u0646 \u0645\u0631\u0627\u062C\u0639\u0629 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0648\u0623\u0639\u062A\u0642\u062F \u0623\u0646\u0646\u0627 \u0628\u062D\u0627\u062C\u0629 \u0644\u0645\u0646\u0627\u0642\u0634\u0629 \u0628\u0639\u0636 \u0627\u0644\u062A\u0639\u062F\u064A\u0644\u0627\u062A', '\u0627\u0644\u062A\u0635\u0645\u064A\u0645 \u0627\u0644\u062C\u062F\u064A\u062F \u064A\u0628\u062F\u0648 \u0631\u0627\u0626\u0639\u0627 \u0648\u0644\u0643\u0646 \u0646\u062D\u062A\u0627\u062C \u0625\u0644\u0649 \u062A\u0639\u062F\u064A\u0644 \u0627\u0644\u062A\u062E\u0637\u064A\u0637 \u0644\u0644\u0634\u0627\u0634\u0627\u062A \u0627\u0644\u0635\u063A\u064A\u0631\u0629', '\u0647\u0644 \u064A\u0645\u0643\u0646\u0646\u0627 \u0625\u0639\u0627\u062F\u0629 \u062C\u062F\u0648\u0644\u0629 \u0627\u0644\u0627\u062C\u062A\u0645\u0627\u0639 \u0625\u0644\u0649 \u0627\u0644\u0623\u0633\u0628\u0648\u0639 \u0627\u0644\u0645\u0642\u0628\u0644\u061F \u0644\u062F\u064A \u062A\u0639\u0627\u0631\u0636 \u0645\u0639 \u0645\u0648\u0639\u062F \u0622\u062E\u0631', '\u0644\u0642\u062F \u0643\u0646\u062A \u0623\u0639\u0645\u0644 \u0639\u0644\u0649 \u0627\u0644\u0645\u064A\u0632\u0629 \u0627\u0644\u062C\u062F\u064A\u062F\u0629 \u0637\u0648\u0627\u0644 \u0627\u0644\u0623\u0633\u0628\u0648\u0639 \u0648\u0647\u064A \u062C\u0627\u0647\u0632\u0629 \u062A\u0642\u0631\u064A\u0628\u0627 \u0644\u0644\u0627\u062E\u062A\u0628\u0627\u0631', '\u064A\u0631\u062C\u0649 \u0645\u0631\u0627\u062C\u0639\u0629 \u0627\u0644\u0645\u0633\u062A\u0646\u062F \u0627\u0644\u0645\u0631\u0641\u0642 \u0648\u0625\u0628\u0644\u0627\u063A\u064A \u0628\u0631\u0623\u064A\u0643 \u0641\u064A \u0623\u0642\u0631\u0628 \u0648\u0642\u062A \u0645\u0645\u0643\u0646']
+  }
+};
+
+var rtlNames = ['\u0623\u062D\u0645\u062F', '\u0633\u0627\u0631\u0629', '\u0645\u062D\u0645\u062F', '\u0644\u064A\u0644\u0649', '\u0643\u0631\u064A\u0645', '\u062C\u0646\u0649'];
+var ltrNames = ['Alex', 'Sarah', 'Mohammed', 'Layla', 'Karim', 'Jenna'];
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'directionOptions') state.direction = opt.dataset.value;
+      if (group.id === 'textSampleOptions') state.textSample = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleMirrorIcons').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.mirrorIcons = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleFlipNav').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.flipNav = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML = '<div class="ios-navbar" id="iosNavbar">' +
+  '<div class="nav-back" id="navBack"><span id="backArrow">&#9664;</span> Back</div>' +
+  '<div class="nav-title">\u0627\u0644\u0631\u0633\u0627\u0626\u0644</div>' +
+  '<div class="nav-action" id="navAction">&#9998;</div>' +
+  '</div>' +
+  '<div class="message-list">' +
+  '<div class="message-row">' +
+    '<div class="message-avatar" style="background:#007AFF">A</div>' +
+    '<div class="message-body">' +
+      '<div class="message-name">\u0623\u062D\u0645\u062F</div>' +
+      '<div class="message-preview" style="text-align:left;direction:ltr">\u0645\u0631\u062D\u0628\u0627 \u0628\u0643 \u0641\u064A \u062A\u0637\u0628\u064A\u0642\u0646\u0627</div>' +
+    '</div>' +
+    '<div class="message-meta"><div class="message-time">2:30 PM</div><div class="message-chevron">&rsaquo;</div></div>' +
+  '</div>' +
+  '<div class="message-row" style="padding-left:40px;padding-right:16px">' +
+    '<div class="message-avatar" style="background:#34C759">S</div>' +
+    '<div class="message-body">' +
+      '<div class="message-name">\u0633\u0627\u0631\u0629</div>' +
+      '<div class="message-preview" style="text-align:left;direction:ltr">\u0643\u064A\u0641 \u062D\u0627\u0644\u0643 \u0627\u0644\u064A\u0648\u0645\u061F</div>' +
+    '</div>' +
+    '<div class="message-meta"><div class="message-time">1:15 PM</div><div class="message-chevron">&rsaquo;</div></div>' +
+  '</div>' +
+  '<div class="message-row">' +
+    '<div class="message-avatar" style="background:#FF9500">M</div>' +
+    '<div class="message-body">' +
+      '<div class="message-name">\u0645\u062D\u0645\u062F</div>' +
+      '<div class="message-preview" style="text-align:left;direction:ltr">\u0634\u0643\u0631\u0627 \u0639\u0644\u0649 \u0631\u0633\u0627\u0644\u062A\u0643</div>' +
+    '</div>' +
+    '<div class="message-meta"><div class="message-time">12:00 PM</div><div class="message-chevron">&rsaquo;</div></div>' +
+  '</div>' +
+  '</div>' +
+  '<div style="padding:16px;font-size:11px;color:#FF3B30;font-family:-apple-system,sans-serif;line-height:1.6">' +
+    '<p style="font-weight:700;margin-bottom:8px">RTL \uC704\uBC18 \uD328\uD134:</p>' +
+    '<p>&#10060; \uB0B4\uBE44\uAC8C\uC774\uC158\uC774 \uD50C\uB9BD\uB418\uC9C0 \uC54A\uC74C (back \uBC84\uD2BC\uC774 \uC67C\uCABD\uC5D0 \uADF8\uB300\uB85C)</p>' +
+    '<p>&#10060; \uC154\uBE0C\uB860 \uC544\uC774\uCF58\uC774 \uBBF8\uB7EC\uB9C1\uB418\uC9C0 \uC54A\uC74C</p>' +
+    '<p>&#10060; \uC544\uB78D\uC5B4 \uD14D\uC2A4\uD2B8\uAC00 \uC67C\uCABD \uC815\uB82C\uB85C \uD45C\uC2DC\uB428</p>' +
+    '<p>&#10060; left/right \uB9C8\uC9C4\uC774 \uD558\uB4DC\uCF54\uB529\uB428</p>' +
+  '</div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  var w = document.getElementById('higWarning');
+  if (w) { w.textContent = '\u26A0\uFE0F RTL \uB808\uC774\uC544\uC6C3\uC774 \uC62C\uBC14\uB974\uAC8C \uC801\uC6A9\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4'; w.classList.add('show'); }
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  if (isDontMode) return;
+
+  var isRTL = state.direction === 'rtl';
+  var screenContent = document.getElementById('screenContent');
+
+  // Apply RTL mode class
+  if (isRTL && state.flipNav) {
+    screenContent.classList.add('rtl-mode');
+  } else {
+    screenContent.classList.remove('rtl-mode');
+  }
+
+  // Update navigation
+  var navBack = document.getElementById('navBack');
+  var backArrow = document.getElementById('backArrow');
+  var navAction = document.getElementById('navAction');
+  if (navBack && backArrow) {
+    if (isRTL && state.mirrorIcons) {
+      backArrow.innerHTML = '&#9654;';
+    } else {
+      backArrow.innerHTML = '&#9664;';
+    }
+  }
+
+  // Update text content and chevrons
+  var lang = isRTL ? 'rtl' : 'ltr';
+  var names = isRTL ? rtlNames : ltrNames;
+  var previews = textSamples[lang][state.textSample];
+
+  for (var i = 0; i < 6; i++) {
+    var nameEl = document.getElementById('name' + i);
+    var previewEl = document.getElementById('preview' + i);
+    var chevronEl = document.getElementById('chevron' + i);
+
+    if (nameEl) nameEl.textContent = names[i];
+    if (previewEl) previewEl.textContent = previews[i];
+
+    if (chevronEl) {
+      if (isRTL && state.mirrorIcons) {
+        chevronEl.innerHTML = '&#8249;';
+      } else {
+        chevronEl.innerHTML = '&#8250;';
+      }
+    }
+  }
+
+  // Update text direction on message bodies
+  var messageRows = document.querySelectorAll('.message-row');
+  messageRows.forEach(function(row) {
+    var body = row.querySelector('.message-body');
+    if (body) {
+      if (isRTL) {
+        body.style.direction = 'rtl';
+      } else {
+        body.style.direction = 'ltr';
+      }
+    }
+  });
+
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var isRTL = state.direction === 'rtl';
+
+  var code = '<span class="kw">struct</span> <span class="type">MessageRow</span>: <span class="type">View</span> {\n';
+  code += '    <span class="kw">var</span> body: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">HStack</span> {\n';
+  code += '            <span class="comment">// Uses leading/trailing automatically</span>\n';
+  code += '            <span class="func">Avatar</span>()\n';
+  code += '            <span class="type">VStack</span>(alignment: .<span class="prop">leading</span>) {\n';
+  code += '                <span class="type">Text</span>(<span class="str">"Name"</span>)\n';
+  code += '                <span class="type">Text</span>(<span class="str">"Preview..."</span>)\n';
+  code += '                    .<span class="func">foregroundStyle</span>(.<span class="prop">secondary</span>)\n';
+  code += '            }\n';
+  code += '            <span class="type">Spacer</span>()\n';
+  code += '            <span class="type">Text</span>(<span class="str">"2:30 PM"</span>)\n';
+  code += '                .<span class="func">font</span>(.<span class="prop">caption</span>)\n';
+  code += '            <span class="type">Image</span>(systemName: <span class="str">"chevron.forward"</span>)\n';
+  code += '        }\n';
+  code += '    }\n';
+  code += '}\n';
+  code += '<span class="comment">// SwiftUI handles RTL automatically</span>\n';
+
+  if (isRTL) {
+    code += '<span class="comment">// Use .environment(\\.layoutDirection, .rightToLeft)</span>\n';
+    code += '.<span class="func">environment</span>(\\.<span class="prop">layoutDirection</span>, .<span class="prop">rightToLeft</span>)';
+  } else {
+    code += '<span class="comment">// Use .environment(\\.layoutDirection, .rightToLeft)</span>';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.direction === 'rtl' && !state.mirrorIcons; },
+    ko: 'RTL \uB808\uC774\uC544\uC6C3\uC5D0\uC11C\uB294 \uBC29\uD5A5\uC131 \uC544\uC774\uCF58(\uD654\uC0B4\uD45C, \uC154\uBE0C\uB860)\uC744 \uBBF8\uB7EC\uB9C1\uD574\uC57C \uD569\uB2C8\uB2E4',
+    en: 'Directional icons (arrows, chevrons) should mirror in RTL layouts'
+  },
+  {
+    check: function() { return state.direction === 'rtl' && !state.flipNav; },
+    ko: 'RTL \uB808\uC774\uC544\uC6C3\uC5D0\uC11C\uB294 \uB0B4\uBE44\uAC8C\uC774\uC158\uC774 \uBC18\uB4DC\uC2DC \uD50C\uB9BD\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4',
+    en: 'Navigation must flip in RTL layouts'
+  },
+  {
+    check: function() { return state.direction === 'ltr' && state.mirrorIcons === false; },
+    ko: 'LTR \uBAA8\uB4DC\uC5D0\uC11C\uB294 \uC544\uC774\uCF58\uC774 \uAE30\uBCF8 \uBC29\uD5A5\uC744 \uC720\uC9C0\uD574\uC57C \uD569\uB2C8\uB2E4',
+    en: 'Icons should maintain default direction in LTR mode'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var r = 0; r < higRules.length; r++) {
+    try { if (higRules[r].check()) violations.push(higRules[r]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">\u26A0\uFE0F</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '\u26A0\uFE0F ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">\u2705 HIG \uAC00\uC774\uB4DC\uB77C\uC778\uC744 \uC900\uC218\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Initial render
+updatePreview();
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>

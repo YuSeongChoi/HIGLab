@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS 애니메이션과 모션 가이드라인을 브라우저에서 직접 체험해보세요">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--surface:#ffffff;--text:#1d1d1f;--text-2:#6e6e73;--text-3:#86868b;
+  --accent:#0071e3;--border:#d2d2d7;--radius:16px;
+  --ios-blue:#007AFF;--ios-green:#34C759;--ios-red:#FF3B30;--ios-orange:#FF9500;
+  --ios-purple:#AF52DE;--ios-gray:#8E8E93;--ios-gray3:#C7C7CC;
+  --ios-bg:#F2F2F7;--ios-card:#FFFFFF;--ios-separator:rgba(60,60,67,0.12);
+}
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.header{position:sticky;top:0;z-index:100;background:rgba(250,250,250,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}.nav a:hover{color:var(--accent)}
+.breadcrumb{max-width:1200px;margin:0 auto;padding:16px 24px 0;font-size:13px;color:var(--text-3)}
+.breadcrumb a{color:var(--text-2);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}
+.page-title{max-width:1200px;margin:0 auto;padding:20px 24px 8px;font-size:32px;font-weight:800;letter-spacing:-1px}
+.page-desc{max-width:1200px;margin:0 auto;padding:0 24px 24px;font-size:15px;color:var(--text-2)}
+.playground-layout{max-width:1200px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+@media(max-width:860px){.playground-layout{grid-template-columns:1fr;justify-items:center}}
+.iphone-frame{width:375px;height:812px;background:#000;border-radius:44px;padding:4px;position:sticky;top:72px;box-shadow:0 0 0 2px #1a1a1a,0 20px 60px rgba(0,0,0,0.25),inset 0 0 0 2px #333}
+.iphone-screen{width:100%;height:100%;background:var(--ios-bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:36px;background:#000;border-radius:20px;z-index:10}
+.status-bar{height:54px;padding:14px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:14px;font-weight:600;color:#1d1d1f;flex-shrink:0}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.home-indicator{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 8px}
+.home-indicator-bar{width:134px;height:5px;background:#1d1d1f;border-radius:3px;opacity:0.2}
+.screen-content{flex:1;overflow-y:auto;padding:12px 16px 0;-webkit-overflow-scrolling:touch}
+.screen-content::-webkit-scrollbar{display:none}
+.right-panel{display:flex;flex-direction:column;gap:24px}
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.controls-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+.control-group label{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text)}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.slider-group{display:flex;align-items:center;gap:12px}
+.slider-group input[type=range]{flex:1;accent-color:var(--ios-blue)}
+.slider-value{font-size:13px;color:var(--text-2);font-weight:600;min-width:36px;text-align:right}
+.control-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{width:44px;height:26px;background:var(--ios-gray3);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle-switch.on::after{transform:translateX(18px)}
+.guidelines{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.guidelines-header{padding:16px 20px;font-size:15px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guidelines-body{padding:20px}
+.do-dont-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.do-dont-tab{flex:1;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;transition:all .2s;background:var(--bg);color:var(--text-2)}
+.do-dont-tab.active-do{background:rgba(52,199,89,0.12);color:#34C759;box-shadow:inset 0 -3px 0 #34C759}
+.do-dont-tab.active-dont{background:rgba(255,59,48,0.12);color:#FF3B30;box-shadow:inset 0 -3px 0 #FF3B30}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){background:rgba(0,0,0,0.04)}
+.do-dont-detail{display:none}.do-dont-detail.active{display:block}
+.do-card,.dont-card{padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}.do-card li,.dont-card li{margin-bottom:4px}
+.guideline-note{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+.guideline-link{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--accent)}
+.code-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.code-preview-header{padding:12px 20px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.code-preview-body{background:#1e1e2e;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#cdd6f4;overflow-x:auto;white-space:pre}
+.code-preview-body .kw{color:#cba6f7}.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}.code-preview-body .comment{color:#6c7086}
+.copy-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .15s;color:var(--text-2)}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+@media(max-width:860px){.iphone-frame{transform:scale(0.78);transform-origin:top center;position:relative;top:0;margin-bottom:-140px}}
+@media(max-width:420px){.iphone-frame{transform:scale(0.65);margin-bottom:-220px}}
+.hig-violations{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.hig-violation-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);font-size:12px;line-height:1.5;color:#FF3B30;animation:violationFadeIn .3s ease}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}.hig-violation-item .v-text{flex:1}
+.hig-ok{padding:10px 14px;border-radius:10px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);font-size:12px;color:#34C759;text-align:center;font-weight:600}
+@keyframes violationFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.hig-live-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px}
+.hig-live-badge .dot{width:6px;height:6px;border-radius:50%;background:#FF3B30;animation:livePulse 1.5s infinite}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hig-warning{display:none;position:absolute;bottom:60px;left:16px;right:16px;background:rgba(255,59,48,0.95);color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;z-index:20;animation:warningSlide .3s ease;box-shadow:0 4px 20px rgba(255,59,48,0.3)}
+.hig-warning.show{display:block}
+@keyframes warningSlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Motion-specific styles */
+.motion-box{
+  width:80px;height:80px;background:var(--ios-blue);border-radius:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;
+  user-select:none;-webkit-user-select:none;
+  position:relative;
+}
+.motion-stage{
+  width:100%;height:260px;background:var(--ios-card);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.reduce-motion-overlay{
+  position:absolute;inset:0;background:rgba(255,149,0,0.08);
+  border:2px dashed var(--ios-orange);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--ios-orange);font-weight:600;
+  font-family:-apple-system,sans-serif;pointer-events:none;
+}
+.timing-curve{
+  width:100%;height:80px;background:var(--ios-card);border-radius:10px;
+  position:relative;overflow:hidden;
+}
+.timing-curve canvas{width:100%;height:100%}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Motion
+</div>
+
+<h1 class="page-title">Motion</h1>
+<p class="page-desc">iOS 애니메이션 타입, 지속 시간, 바운스, Reduce Motion 설정을 실시간으로 조작하며 HIG 가이드라인을 확인해보세요. 아이폰 화면의 박스를 탭하면 애니메이션이 재생됩니다.</p>
+
+<div class="playground-layout">
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent"></div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="guidelines">
+      <div class="guidelines-header">📖 HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>✓ 이렇게 하세요</h4>
+            <ul>
+              <li>Spring 애니메이션으로 자연스러운 움직임 구현</li>
+              <li>0.2~0.5초 사이의 짧은 duration 사용</li>
+              <li>Reduce Motion 설정을 항상 존중</li>
+              <li>애니메이션을 중단 가능하게 설계</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>✗ 이렇게 하지 마세요</h4>
+            <ul>
+              <li>❌ 1초 이상의 느린 애니메이션을 사용하지 마세요</li>
+              <li>❌ Linear 곡선을 UI 전환에 사용하지 마세요</li>
+              <li>❌ Reduce Motion을 무시하지 마세요</li>
+              <li>❌ 중단 불가능한 애니메이션을 만들지 마세요</li>
+            </ul>
+          </div>
+        </div>
+        <p class="guideline-note" style="margin-top:16px">
+          iOS는 <strong>Spring</strong> 애니메이션을 기본으로 사용합니다. 자연스러운 물리 기반 움직임은
+          사용자에게 직관적인 피드백을 줍니다. Reduce Motion 접근성 설정을 항상 존중해야 합니다.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/motion" class="guideline-link" target="_blank">
+          Apple HIG: Motion &rarr;
+        </a>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-header">⚙️ Controls</div>
+      <div class="controls-body">
+        <div class="control-group">
+          <label>Animation Type</label>
+          <div class="control-options" id="animOptions">
+            <div class="control-option active" data-value="spring">Spring</div>
+            <div class="control-option" data-value="easeIn">Ease In</div>
+            <div class="control-option" data-value="easeOut">Ease Out</div>
+            <div class="control-option" data-value="linear">Linear</div>
+            <div class="control-option" data-value="easeInOut">Ease In Out</div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Duration: <span id="durationLabel">0.35s</span></label>
+          <div class="slider-group">
+            <input type="range" id="durationSlider" min="0.1" max="2.0" step="0.05" value="0.35">
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Bounciness: <span id="bounceLabel">0.5</span></label>
+          <div class="slider-group">
+            <input type="range" id="bounceSlider" min="0" max="1" step="0.05" value="0.5">
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Reduce Motion</span>
+            <div class="toggle-switch" id="toggleReduceMotion"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Interruptible</span>
+            <div class="toggle-switch on" id="toggleInterruptible"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body"><div class="hig-violations" id="violationList"></div></div>
+    </div>
+
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground</div>
+
+<script>
+// ─── State ───
+let state = {
+  animationType: 'spring',
+  duration: 0.35,
+  reduceMotion: false,
+  bounciness: 0.5,
+  interruptible: true
+};
+
+let isDontMode = false;
+let animationPlaying = false;
+
+// ─── Control bindings ───
+document.querySelectorAll('#animOptions .control-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#animOptions .control-option').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    state.animationType = opt.dataset.value;
+    updatePreview();
+  });
+});
+
+document.getElementById('durationSlider').addEventListener('input', function() {
+  state.duration = parseFloat(this.value);
+  document.getElementById('durationLabel').textContent = state.duration.toFixed(2) + 's';
+  updatePreview();
+});
+
+document.getElementById('bounceSlider').addEventListener('input', function() {
+  state.bounciness = parseFloat(this.value);
+  document.getElementById('bounceLabel').textContent = state.bounciness.toFixed(2);
+  updatePreview();
+});
+
+document.getElementById('toggleReduceMotion').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.reduceMotion = this.classList.contains('on');
+  updatePreview();
+});
+
+document.getElementById('toggleInterruptible').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.interruptible = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Easing functions for canvas ───
+function getEasingPoints(type) {
+  switch(type) {
+    case 'spring': return [[0,0],[0.35,1.4],[0.7,0.95],[1,1]];
+    case 'easeIn': return [[0,0],[0.42,0],[1,1],[1,1]];
+    case 'easeOut': return [[0,0],[0,0],[0.58,1],[1,1]];
+    case 'easeInOut': return [[0,0],[0.42,0],[0.58,1],[1,1]];
+    case 'linear': return [[0,0],[0.25,0.25],[0.75,0.75],[1,1]];
+    default: return [[0,0],[0.25,0.25],[0.75,0.75],[1,1]];
+  }
+}
+
+// ─── CSS easing mapping ───
+function getCSSEasing() {
+  switch(state.animationType) {
+    case 'spring': return 'cubic-bezier(0.35, ' + (1 + state.bounciness * 0.8) + ', 0.5, 1)';
+    case 'easeIn': return 'ease-in';
+    case 'easeOut': return 'ease-out';
+    case 'easeInOut': return 'ease-in-out';
+    case 'linear': return 'linear';
+    default: return 'ease';
+  }
+}
+
+// ─── Animation types for demo ───
+const animTypes = [
+  { name: 'Move', icon: '↔', anim: 'translateX(120px)' },
+  { name: 'Scale', icon: '⤢', anim: 'scale(1.5)' },
+  { name: 'Fade', icon: '◐', anim: 'opacity' },
+  { name: 'Rotate', icon: '↻', anim: 'rotate(180deg)' }
+];
+
+// ─── Update preview ───
+function updatePreview() {
+  if (isDontMode) return;
+  const dur = state.duration;
+  const easing = getCSSEasing();
+
+  let html = '<div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,sans-serif">Motion</div>';
+
+  // Animation stage
+  html += '<div style="font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">TAP TO ANIMATE</div>';
+
+  html += '<div class="motion-stage" id="motionStage">';
+  html += '<div class="motion-box" id="motionBox" onclick="playAnimation()" style="transition:all ' + dur + 's ' + easing + '">Tap</div>';
+  if (state.reduceMotion) {
+    html += '<div class="reduce-motion-overlay">Reduce Motion: 크로스페이드만 허용</div>';
+  }
+  html += '</div>';
+
+  // Animation type buttons
+  html += '<div style="margin-top:12px;display:flex;gap:8px">';
+  animTypes.forEach((t, i) => {
+    html += '<button onclick="playAnimType(' + i + ')" style="flex:1;padding:10px 8px;background:var(--ios-card);border:1.5px solid var(--ios-separator);border-radius:10px;cursor:pointer;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ios-blue);display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:18px">' + t.icon + '</span>' + t.name + '</button>';
+  });
+  html += '</div>';
+
+  // Timing curve visualization
+  html += '<div style="margin-top:16px">';
+  html += '<div style="font-size:13px;font-weight:600;color:var(--ios-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">TIMING CURVE — ' + state.animationType.toUpperCase() + '</div>';
+  html += '<div class="timing-curve"><canvas id="curveCanvas" width="340" height="80"></canvas></div>';
+  html += '</div>';
+
+  // Info
+  html += '<div style="margin-top:12px;background:var(--ios-card);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--ios-gray);font-family:monospace">';
+  html += 'type: ' + state.animationType + ' | dur: ' + dur.toFixed(2) + 's | bounce: ' + state.bounciness.toFixed(2);
+  html += '<br>reduceMotion: ' + state.reduceMotion + ' | interruptible: ' + state.interruptible;
+  html += '</div>';
+  html += '<div style="height:20px"></div>';
+
+  document.getElementById('screenContent').innerHTML = html;
+
+  // Draw timing curve
+  drawCurve();
+  updateCode();
+  checkHigViolations();
+}
+
+function drawCurve() {
+  const canvas = document.getElementById('curveCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * w / 4, 0);
+    ctx.lineTo(i * w / 4, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, i * h / 4);
+    ctx.lineTo(w, i * h / 4);
+    ctx.stroke();
+  }
+
+  // Curve
+  ctx.strokeStyle = '#007AFF';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+
+  const steps = 60;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    let val;
+    if (state.animationType === 'spring') {
+      // Damped spring approximation
+      const decay = Math.exp(-4 * (1 - state.bounciness) * t);
+      val = 1 - decay * Math.cos(2 * Math.PI * state.bounciness * 2 * t);
+      val = Math.min(Math.max(val, 0), 1.3);
+    } else if (state.animationType === 'easeIn') {
+      val = t * t * t;
+    } else if (state.animationType === 'easeOut') {
+      val = 1 - Math.pow(1 - t, 3);
+    } else if (state.animationType === 'easeInOut') {
+      val = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    } else {
+      val = t;
+    }
+
+    const x = 10 + (w - 20) * t;
+    const y = h - 10 - (h - 20) * Math.min(val, 1.2) / 1.2;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+// ─── Play animation ───
+let currentAnimType = 0;
+
+function playAnimation() {
+  playAnimType(currentAnimType);
+}
+
+function playAnimType(typeIndex) {
+  currentAnimType = typeIndex;
+  const box = document.getElementById('motionBox');
+  if (!box) return;
+
+  if (state.reduceMotion) {
+    // Only crossfade
+    box.style.transition = 'opacity ' + state.duration + 's ease';
+    box.style.opacity = '0.3';
+    setTimeout(() => { box.style.opacity = '1'; }, state.duration * 1000);
+    return;
+  }
+
+  const easing = getCSSEasing();
+  const dur = state.duration;
+  box.style.transition = 'all ' + dur + 's ' + easing;
+
+  // Reset first
+  box.style.transform = '';
+  box.style.opacity = '1';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      switch(typeIndex) {
+        case 0: box.style.transform = 'translateX(100px)'; break;
+        case 1: box.style.transform = 'scale(1.5)'; break;
+        case 2: box.style.opacity = '0.2'; break;
+        case 3: box.style.transform = 'rotate(180deg)'; break;
+      }
+
+      setTimeout(() => {
+        box.style.transform = '';
+        box.style.opacity = '1';
+      }, dur * 1000 + 100);
+    });
+  });
+}
+
+// ─── Don't mode ───
+const dontScreenHTML = `
+  <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;color:#000;font-family:-apple-system,sans-serif">Motion</div>
+  <div style="font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ TOO SLOW (2s LINEAR)</div>
+  <div class="motion-stage">
+    <div style="width:60px;height:60px;background:#FF3B30;border-radius:12px;animation:slowLinear 2s linear infinite;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">Slow</div>
+  </div>
+  <style>@keyframes slowLinear{0%{transform:translateX(-100px)}50%{transform:translateX(100px)}100%{transform:translateX(-100px)}}</style>
+  <div style="margin-top:16px;font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ IGNORING REDUCE MOTION</div>
+  <div style="background:var(--ios-card);border-radius:14px;padding:16px;text-align:center">
+    <div style="width:60px;height:60px;background:var(--ios-orange);border-radius:12px;margin:0 auto;animation:aggressiveSpin 0.5s ease-in-out infinite;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px">🌀</div>
+    <p style="margin-top:12px;font-size:12px;color:var(--ios-gray);font-family:-apple-system,sans-serif">Reduce Motion이 켜져 있어도 계속 회전</p>
+  </div>
+  <style>@keyframes aggressiveSpin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}</style>
+  <div style="margin-top:16px;font-size:13px;font-weight:600;color:#FF3B30;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:4px;font-family:-apple-system,sans-serif">❌ NON-INTERRUPTIBLE</div>
+  <div style="background:var(--ios-card);border-radius:14px;padding:16px;text-align:center">
+    <div style="width:60px;height:60px;background:var(--ios-purple);border-radius:12px;margin:0 auto;animation:bounceForever 1.5s ease-in-out infinite;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">Lock</div>
+    <p style="margin-top:12px;font-size:12px;color:var(--ios-gray);font-family:-apple-system,sans-serif">탭해도 멈출 수 없는 애니메이션</p>
+  </div>
+  <style>@keyframes bounceForever{0%,100%{transform:translateY(0)}50%{transform:translateY(-40px)}}</style>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  const w = document.getElementById('higWarning');
+  w.textContent = '⚠️ 모션 HIG 위반 패턴입니다';
+  w.classList.add('show');
+}
+
+// ─── Code preview ───
+function updateCode() {
+  const animMap = {
+    spring: '.spring(duration: ' + state.duration.toFixed(2) + ', bounce: ' + state.bounciness.toFixed(2) + ')',
+    easeIn: '.easeIn(duration: ' + state.duration.toFixed(2) + ')',
+    easeOut: '.easeOut(duration: ' + state.duration.toFixed(2) + ')',
+    easeInOut: '.easeInOut(duration: ' + state.duration.toFixed(2) + ')',
+    linear: '.linear(duration: ' + state.duration.toFixed(2) + ')'
+  };
+
+  let code = '<span class="kw">struct</span> <span class="type">AnimatedView</span>: <span class="type">View</span> {\n';
+  code += '    <span class="kw">@State private var</span> <span class="prop">isAnimated</span> = <span class="prop">false</span>\n\n';
+  code += '    <span class="kw">var</span> <span class="prop">body</span>: <span class="kw">some</span> <span class="type">View</span> {\n';
+  code += '        <span class="type">RoundedRectangle</span>(cornerRadius: <span class="prop">16</span>)\n';
+  code += '            .<span class="func">fill</span>(.<span class="prop">blue</span>)\n';
+  code += '            .<span class="func">frame</span>(width: <span class="prop">80</span>, height: <span class="prop">80</span>)\n';
+  code += '            .<span class="func">offset</span>(x: isAnimated ? <span class="prop">120</span> : <span class="prop">0</span>)\n';
+
+  if (state.reduceMotion) {
+    code += '            .<span class="func">animation</span>(\n';
+    code += '                <span class="prop">.default</span>,\n';
+    code += '                value: isAnimated\n';
+    code += '            )\n';
+    code += '            <span class="comment">// Respects Reduce Motion automatically</span>\n';
+  } else {
+    code += '            .<span class="func">animation</span>(\n';
+    code += '                <span class="prop">' + animMap[state.animationType] + '</span>,\n';
+    code += '                value: isAnimated\n';
+    code += '            )\n';
+  }
+
+  code += '            .<span class="func">onTapGesture</span> {\n';
+  code += '                isAnimated.<span class="func">toggle</span>()\n';
+  code += '            }\n';
+  code += '    }\n';
+  code += '}';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  const code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── HIG Rules ───
+const higRules = [
+  {
+    check: () => state.duration > 1.0,
+    ko: '1초 이상의 애니메이션은 사용자를 지루하게 합니다'
+  },
+  {
+    check: () => !state.reduceMotion,
+    ko: 'Reduce Motion 설정을 존중하지 않으면 접근성 문제가 발생합니다'
+  },
+  {
+    check: () => state.animationType === 'linear',
+    ko: 'UI 전환에 linear는 부자연스럽습니다. Spring이나 easeInOut을 사용하세요'
+  },
+  {
+    check: () => !state.interruptible,
+    ko: '애니메이션을 중단할 수 없으면 사용자 경험이 저하됩니다'
+  }
+];
+
+function checkHigViolations() {
+  const panel = document.getElementById('violationPanel');
+  const list = document.getElementById('violationList');
+  const badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  const violations = higRules.filter(r => { try { return r.check(); } catch(e) { return false; } });
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(v => '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>').join('');
+    const w = document.getElementById('higWarning');
+    if (w && !isDontMode) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    const w = document.getElementById('higWarning');
+    if (w && !isDontMode) w.classList.remove('show');
+  }
+}
+
+updatePreview();
+</script>
+</body>
+</html>

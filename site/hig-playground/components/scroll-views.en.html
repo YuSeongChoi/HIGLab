@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Views — HIG Playground | HIG Lab</title>
+<meta name="description" content="iOS Scroll View interactively in the browser. Vertical, Horizontal 스크롤과 Paging, Indicator, Bounce 옵션을 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* --- Reset & Variables --- */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* --- Header --- */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* --- Breadcrumb --- */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* --- Page Layout --- */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* --- iPhone Frame --- */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow:hidden;padding:12px 0 0;
+  position:relative;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;padding:0 16px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:20px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* --- Scroll Demo Area --- */
+.scroll-demo-area{
+  position:relative;
+  overflow:hidden;
+  flex:1;
+}
+
+/* Vertical scroll container */
+.scroll-vertical{
+  width:100%;height:100%;
+  overflow-y:auto;
+  padding:0 16px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+}
+.scroll-vertical::-webkit-scrollbar{display:none}
+
+/* Horizontal scroll container */
+.scroll-horizontal{
+  width:100%;height:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  display:flex;
+  align-items:flex-start;
+  padding:0 16px;
+  gap:12px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  scroll-snap-type:none;
+}
+.scroll-horizontal::-webkit-scrollbar{display:none}
+.scroll-horizontal.paging{
+  scroll-snap-type:x mandatory;
+  gap:0;
+  padding:0;
+}
+
+/* Vertical card */
+.v-card{
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:12px;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  min-height:100px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+.v-card-title{font-size:18px;font-weight:700;margin-bottom:2px}
+.v-card-subtitle{font-size:13px;opacity:0.8;font-weight:500}
+
+/* Horizontal card */
+.h-card{
+  flex-shrink:0;
+  width:280px;
+  height:360px;
+  border-radius:16px;
+  padding:20px;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  scroll-snap-align:center;
+}
+.h-card.paging-card{
+  width:100%;
+  min-width:100%;
+  height:100%;
+  border-radius:0;
+  scroll-snap-align:start;
+}
+.h-card-title{font-size:22px;font-weight:700;margin-bottom:2px}
+.h-card-subtitle{font-size:14px;opacity:0.8;font-weight:500}
+.h-card-number{
+  font-size:64px;font-weight:800;opacity:0.2;
+  position:absolute;top:20px;right:24px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;
+  background:rgba(0,0,0,0.35);
+  border-radius:2px;
+  opacity:0;
+  transition:opacity 0.3s ease;
+  z-index:5;
+  pointer-events:none;
+}
+.scroll-indicator.visible{opacity:1}
+.scroll-indicator.vertical{
+  right:3px;
+  width:3px;
+  min-height:40px;
+}
+.scroll-indicator.horizontal{
+  bottom:3px;
+  height:3px;
+  min-width:40px;
+}
+
+/* Bounce effect */
+.bounce-glow-top,.bounce-glow-bottom,.bounce-glow-left,.bounce-glow-right{
+  position:absolute;
+  z-index:4;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.2s;
+}
+.bounce-glow-top{top:0;left:0;right:0;height:30px;background:linear-gradient(to bottom,rgba(0,122,255,0.15),transparent)}
+.bounce-glow-bottom{bottom:0;left:0;right:0;height:30px;background:linear-gradient(to top,rgba(0,122,255,0.15),transparent)}
+.bounce-glow-left{top:0;bottom:0;left:0;width:30px;background:linear-gradient(to right,rgba(0,122,255,0.15),transparent)}
+.bounce-glow-right{top:0;bottom:0;right:0;width:30px;background:linear-gradient(to left,rgba(0,122,255,0.15),transparent)}
+
+/* Page dots */
+.page-dots{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  padding:10px 0 4px;
+}
+.page-dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--ios-gray3);
+  transition:all 0.2s;
+}
+.page-dot.active{
+  background:var(--ios-blue);
+  width:20px;
+  border-radius:4px;
+}
+
+/* --- Right Panel --- */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* --- Controls Panel --- */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* --- Guidelines Section --- */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* --- Code Preview --- */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* --- Footer --- */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* --- Mobile iPhone Scale --- */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.en.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="scroll-views.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.en.html">HIG Playground</a> &rarr; Scroll Views
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Scroll Views</h1>
+<p class="page-desc">iOS Scroll View의 Vertical/Horizontal 방향과 Paging, Indicator, Bounce 옵션을 직접 체험해보세요. Change properties in the control panel to see them reflected on the iPhone screen instantly.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Scroll Views</div>
+
+        <!-- Scroll Demo -->
+        <div class="scroll-demo-area" id="scrollDemoArea">
+          <!-- Vertical scroll container -->
+          <div class="scroll-vertical" id="scrollVertical"></div>
+          <!-- Horizontal scroll container -->
+          <div class="scroll-horizontal" id="scrollHorizontal" style="display:none"></div>
+
+          <!-- Scroll Indicators -->
+          <div class="scroll-indicator vertical" id="indicatorV"></div>
+          <div class="scroll-indicator horizontal" id="indicatorH"></div>
+
+          <!-- Bounce glows -->
+          <div class="bounce-glow-top" id="bounceTop"></div>
+          <div class="bounce-glow-bottom" id="bounceBottom"></div>
+          <div class="bounce-glow-left" id="bounceLeft"></div>
+          <div class="bounce-glow-right" id="bounceRight"></div>
+        </div>
+
+        <!-- Page dots (for horizontal paging) -->
+        <div class="page-dots" id="pageDots" style="display:none"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG Violation: Improper scroll view</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — Try It Yourself</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — Good Example</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — Bad Example</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; Do This</h4>
+            <ul>
+              <li>Provide visual cues that content is scrollable (partial content visible at edges)</li>
+              <li>Use paging behavior for full-width items like onboarding or photo galleries</li>
+              <li>Show scroll indicators during active scrolling</li>
+              <li>Support both drag and swipe gestures</li>
+              <li>Use horizontal scrolling for related, browsable content</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; Don't Do This</h4>
+            <ul>
+              <li>Don't nest scroll views in the same direction</li>
+              <li>Don't hide all scrollable content below the fold with no visual hint</li>
+              <li>Don't disable bounce unless you have a strong reason</li>
+              <li>Don't use horizontal scrolling for primary navigation lists</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 See the bad pattern in the iPhone preview above</p>
+          </div>
+        </div>
+        <!-- Toggles -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Paging</span>
+            <div class="toggle-switch" id="togglePaging"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Indicators</span>
+            <div class="toggle-switch on" id="toggleIndicators"></div>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Bounce</span>
+            <div class="toggle-switch on" id="toggleBounce"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// --- Card Data ---
+var cardData = [
+  {title:'Sunrise',   subtitle:'Golden morning light',  grad:'linear-gradient(135deg,#FF9500,#FF5E3A)'},
+  {title:'Ocean',     subtitle:'Deep blue waters',      grad:'linear-gradient(135deg,#007AFF,#5856D6)'},
+  {title:'Forest',    subtitle:'Lush green canopy',     grad:'linear-gradient(135deg,#34C759,#30B94D)'},
+  {title:'Lavender',  subtitle:'Purple meadows',        grad:'linear-gradient(135deg,#AF52DE,#5856D6)'},
+  {title:'Sunset',    subtitle:'Warm evening glow',     grad:'linear-gradient(135deg,#FF3B30,#FF9500)'},
+  {title:'Midnight',  subtitle:'Starlit darkness',      grad:'linear-gradient(135deg,#5856D6,#1C1C1E)'},
+  {title:'Coral',     subtitle:'Tropical reef colors',  grad:'linear-gradient(135deg,#FF6482,#FF2D55)'},
+  {title:'Sky',       subtitle:'Clear blue horizon',    grad:'linear-gradient(135deg,#5AC8FA,#007AFF)'},
+  {title:'Amber',     subtitle:'Warm honey tones',      grad:'linear-gradient(135deg,#FFCC00,#FF9500)'},
+  {title:'Mint',      subtitle:'Fresh cool breeze',     grad:'linear-gradient(135deg,#00C7BE,#34C759)'}
+];
+
+// --- State ---
+var state = {
+  direction: 'vertical',
+  paging: false,
+  indicators: true,
+  bounce: true
+};
+
+var indicatorTimeout = null;
+var currentPage = 0;
+
+// --- Control Options ---
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'directionOptions') state.direction = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// --- Toggles ---
+document.getElementById('togglePaging').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.paging = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleIndicators').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.indicators = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleBounce').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.bounce = this.classList.contains('on');
+  updatePreview();
+});
+
+// --- Build Cards ---
+function buildVerticalCards() {
+  var container = document.getElementById('scrollVertical');
+  container.innerHTML = '';
+  cardData.forEach(function(card) {
+    var el = document.createElement('div');
+    el.className = 'v-card';
+    el.style.background = card.grad;
+    el.innerHTML = '<div class="v-card-title">' + card.title + '</div><div class="v-card-subtitle">' + card.subtitle + '</div>';
+    container.appendChild(el);
+  });
+  // spacer at bottom
+  var spacer = document.createElement('div');
+  spacer.style.height = '20px';
+  container.appendChild(spacer);
+}
+
+function buildHorizontalCards() {
+  var container = document.getElementById('scrollHorizontal');
+  container.innerHTML = '';
+  cardData.forEach(function(card, i) {
+    var el = document.createElement('div');
+    el.className = 'h-card' + (state.paging ? ' paging-card' : '');
+    el.style.background = card.grad;
+    el.style.position = 'relative';
+    el.innerHTML =
+      '<div class="h-card-number">' + (i + 1) + '</div>' +
+      '<div class="h-card-title">' + card.title + '</div>' +
+      '<div class="h-card-subtitle">' + card.subtitle + '</div>';
+    container.appendChild(el);
+  });
+}
+
+function buildPageDots() {
+  var dots = document.getElementById('pageDots');
+  dots.innerHTML = '';
+  cardData.forEach(function(_, i) {
+    var dot = document.createElement('div');
+    dot.className = 'page-dot' + (i === currentPage ? ' active' : '');
+    dots.appendChild(dot);
+  });
+}
+
+// --- Scroll Indicator Logic ---
+function showIndicator(type) {
+  if (!state.indicators) return;
+  var el = type === 'vertical' ? document.getElementById('indicatorV') : document.getElementById('indicatorH');
+  el.classList.add('visible');
+  clearTimeout(indicatorTimeout);
+  indicatorTimeout = setTimeout(function() {
+    el.classList.remove('visible');
+  }, 800);
+}
+
+function updateVerticalIndicator() {
+  var container = document.getElementById('scrollVertical');
+  var indicator = document.getElementById('indicatorV');
+  var scrollRatio = container.scrollTop / (container.scrollHeight - container.clientHeight || 1);
+  var trackHeight = container.clientHeight;
+  var thumbHeight = Math.max(40, (container.clientHeight / container.scrollHeight) * trackHeight);
+  var thumbTop = scrollRatio * (trackHeight - thumbHeight);
+  indicator.style.height = thumbHeight + 'px';
+  indicator.style.top = thumbTop + 'px';
+  showIndicator('vertical');
+}
+
+function updateHorizontalIndicator() {
+  var container = document.getElementById('scrollHorizontal');
+  var indicator = document.getElementById('indicatorH');
+  var scrollRatio = container.scrollLeft / (container.scrollWidth - container.clientWidth || 1);
+  var trackWidth = container.clientWidth;
+  var thumbWidth = Math.max(40, (container.clientWidth / container.scrollWidth) * trackWidth);
+  var thumbLeft = scrollRatio * (trackWidth - thumbWidth);
+  indicator.style.width = thumbWidth + 'px';
+  indicator.style.left = thumbLeft + 'px';
+  showIndicator('horizontal');
+}
+
+// --- Bounce Logic ---
+function handleVerticalBounce() {
+  if (!state.bounce) return;
+  var container = document.getElementById('scrollVertical');
+  var top = container.scrollTop;
+  var bottom = container.scrollHeight - container.clientHeight - container.scrollTop;
+  if (top <= 0) {
+    document.getElementById('bounceTop').style.opacity = '1';
+    setTimeout(function() { document.getElementById('bounceTop').style.opacity = '0'; }, 300);
+  }
+  if (bottom <= 0) {
+    document.getElementById('bounceBottom').style.opacity = '1';
+    setTimeout(function() { document.getElementById('bounceBottom').style.opacity = '0'; }, 300);
+  }
+}
+
+function handleHorizontalBounce() {
+  if (!state.bounce) return;
+  var container = document.getElementById('scrollHorizontal');
+  var left = container.scrollLeft;
+  var right = container.scrollWidth - container.clientWidth - container.scrollLeft;
+  if (left <= 0) {
+    document.getElementById('bounceLeft').style.opacity = '1';
+    setTimeout(function() { document.getElementById('bounceLeft').style.opacity = '0'; }, 300);
+  }
+  if (right <= 1) {
+    document.getElementById('bounceRight').style.opacity = '1';
+    setTimeout(function() { document.getElementById('bounceRight').style.opacity = '0'; }, 300);
+  }
+}
+
+// --- Page tracking for horizontal paging ---
+function updateCurrentPage() {
+  var container = document.getElementById('scrollHorizontal');
+  if (!state.paging) return;
+  var pageWidth = container.clientWidth;
+  currentPage = Math.round(container.scrollLeft / pageWidth);
+  buildPageDots();
+}
+
+// --- Update Preview ---
+function updatePreview() {
+  var vContainer = document.getElementById('scrollVertical');
+  var hContainer = document.getElementById('scrollHorizontal');
+  var indicatorV = document.getElementById('indicatorV');
+  var indicatorH = document.getElementById('indicatorH');
+  var pageDots = document.getElementById('pageDots');
+
+  // Reset
+  indicatorV.classList.remove('visible');
+  indicatorH.classList.remove('visible');
+  document.getElementById('bounceTop').style.opacity = '0';
+  document.getElementById('bounceBottom').style.opacity = '0';
+  document.getElementById('bounceLeft').style.opacity = '0';
+  document.getElementById('bounceRight').style.opacity = '0';
+
+  currentPage = 0;
+
+  if (state.direction === 'vertical') {
+    vContainer.style.display = 'block';
+    hContainer.style.display = 'none';
+    pageDots.style.display = 'none';
+    indicatorH.style.display = 'none';
+    indicatorV.style.display = 'block';
+    buildVerticalCards();
+
+    vContainer.style.overflowY = state.bounce ? 'auto' : 'auto';
+
+    // Attach scroll event
+    vContainer.onscroll = function() {
+      updateVerticalIndicator();
+      handleVerticalBounce();
+    };
+  } else {
+    vContainer.style.display = 'none';
+    hContainer.style.display = 'flex';
+    indicatorV.style.display = 'none';
+    indicatorH.style.display = 'block';
+
+    if (state.paging) {
+      hContainer.classList.add('paging');
+      pageDots.style.display = 'flex';
+    } else {
+      hContainer.classList.remove('paging');
+      pageDots.style.display = 'none';
+    }
+
+    buildHorizontalCards();
+    if (state.paging) buildPageDots();
+
+    hContainer.scrollLeft = 0;
+
+    // Attach scroll event
+    hContainer.onscroll = function() {
+      updateHorizontalIndicator();
+      handleHorizontalBounce();
+      if (state.paging) updateCurrentPage();
+    };
+  }
+
+  updateCode();
+}
+
+// --- Update Code ---
+function updateCode() {
+  var code = '';
+  if (state.direction === 'vertical') {
+    code += '<span class="kw">ScrollView</span>(.<span class="prop">vertical</span>) {\n';
+    code += '    <span class="kw">VStack</span>(<span class="prop">spacing</span>: <span class="str">12</span>) {\n';
+    code += '        <span class="kw">ForEach</span>(<span class="prop">cards</span>) { card <span class="kw">in</span>\n';
+    code += '            <span class="type">CardView</span>(card: card)\n';
+    code += '                .<span class="func">frame</span>(<span class="prop">height</span>: <span class="str">100</span>)\n';
+    code += '                .<span class="func">clipShape</span>(<span class="type">RoundedRectangle</span>(\n';
+    code += '                    <span class="prop">cornerRadius</span>: <span class="str">14</span>))\n';
+    code += '        }\n';
+    code += '    }\n';
+    code += '    .<span class="func">padding</span>(.<span class="prop">horizontal</span>)\n';
+    code += '}';
+    if (state.paging) {
+      code += '\n.<span class="func">scrollTargetBehavior</span>(.<span class="prop">paging</span>)';
+    }
+  } else {
+    code += '<span class="kw">ScrollView</span>(.<span class="prop">horizontal</span>) {\n';
+    code += '    <span class="kw">HStack</span>(<span class="prop">spacing</span>: <span class="str">' + (state.paging ? '0' : '12') + '</span>) {\n';
+    code += '        <span class="kw">ForEach</span>(<span class="prop">cards</span>) { card <span class="kw">in</span>\n';
+    code += '            <span class="type">CardView</span>(card: card)\n';
+    if (state.paging) {
+      code += '                .<span class="func">containerRelativeFrame</span>(\n';
+      code += '                    .<span class="prop">horizontal</span>)\n';
+    } else {
+      code += '                .<span class="func">frame</span>(<span class="prop">width</span>: <span class="str">280</span>,\n';
+      code += '                       <span class="prop">height</span>: <span class="str">360</span>)\n';
+    }
+    code += '                .<span class="func">clipShape</span>(<span class="type">RoundedRectangle</span>(\n';
+    code += '                    <span class="prop">cornerRadius</span>: <span class="str">16</span>))\n';
+    code += '        }\n';
+    code += '    }';
+    if (!state.paging) {
+      code += '\n    .<span class="func">padding</span>(.<span class="prop">horizontal</span>)';
+    }
+    code += '\n}';
+    if (state.paging) {
+      code += '\n.<span class="func">scrollTargetBehavior</span>(.<span class="prop">paging</span>)';
+    }
+  }
+
+  if (!state.indicators) {
+    code += '\n.<span class="func">scrollIndicators</span>(.<span class="prop">hidden</span>)';
+  }
+
+  if (!state.bounce) {
+    code += '\n.<span class="func">scrollBounceBehavior</span>(.<span class="prop">basedOnSize</span>)';
+  }
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// --- Initial render ---
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Scroll Views</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Nested Scrolling</div>
+          <div class="screen-card"><div style="background:#F2F2F7;padding:8px;border-radius:14px;height:120px;overflow-y:auto"><div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:8px;height:100px;overflow-y:auto;font-size:11px;color:#000">Scrollable content inside another scrollable container. This creates confusing gesture conflicts where the user doesn't know which container will scroll.</div><div style="background:#fff;border-radius:8px;padding:8px;height:100px;overflow-y:auto;font-size:11px;color:#000">Another nested scroll view that fights with the parent scroll.</div></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+var state = { direction: 'vertical', paging: false, showIndicators: true };
+
+var higRules = [
+    { check: function(){ return !state.showIndicators; }, ko: "Without scroll indicators, users can't tell there's more content", en: "Without scroll indicators, users can't tell there's more content" },
+    { check: function(){ return state.paging && state.direction === 'vertical'; }, ko: "Vertical paging is uncommon. Horizontal paging feels more natural", en: "Vertical paging is uncommon. Horizontal paging feels more natural" }
+];
+
+function checkHigViolations() {
+  if (typeof isDontMode !== 'undefined' && isDontMode) return;
+  if(document.querySelector('.control-option.active[data-value="horizontal"]')) state.direction='horizontal'; else state.direction='vertical'; state.paging = !!document.querySelector('#togglePaging.on'); state.showIndicators = !document.querySelector('#toggleIndicators.on');
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ Following HIG guidelines correctly</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into existing updatePreview if exists
+var _origUp = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUp) {
+  updatePreview = function() { _origUp(); checkHigViolations(); };
+}
+
+// Listen on all controls
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch, input[type=range]').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 100); });
+  el.addEventListener('input', function() { setTimeout(checkHigViolations, 100); });
+});
+
+setTimeout(checkHigViolations, 200);
+</script>
+</body>
+</html>

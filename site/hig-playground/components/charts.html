@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charts — HIG Playground | HIG Lab</title>
+<meta name="description" content="SwiftUI Charts 프레임워크의 다양한 차트 유형을 직접 체험해보세요. Bar, Line, Area, Pie 차트를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg, #f2f2f7);color:var(--text-2, #6e6e73);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+      <a href="charts.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; Charts
+</div>
+
+<!-- Title -->
+<h1 class="page-title">Charts</h1>
+<p class="page-desc">SwiftUI Charts 프레임워크의 다양한 차트 유형을 직접 체험해보세요. 컨트롤 패널에서 차트 유형과 옵션을 변경하면 iPhone 화면에 즉시 반영됩니다.</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">Charts</div>
+
+        <!-- Chart Card -->
+        <div class="screen-section">
+          <div class="screen-section-title">Monthly Data</div>
+          <div class="screen-card" style="padding:12px;">
+            <canvas id="chartCanvas" width="310" height="200" style="width:310px;height:200px;"></canvas>
+          </div>
+        </div>
+
+        <!-- Legend Section -->
+        <div class="screen-section" id="legendSection" style="display:none;">
+          <div class="screen-section-title">Legend</div>
+          <div class="screen-card" id="legendCard" style="flex-direction:row;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px 16px;">
+          </div>
+        </div>
+
+        <!-- Data Summary -->
+        <div class="screen-section">
+          <div class="screen-section-title">Summary</div>
+          <div class="screen-card" id="summaryCard" style="gap:6px;align-items:stretch;">
+            <div style="display:flex;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;">
+              <span style="color:var(--ios-gray);">Average</span>
+              <span id="summaryAvg" style="font-weight:600;">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;">
+              <span style="color:var(--ios-gray);">Maximum</span>
+              <span id="summaryMax" style="font-weight:600;">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;">
+              <span style="color:var(--ios-gray);">Minimum</span>
+              <span id="summaryMin" style="font-weight:600;">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning">⚠️ HIG 위반: 차트가 읽기 어렵습니다</div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">✓ Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">✗ Don't — 나쁜 예시</div>
+        </div>
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>Use clear axis labels and data labels</li>
+              <li>Choose the appropriate chart type for your data</li>
+              <li>Use consistent color coding</li>
+              <li>Provide context with titles and legends</li>
+            </ul>
+          </div>
+        </div>
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>Overcrowd charts with too many data points</li>
+              <li>Use 3D effects that distort perception</li>
+              <li>Use misleading scales or truncated axes</li>
+              <li>Mix too many colors without purpose</li>
+            </ul>
+          
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">👆 iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+        <!-- Data Points -->
+        <div class="control-group">
+          <label>Data Points</label>
+          <div class="control-options" id="dataPointsOptions">
+            <div class="control-option" data-value="5">5</div>
+            <div class="control-option active" data-value="7">7</div>
+            <div class="control-option" data-value="10">10</div>
+          </div>
+        </div>
+        <!-- Color Scheme -->
+        <div class="control-group">
+          <label>Color Scheme</label>
+          <div class="color-options" id="colorOptions">
+            <div class="color-swatch active" data-color="#007AFF" style="background:#007AFF" title="Blue"></div>
+            <div class="color-swatch" data-color="#34C759" style="background:#34C759" title="Green"></div>
+            <div class="color-swatch" data-color="#FF9500" style="background:#FF9500" title="Orange"></div>
+            <div class="color-swatch" data-color="#AF52DE" style="background:#AF52DE" title="Purple"></div>
+            <div class="color-swatch" data-color="#FF3B30" style="background:#FF3B30" title="Red"></div>
+            <div class="color-swatch" data-color="#5AC8FA" style="background:#5AC8FA" title="Teal"></div>
+          </div>
+        </div>
+        <!-- Show Legend Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Legend</span>
+            <div class="toggle-switch" id="toggleLegend"></div>
+          </div>
+        </div>
+        <!-- Show Grid Toggle -->
+        <div class="control-group">
+          <div class="control-toggle">
+            <span class="control-toggle-label">Show Grid</span>
+            <div class="toggle-switch on" id="toggleGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── Seeded Data ───
+var allLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+var allValues = [65, 78, 52, 91, 83, 70, 95, 60, 88, 74];
+
+// ─── State ───
+var state = {
+  chartType: 'bar',
+  dataPoints: 7,
+  color: '#007AFF',
+  showLegend: false,
+  showGrid: true
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'typeOptions') state.chartType = opt.dataset.value;
+      if (group.id === 'dataPointsOptions') state.dataPoints = parseInt(opt.dataset.value);
+      updatePreview();
+    });
+  });
+});
+
+// ─── Color Swatches ───
+document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+  swatch.addEventListener('click', function() {
+    document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+    swatch.classList.add('active');
+    state.color = swatch.dataset.color;
+    updatePreview();
+  });
+});
+
+// ─── Toggles ───
+document.getElementById('toggleLegend').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showLegend = this.classList.contains('on');
+  updatePreview();
+});
+document.getElementById('toggleGrid').addEventListener('click', function() {
+  this.classList.toggle('on');
+  state.showGrid = this.classList.contains('on');
+  updatePreview();
+});
+
+// ─── Helpers ───
+function hexToRgba(hex, alpha) {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+function getDataSlice() {
+  var labels = allLabels.slice(0, state.dataPoints);
+  var values = allValues.slice(0, state.dataPoints);
+  return { labels: labels, values: values };
+}
+
+// ─── Draw Chart ───
+function drawChart() {
+  var canvas = document.getElementById('chartCanvas');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = 310 * dpr;
+  canvas.height = 200 * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, 310, 200);
+
+  var data = getDataSlice();
+  var labels = data.labels;
+  var values = data.values;
+  var color = state.color;
+
+  if (state.chartType === 'pie') {
+    drawPieChart(ctx, labels, values, color);
+  } else {
+    drawCartesianChart(ctx, labels, values, color);
+  }
+
+  // Update summary
+  var sum = 0;
+  var max = -Infinity;
+  var min = Infinity;
+  for (var i = 0; i < values.length; i++) {
+    sum += values[i];
+    if (values[i] > max) max = values[i];
+    if (values[i] < min) min = values[i];
+  }
+  document.getElementById('summaryAvg').textContent = (sum / values.length).toFixed(1);
+  document.getElementById('summaryMax').textContent = max;
+  document.getElementById('summaryMin').textContent = min;
+
+  // Update legend
+  var legendSection = document.getElementById('legendSection');
+  var legendCard = document.getElementById('legendCard');
+  if (state.showLegend) {
+    legendSection.style.display = 'block';
+    legendCard.innerHTML = '';
+    if (state.chartType === 'pie') {
+      var pieColors = generatePieColors(color, values.length);
+      for (var i = 0; i < labels.length; i++) {
+        var dot = document.createElement('div');
+        dot.style.cssText = 'display:flex;align-items:center;gap:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12px;color:#333;';
+        dot.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:' + pieColors[i] + ';display:inline-block;"></span>' + labels[i];
+        legendCard.appendChild(dot);
+      }
+    } else {
+      var dot = document.createElement('div');
+      dot.style.cssText = 'display:flex;align-items:center;gap:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12px;color:#333;';
+      dot.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:' + color + ';display:inline-block;"></span>Monthly Data';
+      legendCard.appendChild(dot);
+    }
+  } else {
+    legendSection.style.display = 'none';
+  }
+}
+
+function drawCartesianChart(ctx, labels, values, color) {
+  var W = 310;
+  var H = 200;
+  var padLeft = 32;
+  var padRight = 12;
+  var padTop = 16;
+  var padBottom = 28;
+  var chartW = W - padLeft - padRight;
+  var chartH = H - padTop - padBottom;
+
+  var maxVal = 0;
+  for (var i = 0; i < values.length; i++) {
+    if (values[i] > maxVal) maxVal = values[i];
+  }
+  maxVal = Math.ceil(maxVal / 20) * 20;
+
+  // Grid lines
+  if (state.showGrid) {
+    ctx.strokeStyle = '#E5E5EA';
+    ctx.lineWidth = 0.5;
+    var gridCount = 4;
+    for (var g = 0; g <= gridCount; g++) {
+      var gy = padTop + (chartH / gridCount) * g;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, gy);
+      ctx.lineTo(W - padRight, gy);
+      ctx.stroke();
+
+      // Y-axis labels
+      var yVal = Math.round(maxVal - (maxVal / gridCount) * g);
+      ctx.fillStyle = '#8E8E93';
+      ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(yVal, padLeft - 6, gy);
+    }
+  }
+
+  // X-axis labels
+  ctx.fillStyle = '#8E8E93';
+  ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+
+  var n = labels.length;
+
+  if (state.chartType === 'bar') {
+    var barGap = 6;
+    var totalGaps = (n + 1) * barGap;
+    var barW = (chartW - totalGaps) / n;
+    if (barW > 30) barW = 30;
+    var totalBarsW = barW * n + barGap * (n - 1);
+    var offsetX = padLeft + (chartW - totalBarsW) / 2;
+
+    for (var i = 0; i < n; i++) {
+      var x = offsetX + i * (barW + barGap);
+      var barH = (values[i] / maxVal) * chartH;
+      var y = padTop + chartH - barH;
+
+      // Bar with rounded top
+      var radius = Math.min(4, barW / 2);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x, y + radius);
+      ctx.arcTo(x, y, x + radius, y, radius);
+      ctx.arcTo(x + barW, y, x + barW, y + radius, radius);
+      ctx.lineTo(x + barW, padTop + chartH);
+      ctx.lineTo(x, padTop + chartH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Value label on top
+      ctx.fillStyle = '#1d1d1f';
+      ctx.font = 'bold 8px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(values[i], x + barW / 2, y - 3);
+
+      // X label
+      ctx.fillStyle = '#8E8E93';
+      ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(labels[i], x + barW / 2, padTop + chartH + 6);
+    }
+  } else if (state.chartType === 'line' || state.chartType === 'area') {
+    var points = [];
+    var step = chartW / (n - 1);
+    for (var i = 0; i < n; i++) {
+      var px = padLeft + step * i;
+      var py = padTop + chartH - (values[i] / maxVal) * chartH;
+      points.push({ x: px, y: py });
+    }
+
+    // Area fill
+    if (state.chartType === 'area') {
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, padTop + chartH);
+      for (var i = 0; i < points.length; i++) {
+        if (i === 0) {
+          ctx.lineTo(points[i].x, points[i].y);
+        } else {
+          var cpx1 = (points[i - 1].x + points[i].x) / 2;
+          var cpy1 = points[i - 1].y;
+          var cpx2 = (points[i - 1].x + points[i].x) / 2;
+          var cpy2 = points[i].y;
+          ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, points[i].x, points[i].y);
+        }
+      }
+      ctx.lineTo(points[points.length - 1].x, padTop + chartH);
+      ctx.closePath();
+      var grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
+      grad.addColorStop(0, hexToRgba(color, 0.35));
+      grad.addColorStop(1, hexToRgba(color, 0.03));
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    for (var i = 0; i < points.length; i++) {
+      if (i === 0) {
+        ctx.moveTo(points[i].x, points[i].y);
+      } else {
+        var cpx1 = (points[i - 1].x + points[i].x) / 2;
+        var cpy1 = points[i - 1].y;
+        var cpx2 = (points[i - 1].x + points[i].x) / 2;
+        var cpy2 = points[i].y;
+        ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, points[i].x, points[i].y);
+      }
+    }
+    ctx.stroke();
+
+    // Data points
+    for (var i = 0; i < points.length; i++) {
+      ctx.beginPath();
+      ctx.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Value label
+      ctx.fillStyle = '#1d1d1f';
+      ctx.font = 'bold 8px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(values[i], points[i].x, points[i].y - 7);
+    }
+
+    // X labels
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = '#8E8E93';
+      ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(labels[i], points[i].x, padTop + chartH + 6);
+    }
+  }
+}
+
+function generatePieColors(baseColor, count) {
+  var r = parseInt(baseColor.slice(1, 3), 16);
+  var g = parseInt(baseColor.slice(3, 5), 16);
+  var b = parseInt(baseColor.slice(5, 7), 16);
+  var colors = [];
+  for (var i = 0; i < count; i++) {
+    var t = i / count;
+    var nr = Math.round(r + (255 - r) * t * 0.6);
+    var ng = Math.round(g + (255 - g) * t * 0.4);
+    var nb = Math.round(b + (200 - b) * t * 0.5);
+    // Rotate hue slightly
+    var hueShift = (i * 37) % 60 - 30;
+    nr = Math.min(255, Math.max(0, nr + hueShift));
+    ng = Math.min(255, Math.max(0, ng - hueShift / 2));
+    nb = Math.min(255, Math.max(0, nb + hueShift / 3));
+    colors.push('rgb(' + nr + ',' + ng + ',' + nb + ')');
+  }
+  return colors;
+}
+
+function drawPieChart(ctx, labels, values, color) {
+  var W = 310;
+  var H = 200;
+  var cx = W / 2;
+  var cy = H / 2;
+  var radius = 72;
+  var innerRadius = 30;
+
+  var total = 0;
+  for (var i = 0; i < values.length; i++) total += values[i];
+
+  var colors = generatePieColors(color, values.length);
+  var startAngle = -Math.PI / 2;
+
+  for (var i = 0; i < values.length; i++) {
+    var sliceAngle = (values[i] / total) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+
+    // Draw slice
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(startAngle) * innerRadius, cy + Math.sin(startAngle) * innerRadius);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.lineTo(cx + Math.cos(endAngle) * innerRadius, cy + Math.sin(endAngle) * innerRadius);
+    ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+
+    // Separator lines
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    var midAngle = startAngle + sliceAngle / 2;
+    var labelR = radius + 14;
+    var lx = cx + Math.cos(midAngle) * labelR;
+    var ly = cy + Math.sin(midAngle) * labelR;
+    ctx.fillStyle = '#1d1d1f';
+    ctx.font = '8px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    var pct = Math.round((values[i] / total) * 100);
+    ctx.fillText(labels[i], lx, ly - 5);
+    ctx.fillStyle = '#8E8E93';
+    ctx.font = 'bold 8px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText(pct + '%', lx, ly + 5);
+
+    startAngle = endAngle;
+  }
+
+  // Center label
+  ctx.fillStyle = '#1d1d1f';
+  ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy - 4);
+  ctx.fillStyle = '#8E8E93';
+  ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText('Total', cx, cy + 10);
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  drawChart();
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var markMap = {
+    bar: 'BarMark',
+    line: 'LineMark',
+    area: 'AreaMark',
+    pie: 'SectorMark'
+  };
+  var mark = markMap[state.chartType];
+  var colorNameMap = {
+    '#007AFF': '.blue',
+    '#34C759': '.green',
+    '#FF9500': '.orange',
+    '#AF52DE': '.purple',
+    '#FF3B30': '.red',
+    '#5AC8FA': '.cyan'
+  };
+  var colorName = colorNameMap[state.color] || '.blue';
+
+  var code = '';
+
+  if (state.chartType === 'pie') {
+    code += '<span class="kw">import</span> <span class="type">Charts</span>\n\n';
+    code += '<span class="type">Chart</span> {\n';
+    code += '    <span class="kw">ForEach</span>(data) { item <span class="kw">in</span>\n';
+    code += '        <span class="type">' + mark + '</span>(\n';
+    code += '            <span class="prop">angle</span>: .<span class="func">value</span>(<span class="str">"Value"</span>, item.<span class="prop">value</span>),\n';
+    code += '            <span class="prop">innerRadius</span>: .<span class="func">ratio</span>(<span class="prop">0.4</span>)\n';
+    code += '        )\n';
+    code += '        .<span class="func">foregroundStyle</span>(\n';
+    code += '            <span class="kw">by</span>: .<span class="func">value</span>(<span class="str">"Month"</span>, item.<span class="prop">month</span>)\n';
+    code += '        )\n';
+    code += '    }\n';
+    code += '}\n';
+    code += '.<span class="func">chartForegroundStyleScale</span>(\n';
+    code += '    <span class="prop">range</span>: <span class="type">Gradient</span>(\n';
+    code += '        <span class="prop">colors</span>: [<span class="prop">' + colorName + '</span>, <span class="prop">' + colorName + '</span>.<span class="func">opacity</span>(<span class="prop">0.4</span>)]\n';
+    code += '    )\n';
+    code += ')';
+  } else {
+    code += '<span class="kw">import</span> <span class="type">Charts</span>\n\n';
+    code += '<span class="type">Chart</span> {\n';
+    code += '    <span class="kw">ForEach</span>(data) { item <span class="kw">in</span>\n';
+    code += '        <span class="type">' + mark + '</span>(\n';
+    code += '            <span class="prop">x</span>: .<span class="func">value</span>(<span class="str">"Month"</span>, item.<span class="prop">month</span>),\n';
+    code += '            <span class="prop">y</span>: .<span class="func">value</span>(<span class="str">"Value"</span>, item.<span class="prop">value</span>)\n';
+    code += '        )\n';
+    if (state.chartType === 'area') {
+      code += '        .<span class="func">foregroundStyle</span>(\n';
+      code += '            <span class="prop">' + colorName + '</span>.<span class="func">gradient</span>\n';
+      code += '        )\n';
+    } else {
+      code += '        .<span class="func">foregroundStyle</span>(<span class="prop">' + colorName + '</span>)\n';
+    }
+    if (state.chartType === 'line') {
+      code += '        .<span class="func">symbol</span>(<span class="type">Circle</span>())\n';
+      code += '        .<span class="func">interpolationMethod</span>(.<span class="prop">catmullRom</span>)\n';
+    }
+    code += '    }\n';
+    code += '}';
+  }
+
+  if (state.showLegend) {
+    code += '\n.<span class="func">chartLegend</span>(.<span class="prop">visible</span>)';
+  } else {
+    code += '\n.<span class="func">chartLegend</span>(.<span class="prop">hidden</span>)';
+  }
+
+  if (state.chartType !== 'pie') {
+    if (state.showGrid) {
+      code += '\n.<span class="func">chartYAxis</span> {\n';
+      code += '    <span class="type">AxisMarks</span>(<span class="prop">position</span>: .<span class="prop">leading</span>)\n';
+      code += '}';
+    } else {
+      code += '\n.<span class="func">chartYAxis</span>(.<span class="prop">hidden</span>)\n';
+      code += '.<span class="func">chartXAxis</span>(.<span class="prop">hidden</span>)';
+    }
+  }
+
+  code += '\n.<span class="func">frame</span>(<span class="prop">height</span>: <span class="prop">200</span>)';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// Initial render
+updatePreview();
+
+// ─── Do/Don't Interactive ───
+let isDontMode = false;
+const originalScreenHTML = document.getElementById('screenContent').innerHTML;
+const dontScreenHTML = `
+  <div class="screen-nav-title">Charts</div>
+  
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ 3D Effects</div>
+          <div class="screen-card"><div style="background:#F2F2F7;padding:20px;border-radius:14px;text-align:center"><div style="transform:perspective(200px) rotateX(30deg);margin:0 auto"><div style="display:flex;gap:4px;align-items:flex-end;justify-content:center;height:120px"><div style="width:30px;background:linear-gradient(#007AFF,#5856D6);height:80px;border-radius:4px"></div><div style="width:30px;background:linear-gradient(#34C759,#30D158);height:50px;border-radius:4px"></div><div style="width:30px;background:linear-gradient(#FF9500,#FF6B00);height:100px;border-radius:4px"></div><div style="width:30px;background:linear-gradient(#FF3B30,#FF6482);height:30px;border-radius:4px"></div></div></div><p style="font-size:10px;color:#8E8E93;margin-top:8px">3D 원근감이 데이터를 왜곡합니다</p></div></div>
+        </div>
+        <div class="screen-section">
+          <div class="screen-section-title" style="color:#FF3B30">❌ Too Many Colors</div>
+          <div class="screen-card"><div style="background:#F2F2F7;padding:20px;border-radius:14px;text-align:center"><div style="display:flex;gap:2px;align-items:flex-end;justify-content:center;height:100px"><div style="width:16px;background:#FF0000;height:40px"></div><div style="width:16px;background:#FF8800;height:60px"></div><div style="width:16px;background:#FFFF00;height:35px"></div><div style="width:16px;background:#00FF00;height:80px"></div><div style="width:16px;background:#0088FF;height:45px"></div><div style="width:16px;background:#8800FF;height:70px"></div><div style="width:16px;background:#FF00FF;height:55px"></div><div style="width:16px;background:#00FFFF;height:90px"></div><div style="width:16px;background:#888888;height:25px"></div><div style="width:16px;background:#FF4488;height:65px"></div></div><p style="font-size:8px;color:#8E8E93;margin-top:4px">10개 항목의 색을 구분할 수 없습니다</p></div></div>
+        </div>
+  <div style="height:20px"></div>
+`;
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  if (typeof updatePreview === 'function') updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  document.getElementById('higWarning').classList.add('show');
+}
+
+// ─── Realtime HIG Violation Detection ───
+
+var higRules = [
+    { check: function(){ return state.chartType === 'pie' && state.dataPoints > 5; }, ko: "Pie 차트는 5개 이하 항목에 적합합니다. 많은 항목에는 Bar를 사용하세요", en: "Pie charts work best with 5 or fewer items. Use Bar for more" },
+    { check: function(){ return state.dataPoints >= 9; }, ko: "데이터 포인트가 너무 많으면 차트가 복잡해집니다", en: "Too many data points make the chart cluttered" },
+    { check: function(){ return !state.showGrid && state.chartType !== 'pie'; }, ko: "Grid 없이 Bar/Line 차트를 표시하면 값 비교가 어렵습니다", en: "Bar/Line charts without grid make value comparison difficult" },
+    { check: function(){ return !state.showLegend && state.dataPoints >= 5; }, ko: "5개 이상의 데이터에는 범례(Legend)를 표시하세요", en: "Show legend for 5+ data points" }
+];
+
+function checkHigViolations() {
+  if (typeof isDontMode !== 'undefined' && isDontMode) return;
+  
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+  
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+  
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">⚠️</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = '⚠️ ' + violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">✅ HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into existing updatePreview if exists
+var _origUp = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUp) {
+  updatePreview = function() { _origUp(); checkHigViolations(); };
+}
+
+// Listen on all controls
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch, input[type=range]').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 100); });
+  el.addEventListener('input', function() { setTimeout(checkHigViolations, 100); });
+});
+
+setTimeout(checkHigViolations, 200);
+</script>
+</body>
+</html>

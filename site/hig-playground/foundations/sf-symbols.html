@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF Symbols — HIG Playground | HIG Lab</title>
+<meta name="description" content="SF Symbols 카탈로그에서 다양한 렌더링 옵션을 체험해보세요. Weight, Rendering Mode, Variable Value를 인터랙티브하게 조작할 수 있습니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ─── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#86868b;
+  --accent:#0071e3;
+  --border:#d2d2d7;
+  --radius:16px;
+  /* iOS System Colors */
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+  --ios-red:#FF3B30;
+  --ios-orange:#FF9500;
+  --ios-purple:#AF52DE;
+  --ios-teal:#5AC8FA;
+  --ios-gray:#8E8E93;
+  --ios-gray2:#AEAEB2;
+  --ios-gray3:#C7C7CC;
+  --ios-gray4:#D1D1D6;
+  --ios-gray5:#E5E5EA;
+  --ios-gray6:#F2F2F7;
+  --ios-bg:#F2F2F7;
+  --ios-card:#FFFFFF;
+  --ios-separator:rgba(60,60,67,0.12);
+}
+body{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ─── Header ─── */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,250,250,0.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--border);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 24px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.logo span{color:var(--accent)}
+.nav{display:flex;gap:20px;align-items:center;font-size:13px;font-weight:500}
+.nav a{color:var(--text-2);text-decoration:none;transition:color .2s}
+.nav a:hover{color:var(--accent)}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{
+  max-width:1200px;margin:0 auto;padding:16px 24px 0;
+  font-size:13px;color:var(--text-3);
+}
+.breadcrumb a{color:var(--text-2);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+
+/* ─── Page Layout ─── */
+.page-title{
+  max-width:1200px;margin:0 auto;padding:20px 24px 8px;
+  font-size:32px;font-weight:800;letter-spacing:-1px;
+}
+.page-desc{
+  max-width:1200px;margin:0 auto;padding:0 24px 24px;
+  font-size:15px;color:var(--text-2);
+}
+.playground-layout{
+  max-width:1200px;margin:0 auto;padding:0 24px 60px;
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .playground-layout{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+}
+
+/* ─── iPhone Frame ─── */
+.iphone-frame{
+  width:375px;height:812px;
+  background:#000;
+  border-radius:44px;
+  padding:4px;
+  position:sticky;top:72px;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 20px 60px rgba(0,0,0,0.25),
+    inset 0 0 0 2px #333;
+}
+.iphone-screen{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+/* Dynamic Island */
+.dynamic-island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;
+  background:#000;border-radius:20px;
+  z-index:10;
+}
+/* Status Bar */
+.status-bar{
+  height:54px;padding:14px 24px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  font-size:14px;font-weight:600;
+  color:#1d1d1f;
+  flex-shrink:0;
+}
+.status-bar-right{display:flex;gap:5px;align-items:center;font-size:12px}
+/* Home Indicator */
+.home-indicator{
+  flex-shrink:0;
+  display:flex;justify-content:center;padding:8px 0 8px;
+}
+.home-indicator-bar{
+  width:134px;height:5px;
+  background:#1d1d1f;border-radius:3px;
+  opacity:0.2;
+}
+/* Screen Content */
+.screen-content{
+  flex:1;overflow-y:auto;padding:12px 16px 0;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-content::-webkit-scrollbar{display:none}
+.screen-nav-title{
+  font-size:28px;font-weight:700;letter-spacing:-0.5px;
+  margin-bottom:16px;color:#000;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-section{margin-bottom:24px}
+.screen-section-title{
+  font-size:13px;font-weight:600;
+  color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.screen-card{
+  background:var(--ios-card);
+  border-radius:14px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  align-items:center;
+}
+
+/* ─── Symbol Grid ─── */
+.symbol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.symbol-card{background:var(--ios-card);border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.symbol-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.symbol-icon svg{width:24px;height:24px}
+.symbol-name{font-size:9px;color:var(--ios-gray);font-family:-apple-system,sans-serif;line-height:1.2}
+.category-header{
+  font-size:13px;font-weight:600;color:var(--ios-gray);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:8px;padding-left:4px;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* ─── Right Panel ─── */
+.right-panel{display:flex;flex-direction:column;gap:24px}
+
+/* ─── Controls Panel ─── */
+.controls-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.controls-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.controls-body{padding:20px;display:flex;flex-direction:column;gap:20px}
+
+.control-group label{
+  display:block;font-size:12px;font-weight:700;
+  color:var(--text-2);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:8px;
+}
+.control-options{display:flex;flex-wrap:wrap;gap:6px}
+.control-option{
+  padding:6px 14px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  background:var(--bg);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  color:var(--text);
+}
+.control-option:hover{border-color:var(--accent);color:var(--accent)}
+.control-option.active{
+  background:var(--accent);color:#fff;border-color:var(--accent);
+}
+.control-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0;
+}
+.control-toggle-label{font-size:14px;font-weight:500}
+.toggle-switch{
+  width:44px;height:26px;
+  background:var(--ios-gray3);
+  border-radius:13px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.toggle-switch.on{background:var(--ios-green)}
+.toggle-switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:22px;height:22px;
+  background:#fff;border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+/* ─── Color Picker Row ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap}
+.color-swatch{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid transparent;
+  transition:all .15s;position:relative;
+}
+.color-swatch:hover{transform:scale(1.15)}
+.color-swatch.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg)}
+
+/* ─── Slider Control ─── */
+.slider-control{width:100%;display:flex;align-items:center;gap:12px}
+.slider-control input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--ios-gray4);outline:none}
+.slider-control input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.15);cursor:pointer}
+.slider-value{font-size:13px;font-weight:600;color:var(--text);min-width:36px;text-align:center}
+
+/* ─── Guidelines Section ─── */
+.guidelines{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.guidelines-header{
+  padding:16px 20px;
+  font-size:15px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.guidelines-body{padding:20px}
+
+.do-dont{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:20px;
+}
+@media(max-width:640px){.do-dont{grid-template-columns:1fr}}
+.do-card,.dont-card{
+  padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;
+}
+.do-card{background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2)}
+.do-card h4{color:var(--ios-green);font-size:13px;font-weight:700;margin-bottom:6px}
+.dont-card{background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2)}
+.dont-card h4{color:var(--ios-red);font-size:13px;font-weight:700;margin-bottom:6px}
+.do-card ul,.dont-card ul{padding-left:16px}
+.do-card li,.dont-card li{margin-bottom:4px}
+
+/* ─── Interactive Do/Don't ─── */
+.do-dont-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.do-dont-tab{
+  flex:1;padding:10px 16px;cursor:pointer;
+  font-size:13px;font-weight:700;text-align:center;
+  transition:all .2s;position:relative;
+  background:var(--bg);color:var(--text-2);
+}
+.do-dont-tab.active-do{
+  background:rgba(52,199,89,0.12);color:#34C759;
+  box-shadow:inset 0 -3px 0 #34C759;
+}
+.do-dont-tab.active-dont{
+  background:rgba(255,59,48,0.12);color:#FF3B30;
+  box-shadow:inset 0 -3px 0 #FF3B30;
+}
+.do-dont-tab:hover:not(.active-do):not(.active-dont){
+  background:rgba(0,0,0,0.04);
+}
+.do-dont-detail{display:none}
+.do-dont-detail.active{display:block}
+
+/* Warning Banner */
+.hig-warning{
+  display:none;
+  position:absolute;bottom:60px;left:16px;right:16px;
+  background:rgba(255,59,48,0.95);color:#fff;
+  padding:10px 14px;border-radius:12px;
+  font-size:12px;font-weight:600;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  text-align:center;z-index:20;
+  animation:warningSlide .3s ease;
+  box-shadow:0 4px 20px rgba(255,59,48,0.3);
+}
+.hig-warning.show{display:block}
+@keyframes warningSlide{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.guideline-note{
+  font-size:13px;color:var(--text-2);line-height:1.7;
+  margin-bottom:16px;
+}
+.guideline-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:600;
+  color:var(--accent);
+}
+
+/* ─── Code Preview ─── */
+.code-preview{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.code-preview-header{
+  padding:12px 20px;
+  font-size:13px;font-weight:700;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-preview-body{
+  background:#1e1e2e;
+  padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.7;
+  color:#cdd6f4;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code-preview-body .kw{color:#cba6f7}
+.code-preview-body .type{color:#89b4fa}
+.code-preview-body .str{color:#a6e3a1}
+.code-preview-body .func{color:#89dceb}
+.code-preview-body .prop{color:#f9e2af}
+.code-preview-body .comment{color:#6c7086}
+
+.copy-btn{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:6px;
+  background:var(--bg);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;color:var(--text-2);
+}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:40px 24px;
+  border-top:1px solid var(--border);
+  font-size:13px;color:var(--text-2);
+}
+
+/* ─── Mobile iPhone Scale ─── */
+@media(max-width:860px){
+  .iphone-frame{
+    transform:scale(0.78);transform-origin:top center;
+    position:relative;top:0;
+    margin-bottom:-140px;
+  }
+}
+@media(max-width:420px){
+  .iphone-frame{
+    transform:scale(0.65);
+    margin-bottom:-220px;
+  }
+}
+
+/* ─── Realtime HIG Violation Warnings ─── */
+.hig-violations{
+  margin-top:16px;display:flex;flex-direction:column;gap:8px;
+}
+.hig-violation-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(255,59,48,0.08);border:1px solid rgba(255,59,48,0.2);
+  font-size:12px;line-height:1.5;color:#FF3B30;
+  animation:violationFadeIn .3s ease;
+}
+.hig-violation-item .v-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.hig-violation-item .v-text{flex:1}
+.hig-violation-item .v-text strong{font-weight:700}
+.hig-ok{
+  padding:10px 14px;border-radius:10px;
+  background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);
+  font-size:12px;color:#34C759;text-align:center;font-weight:600;
+}
+@keyframes violationFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hig-live-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:#FF3B30;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.hig-live-badge .dot{
+  width:6px;height:6px;border-radius:50%;background:#FF3B30;
+  animation:livePulse 1.5s infinite;
+}
+.hig-live-badge.ok .dot{background:#34C759;animation:none}
+.hig-live-badge.ok{color:#34C759}
+@keyframes livePulse{
+  0%,100%{opacity:1}50%{opacity:0.3}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">HIG <span>Lab</span></a>
+    <div class="nav">
+      <a href="../index.html">HIG Playground</a>
+      <a href="../../index.html">Home</a>
+      <a href="https://github.com/M1zz/HIGLab">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../../index.html">HIG Lab</a> &rarr; <a href="../index.html">HIG Playground</a> &rarr; SF Symbols
+</div>
+
+<!-- Title -->
+<h1 class="page-title">SF Symbols</h1>
+<p class="page-desc">SF Symbols 카탈로그에서 다양한 렌더링 옵션을 체험해보세요</p>
+
+<!-- Main Layout -->
+<div class="playground-layout">
+
+  <!-- iPhone Frame -->
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+      <div class="dynamic-island"></div>
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-bar-right">
+          <span>&#9679;&#9679;&#9679;&#9679;</span>
+          <span>WiFi</span>
+          <span>&#128267;</span>
+        </div>
+      </div>
+      <div class="screen-content" id="screenContent">
+        <div class="screen-nav-title">SF Symbols</div>
+        <div class="category-header" id="categoryTitle">COMMUNICATION</div>
+        <div class="symbol-grid" id="symbolGrid"></div>
+        <div style="height:20px"></div>
+      </div>
+      <div class="hig-warning" id="higWarning"></div>
+      <div class="home-indicator"><div class="home-indicator-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+
+    <!-- Guidelines -->
+    <div class="guidelines">
+      <div class="guidelines-header">&#128218; HIG Guidelines — 직접 체험하기</div>
+      <div class="guidelines-body">
+        <!-- Interactive Tabs -->
+        <div class="do-dont-tabs">
+          <div class="do-dont-tab active-do" id="tabDo" onclick="showDoState()">&#10003; Do — 올바른 예시</div>
+          <div class="do-dont-tab" id="tabDont" onclick="showDontState()">&#10007; Don't — 나쁜 예시</div>
+        </div>
+
+        <!-- Do Detail -->
+        <div class="do-dont-detail active" id="detailDo">
+          <div class="do-card">
+            <h4>&#10003; 이렇게 하세요</h4>
+            <ul>
+              <li>iOS와 일관성을 위해 <strong>SF Symbols</strong>를 사용하세요</li>
+              <li>심볼 weight를 텍스트 weight와 <strong>일치</strong>시키세요</li>
+              <li>맥락에 맞는 <strong>렌더링 모드</strong>를 사용하세요</li>
+              <li>상태 표현을 위해 <strong>Variable Value</strong>를 활용하세요</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Don't Detail -->
+        <div class="do-dont-detail" id="detailDont">
+          <div class="dont-card">
+            <h4>&#10007; 이렇게 하지 마세요</h4>
+            <ul>
+              <li>SF Symbol이 있는데 커스텀 아이콘을 사용하지 마세요</li>
+              <li>심볼 weight와 텍스트 weight를 불일치시키지 마세요</li>
+              <li>Multicolor 심볼의 의도된 색상을 덮어쓰지 마세요</li>
+              <li>작은 크기에서 테스트 없이 심볼을 사용하지 마세요</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-3)">iPhone 미리보기에서 나쁜 패턴을 직접 확인해보세요</p>
+          </div>
+        </div>
+
+        <p class="guideline-note" style="margin-top:16px">
+          SF Symbols provides a library of over 5,000 configurable symbols. Use <strong>Monochrome</strong> for single-color contexts,
+          <strong>Hierarchical</strong> for depth with a single tint, <strong>Palette</strong> for contrasting dual-color designs,
+          and <strong>Multicolor</strong> for symbols with intrinsic colors.
+        </p>
+        <a href="https://developer.apple.com/design/human-interface-guidelines/sf-symbols" class="guideline-link" target="_blank">
+          Apple HIG: SF Symbols &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="controls-header">&#9881;&#65039; Controls</div>
+      <div class="controls-body">
+        <!-- Category -->
+        <div class="control-group">
+          <label>Category</label>
+          <div class="control-options" id="categoryOptions">
+            <div class="control-option active" data-value="communication">Communication</div>
+            <div class="control-option" data-value="weather">Weather</div>
+            <div class="control-option" data-value="devices">Devices</div>
+            <div class="control-option" data-value="nature">Nature</div>
+            <div class="control-option" data-value="editing">Editing</div>
+          </div>
+        </div>
+        <!-- Weight -->
+        <div class="control-group">
+          <label>Weight</label>
+          <div class="control-options" id="weightOptions">
+            <div class="control-option" data-value="ultralight">Ultralight</div>
+            <div class="control-option" data-value="light">Light</div>
+            <div class="control-option active" data-value="regular">Regular</div>
+            <div class="control-option" data-value="medium">Medium</div>
+            <div class="control-option" data-value="semibold">Semibold</div>
+            <div class="control-option" data-value="bold">Bold</div>
+            <div class="control-option" data-value="black">Black</div>
+          </div>
+        </div>
+        <!-- Rendering Mode -->
+        <div class="control-group">
+          <label>Rendering Mode</label>
+          <div class="control-options" id="renderingOptions">
+            <div class="control-option active" data-value="monochrome">Monochrome</div>
+            <div class="control-option" data-value="hierarchical">Hierarchical</div>
+            <div class="control-option" data-value="palette">Palette</div>
+            <div class="control-option" data-value="multicolor">Multicolor</div>
+          </div>
+        </div>
+        <!-- Variable Value -->
+        <div class="control-group">
+          <label>Variable Value</label>
+          <div class="slider-control">
+            <input type="range" id="variableSlider" min="0" max="100" value="50">
+            <span class="slider-value" id="variableValueLabel">50%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Realtime HIG Violations -->
+    <div class="controls-panel" id="violationPanel" style="display:none">
+      <div class="controls-header"><span class="hig-live-badge" id="violationBadge"><span class="dot"></span> LIVE HIG CHECK</span></div>
+      <div class="controls-body">
+        <div class="hig-violations" id="violationList"></div>
+      </div>
+    </div>
+
+    <!-- Code Preview -->
+    <div class="code-preview">
+      <div class="code-preview-header">
+        <span>SwiftUI Code</span>
+        <button class="copy-btn" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-preview-body" id="codePreview"><span class="kw">Image</span>(systemName: <span class="str">"envelope.fill"</span>)
+    .<span class="func">symbolRenderingMode</span>(.<span class="prop">monochrome</span>)
+    .<span class="func">fontWeight</span>(.<span class="prop">regular</span>)
+    .<span class="func">font</span>(.<span class="prop">title</span>)</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  HIG Lab &mdash; Apple Human Interface Guidelines Interactive Playground
+</div>
+
+<script>
+// ─── SVG Icon Definitions ───
+var symbolData = {
+  communication: [
+    { name: 'envelope', path: 'M2 6c0-1.1.9-2 2-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm2-.5L12 12l8-6.5', secondaryPath: 'M2 6l10 7 10-7' },
+    { name: 'phone', path: 'M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.13.81.36 1.6.68 2.34a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.74.32 1.53.55 2.34.68A2 2 0 0122 16.92z' },
+    { name: 'bubble.left', path: 'M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z' },
+    { name: 'antenna.radiowaves', path: 'M12 12m-2 0a2 2 0 104 0 2 2 0 10-4 0', secondaryPath: 'M8.46 8.46a6 6 0 010 7.08M15.54 8.46a6 6 0 010 7.08M5.64 5.64a10 10 0 000 12.72M18.36 5.64a10 10 0 010 12.72' },
+    { name: 'bell', path: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0' },
+    { name: 'paperplane', path: 'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z' }
+  ],
+  weather: [
+    { name: 'sun.max', path: 'M12 12m-5 0a5 5 0 1010 0 5 5 0 10-10 0', secondaryPath: 'M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42' },
+    { name: 'cloud', path: 'M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z' },
+    { name: 'cloud.rain', path: 'M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z', secondaryPath: 'M8 21v2M12 21v2M16 21v2' },
+    { name: 'snowflake', path: 'M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07' },
+    { name: 'wind', path: 'M9.59 4.59A2 2 0 1111 8H2M12.59 19.41A2 2 0 1014 16H2M17.73 7.73A2.5 2.5 0 1119.5 12H2' },
+    { name: 'rainbow', path: 'M22 17a10 10 0 00-20 0', secondaryPath: 'M19 17a7 7 0 00-14 0M16 17a4 4 0 00-8 0' }
+  ],
+  devices: [
+    { name: 'laptopcomputer', path: 'M20 16V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10M1 20h22M1 20l2-4h18l2 4' },
+    { name: 'desktopcomputer', path: 'M3 4h18a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1zM8 20h8M12 16v4' },
+    { name: 'applewatch', path: 'M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2zM9 1h6M9 23h6' },
+    { name: 'iphone', path: 'M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zM10 19h4' },
+    { name: 'printer', path: 'M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z' },
+    { name: 'keyboard', path: 'M3 5h18a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V7a2 2 0 012-2zM7 15h10', secondaryPath: 'M7 9h.01M11 9h.01M15 9h.01M9 12h.01M13 12h.01M17 9h.01' }
+  ],
+  nature: [
+    { name: 'leaf', path: 'M6 21c3-6 10-11 16-14a24 24 0 01-16 14z', secondaryPath: 'M6 21c0-6 2-10 5-13' },
+    { name: 'camera.macro', path: 'M12 16a4 4 0 100-8 4 4 0 000 8z', secondaryPath: 'M12 2c-5 0-8 3-9 6s0 7 2 10M12 2c5 0 8 3 9 6s0 7-2 10M12 2v6' },
+    { name: 'pawprint', path: 'M12 16c-2 2-5 3-5 5s2 2 5 0 5-2 5 0 0-3-5-5z', secondaryPath: 'M7 8a2 2 0 100-4 2 2 0 000 4zM17 8a2 2 0 100-4 2 2 0 000 4zM4 14a2 2 0 100-4 2 2 0 000 4zM20 14a2 2 0 100-4 2 2 0 000 4z' },
+    { name: 'drop', path: 'M12 2.69l5.66 5.66a8 8 0 11-11.31 0z' },
+    { name: 'flame', path: 'M12 22c4.97 0 9-3.13 9-7 0-2.87-2.37-5.31-4-7-1.5-1.56-2-4.19-2-6 0 2-1.5 4-3 6s-4 4.14-4 7c0 3.87 4.03 7 9 7z', secondaryPath: 'M12 22c-1.66 0-3-1.5-3-3.33 0-1.5 1-2.67 2-3.67s2-2.33 2-4c0 1.5.5 3 1 4s1.5 2.17 1.5 3.67c0 1.83-1.34 3.33-3 3.33z' },
+    { name: 'star', path: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' }
+  ],
+  editing: [
+    { name: 'scissors', path: 'M6 9a3 3 0 100-6 3 3 0 000 6zM6 21a3 3 0 100-6 3 3 0 000 6zM20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12' },
+    { name: 'doc.on.clipboard', path: 'M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2', secondaryPath: 'M15 2H9a1 1 0 00-1 1v2a1 1 0 001 1h6a1 1 0 001-1V3a1 1 0 00-1-1z' },
+    { name: 'pencil', path: 'M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z' },
+    { name: 'trash', path: 'M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2', secondaryPath: 'M10 11v6M14 11v6' },
+    { name: 'pin', path: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z', secondaryPath: 'M12 10m-3 0a3 3 0 106 0 3 3 0 10-6 0' },
+    { name: 'link', path: 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71' }
+  ]
+};
+
+// Multicolor assignments per category
+var multicolorMap = {
+  communication: ['#007AFF','#34C759','#5AC8FA','#FF9500','#FF3B30','#007AFF'],
+  weather: ['#FF9500','#8E8E93','#5AC8FA','#AEAEB2','#8E8E93','#FF3B30'],
+  devices: ['#8E8E93','#1d1d1f','#1d1d1f','#1d1d1f','#8E8E93','#8E8E93'],
+  nature: ['#34C759','#FF9500','#AF52DE','#5AC8FA','#FF3B30','#FF9500'],
+  editing: ['#8E8E93','#FF9500','#007AFF','#FF3B30','#FF3B30','#007AFF']
+};
+
+// ─── State ───
+var state = {
+  category: 'communication',
+  weight: 'regular',
+  rendering: 'monochrome',
+  variableValue: 50
+};
+
+// ─── Weight to stroke-width mapping ───
+var weightMap = {
+  ultralight: 0.5,
+  light: 1,
+  regular: 1.5,
+  medium: 2,
+  semibold: 2.5,
+  bold: 3,
+  black: 4
+};
+
+// ─── Control Options ───
+document.querySelectorAll('.control-options').forEach(function(group) {
+  group.querySelectorAll('.control-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      group.querySelectorAll('.control-option').forEach(function(o) { o.classList.remove('active'); });
+      opt.classList.add('active');
+      if (group.id === 'categoryOptions') state.category = opt.dataset.value;
+      if (group.id === 'weightOptions') state.weight = opt.dataset.value;
+      if (group.id === 'renderingOptions') state.rendering = opt.dataset.value;
+      updatePreview();
+    });
+  });
+});
+
+// ─── Variable Value Slider ───
+document.getElementById('variableSlider').addEventListener('input', function() {
+  state.variableValue = parseInt(this.value);
+  document.getElementById('variableValueLabel').textContent = this.value + '%';
+  updatePreview();
+});
+
+// ─── Build Symbol Grid ───
+function buildSymbolGrid() {
+  var grid = document.getElementById('symbolGrid');
+  var symbols = symbolData[state.category];
+  var strokeWidth = weightMap[state.weight];
+  var varValue = state.variableValue / 100;
+
+  document.getElementById('categoryTitle').textContent = state.category.toUpperCase();
+
+  var html = '';
+  symbols.forEach(function(sym, idx) {
+    var primaryColor, secondaryColor, primaryOpacity, secondaryOpacity;
+
+    switch (state.rendering) {
+      case 'monochrome':
+        primaryColor = '#007AFF';
+        secondaryColor = '#007AFF';
+        primaryOpacity = 1;
+        secondaryOpacity = 1;
+        break;
+      case 'hierarchical':
+        primaryColor = '#007AFF';
+        secondaryColor = '#007AFF';
+        primaryOpacity = 1;
+        secondaryOpacity = 0.33;
+        break;
+      case 'palette':
+        primaryColor = '#007AFF';
+        secondaryColor = '#FF9500';
+        primaryOpacity = 1;
+        secondaryOpacity = 1;
+        break;
+      case 'multicolor':
+        primaryColor = multicolorMap[state.category][idx];
+        secondaryColor = multicolorMap[state.category][idx];
+        primaryOpacity = 1;
+        secondaryOpacity = 0.6;
+        break;
+    }
+
+    // Apply variable value to secondary elements
+    secondaryOpacity = secondaryOpacity * varValue;
+
+    var svgParts = '<path d="' + sym.path + '" fill="none" stroke="' + primaryColor + '" stroke-width="' + strokeWidth + '" stroke-linecap="round" stroke-linejoin="round" opacity="' + primaryOpacity + '"/>';
+    if (sym.secondaryPath) {
+      svgParts += '<path d="' + sym.secondaryPath + '" fill="none" stroke="' + secondaryColor + '" stroke-width="' + (strokeWidth * 0.8) + '" stroke-linecap="round" stroke-linejoin="round" opacity="' + secondaryOpacity + '"/>';
+    }
+
+    html += '<div class="symbol-card">';
+    html += '<div class="symbol-icon"><svg viewBox="0 0 24 24" fill="none">' + svgParts + '</svg></div>';
+    html += '<div class="symbol-name">' + sym.name + '</div>';
+    html += '</div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+// ─── Update Preview ───
+function updatePreview() {
+  buildSymbolGrid();
+  updateCode();
+}
+
+// ─── Update Code ───
+function updateCode() {
+  var symbols = symbolData[state.category];
+  var firstName = symbols[0].name;
+
+  var renderingMap = {
+    monochrome: '.monochrome',
+    hierarchical: '.hierarchical',
+    palette: '.palette',
+    multicolor: '.multicolor'
+  };
+  var swiftWeightMap = {
+    ultralight: '.ultraLight',
+    light: '.light',
+    regular: '.regular',
+    medium: '.medium',
+    semibold: '.semibold',
+    bold: '.bold',
+    black: '.black'
+  };
+
+  var code = '<span class="kw">Image</span>(systemName: <span class="str">"' + firstName + '.fill"</span>)\n';
+  code += '    .<span class="func">symbolRenderingMode</span>(<span class="prop">' + renderingMap[state.rendering] + '</span>)\n';
+  code += '    .<span class="func">fontWeight</span>(<span class="prop">' + swiftWeightMap[state.weight] + '</span>)\n';
+
+  if (state.rendering === 'palette') {
+    code += '    .<span class="func">foregroundStyle</span>(<span class="prop">.blue</span>, <span class="prop">.orange</span>)\n';
+  }
+
+  if (state.variableValue < 100) {
+    code += '    .<span class="func">symbolEffect</span>(.<span class="prop">variableColor</span>.<span class="prop">cumulative</span>)\n';
+  }
+
+  code += '    .<span class="func">font</span>(.<span class="prop">title</span>)';
+
+  document.getElementById('codePreview').innerHTML = code;
+}
+
+function copyCode() {
+  var code = document.getElementById('codePreview').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
+// ─── Do/Don't Interactive ───
+var isDontMode = false;
+
+var originalScreenHTML = document.getElementById('screenContent').innerHTML;
+
+var dontScreenHTML =
+  '<div class="screen-nav-title">SF Symbols</div>' +
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">CUSTOM ICONS INSTEAD OF SF SYMBOLS</div>' +
+    '<div class="screen-card" style="flex-direction:row;flex-wrap:wrap;gap:10px;justify-content:center">' +
+      '<div style="width:40px;height:40px;background:#ddd;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999">img</div>' +
+      '<div style="width:40px;height:40px;background:#ddd;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999">img</div>' +
+      '<div style="width:40px;height:40px;background:#ddd;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999">img</div>' +
+    '</div>' +
+  '</div>' +
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">MISMATCHED WEIGHTS</div>' +
+    '<div class="screen-card" style="flex-direction:row;flex-wrap:wrap;gap:12px;justify-content:center;align-items:end">' +
+      '<div style="text-align:center"><svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M2 6c0-1.1.9-2 2-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" stroke="#007AFF" stroke-width="0.5"/></svg><div style="font-size:9px;font-weight:800;color:#333;margin-top:4px">Bold Text</div></div>' +
+      '<div style="text-align:center"><svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3" stroke="#007AFF" stroke-width="4"/></svg><div style="font-size:9px;font-weight:300;color:#333;margin-top:4px">Light Text</div></div>' +
+    '</div>' +
+  '</div>' +
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">OVERRIDDEN MULTICOLOR</div>' +
+    '<div class="screen-card" style="flex-direction:row;flex-wrap:wrap;gap:12px;justify-content:center">' +
+      '<svg viewBox="0 0 24 24" width="32" height="32" fill="none"><path d="M12 12m-5 0a5 5 0 1010 0 5 5 0 10-10 0" stroke="#FF00FF" stroke-width="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42" stroke="#FF00FF" stroke-width="2"/></svg>' +
+      '<svg viewBox="0 0 24 24" width="32" height="32" fill="none"><path d="M6 21c3-6 10-11 16-14a24 24 0 01-16 14z" stroke="#FF00FF" stroke-width="2"/></svg>' +
+      '<svg viewBox="0 0 24 24" width="32" height="32" fill="none"><path d="M12 22c4.97 0 9-3.13 9-7 0-2.87-2.37-5.31-4-7-1.5-1.56-2-4.19-2-6 0 2-1.5 4-3 6s-4 4.14-4 7c0 3.87 4.03 7 9 7z" stroke="#FF00FF" stroke-width="2"/></svg>' +
+    '</div>' +
+  '</div>' +
+  '<div class="screen-section">' +
+    '<div class="screen-section-title" style="color:#FF3B30">TINY UNTESTED SYMBOLS</div>' +
+    '<div class="screen-card" style="flex-direction:row;flex-wrap:wrap;gap:4px;justify-content:center">' +
+      '<svg viewBox="0 0 24 24" width="8" height="8" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#007AFF" stroke-width="1.5"/></svg>' +
+      '<svg viewBox="0 0 24 24" width="8" height="8" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#007AFF" stroke-width="1.5"/></svg>' +
+      '<svg viewBox="0 0 24 24" width="8" height="8" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="#007AFF" stroke-width="1.5"/></svg>' +
+      '<span style="font-size:9px;color:#999;margin-left:8px">barely visible at 8px</span>' +
+    '</div>' +
+  '</div>' +
+  '<div style="height:20px"></div>';
+
+function showDoState() {
+  isDontMode = false;
+  document.getElementById('tabDo').className = 'do-dont-tab active-do';
+  document.getElementById('tabDont').className = 'do-dont-tab';
+  document.getElementById('detailDo').className = 'do-dont-detail active';
+  document.getElementById('detailDont').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = originalScreenHTML;
+  document.getElementById('higWarning').classList.remove('show');
+  updatePreview();
+}
+
+function showDontState() {
+  isDontMode = true;
+  document.getElementById('tabDont').className = 'do-dont-tab active-dont';
+  document.getElementById('tabDo').className = 'do-dont-tab';
+  document.getElementById('detailDont').className = 'do-dont-detail active';
+  document.getElementById('detailDo').className = 'do-dont-detail';
+  document.getElementById('screenContent').innerHTML = dontScreenHTML;
+  var w = document.getElementById('higWarning');
+  if (w) { w.textContent = 'HIG: SF Symbols best practices are being violated'; w.classList.add('show'); }
+}
+
+// Initial render
+updatePreview();
+
+// ─── Realtime HIG Violation Detection ───
+var higRules = [
+  {
+    check: function() { return state.weight === 'ultralight' || state.weight === 'black'; },
+    ko: '극단적인 weight(ultralight/black)는 가독성을 떨어뜨립니다. Regular~Semibold 사용을 권장합니다',
+    en: 'Extreme weights (ultralight/black) reduce legibility'
+  },
+  {
+    check: function() { return state.rendering === 'multicolor' && state.variableValue < 30; },
+    ko: 'Multicolor 모드에서 낮은 Variable Value는 심볼이 깨져 보일 수 있습니다',
+    en: 'Low variable value with multicolor rendering can look broken'
+  },
+  {
+    check: function() { return (state.weight === 'bold' || state.weight === 'black') && state.rendering === 'hierarchical'; },
+    ko: '두꺼운 weight는 Hierarchical 렌더링의 계층 효과를 감소시킵니다',
+    en: 'Heavy weights reduce the subtlety of hierarchical rendering'
+  }
+];
+
+function checkHigViolations() {
+  if (typeof state === 'undefined' || isDontMode) return;
+  var panel = document.getElementById('violationPanel');
+  var list = document.getElementById('violationList');
+  var badge = document.getElementById('violationBadge');
+  if (!panel || !list) return;
+
+  var violations = [];
+  for (var i = 0; i < higRules.length; i++) {
+    try { if (higRules[i].check()) violations.push(higRules[i]); } catch(e) {}
+  }
+
+  if (violations.length > 0) {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge';
+    badge.innerHTML = '<span class="dot"></span> ' + violations.length + ' HIG VIOLATION' + (violations.length > 1 ? 'S' : '');
+    list.innerHTML = violations.map(function(v) {
+      return '<div class="hig-violation-item"><span class="v-icon">&#9888;</span><span class="v-text">' + v.ko + '</span></div>';
+    }).join('');
+    var w = document.getElementById('higWarning');
+    if (w) { w.textContent = violations[0].ko; w.classList.add('show'); }
+  } else {
+    panel.style.display = '';
+    badge.className = 'hig-live-badge ok';
+    badge.innerHTML = '<span class="dot"></span> HIG OK';
+    list.innerHTML = '<div class="hig-ok">HIG 가이드라인을 준수하고 있습니다</div>';
+    var w = document.getElementById('higWarning');
+    if (w) w.classList.remove('show');
+  }
+}
+
+// Hook into updatePreview
+var _origUpdatePreview = typeof updatePreview === 'function' ? updatePreview : null;
+if (_origUpdatePreview) {
+  updatePreview = function() {
+    _origUpdatePreview();
+    checkHigViolations();
+  };
+}
+
+// Also check on any control click
+document.querySelectorAll('.control-option, .toggle-switch, .color-swatch').forEach(function(el) {
+  el.addEventListener('click', function() { setTimeout(checkHigViolations, 50); });
+});
+
+// Check on slider input
+document.getElementById('variableSlider').addEventListener('input', function() {
+  setTimeout(checkHigViolations, 50);
+});
+
+// Initial check
+setTimeout(checkHigViolations, 100);
+</script>
+</body>
+</html>
