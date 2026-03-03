@@ -1,5 +1,5 @@
 //
-//  DeliveryCompactLayoutView.swift
+//  DeliveryCompactLayout.swift
 //  HIGPractice
 //
 //  Created by YuSeongChoi on 3/3/26.
@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+/*
+ Dynamic Island - Compact 레이아웃
+ Dynamic Island의 가장 작은 레이아웃인 Compact와 Minimal 상태를 구현합니다.
+ 
+ Compactsms Leading과 Trailing 두 영역으로 나뉩니다.
+ 가장 핵심적인 정보만 표시하세요.
+ */
 // MARK: - Compact Leading View
 // Dynamic Island 좌측 영역
 
