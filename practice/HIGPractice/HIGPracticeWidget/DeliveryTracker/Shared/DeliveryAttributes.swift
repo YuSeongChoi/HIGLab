@@ -9,7 +9,7 @@ import ActivityKit
 import Foundation
 
 // MARK: - Delivery Activity Attributes
-// Static 속성: Activity 생성 시 설정, 변경 불가
+// Static 속성: Activity 생성 시 설정, 변경 불가(예: 주문 번호)
 
 struct DeliveryAttributes: ActivityAttributes {
     // 주문 정보 (변경 불가)
@@ -19,7 +19,7 @@ struct DeliveryAttributes: ActivityAttributes {
     let customerAddress: String
     
     // MARK: - COntent State
-    // 실시간으로 업데이트되는 상태
+    // 실시간으로 업데이트되는 상태(예: 배달 상태)
     
     struct ContentState: Codable, Hashable {
         // 현재 배달 상태
