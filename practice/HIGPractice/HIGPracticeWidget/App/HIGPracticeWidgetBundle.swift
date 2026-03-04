@@ -5,6 +5,6 @@ import SwiftUI
 struct HIGPracticeWidgetBundle: WidgetBundle {
     var body: some Widget {
         WeatherWidget()
-        // TODO: DeliveryTrackerLiveActivity() will be added here.
+        DeliveryTrackerLiveActivity()
     }
 }
