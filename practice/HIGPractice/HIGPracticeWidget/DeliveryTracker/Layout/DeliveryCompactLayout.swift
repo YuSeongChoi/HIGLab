@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// 이 파일은 Dynamic Island의 compact/minimal 상태 전용 레이아웃 컴포넌트를 제공합니다.
 /*
  Dynamic Island - Compact 레이아웃
  Dynamic Island의 가장 작은 레이아웃인 Compact와 Minimal 상태를 구현합니다.
@@ -39,7 +40,7 @@ DynamicIsland {
 // MARK: - Compact Trailing View
 // Dynamic Island 우측 영역 - 예상 도착 시간
 
-struct DeiliveryCompactTrailingView {
+struct DeliveryCompactTrailingView: View {
     let estimatedArrival: Date
     
     var body: some View {
@@ -48,21 +49,6 @@ struct DeiliveryCompactTrailingView {
             .font(.system(size: 14, weight: .bold, design: .rounded))
             .monospacedDigit()
             .foregroundStyle(.primary)
-    }
-}
-
-// 분 단위로 표시하고 싶다면:
-struct MinutesRemainingView: View {
-    let estimatedArrival: Date
-    
-    var minutesRemainig: Int {
-        max(0, Int(estimatedArrival.timeIntervalSinceNow / 60))
-    }
-    
-    var body: some View {
-        Text("\(estimatedArrival)")
-            .font(.system(size: 14, weight: .bold, design: .rounded))
-            .monospacedDigit()
     }
 }
 

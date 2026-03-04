@@ -1,20 +1,12 @@
-//
-//  DeliveryStatus.swift
-//  HIGPractice
-//
-//  Created by YuSeongChoi on 2/26/26.
-//
-
 import SwiftUI
 
-// MARK: - 배달 상태 Enum
+// 이 파일은 앱/위젯 공통으로 사용하는 배달 상태와 상태별 표시 속성을 정의합니다.
+enum DeliveryStatus: String, Equatable, Codable, CaseIterable {
+    case preparing
+    case pickedUp
+    case nearby
+    case delivered
 
-enum DeliveryStatus: String, Codable, CaseIterable {
-    case preparing      // 준비 중
-    case pickedUp       // 픽업 완료
-    case nearby         // 근처 도착
-    case delivered      // 배달 완료
-    
     var displayName: String {
         switch self {
         case .preparing: "준비 중"
@@ -23,7 +15,7 @@ enum DeliveryStatus: String, Codable, CaseIterable {
         case .delivered: "완료"
         }
     }
-    
+
     var symbolName: String {
         switch self {
         case .preparing: "bag.fill"
@@ -32,7 +24,11 @@ enum DeliveryStatus: String, Codable, CaseIterable {
         case .delivered: "checkmark.circle.fill"
         }
     }
-    
+
+    // 앱 학습 화면과의 호환을 위해 별칭을 유지합니다.
+    var title: String { displayName }
+    var icon: String { symbolName }
+
     var color: Color {
         switch self {
         case .preparing: .orange

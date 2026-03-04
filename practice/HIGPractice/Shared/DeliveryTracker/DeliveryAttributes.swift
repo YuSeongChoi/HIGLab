@@ -1,38 +1,20 @@
-//
-//  DeliveryAttributes.swift
-//  HIGPractice
-//
-//  Created by YuSeongChoi on 2/26/26.
-//
-
 import ActivityKit
 import Foundation
 
-// MARK: - Delivery Activity Attributes
-// Static 속성: Activity 생성 시 설정, 변경 불가(예: 주문 번호)
-
+// 이 파일은 앱/위젯이 함께 사용하는 Delivery Live Activity의 Attributes/ContentState 모델입니다.
 struct DeliveryAttributes: ActivityAttributes {
-    // 주문 정보 (변경 불가)
     let orderNumber: String
     let storeName: String
     let storeImageURL: URL?
     let customerAddress: String
-    
-    // MARK: - COntent State
-    // 실시간으로 업데이트되는 상태(예: 배달 상태)
-    
+
     struct ContentState: Codable, Hashable {
-        // 현재 배달 상태
         let status: DeliveryStatus
-        
-        // 예상 도착 시간
+        let orderTime: Date
         let estimatedArrival: Date
-        
-        // 배달원 정보
         let driverName: String?
         let driverImageURL: URL?
-        
-        // 진행률 (0.0 ~ 1.0)
+
         var progress: Double {
             switch status {
             case .preparing: 0.2
@@ -41,8 +23,7 @@ struct DeliveryAttributes: ActivityAttributes {
             case .delivered: 1.0
             }
         }
-        
-        // 상태 메시지
+
         var statusMessage: String {
             switch status {
             case .preparing: "음식을 준비 중이에요"

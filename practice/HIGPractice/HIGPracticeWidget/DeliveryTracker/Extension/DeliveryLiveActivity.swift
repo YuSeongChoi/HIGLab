@@ -9,71 +9,36 @@ import ActivityKit
 import SwiftUI
 import WidgetKit
 
+// 이 파일은 Delivery Live Activity의 Lock Screen/Dynamic Island 진입 구성을 담당합니다.
 struct DeliveryTrackerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: DeliveryAttributes.self) { context in
-            // Lock Screen / Banner UI
-            DeliveryLockScreenView(context: context)
+            LockScreenView(context: context)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Label(context.state.status.displayName, systemImage: context.state.status.symbolName)
-                        .font(.caption2)
+                    ExpandedLeadingView(context: context)
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(context.state.estimatedArrival, style: .time)
-                        .font(.caption2)
+                    ExpandedTrailingView(context: context)
+                }
+
+                DynamicIslandExpandedRegion(.center) {
+                    ExpandedCenterView(context: context)
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(context.attributes.storeName)
-                            .font(.subheadline)
-                            .lineLimit(1)
-                        ProgressView(value: context.state.progress)
-                    }
+                    ExpandedBottomView(context: context)
                 }
             } compactLeading: {
-                Image(systemName: context.state.status.symbolName)
+                DeliveryCompactLeadingView(status: context.state.status)
             } compactTrailing: {
-                Text(context.state.estimatedArrival, style: .timer)
-                    .font(.caption2)
+                DeliveryCompactTrailingView(estimatedArrival: context.state.estimatedArrival)
             } minimal: {
-                Image(systemName: context.state.status.symbolName)
+                DeliveryMinimalView(status: context.state.status)
             }
+            .keylineTint(context.state.status.color)
         }
-    }
-}
-
-private struct DeliveryLockScreenView: View {
-    let context: ActivityViewContext<DeliveryAttributes>
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Image(systemName: context.state.status.symbolName)
-                .font(.title3)
-                .foregroundStyle(context.state.status.color)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(context.attributes.storeName)
-                    .font(.headline)
-                    .lineLimit(1)
-
-                Text(context.state.statusMessage)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-
-                ProgressView(value: context.state.progress)
-            }
-
-            Spacer()
-
-            Text(context.state.estimatedArrival, style: .time)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 6)
     }
 }

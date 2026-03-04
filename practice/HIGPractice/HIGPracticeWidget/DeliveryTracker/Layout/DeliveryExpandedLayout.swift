@@ -8,6 +8,7 @@
 import SwiftUI
 import WidgetKit
 
+// 이 파일은 Dynamic Island expanded 상태의 영역별(leading/trailing/center/bottom) UI를 정의합니다.
 /*
  Dynamic Island - Expanded 레이아웃
  길게 눌렀을 때 표시되는 Expanded 레이아웃을 구현합니다.
@@ -113,7 +114,10 @@ struct ExpandedBottomView: View {
     var body: some View {
         VStack(spacing: 8) {
             // 진행 바
-            DeliveryProgressBar(progress: context.state.progress)
+            DeliveryProgressBar(
+                progress: context.state.progress,
+                tint: context.state.status.color
+            )
             
             // 단계 라벨
             HStack {
@@ -122,7 +126,7 @@ struct ExpandedBottomView: View {
                         Text(status.displayName)
                             .font(.caption2)
                             .foregroundStyle(
-                                context.state.status.rawValue >= status.rawValue ? .primary : .secondary
+                                isCurrentOrPassed(status) ? .primary : .secondary
                             )
                         if status != .nearby {
                             Spacer()
@@ -137,10 +141,20 @@ struct ExpandedBottomView: View {
             }
         }
     }
+
+    private func isCurrentOrPassed(_ status: DeliveryStatus) -> Bool {
+        let all = DeliveryStatus.allCases
+        guard
+            let currentIndex = all.firstIndex(of: context.state.status),
+            let statusIndex = all.firstIndex(of: status)
+        else { return false }
+        return currentIndex >= statusIndex
+    }
 }
 
 struct DeliveryProgressBar: View {
     let progress: Double
+    var tint: Color = .green
     
     var body: some View {
         GeometryReader { geometry in
@@ -151,7 +165,7 @@ struct DeliveryProgressBar: View {
                 
                 // 진행
                 Capsule()
-                    .fill(.green)
+                    .fill(tint)
                     .frame(width: geometry.size.width * progress)
                     .animation(.spring, value: progress)
             }

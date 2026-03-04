@@ -3,6 +3,7 @@ import Combine
 import Foundation
 import os
 
+// 이 파일은 Delivery Live Activity의 시작/업데이트/종료를 앱에서 제어하는 매니저입니다.
 @MainActor
 final class DeliveryActivityManager: ObservableObject {
     @Published private(set) var currentActivity: Activity<DeliveryAttributes>?
@@ -14,16 +15,15 @@ final class DeliveryActivityManager: ObservableObject {
 
     func start() async {
         guard areActivitiesEnabled else {
+            AppActivityLogger.logError(ActivityError.disabled, context: "start")
             lastMessage = "Live Activities 비활성화 상태입니다."
-            ActivityDebugger.logger.error("start blocked: live activities disabled")
             return
         }
 
         if let existing = Activity<DeliveryAttributes>.activities.first {
             currentActivity = existing
+            AppActivityLogger.lifecycle.info("기존 Activity 재사용: \(existing.id)")
             lastMessage = "기존 Activity 재사용: \(existing.id)"
-            ActivityDebugger.logger.info("reusing existing activity id=\(existing.id, privacy: .public)")
-            ActivityDebugger.logActivityState(existing)
             return
         }
 
@@ -37,27 +37,28 @@ final class DeliveryActivityManager: ObservableObject {
 
             let state = DeliveryAttributes.ContentState(
                 status: .preparing,
+                orderTime: Date(),
                 estimatedArrival: Date().addingTimeInterval(20 * 60),
                 driverName: nil,
                 driverImageURL: nil
             )
 
-            let content = ActivityContent(state: state, staleDate: Date().addingTimeInterval(3600))
-            let activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
+            let activity = try await SafeActivityManager.safeStart(
+                attributes: attributes,
+                state: state
+            )
             currentActivity = activity
             lastMessage = "start 성공: \(activity.id)"
-            ActivityDebugger.logger.info("start success id=\(activity.id, privacy: .public)")
-            ActivityDebugger.logActivityState(activity)
         } catch {
+            AppActivityLogger.logError(error, context: "start")
             lastMessage = "start 실패: \(error.localizedDescription)"
-            ActivityDebugger.logger.error("start failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
     func update(status: DeliveryStatus, minutes: Int? = nil, driverName: String? = nil) async {
         guard let activity = currentActivity ?? Activity<DeliveryAttributes>.activities.first else {
+            AppActivityLogger.lifecycle.warning("update 요청 무시: 대상 Activity 없음")
             lastMessage = "업데이트할 Activity가 없습니다."
-            ActivityDebugger.logger.error("update failed: no active activity")
             return
         }
 
@@ -66,34 +67,36 @@ final class DeliveryActivityManager: ObservableObject {
         let eta = minutes.map { Date().addingTimeInterval(TimeInterval($0 * 60)) } ?? activity.content.state.estimatedArrival
         let state = DeliveryAttributes.ContentState(
             status: status,
+            orderTime: Date(),
             estimatedArrival: eta,
             driverName: driverName ?? activity.content.state.driverName,
             driverImageURL: activity.content.state.driverImageURL
         )
 
-        await activity.update(ActivityContent(state: state, staleDate: Date().addingTimeInterval(3600)))
-        lastMessage = "update 성공: \(status.displayName)"
-        ActivityDebugger.logger.info("update success status=\(status.rawValue, privacy: .public)")
-        ActivityDebugger.logActivityState(activity)
+        await SafeActivityManager.safeUpdate(activity: activity, state: state)
+        lastMessage = "update 성공: \(status.rawValue)"
     }
 
     func end() async {
         guard let activity = currentActivity ?? Activity<DeliveryAttributes>.activities.first else {
+            AppActivityLogger.lifecycle.warning("end 요청 무시: 대상 Activity 없음")
             lastMessage = "종료할 Activity가 없습니다."
-            ActivityDebugger.logger.error("end failed: no active activity")
             return
         }
 
         let final = DeliveryAttributes.ContentState(
             status: .delivered,
+            orderTime: Date(),
             estimatedArrival: Date(),
             driverName: activity.content.state.driverName,
             driverImageURL: activity.content.state.driverImageURL
         )
-        await activity.end(ActivityContent(state: final, staleDate: nil), dismissalPolicy: .default)
+        await SafeActivityManager.safeEnd(
+            activity: activity,
+            finalState: final,
+            dismissalPolicy: .default
+        )
         currentActivity = nil
         lastMessage = "end 성공"
-        ActivityDebugger.logger.info("end success id=\(activity.id, privacy: .public)")
-        ActivityDebugger.logAllDeliveryActivities()
     }
 }
