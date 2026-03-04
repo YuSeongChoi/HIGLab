@@ -21,6 +21,7 @@ For each completed scope, append one row:
 |---|---|---|---|---|---|---|---|
 | 2026-02-23 | Phase 1 | WidgetKit | Core timeline | #5 | #6 | https://velog.io/@... | Understood placeholder/snapshot/timeline flow |
 | 2026-02-26 | Phase 1 | WidgetKit | Theory review & architecture notes | #5 | #9 | https://devyuseong.tistory.com/38 | Clarified TimelineEntry/date, provider lifecycle, family-based density, and iOS 17 interactive widget patterns. |
+| 2026-03-04 | Phase 1 | ActivityKit | DeliveryTracker (Local lifecycle + Widget UI + Debug logging) | #11 | - | - | Separated app control plane vs widget rendering plane, unified shared models, and validated local start/update/end debugging flow. |
 
 ## Weekly Reflection (Optional)
 

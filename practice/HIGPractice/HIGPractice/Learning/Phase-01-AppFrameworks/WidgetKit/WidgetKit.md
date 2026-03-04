@@ -1,96 +1,111 @@
 # WidgetKit
 
-  ## 학습 소스
-  - site: `site/widgets/01-weather-widget-challenge.html`
-  - issue: #5
-  - branch: `practice/p1-widgetkit-review`
+## 학습 소스
+- site: `site/widgets/01-weather-widget-challenge.html`
+- issue: #5
+- branch: `practice/p1-widgetkit-review`
 
-  ## Ring 1 — HIG 위젯 가이드라인
-  ### 개념 요약
-  - Glanceable(한눈에 파악) / Relevant(시의적절) / Personalized(개인화) 3원칙
-  - Do: 콘텐츠 중심, 크기별 레이아웃, 다크모드/틴트, `containerBackground`
-  - Don't: 정보 과다, 로딩 스피너, 앱명 반복, 과도한 갱신
+## Ring 1 — HIG 위젯 가이드라인
+### 개념 요약
+- 핵심 원칙: `Glanceable`, `Relevant`, `Personalized`
+- 위젯은 "작은 앱"이 아니라 앱의 핵심 정보를 홈/잠금화면에 투영하는 컴포넌트다.
+- 크기별 정보 밀도를 다르게 설계해야 한다.
 
-  ### 내가 이해한 바
-  - Apple은 위젯을 "미니 앱"이 아닌 `앱의 핵심 정보를 조 홈 화면에 투영하는 것` 이라고 정의
-  - 즉, 사용자가 한눈에 정보를 파악하고 커스텀 가능하고 원하는 정보를 보여줘한다는 것!
+### 내가 이해한 바
+- 위젯은 빠른 파악이 목적이므로 텍스트를 줄이고 상태/숫자 중심으로 구성해야 한다.
+- 갱신 주기는 데이터 성격에 맞춰 명확한 근거를 가져야 한다.
 
-  ## Ring 2 — Widget Extension 기본 구조
-  ### 개념 요약
-  - `TimelineEntry`를 채택한 Entry는 `date`를 반드시 포함하며, 시스템은 이 시점을 기준으로 렌더링/갱신을 판단한다.
-  - `AppIntentTimelineProvider`는 `placeholder` / `snapshot` / `timeline`을 구현한다.
-  - `timeline`에서 `Timeline(entries:policy:)`로 갱신 정책(`.after`, `.atEnd`, `.never`)을 제어한다.
-  - Provider 구현 시 `async/await`로 비동기 데이터 fetch를 자연스럽게 연결할 수 있다.
+## Ring 2 — Widget Extension 기본 구조
+### 개념 요약
+- `TimelineEntry`는 `date`가 필수이며, 시스템은 이 기준으로 렌더/갱신 시점을 판단한다.
+- `AppIntentTimelineProvider`는 `placeholder`, `snapshot`, `timeline`을 분리해 구현한다.
+- `Timeline(entries:policy:)`로 갱신 정책을 제어한다.
 
-  ### 내가 구현한 것
-  - `WeatherEntry(date:weather:)` 형태의 Entry 구성
-  - `placeholder`: 위젯 갤러리용 실데이터 형태 미리보기
-  - `snapshot`: 위젯 추가/편집 시점의 단일 스냅샷
-  - `timeline`: 15분 기준 next update 설정
+### 내가 구현한 것
+- `WeatherEntry(date:weather:)`
+- `WeatherProvider`에서:
+  - `placeholder`: `WeatherData.preview`
+  - `snapshot`: `WeatherService` 비동기 조회
+  - `timeline`: 15분 간격(`.after(nextUpdate)`)
+- `WeatherWidget`에 `AppIntentConfiguration(intent: SelectCityIntent.self, provider: WeatherProvider())` 적용
 
-  ### 검증
-  - [x] 위젯 갤러리 placeholder 노출 확인
-  - [x] timeline 재요청 시점 확인
+### 검증
+- [x] 위젯 갤러리 placeholder 노출 확인
+- [x] snapshot/timeline 데이터 경로 정상 동작 확인
+- [x] 15분 주기 timeline policy 적용 확인
 
-  ### 회고
-  - WidgetKit은 `Provider -> Entry -> View`의 흐름이 명확하고, 갱신 정책은 `timeline`에서만 제어된다.
+### 회고
+- `Provider -> Entry -> View` 흐름이 선명해서 유지보수가 쉽다.
+- 갱신 정책은 provider에만 두는 것이 가장 명확하다.
 
-  ## Ring 3 — HIG 준수 UI 디자인
-  ### 개념 요약
-  - small 위젯(예: 약 169x169pt)은 핵심 정보 1-2개를 즉시 읽히게 구성한다.
-  - medium(예: 약 360x169pt)은 가로 확장을 활용해 요약+보조정보를 함께 보여준다.
-  - large(예: 약 360x376pt)은 상세 정보까지 포함 가능하지만 정보 과밀은 피해야 한다.
-  - iOS 17+에서는 `containerBackground(for: .widget)`로 상황별 배경을 구성할 수 있다.
+## Ring 3 — HIG 준수 UI 디자인
+### 개념 요약
+- Small: 핵심 수치 1~2개 우선
+- Medium: 현재 상태 + 시간별 요약 병행
+- Large: 상세 정보 확장 가능, 과밀 금지
+- iOS 17+는 `containerBackground(for: .widget)`로 배경 처리
 
-  ### 내가 구현한 것
-  - family별 레이아웃 분기
-  - 날씨 상태 기반 그라디언트 배경(`WeatherCondition.gradient`)
+### 내가 구현한 것
+- Family별 전용 뷰:
+  - `SmallWeatherView`
+  - `MediumWeatherView`
+  - `LargeWeatherView`
+  - `CircularWeatherView`, `RectangularWeatherView`, `accessoryInline`
+- 날씨 상태 기반 그라디언트 배경 적용
 
-  ### 검증
-  - [x] small/medium/large 레이아웃 깨짐 없음
-  - [x] 배경 대비(가독성) 확인
+### 검증
+- [x] `systemSmall/systemMedium/systemLarge` 레이아웃 분기 정상
+- [x] `accessoryCircular/accessoryRectangular/accessoryInline` 분기 정상
+- [x] 숫자 갱신 시 `numericText` 전환 적용
 
-  ### 회고
-  - small은 요약, medium/large는 확장 정보라는 기준이 있어야 레이아웃 우선순위가 흔들리지 않는다.
+### 회고
+- Small을 기준으로 정보 우선순위를 먼저 잡으면 Medium/Large 확장이 쉬워진다.
 
-  ## Ring 4 — 데이터 & 인터랙션
-  ### 개념 요약
-  - iOS 17+에서 `Button(intent:)`를 사용하면 앱을 열지 않고 위젯에서 액션을 직접 수행할 수 있다.
-  - 인터랙션 이후 `WidgetCenter.shared.reloadAllTimelines()`로 반영 타이밍을 제어한다.
-  - 잠금화면 위젯은 시스템이 색을 제어하므로 대비 중심으로 표현해야 한다.
+## Ring 4 — 데이터 & 인터랙션
+### 개념 요약
+- WidgetKit은 기본적으로 timeline 기반 비동기 조회 흐름이 안정적이다.
+- AppIntent 기반 설정은 지원하지만, 인터랙티브 버튼은 반드시 필요한 경우만 도입한다.
 
-  ### 내가 구현한 것
-  - `RefreshWeatherIntent`
-  - 위젯 내 새로고침 버튼
+### 내가 구현한 것
+- `WeatherService` 기반 fetch
+- `SelectCityIntent`로 도시 설정 반영
+- 현재는 `Button(intent:)` 기반 인터랙티브 액션은 미적용(학습 범위에서 제외)
 
-  ### 검증
-  - [x] 버튼 탭 시 타임라인 갱신 호출 확인
+### 검증
+- [x] 도시 변경 시 timeline 조회 파라미터 반영
+- [x] 설정 intent와 provider 연결 확인
 
-  ### 회고
-  - 인터랙션은 가능한 단순하게 유지하고, 결과 반영은 timeline 갱신으로 연결하는 패턴이 안전하다.
+### 회고
+- 현 단계에서는 "정확한 상태 표시 + 일관된 갱신 정책"이 인터랙션 추가보다 중요했다.
 
-  ## Ring 5 — 설정 & 퍼스널라이즈
-  ### 개념 요약
-  - `WidgetConfigurationIntent`로 사용자 설정(도시 선택)
-  - family switch로 뷰 분기
+## Ring 5 — 설정 & 퍼스널라이즈
+### 개념 요약
+- `WidgetConfigurationIntent`로 사용자 선택값을 받아 개인화된 위젯을 구성한다.
+- family별 같은 데이터라도 표현 밀도를 다르게 가져가야 한다.
 
-  ### 내가 구현한 것
-  - `SelectCityIntent`, `CityOption`
-  - `AppIntentConfiguration` 적용
+### 내가 구현한 것
+- `SelectCityIntent`, `CityOption`
+- `AppIntentConfiguration`과 연결
+- 부가 config intent(`AirQualityConfigIntent`, `UVIndexConfigIntent`, `WeeklyForecastConfigIntent`, `HourlyForecastConfigIntent`) 구조 정리
 
-  ### 검증
-  - [ ] 도시 변경 시 표시 데이터 변경 확인
-  - [ ] 지원 family 정상 동작 확인
+### 검증
+- [x] 도시 옵션 선택 UI 노출 확인
+- [x] 선택값 기반 데이터 표시 확인
 
-  ### 회고
-  - (짧게)
+### 회고
+- 개인화의 핵심은 옵션 개수보다 "선택 결과가 즉시 의미 있게 보이는가"다.
 
-  ## 최종 정리
-  - 오늘 배운 핵심 3가지:
-    1. Entry는 `TimelineEntry` + `date`가 핵심이며 시스템 갱신 판단의 기준점이다.
-    2. `placeholder/snapshot/timeline`의 목적을 분리해야 위젯 품질과 사용자 경험이 안정된다.
-    3. family별 정보 밀도와 iOS 17+ 인터랙티브/배경 처리 전략이 WidgetKit 설계의 핵심이다.
-  - 다음 액션:
-    1. timeline policy를 데이터 성격에 맞춰 재검토(15/30분 근거 명시)
-    2. 잠금화면 family 대비 중심 스타일 추가 점검
-    3. Mock -> 실제 WeatherKit API 전환 실험
+## 현재 상태 요약
+- `WidgetBundle`에 `WeatherWidget` + `DeliveryTrackerLiveActivity`를 함께 등록해 사용 중
+- WeatherWidget은 WidgetKit timeline 중심
+- DeliveryTracker는 ActivityKit 렌더링 중심으로 역할 분리 완료
+
+## 최종 정리
+- 오늘 배운 핵심 3가지:
+  1. WidgetKit 품질은 timeline 정책과 family별 정보 밀도에서 결정된다.
+  2. `placeholder/snapshot/timeline` 목적 분리가 위젯 안정성의 기본이다.
+  3. ActivityKit과 병행할 때는 "WidgetKit=정기 갱신", "ActivityKit=실시간 상태"로 분리하는 것이 명확하다.
+- 다음 액션:
+  1. Weather timeline 주기(15분) 근거를 실제 데이터 소스 기준으로 재조정
+  2. accessory family 대비/가독성 QA 추가 점검
+  3. 필요 시에만 Widget 인터랙션(`Button(intent:)`)을 제한적으로 도입

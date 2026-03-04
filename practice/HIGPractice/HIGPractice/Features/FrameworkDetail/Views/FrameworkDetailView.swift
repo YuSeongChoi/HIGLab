@@ -17,6 +17,9 @@ struct FrameworkDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 headerCard
                 progressCard
+                if item.id == "activitykit" {
+                    activityKitTestCard
+                }
                 resourcesCard
                 localPathCard
                 checklistCard
@@ -91,6 +94,20 @@ struct FrameworkDetailView: View {
                     .tint(.primary)
                 }
             }
+        }
+        .padding(16)
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var activityKitTestCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("로컬 Live Activity 테스트")
+                .font(.headline)
+            Text("시뮬레이터 `simctl push`는 Live Activity 전용 푸시 타입을 완전히 지원하지 않을 수 있어요. 아래 버튼으로 앱 내부에서 시작/업데이트/종료를 먼저 검증하세요.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            DeliveryActivityDebugPanel()
         }
         .padding(16)
         .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
