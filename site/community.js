@@ -5,7 +5,7 @@
  */
 
 (function () {
-  const KAKAO_URL = 'KAKAO_URL_PLACEHOLDER';
+  const KAKAO_URL = 'https://open.kakao.com/o/pjNluRji';
   const GISCUS_REPO = 'M1zz/HIGLab';
   const GISCUS_REPO_ID = 'R_kgDORQ1tLA';
   const GISCUS_CATEGORY = 'General';
