@@ -148,17 +148,6 @@
 
   function init() {
     render();
-    loadSponsor();
-  }
-
-  function loadSponsor() {
-    if (document.getElementById('hig-sponsor-script')) return;
-    const depth = (window.location.pathname.match(/\//g) || []).length;
-    const prefix = depth <= 2 ? '' : '../';
-    const s = document.createElement('script');
-    s.id = 'hig-sponsor-script';
-    s.src = prefix + 'sponsor.js';
-    document.body.appendChild(s);
   }
 
   if (document.readyState === 'loading') {
