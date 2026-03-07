@@ -1,165 +1,96 @@
 /**
- * HIG Lab — 후원 플로팅 버튼
- * 한국어 페이지: 카카오페이 QR 모달
- * 영어 페이지:   GitHub Sponsors 링크
+ * HIG Lab — Floating Sponsor Button
+ * Korean: KakaoPay QR popup
+ * English: GitHub Sponsors popup
  */
 (function () {
   if (document.getElementById('hig-sponsor-fab')) return;
 
-  const KAKAOPAY_QR = 'https://m1zz.github.io/HIGLab/kakao-pay-qr.jpg';
-  const GITHUB_SPONSORS_URL = 'https://github.com/sponsors/M1zz';
+  var isEn = (function () {
+    var lang = (document.documentElement.lang || '').toLowerCase();
+    var path = window.location.pathname;
+    return lang.startsWith('en') || path.indexOf('/en/') !== -1 || path.indexOf('.en.html') !== -1;
+  })();
 
-  function isEnglish() {
-    const lang = (document.documentElement.lang || '').toLowerCase();
-    const path = window.location.pathname;
-    return lang.startsWith('en') || path.includes('/en/') || path.endsWith('.en.html');
+  function qrPath() {
+    var depth = (window.location.pathname.match(/\//g) || []).length;
+    if (depth <= 2) return 'kakaopay-qr.jpg';
+    if (depth === 3) return '../kakaopay-qr.jpg';
+    return '../../kakaopay-qr.jpg';
   }
 
-  function injectCSS() {
-    if (document.getElementById('hig-sponsor-fab-css')) return;
-    const s = document.createElement('style');
-    s.id = 'hig-sponsor-fab-css';
-    s.textContent = `
-.hig-sponsor-fab {
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  border-radius: 100px;
-  padding: 12px 20px 12px 16px;
-  font-size: .9rem;
-  font-weight: 700;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  cursor: pointer;
-  box-shadow: 0 6px 24px rgba(0,0,0,.22);
-  transition: transform .2s, box-shadow .2s;
-  text-decoration: none;
-}
-.hig-sponsor-fab:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0,0,0,.28);
-}
-.hig-sponsor-fab.kakao {
-  background: #3C1E1E;
-  color: #FEE500;
-}
-.hig-sponsor-fab.github {
-  background: #24292f;
-  color: #fff;
-}
-.hig-sponsor-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-.hig-sponsor-overlay.open { display: flex; }
-.hig-sponsor-modal {
-  background: #fff;
-  border-radius: 24px;
-  padding: 32px 28px 28px;
-  max-width: 320px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 24px 80px rgba(0,0,0,.18);
-  position: relative;
-  animation: hig-modal-in .25s ease;
-}
-@keyframes hig-modal-in {
-  from { opacity: 0; transform: scale(.92) translateY(12px); }
-  to   { opacity: 1; transform: scale(1)  translateY(0); }
-}
-.hig-sponsor-modal .hig-modal-close {
-  position: absolute;
-  top: 16px; right: 18px;
-  background: none; border: none;
-  font-size: 1.3rem; cursor: pointer;
-  color: #999; line-height: 1;
-}
-.hig-sponsor-modal .hig-modal-title {
-  font-size: 1.15rem; font-weight: 800;
-  color: #1d1d1f; margin-bottom: 4px;
-}
-.hig-sponsor-modal .hig-modal-desc {
-  font-size: .82rem; color: #6e6e73;
-  margin-bottom: 20px; line-height: 1.6;
-}
-.hig-sponsor-modal .hig-modal-qr {
-  width: 200px; height: 200px;
-  border-radius: 16px;
-  object-fit: cover;
-  margin: 0 auto 12px;
-  display: block;
-  box-shadow: 0 4px 16px rgba(0,0,0,.1);
-}
-.hig-sponsor-modal .hig-modal-label {
-  font-size: .78rem; color: #aaa; font-weight: 500;
-}
-    `;
-    document.head.appendChild(s);
+  var style = document.createElement('style');
+  style.textContent =
+    '.sp-overlay{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.25)}' +
+    '.sp-overlay.open{display:block}' +
+    '.sp-fab{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:10px}' +
+    '.sp-btn{width:48px;height:48px;border-radius:50%;background:#FFEB00;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .2s,box-shadow .2s;text-decoration:none;color:inherit}' +
+    '.sp-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.22)}' +
+    '.sp-popup{display:none;background:#fff;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.18);padding:20px;text-align:center;width:240px;position:relative}' +
+    '.sp-popup.open{display:block;animation:spIn .2s ease}' +
+    '@keyframes spIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
+    '.sp-popup-title{font-size:14px;font-weight:700;color:#1d1d1f;margin-bottom:12px}' +
+    '.sp-popup-qr img{width:160px;height:160px;border-radius:10px;object-fit:cover}' +
+    '.sp-popup-label{font-size:11px;color:#999;margin-top:6px}' +
+    '.sp-popup-close{position:absolute;top:8px;right:12px;background:none;border:none;font-size:18px;color:#999;cursor:pointer;padding:4px}' +
+    '.sp-popup-link{display:inline-block;margin-top:14px;padding:10px 24px;background:#24292f;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:600;transition:background .2s}' +
+    '.sp-popup-link:hover{background:#1a1e22}' +
+    '@media(max-width:480px){.sp-popup{width:220px;padding:16px}.sp-popup-qr img{width:140px;height:140px}}';
+  document.head.appendChild(style);
+
+  var overlay = document.createElement('div');
+  overlay.className = 'sp-overlay';
+  overlay.onclick = close;
+
+  var fab = document.createElement('div');
+  fab.className = 'sp-fab';
+
+  var popup = document.createElement('div');
+  popup.className = 'sp-popup';
+
+  if (isEn) {
+    popup.innerHTML =
+      '<button class="sp-popup-close">&times;</button>' +
+      '<div class="sp-popup-title">Buy me a coffee ☕</div>' +
+      '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px;line-height:1.5">If HIG Lab helped you,<br>consider sponsoring on GitHub</div>' +
+      '<a class="sp-popup-link" href="https://github.com/sponsors/M1zz" target="_blank" rel="noopener noreferrer">♥ Sponsor on GitHub</a>';
+  } else {
+    popup.innerHTML =
+      '<button class="sp-popup-close">&times;</button>' +
+      '<div class="sp-popup-title">커피 한 잔 사주기 ☕</div>' +
+      '<div class="sp-popup-qr"><img src="' + qrPath() + '" alt="카카오페이 QR"></div>' +
+      '<div class="sp-popup-label">카카오페이 · 이현호</div>';
   }
 
-  function injectKakao() {
-    const fab = document.createElement('button');
-    fab.id = 'hig-sponsor-fab';
-    fab.className = 'hig-sponsor-fab kakao';
-    fab.innerHTML = '<span style="font-size:1.2rem">☕</span> 후원하기';
-    document.body.appendChild(fab);
+  popup.querySelector('.sp-popup-close').onclick = close;
 
-    const overlay = document.createElement('div');
-    overlay.id = 'hig-sponsor-overlay';
-    overlay.className = 'hig-sponsor-overlay';
-    overlay.innerHTML = `
-      <div class="hig-sponsor-modal">
-        <button class="hig-modal-close" id="hig-modal-close-btn">✕</button>
-        <div class="hig-modal-title">☕ HIG Lab 후원하기</div>
-        <div class="hig-modal-desc">카카오페이로 소액 후원하시면<br>콘텐츠 제작에 큰 힘이 됩니다 🙏</div>
-        <img class="hig-modal-qr" src="${KAKAOPAY_QR}" alt="카카오페이 후원 QR"/>
-        <div class="hig-modal-label">카메라로 QR 스캔 · 카카오페이</div>
-      </div>
-    `;
+  var btn = document.createElement('button');
+  btn.id = 'hig-sponsor-fab';
+  btn.className = 'sp-btn';
+  btn.setAttribute('aria-label', isEn ? 'Sponsor' : '후원');
+  btn.textContent = '☕';
+  btn.onclick = toggle;
+
+  fab.appendChild(popup);
+  fab.appendChild(btn);
+
+  function toggle() {
+    popup.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+  function close() {
+    popup.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  function init() {
     document.body.appendChild(overlay);
-
-    fab.addEventListener('click', () => overlay.classList.add('open'));
-    document.getElementById('hig-modal-close-btn').addEventListener('click', () => overlay.classList.remove('open'));
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
-  }
-
-  function injectGitHub() {
-    const fab = document.createElement('a');
-    fab.id = 'hig-sponsor-fab';
-    fab.className = 'hig-sponsor-fab github';
-    fab.href = GITHUB_SPONSORS_URL;
-    fab.target = '_blank';
-    fab.rel = 'noopener noreferrer';
-    fab.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-        <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/>
-      </svg>
-      Sponsor`;
     document.body.appendChild(fab);
-  }
-
-  function inject() {
-    injectCSS();
-    if (isEnglish()) {
-      injectGitHub();
-    } else {
-      injectKakao();
-    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inject);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    inject();
+    init();
   }
 })();

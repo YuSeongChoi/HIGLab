@@ -14,8 +14,10 @@
   // QR 이미지 경로: 호출하는 HTML의 depth에 따라 자동 감지
   function getQRPath() {
     const depth = (window.location.pathname.match(/\//g) || []).length;
-    // site/index.html → depth 2, site/<fw>/xx.html → depth 3
-    return depth <= 2 ? 'kakao-openchat-qr.jpg' : '../kakao-openchat-qr.jpg';
+    // depth 2: site/index.html, depth 3: site/<fw>/xx.html, depth 4: site/en/<fw>/xx.html
+    if (depth <= 2) return 'kakao-openchat-qr.jpg';
+    if (depth === 3) return '../kakao-openchat-qr.jpg';
+    return '../../kakao-openchat-qr.jpg';
   }
 
   function injectCSS() {
