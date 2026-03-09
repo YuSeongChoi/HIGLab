@@ -129,10 +129,7 @@ extension TodoItem: AppEntity {
     
     /// 엔티티 타입 표시 이름
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(
-            name: "할일",
-            numericFormat: "\(placeholder: .int)개 할일"
-        )
+        TypeDisplayRepresentation(name: "할일")
     }
     
     // MARK: - 개별 항목 표시

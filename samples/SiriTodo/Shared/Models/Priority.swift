@@ -68,10 +68,7 @@ extension Priority: AppEnum {
     
     /// 타입 표시 정보
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        TypeDisplayRepresentation(
-            name: "우선순위",
-            numericFormat: "\(placeholder: .int) 우선순위"
-        )
+        TypeDisplayRepresentation(name: "우선순위")
     }
     
     /// 각 케이스별 표시 정보
