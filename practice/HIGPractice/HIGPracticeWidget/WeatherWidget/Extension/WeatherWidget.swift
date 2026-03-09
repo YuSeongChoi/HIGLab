@@ -77,12 +77,3 @@ struct WeatherWidget: Widget {
         ])
     }
 }
-
-// MARK: - Widget Bundle
-
-@main
-struct WeatherWidgetBundle: WidgetBundle {
-    var body: some Widget {
-        WeatherWidget()
-    }
-}
