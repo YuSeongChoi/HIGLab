@@ -398,3 +398,8 @@
 ### 한 줄 정리
 - `nonisolated` = 이 멤버는 actor 보호 없이도 안전하다.
 - `await MainActor.run { ... }` = 이 상태는 actor 보호가 필요하니 메인 액터 안에서 접근한다.
+
+## Validation Note
+- HIGPractice 홈의 `App Intents` 카드에서 `SiriTodoSampleRootView`로 직접 이동하도록 연결했다.
+- 샘플 화면에서 테스트 순서, 핵심 개념, `TodoStore` 상태를 함께 볼 수 있게 구성했다.
+- 실제 Intent 확인은 `Shortcuts` 앱에서 `할일 추가`, `할일 완료`, `할일 목록`, `검색`, `앱 열기` 순서로 점검하는 흐름을 기준으로 한다.
