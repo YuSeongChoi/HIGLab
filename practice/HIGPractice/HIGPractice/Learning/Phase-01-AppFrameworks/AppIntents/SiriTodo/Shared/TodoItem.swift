@@ -1,24 +1,36 @@
+//
+//  TodoItem.swift
+//  HIGPractice
+//
+//  Created by YuSeongChoi on 3/9/26.
+//
+
 import Foundation
 import AppIntents
 
 // MARK: - 할일 모델
 /// Siri 및 단축어에서 사용할 수 있는 할일 항목
-/// AppEntity를 준수하여 Siri와 단축어에서 엔티티로 사용 가능
+/// AppEntitiy를 준수하여 Siri와 단축어에서 엔티티로 사용 가능
+///
+/// # Siri/Shortcusts에 "이 타입은 선택 가능한 앱 데이터(예: 할 일, 태그)" 라고 알려줌
+/// # 음성/텍스트 입력에서 엔티티 후보를 검색하고 매칭할 수 있게 함 (EntityQuery)
+/// # 사용자에게 보여줄 이름/표시 방식 제공 (displayRepresentation)
+/// -> AppEntity는 "명령어가 참조할 데이터 타입을 시스템에 등록하는 규약"
 struct TodoItem: Identifiable, Codable, Hashable, Sendable {
     
     // MARK: - 속성
     
-    let id: UUID                    // 고유 식별자
-    var title: String               // 할일 제목
-    var notes: String?              // 상세 메모
-    var isCompleted: Bool           // 완료 여부
-    var priority: Priority          // 우선순위
-    var dueDate: Date?              // 마감일
-    var tagIds: [UUID]              // 연결된 태그 ID 목록
-    var reminderDate: Date?         // 알림 시간
-    var createdAt: Date             // 생성 시간
-    var completedAt: Date?          // 완료 시간
-    var updatedAt: Date             // 마지막 수정 시간
+    nonisolated let id: UUID                    // 고유 식별자
+    nonisolated var title: String               // 할일 제목
+    nonisolated var notes: String?              // 상세 메모
+    nonisolated var isCompleted: Bool           // 완료 여부
+    nonisolated var priority: Priority          // 우선순위
+    nonisolated var dueDate: Date?              // 마감일
+    nonisolated var tagIds: [UUID]              // 연결된 태그 ID 목록
+    nonisolated var reminderDate: Date?         // 알림 시간
+    nonisolated var createdAt: Date             // 생성 시간
+    nonisolated var completedAt: Date?          // 완료 시간
+    nonisolated var updatedAt: Date             // 마지막 수정 시간
     
     // MARK: - 초기화
     
@@ -48,24 +60,24 @@ struct TodoItem: Identifiable, Codable, Hashable, Sendable {
     // MARK: - 계산 속성
     
     /// 마감일 정보
-    var dueDateInfo: DueDate? {
+    nonisolated var dueDateInfo: DueDate? {
         dueDate.map { DueDate($0) }
     }
     
     /// 기한이 지났는지 확인
-    var isOverdue: Bool {
+    nonisolated var isOverdue: Bool {
         guard let dueDate else { return false }
         return !isCompleted && dueDate < Date()
     }
     
     /// 오늘 마감인지 확인
-    var isDueToday: Bool {
+    nonisolated var isDueToday: Bool {
         guard let dueDate else { return false }
         return Calendar.current.isDateInToday(dueDate)
     }
     
     /// 정렬 우선순위 (높을수록 먼저)
-    var sortPriority: Int {
+    nonisolated var sortPriority: Int {
         var score = priority.sortWeight * 100
         
         // 기한 지난 항목 최상위
@@ -84,7 +96,7 @@ struct TodoItem: Identifiable, Codable, Hashable, Sendable {
     // MARK: - 요약 문자열
     
     /// 간단한 요약 (Siri 응답용)
-    var summary: String {
+    nonisolated var summary: String {
         var parts: [String] = [title]
         
         if let dueDateInfo {
@@ -99,7 +111,7 @@ struct TodoItem: Identifiable, Codable, Hashable, Sendable {
     }
     
     /// 상세 요약 (여러 줄)
-    var detailedSummary: String {
+    nonisolated var detailedSummary: String {
         var lines: [String] = []
         
         lines.append("📝 \(title)")
@@ -128,14 +140,14 @@ extension TodoItem: AppEntity {
     // MARK: - 타입 표시 정보
     
     /// 엔티티 타입 표시 이름
-    static var typeDisplayRepresentation: TypeDisplayRepresentation {
+    nonisolated static var typeDisplayRepresentation: TypeDisplayRepresentation {
         TypeDisplayRepresentation(name: "할일")
     }
     
     // MARK: - 개별 항목 표시
     
     /// 개별 항목 표시 정보
-    var displayRepresentation: DisplayRepresentation {
+    nonisolated var displayRepresentation: DisplayRepresentation {
         // 부제목 구성
         var subtitleParts: [String] = []
         
@@ -168,7 +180,7 @@ extension TodoItem: AppEntity {
     // MARK: - 기본 쿼리
     
     /// 기본 쿼리 제공
-    static var defaultQuery: TodoItemQuery {
+    nonisolated static var defaultQuery: TodoItemQuery {
         TodoItemQuery()
     }
 }
@@ -181,19 +193,20 @@ struct TodoItemQuery: EntityQuery {
     
     /// ID로 할일 조회
     func entities(for identifiers: [UUID]) async throws -> [TodoItem] {
-        let store = await TodoStore.shared
-        return await store.todos.filter { identifiers.contains($0.id) }
+        await MainActor.run {
+            TodoStore.shared.todos.filter { identifiers.contains($0.id) }
+        }
     }
     
     // MARK: - 추천 항목
     
     /// 모든 할일 조회 (추천 항목)
     func suggestedEntities() async throws -> [TodoItem] {
-        // 미완료 항목 우선, 우선순위/마감일 순으로 정렬
-        let store = await TodoStore.shared
-        return await store.todos
-            .filter { !$0.isCompleted }
-            .sorted { $0.sortPriority > $1.sortPriority }
+        await MainActor.run {
+            TodoStore.shared.todos
+                .filter { !$0.isCompleted }
+                .sorted { $0.sortPriority > $1.sortPriority }
+        }
     }
 }
 
@@ -202,90 +215,18 @@ extension TodoItemQuery: EntityStringQuery {
     
     /// 문자열로 할일 검색
     func entities(matching string: String) async throws -> [TodoItem] {
-        let store = await TodoStore.shared
-        
-        // 빈 문자열이면 전체 반환
-        guard !string.isEmpty else {
-            return await store.todos
+        let allTodos = await MainActor.run {
+            TodoStore.shared.todos
         }
-        
-        // 제목 또는 메모에 검색어가 포함된 항목 필터링
-        return await store.todos.filter { todo in
+
+        guard !string.isEmpty else {
+            return allTodos
+        }
+
+        return allTodos.filter { todo in
             todo.title.localizedCaseInsensitiveContains(string) ||
             (todo.notes?.localizedCaseInsensitiveContains(string) ?? false)
         }
-    }
-}
-
-// MARK: - 엔티티 속성 쿼리 (고급 필터링)
-extension TodoItemQuery: EntityPropertyQuery {
-    
-    // MARK: - 쿼리 속성 정의
-    
-    /// 쿼리에서 사용할 수 있는 속성들
-    static var properties: QueryProperties {
-        Property(\TodoItem.title) {
-            EqualToComparator()
-            ContainsComparator()
-        }
-        Property(\TodoItem.isCompleted) {
-            EqualToComparator()
-        }
-        Property(\TodoItem.priority) {
-            EqualToComparator()
-        }
-    }
-    
-    /// 정렬 옵션
-    static var sortingOptions: SortingOptions {
-        SortingOptions {
-            SortableBy(\TodoItem.title)
-            SortableBy(\TodoItem.createdAt)
-            SortableBy(\TodoItem.priority)
-        }
-    }
-    
-    /// 속성 기반 쿼리 실행
-    func entities(
-        matching comparators: [ComparatorMapping<TodoItem>],
-        mode: ComparatorMode,
-        sortedBy: [Sort<TodoItem>],
-        limit: Int?
-    ) async throws -> [TodoItem] {
-        let store = await TodoStore.shared
-        var results = await store.todos
-        
-        // 필터링
-        results = results.filter { todo in
-            comparators.allSatisfy { mapping in
-                mapping.comparator.matches(todo, for: mapping.keyPath)
-            }
-        }
-        
-        // 정렬
-        for sort in sortedBy.reversed() {
-            results.sort { lhs, rhs in
-                let ascending = sort.order == .ascending
-                
-                switch sort.by {
-                case \TodoItem.title:
-                    return ascending ? lhs.title < rhs.title : lhs.title > rhs.title
-                case \TodoItem.createdAt:
-                    return ascending ? lhs.createdAt < rhs.createdAt : lhs.createdAt > rhs.createdAt
-                case \TodoItem.priority:
-                    return ascending ? lhs.priority < rhs.priority : lhs.priority > rhs.priority
-                default:
-                    return false
-                }
-            }
-        }
-        
-        // 제한
-        if let limit {
-            results = Array(results.prefix(limit))
-        }
-        
-        return results
     }
 }
 
@@ -293,15 +234,27 @@ extension TodoItemQuery: EntityPropertyQuery {
 /// 실행 결과로 반환되는 임시 엔티티
 struct TodoResultEntity: TransientAppEntity {
     
-    var id: UUID
-    var title: String
-    var message: String
-    
-    static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        "할일 결과"
+    nonisolated var id: UUID
+    nonisolated var title: String
+    nonisolated var message: String
+
+    nonisolated init() {
+        self.id = UUID()
+        self.title = ""
+        self.message = ""
+    }
+
+    nonisolated init(id: UUID = UUID(), title: String, message: String) {
+        self.id = id
+        self.title = title
+        self.message = message
     }
     
-    var displayRepresentation: DisplayRepresentation {
+    nonisolated static var typeDisplayRepresentation: TypeDisplayRepresentation {
+        TypeDisplayRepresentation(name: "할일 결과")
+    }
+    
+    nonisolated var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
             title: "\(title)",
             subtitle: "\(message)"

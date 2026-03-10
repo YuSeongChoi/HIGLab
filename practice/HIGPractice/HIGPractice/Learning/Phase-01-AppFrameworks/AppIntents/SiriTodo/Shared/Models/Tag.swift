@@ -1,15 +1,23 @@
+//
+//  Tag.swift
+//  HIGPractice
+//
+//  Created by YuSeongChoi on 3/9/26.
+//
+
 import Foundation
 import AppIntents
 import SwiftUI
+import Combine
 
 // MARK: - 태그 모델
 /// 할일에 부착할 수 있는 태그
 /// 분류 및 필터링에 사용
 struct Tag: Identifiable, Codable, Hashable, Sendable {
-    let id: UUID
-    var name: String           // 태그 이름
-    var colorHex: String       // 색상 (Hex)
-    var createdAt: Date        // 생성 시간
+    nonisolated let id: UUID
+    nonisolated var name: String           // 태그 이름
+    nonisolated var colorHex: String       // 색상 (Hex)
+    nonisolated var createdAt: Date        // 생성 시간
     
     // MARK: - 초기화
     
@@ -43,12 +51,12 @@ struct Tag: Identifiable, Codable, Hashable, Sendable {
 extension Tag: AppEntity {
     
     /// 타입 표시 정보
-    static var typeDisplayRepresentation: TypeDisplayRepresentation {
+    nonisolated static var typeDisplayRepresentation: TypeDisplayRepresentation {
         TypeDisplayRepresentation(name: "태그")
     }
     
     /// 개별 태그 표시 정보
-    var displayRepresentation: DisplayRepresentation {
+    nonisolated var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
             title: "\(name)",
             subtitle: nil,
@@ -57,7 +65,7 @@ extension Tag: AppEntity {
     }
     
     /// 기본 쿼리
-    static var defaultQuery: TagQuery {
+    nonisolated static var defaultQuery: TagQuery {
         TagQuery()
     }
 }
@@ -68,12 +76,16 @@ struct TagQuery: EntityQuery {
     
     /// ID로 태그 조회
     func entities(for identifiers: [UUID]) async throws -> [Tag] {
-        await TagStore.shared.tags.filter { identifiers.contains($0.id) }
+        await MainActor.run {
+            TagStore.shared.tags.filter { identifiers.contains($0.id) }
+        }
     }
     
     /// 추천 태그 (자주 사용하는 태그)
     func suggestedEntities() async throws -> [Tag] {
-        await TagStore.shared.tags
+        await MainActor.run {
+            TagStore.shared.tags
+        }
     }
 }
 
@@ -82,7 +94,9 @@ extension TagQuery: EntityStringQuery {
     
     /// 문자열로 태그 검색
     func entities(matching string: String) async throws -> [Tag] {
-        let allTags = await TagStore.shared.tags
+        let allTags = await MainActor.run {
+            TagStore.shared.tags
+        }
         
         guard !string.isEmpty else {
             return allTags

@@ -86,23 +86,22 @@ struct MediumWeatherWidget: View {
     }
 
 
-    var hourlyForecasts: [HourlyForecast] {
+    private var hourlyForecasts: [MediumHourlyForecast] {
         [
-            HourlyForecast(time: "지금", icon: "cloud.sun.fill", temperature: 24),
-            HourlyForecast(time: "15시", icon: "sun.max.fill", temperature: 26),
-            HourlyForecast(time: "16시", icon: "sun.max.fill", temperature: 27),
-            HourlyForecast(time: "17시", icon: "cloud.fill", temperature: 25),
-            HourlyForecast(time: "18시", icon: "cloud.moon.fill", temperature: 23)
+            MediumHourlyForecast(time: "지금", icon: "cloud.sun.fill", temperature: 24),
+            MediumHourlyForecast(time: "15시", icon: "sun.max.fill", temperature: 26),
+            MediumHourlyForecast(time: "16시", icon: "sun.max.fill", temperature: 27),
+            MediumHourlyForecast(time: "17시", icon: "cloud.fill", temperature: 25),
+            MediumHourlyForecast(time: "18시", icon: "cloud.moon.fill", temperature: 23)
         ]
     }
 }
 
 
-struct HourlyForecast: Identifiable {
+private struct MediumHourlyForecast: Identifiable {
     let id = UUID()
     let time: String
     let icon: String
     let temperature: Int
 }
-
 
