@@ -15,7 +15,9 @@ struct PracticeHomeView: View {
 
                             LazyVGrid(columns: gridColumns, spacing: 16) {
                                 ForEach(PracticeCatalog.items(for: phase)) { item in
-                                    NavigationLink(value: item) {
+                                    NavigationLink {
+                                        destination(for: item)
+                                    } label: {
                                         FrameworkCardView(item: item)
                                     }
                                     .buttonStyle(.plain)
@@ -29,9 +31,15 @@ struct PracticeHomeView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("HIG Practice")
-            .navigationDestination(for: FrameworkItem.self) { item in
-                FrameworkDetailView(item: item)
-            }
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for item: FrameworkItem) -> some View {
+        if item.id == "appintents" {
+            SiriTodoSampleRootView()
+        } else {
+            FrameworkDetailView(item: item)
         }
     }
 
