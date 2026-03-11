@@ -29,6 +29,57 @@
 - SwiftUI는 화면을 직접 갱신하는 프레임워크라기보다, 상태가 바뀌면 UI가 다시 계산되는 구조에 가깝다.
 - 그래서 처음부터 커스텀 디자인을 만드는 것보다 `View 구조`, `상태`, `데이터 흐름`을 먼저 이해해야 한다.
 
+## SwiftUI 개념 메모
+
+### 왜 `struct MyView: View`는 `var body: some View`가 필요할까
+- `View`는 프로토콜이고, SwiftUI는 각 View 타입이 자기 화면 구조를 `body`로 설명하길 기대한다.
+- 즉 `body`는 "이 View가 실제로 어떤 하위 View들로 구성되는가"를 정의하는 핵심 속성이다.
+- SwiftUI는 상태가 바뀌면 이 `body`를 다시 계산해 새로운 화면 구조를 만든다.
+
+### `some View`는 무엇인가
+- `some View`는 "구체 타입은 하나로 정해져 있지만, 그 타입 이름은 숨긴다"는 뜻이다.
+- 예를 들어 `Text("Hello")`를 반환하면 실제 타입은 `Text`지만, 바깥에는 `some View`라고만 드러난다.
+- 중요한 점은 `some View`가 "아무 View나 가능하다"는 뜻이 아니라, 실제로는 하나의 고정된 구체 타입이라는 점이다.
+
+### `any View`와의 차이
+- `any View`는 "`View` 프로토콜을 따르는 타입이면 무엇이든 담을 수 있는 프로토콜 타입"이다.
+- 즉 `some View`는 "정체는 하나인데 숨긴 것"이고,
+- `any View`는 "`View` 계열이면 무엇이든 담을 수 있는 큰 상자"에 가깝다.
+
+### 쉽게 비유하면
+- `some View`
+  - 봉투 안에 물건이 하나 들어 있고, 그 정체는 이미 정해져 있다.
+  - 다만 바깥에서 타입 이름만 숨긴 상태다.
+- `any View`
+  - 상자 안에 `Text`, `Image`, `VStack`처럼 여러 종류의 View를 넣을 수 있다.
+  - 공통점은 전부 `View` 프로토콜을 따른다는 것뿐이다.
+
+### 왜 SwiftUI는 `some View`를 더 선호하나
+- SwiftUI는 View 타입 정보를 많이 활용해서 렌더링 구조와 변경 지점을 추적한다.
+- 그래서 타입이 더 선명한 `some View`가 SwiftUI의 기본 구조와 잘 맞는다.
+- 반대로 `any View`는 "일단 View이긴 한데 정확한 타입 정보는 감춘 상태"라서 SwiftUI가 정적 타입 정보를 덜 활용하게 된다.
+
+### 그럼 `body` 안에서 `if/else`는 왜 될까
+- 겉으로 보면 `if`에서는 `ProgressView`, `else`에서는 `Text`처럼 서로 다른 타입을 반환하는 것처럼 보인다.
+- 그런데 `body`는 SwiftUI가 `@ViewBuilder`로 조립해주는 특별한 문맥이라,
+- 여러 View 분기와 조합을 결국 하나의 View 타입으로 묶어준다.
+
+### `@ViewBuilder`는 무엇을 해주나
+- 여러 View 조각을 하나의 View 결과처럼 조립해주는 빌더다.
+- 그래서 `body` 안에서는 `if`, `switch`, 여러 줄 View 선언이 자연스럽게 동작한다.
+- 일반 함수에서는 이 처리가 없으면 서로 다른 View 타입을 `some View`로 바로 반환하기 어렵다.
+
+### `AnyView`는 언제 쓰나
+- `AnyView`는 서로 다른 View 타입을 같은 박스에 넣어 하나처럼 다루고 싶을 때 쓴다.
+- 다만 SwiftUI에서는 가능하면 `some View`와 `@ViewBuilder`를 먼저 쓰고,
+- 정말 타입을 지워야 할 때만 `AnyView`를 쓰는 편이 일반적이다.
+
+### 한 줄 정리
+- `body` = 이 View의 실제 화면 정의
+- `some View` = 구체 타입은 하나지만 이름은 숨김
+- `any View` = `View`면 무엇이든 담을 수 있는 프로토콜 타입
+- `@ViewBuilder` = 여러 View 조각을 하나의 View처럼 조립해주는 장치
+
 ## Ring 2 — 기본 View 구조와 Modifier
 ### 개념 요약
 - 모든 화면은 `View` 프로토콜을 따르는 타입으로 시작한다.
