@@ -44,12 +44,12 @@ struct TaskMasterRootView: View {
                 // 첫 실행 시 기본 카테고리 초기화
                 initializeDefaultData()
             }
-            .modelContainer(sharedModelContainer)
+            .modelContainer(Self.sharedModelContainer)
     }
     
     @MainActor
     private func initializeDefaultData() {
-        let context = sharedModelContainer.mainContext
+        let context = Self.sharedModelContainer.mainContext
         DataService.shared.initializeDefaultCategories(in: context)
     }
 }
