@@ -38,6 +38,8 @@ struct PracticeHomeView: View {
     private func destination(for item: FrameworkItem) -> some View {
         if item.id == "appintents" {
             SiriTodoSampleRootView()
+        } else if item.id == "swiftui" {
+            TaskMasterRootView()
         } else {
             FrameworkDetailView(item: item)
         }
