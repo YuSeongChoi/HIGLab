@@ -80,6 +80,148 @@
 - `any View` = `View`면 무엇이든 담을 수 있는 프로토콜 타입
 - `@ViewBuilder` = 여러 View 조각을 하나의 View처럼 조립해주는 장치
 
+## 접근성 메모
+
+### SwiftUI의 accessibility 속성은 무엇을 하나
+- `accessibility...` 계열 modifier는 주로 `VoiceOver` 같은 보조기술이 화면 요소를 더 정확히 읽도록 돕는다.
+- 즉 시각적으로 보이는 정보(색상, 선택 상태, 배지 숫자)를 텍스트 정보로 다시 전달하는 역할에 가깝다.
+
+### 자주 쓰는 속성
+- `accessibilityLabel`
+  - 이 요소의 이름을 정한다.
+  - 예: 화면에는 `업무`라고만 보여도, 보조기술에는 `업무 카테고리`라고 더 명확하게 읽히게 할 수 있다.
+- `accessibilityValue`
+  - 현재 상태값을 전달한다.
+  - 예: `선택됨`, `3개 미완료`
+- `accessibilityHint`
+  - 사용자가 이 요소를 조작하면 어떤 일이 일어나는지 설명한다.
+  - 예: `탭하면 업무 카테고리로 필터링합니다`
+- `accessibilityAddTraits`
+  - 이 요소의 성격을 추가로 알려준다.
+  - 예: 현재 선택된 칩이면 `.isSelected`를 붙여 "선택된 항목"으로 인식하게 한다.
+
+### 왜 필요한가
+- 시각적으로는 색상, 배경, 배지, 볼드 처리로 상태를 표현할 수 있다.
+- 하지만 VoiceOver 사용자는 그 시각적 차이를 직접 볼 수 없기 때문에,
+- SwiftUI 접근성 속성으로 같은 의미를 텍스트/상태 정보로 전달해야 한다.
+
+### 이번 TaskMaster 예시로 보면
+- `CategoryChip`은 단순 버튼이 아니라
+  - 어떤 카테고리인지
+  - 몇 개가 남아 있는지
+  - 지금 선택된 상태인지
+  - 누르면 어떤 필터가 적용되는지
+  를 함께 설명해야 한다.
+- 그래서 `accessibilityLabel`, `Value`, `Hint`, `Traits`를 같이 붙이는 것이 좋다.
+
+### 음성 명령과의 차이
+- 이 속성들은 주로 `VoiceOver`처럼 화면을 읽어주는 보조기술을 위한 것이다.
+- 즉 `Siri`나 `App Intents`처럼 "말로 앱 기능을 실행하는 구조"와는 목적이 다르다.
+- 정리하면:
+  - 접근성 속성 = UI 요소를 보조기술이 더 잘 읽게 만드는 정보
+  - App Intents = 앱 기능을 시스템에 외부 액션으로 노출하는 구조
+
+## 빈 상태 UI 메모
+
+### `ContentUnavailableView`는 무엇인가
+- `ContentUnavailableView`는 보여줄 데이터가 없을 때 사용하는 SwiftUI의 시스템 기본 빈 상태 화면이다.
+- 예를 들어:
+  - 할일 목록이 비어 있을 때
+  - 검색 결과가 없을 때
+  - 아직 데이터가 생성되지 않았을 때
+  같은 상황에 적합하다.
+
+### 왜 쓰는가
+- 빈 `List`나 빈 `ScrollView`만 보여주면 사용자는 "왜 아무것도 안 보이는지" 이해하기 어렵다.
+- `ContentUnavailableView`를 쓰면
+  - 현재 상태가 왜 비어 있는지
+  - 다음에 무엇을 하면 되는지
+  를 시스템 스타일에 맞게 전달할 수 있다.
+
+### 어떤 요소로 구성되나
+- 제목
+- 시스템 이미지
+- 설명 텍스트
+- 필요하면 액션 버튼
+
+### 예시
+```swift
+ContentUnavailableView(
+    "할 일이 없습니다",
+    systemImage: "checklist",
+    description: Text("새 할 일을 추가해보세요.")
+)
+```
+
+### TaskMaster에서의 사용 위치
+- `TaskMasterView`에서 전체 할일이 0개일 때
+- 검색 결과가 0개일 때
+- 특정 카테고리 필터 결과가 비어 있을 때
+- 즉 "콘텐츠가 없는 이유를 사용자에게 바로 설명해야 하는 화면"에 쓰는 게 좋다.
+
+### 한 줄 정리
+- `ContentUnavailableView` = 데이터가 없을 때 보여주는 SwiftUI 기본 empty state UI
+
+## 타입 / 인스턴스 / static 메모
+
+### 타입과 인스턴스란
+- 타입은 설계도에 가깝다.
+- 인스턴스는 그 설계도로 실제 만들어진 값 하나다.
+- 비유하면:
+  - 타입 = 붕어빵 틀
+  - 인스턴스 = 실제 만들어진 붕어빵 1개
+
+### 인스턴스 프로퍼티와 타입 프로퍼티의 차이
+- 인스턴스 프로퍼티
+  - 각 인스턴스가 자기 값을 가진다.
+  - 예: `task.title`, `task.isCompleted`
+- 타입 프로퍼티(`static`)
+  - 타입 전체가 하나의 값을 공유한다.
+  - 예: `TaskMasterRootView.sharedModelContainer`
+
+### 왜 `static`이 중요한가
+- SwiftUI의 `View`는 `struct` 기반이라 값 타입이고, 새로 계산되거나 재생성될 수 있다.
+- 그런데 `ModelContainer`처럼 생성 비용이 크고 여러 화면이 같이 써야 하는 자원은
+  - 각 View 인스턴스가 따로 가지는 값보다
+  - 타입 전체가 공유하는 값으로 두는 편이 더 자연스럽다.
+- 그래서 이런 자원은 일반 `let`보다 `static let`이 더 적합하다.
+
+### `private let` vs `private static let`
+- `private let`
+  - 인스턴스 소속 고정 값
+  - View 인스턴스가 자기 값을 가지는 구조
+- `private static let`
+  - 타입 전체가 공유하는 고정 값
+  - 무거운 공용 자원, 공통 설정, 공용 컨테이너에 적합
+
+### `ModelContainer`는 무엇인가
+- SwiftData에서 실제 저장소 역할을 하는 객체다.
+- `TaskItem`, `Category` 같은 모델을 어떤 schema로 저장할지 정하고,
+- 하위 View들이 `modelContext`와 `@Query`를 쓸 수 있도록 데이터 환경을 제공한다.
+
+### `.modelContainer(...)`는 무엇을 하나
+- 특정 `ModelContainer`를 View 계층에 주입한다.
+- 이 modifier가 있어야 하위 View에서:
+  - `@Environment(\\.modelContext)`
+  - `@Query`
+  가 같은 SwiftData 저장소를 기준으로 동작할 수 있다.
+
+### 왜 `TaskMasterRootView`에 `sharedModelContainer`를 두는가
+- `TaskMasterApp.swift`의 `@main` 역할 전체를 그대로 가져오는 것이 아니라,
+- 앱 진입 시점에 하던 SwiftData 준비 작업만 `RootView`로 옮긴다.
+- 즉 `TaskMasterRootView`는:
+  - `ModelContainer` 생성
+  - 기본 카테고리 초기화
+  - `TaskMasterView`에 SwiftData 환경 주입
+  을 담당하는 래퍼 역할이다.
+
+### 한 줄 정리
+- 타입 = 설계도
+- 인스턴스 = 실제 값 하나
+- `static let` = 타입 전체가 공유하는 공용 자원
+- `ModelContainer` = SwiftData 저장소 본체
+- `.modelContainer(...)` = 그 저장소를 View 트리에 주입하는 작업
+
 ## Ring 2 — 기본 View 구조와 Modifier
 ### 개념 요약
 - 모든 화면은 `View` 프로토콜을 따르는 타입으로 시작한다.
