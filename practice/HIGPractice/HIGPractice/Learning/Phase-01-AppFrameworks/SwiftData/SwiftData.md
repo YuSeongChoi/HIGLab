@@ -159,6 +159,7 @@
 ### 5. `AddTaskView.swift`
 - 파일: `samples/TaskMaster/TaskMasterApp/AddTaskView.swift`
 - 여기서는 Create를 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - 입력값을 모델로 바꾸는 위치
   - `context.insert(...)`가 일어나는 위치
@@ -168,6 +169,10 @@
 - 사용자 입력은 `@State`로 모으고, 저장 시점에 `TaskItem` 인스턴스를 만든다.
 - `modelContext.insert(...)`를 하면 SwiftData가 변경을 추적한다.
 - 기본 autosave 흐름 덕분에 간단한 경우 명시적 `save()`가 없어도 된다.
+- 입력 단계에서 바로 모델을 만들지 않는 이유는, 아직 취소될 수 있는 임시 입력을 저장소 객체로 올리지 않기 위해서다.
+- `addTask()` 안에서 제목 trim, optional dueDate 처리, category 연결을 한 번에 정리한 뒤 insert하는 것이 가장 안전하다.
+- create 시 category 관계는 `TaskItem(category: selectedCategory)`를 통해 연결된다.
+- 즉 이 화면의 책임은 "폼 상태 수집"이고, 실제 SwiftData 등록은 마지막 확인 액션에서만 일어난다.
 
 ## `AddTaskView.swift`를 보고 답할 질문
 - 입력값을 왜 곧바로 모델에 바인딩하지 않고 `@State`로 먼저 받는가
