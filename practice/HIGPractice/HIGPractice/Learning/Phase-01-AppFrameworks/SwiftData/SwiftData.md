@@ -134,6 +134,7 @@
 ### 4. `ContentView.swift`
 - 파일: `samples/TaskMaster/TaskMasterApp/ContentView.swift`
 - 여기서는 "조회와 화면 연결"만 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `@Environment(\.modelContext)`
   - `@Query(sort: ...)`
@@ -145,6 +146,10 @@
 - `allTasks`, `categories`는 저장소와 연결된 상태라 데이터가 바뀌면 화면도 갱신된다.
 - 이 파일의 `filteredTasks`는 DB 필터가 아니라 메모리 필터다.
 - 즉 현재 구조는 "먼저 `@Query`로 읽고, 그 결과를 다시 화면에서 가공"하는 방식이다.
+- `@Environment(\.modelContext)`는 읽기 전용 쿼리용이 아니라, 삭제 같은 변경 작업을 실행할 때 쓰는 작업 창구다.
+- `selectedFilter`, `selectedCategory`, `searchText`는 모두 View 상태이므로 SwiftData 저장소에 직접 들어가는 조건이 아니라 화면 레벨에서 후처리된다.
+- `modelContext.delete(task)` 후 목록이 바로 갱신되는 이유는 같은 container/context를 기준으로 `@Query` 결과가 다시 반영되기 때문이다.
+- 이 구조는 단순하고 읽기 쉽지만, 데이터 양이 커지면 일부 필터를 `@Query`나 `FetchDescriptor`로 내려야 할 수 있다.
 
 ## `ContentView.swift`를 보고 답할 질문
 - `@Query`와 `filteredTasks`는 각각 어느 층의 역할인가

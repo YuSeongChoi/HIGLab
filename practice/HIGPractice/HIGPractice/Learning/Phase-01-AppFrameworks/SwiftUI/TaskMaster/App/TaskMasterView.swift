@@ -17,11 +17,17 @@ import SwiftData
 struct TaskMasterView: View {
     // MARK: - 환경 & 쿼리
     
+    // modelContext는 "데이터 작업 창구"다.
+    // 읽기는 주로 @Query가 맡고, delete/insert/fetch 같은 변경 작업은 여기서 실행한다.
     @Environment(\.modelContext) private var modelContext
     
+    // 전체 Task를 생성일 역순으로 읽는다.
+    // 이 시점의 조회는 SwiftData 저장소 기준이고,
+    // 아래 filteredTasks에서 화면 상태에 따라 한 번 더 메모리 필터링한다.
     @Query(sort: \TaskItem.createdAt, order: .reverse)
     private var allTasks: [TaskItem]
     
+    // Category도 저장소에서 바로 읽어오며, order 기준으로 정렬한다.
     @Query(sort: \Category.order)
     private var categories: [Category]
     
@@ -35,6 +41,8 @@ struct TaskMasterView: View {
     // MARK: - 필터링된 할일
     
     private var filteredTasks: [TaskItem] {
+        // 1차 데이터 소스는 @Query 결과다.
+        // 여기서부터는 DB 쿼리가 아니라 View 안에서 수행하는 메모리 필터링이다.
         var tasks = allTasks
         
         // 완료 상태 필터
@@ -57,6 +65,7 @@ struct TaskMasterView: View {
             tasks = tasks.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
         }
         
+        // 최종적으로 화면에 그릴 배열을 반환한다.
         return tasks
     }
     
@@ -238,12 +247,15 @@ struct TaskMasterView: View {
     
     private func deleteTask(_ task: TaskItem) {
         withAnimation {
+            // 같은 modelContext에서 삭제하면 @Query가 연결된 목록도 함께 갱신된다.
             modelContext.delete(task)
         }
     }
     
     private func deleteCommpltedTasks() {
         withAnimation {
+            // 복잡한 삭제 로직은 서비스로 위임하고,
+            // View는 "언제 실행할지"만 결정한다.
             DataService.shared.deleteCompletedTasks(from: modelContext)
         }
     }
