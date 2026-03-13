@@ -182,6 +182,7 @@
 ### 6. `TaskDetailView.swift`
 - 파일: `samples/TaskMaster/TaskMasterApp/TaskDetailView.swift`
 - 여기서는 Update/Delete를 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - 모델 수정이 UI에 반영되는 흐름
   - `@Bindable`의 역할
@@ -191,6 +192,10 @@
 - SwiftData 모델은 변경 추적이 되기 때문에 프로퍼티 수정만으로도 상태 변화가 반영된다.
 - `@Bindable`은 모델 프로퍼티를 폼 입력과 직접 연결할 때 중요하다.
 - 삭제는 `modelContext.delete(...)`로 처리한다.
+- `TextField("제목", text: $task.title)` 같은 바인딩이 가능한 이유는 `@Bindable var task`가 모델의 변경 가능한 binding을 열어 주기 때문이다.
+- 제목, 메모, 우선순위, 카테고리처럼 폼 입력과 연결된 수정은 즉시 모델에 반영된다.
+- 반면 삭제는 되돌리기 어려운 작업이므로 별도 버튼과 확인 alert를 거쳐 명시적으로 실행한다.
+- 이 화면은 상세와 편집이 합쳐진 형태다. 정보를 보여주면서 동시에 모델 값을 직접 수정한다.
 
 ## `TaskDetailView.swift`를 보고 답할 질문
 - `@Bindable var task: TaskItem`이 필요한 이유는 무엇인가

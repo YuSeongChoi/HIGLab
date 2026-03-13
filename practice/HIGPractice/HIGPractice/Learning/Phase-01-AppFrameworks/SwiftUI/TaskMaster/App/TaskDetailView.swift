@@ -16,14 +16,18 @@ import SwiftData
 struct TaskDetailView: View {
     // MARK: - 환경
     
+    // 삭제처럼 명시적인 데이터 작업은 modelContext를 통해 수행한다.
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    // 카테고리 선택용 목록 조회
     @Query(sort: \Category.order)
     private var categories: [Category]
     
     // MARK: - 속성
     
+    // @Bindable 덕분에 TaskItem의 프로퍼티를
+    // TextField, Picker 같은 SwiftUI 입력과 직접 바인딩할 수 있다.
     @Bindable var task: TaskItem
     
     // MARK: - 상태
@@ -42,6 +46,7 @@ struct TaskDetailView: View {
             // 기본 정보 섹션
             Section("기본 정보") {
                 // 제목
+                // 모델 프로퍼티와 직접 바인딩되므로 입력값이 곧바로 task.title에 반영된다.
                 TextField("제목", text: $task.title)
                 
                 // 우선순위
@@ -147,6 +152,7 @@ struct TaskDetailView: View {
                     "마감일",
                     selection: Binding(
                         get: { dueDate },
+                        // optional Date를 다루기 위해 직접 Binding을 만들어 연결한다.
                         set: { task.dueDate = $0 }
                     ),
                     displayedComponents: [.date, .hourAndMinute]
@@ -208,6 +214,8 @@ struct TaskDetailView: View {
     // MARK: - 액션
     
     private func deleteTask() {
+        // 삭제는 즉시 반영되는 편집과 다르게 명시적인 파괴 작업이므로
+        // 별도 alert 확인 뒤 modelContext.delete로 수행한다.
         modelContext.delete(task)
         dismiss()
     }
