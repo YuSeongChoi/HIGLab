@@ -291,13 +291,13 @@
   - Keychain
 
 ## 이번 학습 체크리스트
-- [ ] `@Model`은 왜 `class`에 붙는지 설명할 수 있다
-- [ ] `.modelContainer(...)`를 앱 루트에 붙이는 이유를 설명할 수 있다
-- [ ] `@Query`와 `FetchDescriptor`의 차이를 말할 수 있다
-- [ ] `context.insert` 후 왜 별도 `save()`가 없어도 되는지 설명할 수 있다
-- [ ] 모델 프로퍼티를 바꾸면 왜 UI가 따라오는지 설명할 수 있다
-- [ ] 관계 모델이 어디서 정의되는지 찾을 수 있다
-- [ ] SwiftData와 UserDefaults, Keychain의 역할 차이를 말할 수 있다
+- [x] `@Model`은 왜 `class`에 붙는지 설명할 수 있다
+- [x] `.modelContainer(...)`를 앱 루트에 붙이는 이유를 설명할 수 있다
+- [x] `@Query`와 `FetchDescriptor`의 차이를 말할 수 있다
+- [x] `context.insert` 후 왜 별도 `save()`가 없어도 되는지 설명할 수 있다
+- [x] 모델 프로퍼티를 바꾸면 왜 UI가 따라오는지 설명할 수 있다
+- [x] 관계 모델이 어디서 정의되는지 찾을 수 있다
+- [x] SwiftData와 UserDefaults, Keychain의 역할 차이를 말할 수 있다
 
 ## 이번 학습에서 내가 남길 정리
 - SwiftData는 "저장" 자체보다 "모델과 UI를 어떻게 이어주는가"가 핵심이다.

@@ -24,6 +24,7 @@ For each completed scope, append one row:
 | 2026-03-04 | Phase 1 | ActivityKit | DeliveryTracker (Local lifecycle + Widget UI + Debug logging) | #11 | - | - | Separated app control plane vs widget rendering plane, unified shared models, and validated local start/update/end debugging flow. |
 | 2026-03-10 | Phase 1 | App Intents | SiriTodo sample adaptation, intents, shortcuts, concurrency troubleshooting | #16 | #18 | - | Reframed a standalone sample into an in-app learning flow, clarified `nonisolated` vs `MainActor.run`, and reduced App Shortcut registration to a valid minimal set. |
 | 2026-03-12 | Phase 1 | SwiftUI | TaskMaster scaffold, shared layer, navigation hookup, concept notes | #20 | #22 | - | Reframed a standalone sample app into a navigable in-app demo and clarified `some View`, accessibility, `ContentUnavailableView`, and `static ModelContainer` responsibilities. |
+| 2026-03-13 | Phase 1 | SwiftData | TaskMaster data flow review, CRUD path tracing, service/query notes | #23 | - | - | Clarified how `@Model`, `ModelContainer`, `@Query`, `@Bindable`, `FetchDescriptor`, and relationships connect storage changes to SwiftUI updates. |
 
 ## Weekly Reflection (Optional)
 
