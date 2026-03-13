@@ -205,6 +205,7 @@
 ### 7. `DataService.swift`
 - 파일: `samples/TaskMaster/Shared/DataService.swift`
 - 여기서는 SwiftData를 코드에서 직접 다루는 패턴을 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `FetchDescriptor`
   - `#Predicate`
@@ -216,6 +217,10 @@
 - `FetchDescriptor`는 서비스/로직 코드에서 직접 쿼리할 때 쓰는 방식이다.
 - `#Predicate`는 문자열 기반이 아니라 타입 안전한 조건식을 제공한다.
 - 서비스 레이어를 두면 View에서 쿼리 세부 구현을 덜어낼 수 있다.
+- 즉 `DataService`는 "화면이 아닌 코드 레벨에서 SwiftData를 다루는 예시"다.
+- `FetchDescriptor`에는 정렬과 predicate를 함께 담을 수 있어서, 재사용 가능한 조회 로직을 함수 단위로 묶기 좋다.
+- 이 서비스는 지금 샘플에서는 `shared` 싱글톤으로 쓰지만, SwiftData 자체가 싱글톤을 요구하는 것은 아니다.
+- 기준은 단순하다. 화면 하나에서만 쓰는 단순 조회는 `@Query`, 여러 화면/행동에서 재사용할 조회나 배치 작업은 서비스 함수로 빼는 편이 낫다.
 
 ## `DataService.swift`를 보고 답할 질문
 - `@Query` 대신 `FetchDescriptor`를 쓴 이유는 무엇인가
