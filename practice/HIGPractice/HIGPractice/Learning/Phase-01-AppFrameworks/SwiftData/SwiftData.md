@@ -35,6 +35,7 @@
 ### 1. `TaskMasterApp.swift`
 - 파일: `samples/TaskMaster/TaskMasterApp/TaskMasterApp.swift`
 - 여기서는 "SwiftData를 앱에 어떻게 붙이는가"만 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `Schema`
   - `ModelContainer`
@@ -45,6 +46,8 @@
 - `ModelContainer`는 SwiftData 저장소의 시작점이다.
 - 앱 루트에서 `.modelContainer(...)`를 주입해야 하위 View에서 `@Environment(\.modelContext)`와 `@Query`가 동작한다.
 - preview에서는 in-memory container를 써서 실제 저장 파일을 건드리지 않는다.
+- `Schema([TaskItem.self, Category.self])`는 "이 저장소가 어떤 모델들을 관리하는가"를 선언한다.
+- `sharedModelContainer.mainContext`를 통해 기본 데이터 초기화가 일어난다.
 
 ## `TaskMasterApp.swift`를 보고 답할 질문
 - 왜 `.modelContainer(...)`는 앱 루트에 붙이는가
@@ -54,6 +57,7 @@
 ### 2. `TaskItem.swift`
 - 파일: `samples/TaskMaster/Shared/TaskItem.swift`
 - 여기서는 "SwiftData 모델이 어떻게 생겼는가"를 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `@Model`
   - 저장 프로퍼티
@@ -63,14 +67,46 @@
 
 ### 내가 적을 메모
 - `@Model`이 붙은 클래스는 SwiftData가 저장 가능한 모델로 인식한다.
+- SwiftData가 모델의 identity와 변경 추적을 관리해야 하므로 `@Model`은 `class`에 붙는다.
 - 일반 stored property는 저장 대상이 되고, 계산 프로퍼티는 저장되지 않는다.
 - `toggleCompletion()`처럼 도메인 동작을 모델 안에 두면 View가 단순해진다.
 - 관계는 `@Relationship`으로 정의하고, 역관계가 있으면 양쪽 연결을 더 명확히 이해할 수 있다.
+- 실제 persisted 값은 `priority`, `dueDate`, `createdAt` 같은 stored property다.
+- `taskPriority`, `daysUntilDue`, `isDueSoon`, `isOverdue`는 "저장된 값을 바탕으로 계산하는 뷰 친화적 접근자"다.
+- `inverse`는 "이 관계의 반대편 프로퍼티가 무엇인지"를 지정한다.
+- 양방향 관계는 Task가 Category를 알고, Category도 자신의 Task 목록을 아는 구조다.
 
 ## `TaskItem.swift`를 보고 답할 질문
 - 왜 `@Model`은 `struct`가 아니라 `class`에 붙는가
 - `daysUntilDue`, `isDueSoon`, `isOverdue`는 왜 저장 프로퍼티가 아닌가
 - `taskPriority`는 persisted 값인가, 변환용 접근자인가
+
+## 관계 메모
+
+### `@Relationship`은 무엇인가
+- SwiftData 모델끼리 연결 관계가 있다는 선언이다.
+- 예를 들어 `TaskItem.category`는 "이 할 일이 어느 카테고리에 속하는가"를 나타낸다.
+
+### 양방향 관계란 무엇인가
+- 한쪽만 상대를 아는 것이 아니라, 양쪽 모델이 서로를 참조할 수 있는 관계다.
+- 예:
+  - `TaskItem.category` = 이 Task가 속한 Category
+  - `Category.tasks` = 이 Category에 속한 Task 목록
+
+### `inverse`는 무엇인가
+- "이 관계의 반대편 프로퍼티가 무엇인지"를 SwiftData에 알려주는 설정이다.
+- `@Relationship(inverse: \Category.tasks)`는
+  `TaskItem.category`의 반대편이 `Category.tasks`라고 선언하는 의미다.
+
+### 왜 필요한가
+- SwiftData가 두 모델 사이 연결을 더 명확하게 이해한다.
+- 한쪽에서 관계를 바꿨을 때 반대편 관계도 같은 연결로 해석할 수 있다.
+- 즉 Task와 Category가 따로 노는 것이 아니라, 하나의 관계 양쪽 면으로 연결된다.
+
+### 지금 단계에서 기억할 한 줄
+- `@Relationship` = 모델 간 연결 선언
+- `inverse` = 연결의 반대편 지정
+- 양방향 관계 = 양쪽이 서로를 참조하는 구조
 
 ### 3. `Category.swift`
 - 파일: `samples/TaskMaster/Shared/Category.swift`
