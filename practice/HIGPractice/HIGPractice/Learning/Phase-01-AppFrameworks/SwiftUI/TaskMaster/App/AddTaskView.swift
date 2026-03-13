@@ -19,14 +19,18 @@ import SwiftData
 struct AddTaskView: View {
     // MARK: - 환경
     
+    // 실제 SwiftData 등록은 modelContext를 통해 수행한다.
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    // 카테고리 선택 UI를 구성하기 위해 저장소에서 목록을 읽는다.
     @Query(sort: \Category.order)
     private var categories: [Category]
     
     // MARK: - 상태
     
+    // 사용자의 폼 입력은 우선 @State에 모아 둔다.
+    // 아직 "저장 확정" 전이므로 처음부터 TaskItem 모델에 직접 쓰지 않는다.
     @State private var title = ""
     @State private var hasDueDate = false
     @State private var dueDate = Date()
@@ -174,17 +178,22 @@ struct AddTaskView: View {
     // MARK: - 액션
     
     private func addTask() {
+        // 저장 직전에 한 번 더 입력값을 정리한다.
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return }
         
+        // 이 시점에만 SwiftData 모델 인스턴스를 만든다.
+        // 즉 폼 편집 상태와 저장 모델 생성을 분리한 구조다.
         let task = TaskItem(
             title: trimmedTitle,
             dueDate: hasDueDate ? dueDate : nil,
             priority: priority.rawValue,
             notes: notes.trimmingCharacters(in: .whitespacesAndNewlines),
+            // 선택된 Category를 넘기면 관계도 함께 연결된다.
             category: selectedCategory
         )
         
+        // insert 이후에는 SwiftData가 변경 추적과 autosave 흐름을 이어받는다.
         modelContext.insert(task)
         dismiss()
     }

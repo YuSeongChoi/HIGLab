@@ -20,17 +20,28 @@ final class Category {
     /// 카테고리 이름
     var name: String
     
+    /// 카테고리 대표 색상
+    /// - 실제 저장은 Color 자체가 아니라 hex 문자열로 한다.
     var colorHex: String
     
+    /// 카테고리를 나타내는 SF Symbol 이름
     var iconName: String
     
+    /// 생성 시각
     var createdAt: Date
     
+    /// 목록에서의 정렬 순서
     var order: Int
     
+    /// 이 카테고리에 속한 할일들
+    /// - Category -> TaskItem의 1:N 관계
+    /// - deleteRule이 .nullify라서 Category를 삭제해도 TaskItem까지 함께 삭제되지는 않는다.
+    /// - 대신 연결만 끊기므로, 각 TaskItem의 category는 nil이 된다.
     @Relationship(deleteRule: .nullify)
     var tasks: [TaskItem] = []
     
+    // Category 자체의 고유 데이터(name, colorHex, iconName)와
+    // 다른 모델과의 연결 데이터(tasks)를 나눠서 보면 관계 모델이 더 잘 보인다.
     init(
         name: String,
         colorHex: String = "#007AFF",
@@ -49,11 +60,13 @@ final class Category {
 
 extension Category {
     /// SwiftUI Color 접근
+    /// - 저장된 hex 문자열을 화면에서 쓰기 쉬운 Color로 변환한다.
     var color: Color {
         Color(hex: colorHex) ?? .blue
     }
     
     /// 색상 설정
+    /// - View에서 선택한 Color를 다시 저장 가능한 hex 문자열로 바꾼다.
     func setColor(_ color: Color) {
         self.colorHex = color.toHex() ?? "#007AFF"
     }
@@ -62,6 +75,7 @@ extension Category {
 // MARK: - 통계
 extension Category {
     /// 완료되지 않은 할일 수
+    /// - 별도 저장값이 아니라 tasks 관계를 기준으로 매번 계산한다.
     var pendingTaskCount: Int {
         tasks.filter { !$0.isCompleted }.count
     }

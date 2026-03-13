@@ -6,7 +6,7 @@
 - [x] ActivityKit
 - [ ] App Intents
 - [ ] SwiftUI
-- [ ] SwiftData
+- [x] SwiftData
 - [ ] Observation
 - [ ] Foundation Models
 

@@ -38,12 +38,15 @@ final class DataService {
             notes: notes,
             category: category
         )
+        // View 바깥에서도 insert는 결국 ModelContext가 담당한다.
         context.insert(task)
         return task
     }
     
     /// 모든 할일 조회
     func fetchAllTasks(from context: ModelContext) -> [TaskItem] {
+        // FetchDescriptor는 "코드에서 직접 만드는 쿼리 객체"다.
+        // View 안의 @Query와 달리 서비스/로직 계층에서도 사용할 수 있다.
         let descriptor = FetchDescriptor<TaskItem>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
@@ -52,6 +55,8 @@ final class DataService {
     
     /// 미완료 할일만 조회
     func fetchPendingTasks(from context: ModelContext) -> [TaskItem] {
+        // #Predicate는 타입 안전한 필터 조건이다.
+        // 문자열 NSPredicate보다 Swift 코드와 더 자연스럽게 연결된다.
         let predicate = #Predicate<TaskItem> { !$0.isCompleted }
         let descriptor = FetchDescriptor<TaskItem>(
             predicate: predicate,
@@ -76,6 +81,8 @@ final class DataService {
         let startOfDay = calendar.startOfDay(for: Date())
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
         
+        // predicate와 sort를 조합하면 "화면 상태"가 아닌
+        // 도메인 규칙에 가까운 조회를 서비스 함수로 캡슐화할 수 있다.
         let predicate = #Predicate<TaskItem> { task in
             task.dueDate! >= startOfDay &&
             task.dueDate! < endOfDay
@@ -152,6 +159,7 @@ final class DataService {
     
     /// 전체 통계 조회
     func fetchStatistics(from context: ModelContext) -> TaskStatistics {
+        // 통계처럼 여러 조회/가공이 섞이는 로직은 View보다 서비스에 두는 편이 읽기 쉽다.
         let all = fetchAllTasks(from: context)
         let pending = all.filter { !$0.isCompleted }
         let completed = all.filter { $0.isCompleted }
@@ -236,4 +244,3 @@ extension DataService {
         task.toggleCompletion()
     }
 }
-
