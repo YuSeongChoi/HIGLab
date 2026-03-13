@@ -111,6 +111,7 @@
 ### 3. `Category.swift`
 - 파일: `samples/TaskMaster/Shared/Category.swift`
 - 여기서는 관계 모델을 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `Category`와 `TaskItem` 연결
   - 역관계가 왜 필요한가
@@ -120,6 +121,10 @@
 - `Category`와 `TaskItem`은 1:N 관계다.
 - 한 카테고리에 여러 개의 Task가 연결될 수 있다.
 - 관계 정의를 보면 카테고리 삭제 시 Task가 같이 지워지는지, nil 처리되는지 추론할 수 있어야 한다.
+- `Category.tasks`는 "카테고리에 속한 Task 목록"이고, `TaskItem.category`는 그 반대편 연결이다.
+- 여기서는 `@Relationship(deleteRule: .nullify)`를 쓰므로 카테고리를 삭제해도 Task 자체는 지워지지 않고 `category`만 `nil`이 된다.
+- 즉 `name`, `colorHex`, `iconName`은 카테고리 자신의 저장 데이터이고, `tasks`는 다른 모델과의 연결 상태를 나타내는 관계 프로퍼티다.
+- 관계를 양쪽 모델에 다 적어 두면 "한쪽에서 본 연결"과 "반대편에서 본 연결"을 같은 관계로 해석할 수 있다.
 
 ## `Category.swift`를 보고 답할 질문
 - 관계를 양쪽 모델에 다 적는 이유는 무엇인가
