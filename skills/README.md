@@ -96,5 +96,5 @@ cp copilot/copilot-instructions.md /path/to/your/project/.github/copilot-instruc
 ## 🔗 Links
 
 - [HIG Lab](https://m1zz.github.io/HIGLab/) — Browse all 50 AI References
-- [GitHub](https://github.com/M1zz/HIGLab)
+- [GitHub](https://github.com/YuSeongChoi/HIGLab)
 - [npm package](https://www.npmjs.com/package/higlab-skill)

@@ -197,13 +197,13 @@ function createEnVersion(srcPath, destPath, isIndex = false) {
   const koFile = path.basename(srcPath);
   if (isIndex) {
     html = html.replace(
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n    </div>',
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n      <a href="index.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a>\n    </div>'
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n    </div>',
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n      <a href="index.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a>\n    </div>'
     );
   } else {
     html = html.replace(
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n    </div>',
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n      <a href="' + koFile + '" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a>\n    </div>'
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n    </div>',
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n      <a href="' + koFile + '" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇰🇷 KO</a>\n    </div>'
     );
   }
   
@@ -225,13 +225,13 @@ function addLangToggleToKo(filePath, enFile, isIndex = false) {
   
   if (isIndex) {
     html = html.replace(
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n    </div>',
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n      <a href="index.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>\n    </div>'
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n    </div>',
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n      <a href="index.en.html" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>\n    </div>'
     );
   } else {
     html = html.replace(
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n    </div>',
-      '<a href="https://github.com/M1zz/HIGLab">GitHub</a>\n      <a href="' + enFile + '" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>\n    </div>'
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n    </div>',
+      '<a href="https://github.com/YuSeongChoi/HIGLab">GitHub</a>\n      <a href="' + enFile + '" class="lang-toggle" style="font-size:12px;font-weight:600;color:#0071e3;text-decoration:none;padding:4px 10px;border:1.5px solid #0071e3;border-radius:12px;">🇺🇸 EN</a>\n    </div>'
     );
   }
   
