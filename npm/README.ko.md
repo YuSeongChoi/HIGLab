@@ -54,7 +54,7 @@ npm uninstall -g higlab-skill
 ## 링크
 
 - [HIG Lab](https://m1zz.github.io/HIGLab/) — 전체 레퍼런스 둘러보기
-- [GitHub](https://github.com/M1zz/HIGLab)
+- [GitHub](https://github.com/YuSeongChoi/HIGLab)
 - [English README](./README.md)
 
 ## 라이선스

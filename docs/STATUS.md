@@ -27,7 +27,7 @@
 - **메인**: https://m1zz.github.io/HIGLab/
 - **블로그**: `https://m1zz.github.io/HIGLab/{framework}/`
 - **DocC**: `https://m1zz.github.io/HIGLab/tutorials/{framework}/documentation/hig{framework}/`
-- **샘플**: `https://github.com/M1zz/HIGLab/tree/main/samples/{SampleName}`
+- **샘플**: `https://github.com/YuSeongChoi/HIGLab/tree/main/samples/{SampleName}`
 
 ---
 

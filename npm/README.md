@@ -54,7 +54,7 @@ For automatic framework detection without `/hig`, copy the snippet from `claude-
 ## Links
 
 - [HIG Lab](https://m1zz.github.io/HIGLab/) — Browse all references
-- [GitHub](https://github.com/M1zz/HIGLab)
+- [GitHub](https://github.com/YuSeongChoi/HIGLab)
 - [한국어 README](./README.ko.md)
 
 ## License

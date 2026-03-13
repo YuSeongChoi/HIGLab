@@ -127,7 +127,7 @@ https://m1zz.github.io/HIGLab/tutorials/{tech}/documentation/hig{tech}/
 
 ### GitHub 링크
 
-- 모든 블로그에서 `https://github.com/M1zz/HIGLab` 링크 확인됨 (116개 참조)
+- 모든 블로그에서 `https://github.com/YuSeongChoi/HIGLab` 링크 확인됨 (116개 참조)
 - Apple HIG 원문 링크 모두 유효
 
 ### API 일관성 검증 통과

@@ -41,7 +41,7 @@
 ## 🔗 배포 URL
 
 - **메인**: https://m1zz.github.io/HIGLab/
-- **GitHub**: https://github.com/M1zz/HIGLab
+- **GitHub**: https://github.com/YuSeongChoi/HIGLab
 
 ---
 
