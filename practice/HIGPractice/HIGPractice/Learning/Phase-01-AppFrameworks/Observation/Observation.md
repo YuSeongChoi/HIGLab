@@ -158,6 +158,50 @@
 - Observation 상태 객체를 하위 뷰로 공유할 때 타입 기반으로 주입할 수 있다
 - 기존 `@EnvironmentObject`와 구분해서 이해해야 한다
 
+## Observation 전에 같이 알아둘 이론
+
+### `Sendable`은 무엇인가
+- `Sendable`은 "이 값을 동시성 경계를 넘어 안전하게 전달할 수 있는가"를 나타내는 프로토콜이다.
+- 여기서 동시성 경계란 다른 `Task`, 다른 actor, 다른 실행 문맥으로 값이 이동하는 상황을 말한다.
+- Swift Concurrency에서 데이터 레이스를 줄이기 위해 컴파일러가 확인하는 기준 중 하나다.
+
+### `Sendable`과 `@Sendable`의 차이
+- `Sendable`은 타입에 붙는다.
+  - 예: 어떤 struct, enum, class가 안전하게 전달 가능한가
+- `@Sendable`은 클로저 타입에 붙는다.
+  - 예: 어떤 클로저를 task에 넘겨도 안전한가
+- 즉 `Sendable`은 값의 안전성, `@Sendable`은 클로저의 안전성이라고 보면 된다.
+
+### 왜 Observation 학습 전에 이것을 알아야 하나
+- Observation은 상태를 추적하는 프레임워크지만, 실제 앱에서는 async 작업과 함께 쓰이는 경우가 많다.
+- 이때 상태 객체 자체는 Observation으로 이해하고,
+  task/actor 사이에 넘기는 값은 `Sendable` 관점으로 이해해야 경계가 헷갈리지 않는다.
+- 즉 Observation은 "누가 상태를 읽고 갱신하는가"를 설명하고,
+  `Sendable`은 "그 값을 다른 실행 문맥으로 보내도 안전한가"를 설명한다.
+
+### struct는 언제 `Sendable`에 유리한가
+- struct는 값 타입이라 기본적으로 참조 공유 문제가 적다.
+- 내부 프로퍼티가 모두 안전한 값 타입이면 자동으로 `Sendable` 취급이 가능한 경우가 많다.
+- 예를 들어 `String`, `Int`, `Bool`, 그리고 그 값들로 이루어진 단순 설정 struct는 `Sendable`과 잘 맞는다.
+
+### class는 왜 `Sendable`이 까다로운가
+- class는 참조 타입이라 여러 task가 같은 객체 하나를 동시에 볼 수 있다.
+- 그 객체가 mutable state를 가지면 데이터 레이스 가능성이 생긴다.
+- 그래서 상태가 계속 바뀌는 store나 manager는 무조건 `Sendable`로 보기보다,
+  `@MainActor`, actor 격리, 혹은 명확한 소유권 구조로 먼저 이해하는 편이 맞다.
+
+### Observation과 `Sendable`을 헷갈리지 않기
+- `@Observable` = 상태 추적
+- `@Bindable` = 양방향 바인딩
+- `@State` = 상태 소유
+- `@Environment` = 상태 공유
+- `Sendable` = 동시성 경계를 넘는 값 안전성
+- `@Sendable` = 동시 실행에 넘기는 클로저 안전성
+
+### 한 줄 정리
+- Observation은 "이 상태를 누가 읽고 바꾸는가"를 보는 도구다.
+- `Sendable`은 "이 값을 다른 task/actor로 보내도 안전한가"를 보는 기준이다.
+
 ## Observation vs ObservableObject
 
 ### Observation이 강한 점
