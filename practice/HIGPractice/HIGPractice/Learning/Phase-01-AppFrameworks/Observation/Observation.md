@@ -34,6 +34,7 @@
 ### 1. `CartStore.swift`
 - 파일: `samples/CartFlow/Shared/CartStore.swift`
 - 여기서는 "상태를 가진 중심 객체"를 본다.
+- 완료 여부: [x]
 - 체크 포인트
   - `@Observable`
   - stored property와 computed property
@@ -45,6 +46,10 @@
 - `@Observable`이 붙으면 stored property 접근과 변경이 자동 추적된다.
 - `items`, `isLoading`, `isCheckoutComplete`, `errorMessage`는 추적 대상 상태다.
 - `totalItemCount`, `totalPrice`, `formattedTotalPrice`, `isEmpty`는 저장값이 아니라 읽기 파생값이다.
+- 예전 `ObservableObject`처럼 각 프로퍼티마다 `@Published`를 붙이지 않아도 된다는 점이 가장 큰 문법 차이다.
+- 하지만 더 중요한 차이는 "모든 변경 통지"가 아니라 "실제로 읽은 프로퍼티 기준 추적"이라는 점이다.
+- `addToCart`, `updateQuantity`, `checkout` 같은 메서드를 store 안에 두면, 뷰는 상태 변경 규칙을 직접 들지 않고 store의 도메인 동작만 호출하면 된다.
+- 따라서 Observation에서는 상태 객체를 단순 데이터 상자가 아니라 "상태 + 상태 변경 규칙을 가진 객체"로 보는 편이 이해에 도움이 된다.
 
 ## `CartStore.swift`를 보고 답할 질문
 - `@Observable`은 무엇을 자동화하는가

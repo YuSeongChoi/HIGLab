@@ -31,6 +31,7 @@ import Observation
 @Observable
 class CartStore {
     // MARK: - 상태 (자동 추적됨)
+    // stored property를 읽거나 바꾸는 순간 Observation이 접근을 추적한다.
     
     /// 장바구니 아이템 목록
     var items: [CartItem] = []
@@ -47,6 +48,8 @@ class CartStore {
     // MARK: - 계산 속성
     
     /// 카트 내 총 아이템 수량
+    /// - 저장값이 아니라 items를 읽어 계산하는 파생 상태다.
+    /// - 이 값을 읽는 뷰는 결국 items 변화와 연결된다.
     var totalItemCount: Int {
         items.reduce(0) { $0 + $1.quantity }
     }
@@ -70,6 +73,8 @@ class CartStore {
     }
     
     // MARK: - 카트 조작 메서드
+    // 상태 변경 규칙을 View 밖이 아니라 Store 안에 둔다.
+    // 이렇게 해야 View는 "어떻게 바꿀지"보다 "무슨 행동을 요청할지"에 집중할 수 있다.
     
     /// 상품을 카트에 추가
     /// - Parameters:
@@ -140,6 +145,8 @@ class CartStore {
     func checkout() async {
         guard !isEmpty else { return }
         
+        // Observation은 async 자체를 처리하지 않는다.
+        // 대신 async 작업 전후에 바뀐 상태(isLoading, errorMessage, items)를 추적한다.
         isLoading = true
         errorMessage = nil
         
