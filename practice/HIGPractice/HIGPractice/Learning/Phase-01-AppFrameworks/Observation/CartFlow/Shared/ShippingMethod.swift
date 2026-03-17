@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PassKit
+internal import PassKit
 
 // MARK: - 배송 방법
 /// Apple Pay 결제에서 사용하는 배송 옵션 모델

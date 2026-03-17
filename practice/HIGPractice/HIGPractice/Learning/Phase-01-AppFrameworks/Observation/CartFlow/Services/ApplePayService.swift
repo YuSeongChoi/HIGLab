@@ -6,15 +6,11 @@
 //
 
 import Foundation
-import PassKit
+internal import PassKit
 import Observation
 #if os(iOS)
 import UIKit
 #endif
-
-import Foundation
-import PassKit
-import Observation
 
 // MARK: - Apple Pay 서비스
 /// Apple Pay 결제를 처리하는 핵심 서비스 클래스

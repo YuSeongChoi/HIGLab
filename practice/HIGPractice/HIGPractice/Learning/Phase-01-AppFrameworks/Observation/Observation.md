@@ -226,3 +226,43 @@
 ## 이번 학습에서 내가 남길 정리
 - Observation의 핵심은 "상태 객체를 만든다"가 아니라 "어떤 읽기가 어떤 갱신을 만들었는지"를 이해하는 데 있다.
 - SwiftUI와 SwiftData 학습에서 봤던 상태/저장 흐름이 Observation에서 하나로 이어진다.
+
+## 2026-03-17 구현 완료 메모
+
+### 이번에 구현한 범위
+- `CartFlow/Views` 폴더의 주요 화면 구현을 완료했다.
+- 구현 파일
+  - `ProductListView.swift`
+  - `CartView.swift`
+  - `CheckoutView.swift`
+  - `PaymentResultView.swift`
+  - `CartRootView.swift`
+  - `ApplePayButton.swift`
+- Apple Pay 결제 흐름을 보조하기 위해 `PassKit` import 범위와 결제 설정 타입도 함께 정리했다.
+
+### 화면별 Observation 관점 정리
+- `ProductListView`
+  - `@Environment(CartStore.self)`로 공유 store를 읽고, 화면 고유 상태는 `@State`로 분리했다.
+  - 상품 로딩, 검색어, 레이아웃 모드, 정렬 기준은 뷰 로컬 상태이며, 장바구니 담기 액션만 store에 위임한다.
+- `CartView`
+  - 장바구니 목록, 합계, 빈 상태는 store의 읽기 결과에 따라 자동 갱신된다.
+  - 삭제 확인, 결제 이동 여부 같은 일회성 UI 상태는 로컬 `@State`로 유지했다.
+- `CheckoutView`
+  - `@Bindable var cartStore`로 결제 직전 단계에서 store를 직접 참조한다.
+  - 배송 방법, 쿠폰, 에러 표시, 결과 sheet 노출은 checkout 화면 책임으로 두고, 실제 결제 후 장바구니 정리는 store 액션으로 연결했다.
+- `CartRootView`
+  - 앱 루트에서 `@State private var cartStore = CartStore()`로 상태 소유권을 가진 뒤 `.environment(cartStore)`로 하위에 주입했다.
+  - Observation에서 루트 소유와 하위 공유가 어떻게 분리되는지 확인할 수 있다.
+- `ApplePayButton` / `PaymentResultView`
+  - UIKit/PassKit 브리징과 결과 표현 UI를 SwiftUI로 감싸면서도, 결제 진행 상태는 별도 상태값으로 분리했다.
+  - 외부 서비스 상태와 화면 표현 상태를 분리하는 구조가 Observation 학습 포인트로 남는다.
+
+### 이번 구현에서 확인한 기준
+- 공유 도메인 상태는 `CartStore`가 소유한다.
+- 뷰 전용 상태는 각 화면의 `@State`로 둔다.
+- 수정 규칙은 store 메서드나 서비스 메서드로 위임한다.
+- Observation 학습에서는 "store를 어디서 읽는가"와 "뷰가 어떤 값을 직접 가지는가"를 분리해서 보는 것이 중요하다.
+
+### 다음에 PR/회고에 옮길 핵심 문장
+- 이번 작업은 `CartFlow`의 Views 레이어를 완성하면서 Observation의 상태 소유권, 읽기 추적, 화면 로컬 상태 분리를 실제 UI 흐름으로 연결한 단계다.
+- 특히 `@Environment(CartStore.self)`, `@Bindable`, `@State`가 각각 어디에서 필요한지 실제 결제 플로우 안에서 비교할 수 있게 됐다.

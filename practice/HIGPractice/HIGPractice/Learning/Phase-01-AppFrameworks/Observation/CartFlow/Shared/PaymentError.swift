@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PassKit
+internal import PassKit
 
 // MARK: - 결제 오류
 /// Apple Pay 결제 과정에서 발생할 수 있는 모든 오류 유형

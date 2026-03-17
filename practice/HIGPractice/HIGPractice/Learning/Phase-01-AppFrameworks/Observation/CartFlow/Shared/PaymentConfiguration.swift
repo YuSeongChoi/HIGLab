@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PassKit
+internal import PassKit
 
 // MARK: - 결제 설정
 /// Apple Pay 결제에 필요한 설정 값들을 관리하는 구조체

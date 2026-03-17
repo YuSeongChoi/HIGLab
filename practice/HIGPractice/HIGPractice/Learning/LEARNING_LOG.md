@@ -25,6 +25,7 @@ For each completed scope, append one row:
 | 2026-03-10 | Phase 1 | App Intents | SiriTodo sample adaptation, intents, shortcuts, concurrency troubleshooting | #16 | #18 | - | Reframed a standalone sample into an in-app learning flow, clarified `nonisolated` vs `MainActor.run`, and reduced App Shortcut registration to a valid minimal set. |
 | 2026-03-12 | Phase 1 | SwiftUI | TaskMaster scaffold, shared layer, navigation hookup, concept notes | #20 | #22 | - | Reframed a standalone sample app into a navigable in-app demo and clarified `some View`, accessibility, `ContentUnavailableView`, and `static ModelContainer` responsibilities. |
 | 2026-03-13 | Phase 1 | SwiftData | TaskMaster data flow review, CRUD path tracing, service/query notes | #23 | - | - | Clarified how `@Model`, `ModelContainer`, `@Query`, `@Bindable`, `FetchDescriptor`, and relationships connect storage changes to SwiftUI updates. |
+| 2026-03-17 | Phase 1 | Observation | CartFlow Views 구현 및 Apple Pay 결제 흐름 UI 정리 | #26 | - | - | Connected `@Observable` store reads to actual SwiftUI screens, and clarified where `@Environment`, `@Bindable`, and local `@State` each own or project state. |
 
 ## Weekly Reflection (Optional)
 
