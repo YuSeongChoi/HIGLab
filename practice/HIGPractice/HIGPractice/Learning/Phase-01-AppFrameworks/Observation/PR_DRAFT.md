@@ -40,5 +40,5 @@
 - `@Environment`, `@Bindable`, `@State`의 역할 차이를 상품 목록-장바구니-체크아웃 흐름에서 확인할 수 있게 정리했습니다.
 
 ## 후속 정리
-- PR 생성 후 `LEARNING_LOG.md`의 Observation 행에 PR 번호를 업데이트합니다.
+- PR `#27` 생성 완료. `LEARNING_LOG.md`의 Observation 행에 PR 번호를 반영합니다.
 - issue 체크리스트의 `PR 생성 및 CI 확인`, `머지 후 LEARNING_LOG / 회고 기록` 항목은 실제 PR 진행 시점에 마무리합니다.
