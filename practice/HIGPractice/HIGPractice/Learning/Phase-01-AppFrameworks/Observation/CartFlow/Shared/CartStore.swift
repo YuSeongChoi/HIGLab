@@ -1,3 +1,10 @@
+//
+//  CartStore.swift
+//  HIGPractice
+//
+//  Created by YuSeongChoi on 3/16/26.
+//
+
 import Foundation
 import Observation
 
@@ -101,7 +108,7 @@ class CartStore {
     /// - Parameters:
     ///   - item: 대상 카트 아이템
     ///   - newQuantity: 새 수량 (0 이하면 제거)
-    func updateQuantity(for item: CartItem, to newQuantity: Int) {
+    func updatedQuantity(for item: CartItem, to newQuantity: Int) {
         guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
         
         if newQuantity <= 0 {
@@ -113,12 +120,12 @@ class CartStore {
     
     /// 수량 1 증가
     func incrementQuantity(for item: CartItem) {
-        updateQuantity(for: item, to: item.quantity + 1)
+        updatedQuantity(for: item, to: item.quantity + 1)
     }
     
     /// 수량 1 감소 (1개면 제거)
     func decrementQuantity(for item: CartItem) {
-        updateQuantity(for: item, to: item.quantity - 1)
+        updatedQuantity(for: item, to: item.quantity - 1)
     }
     
     /// 카트 비우기
