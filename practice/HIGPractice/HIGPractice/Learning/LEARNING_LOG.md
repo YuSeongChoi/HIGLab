@@ -27,6 +27,10 @@ For each completed scope, append one row:
 | 2026-03-13 | Phase 1 | SwiftData | TaskMaster data flow review, CRUD path tracing, service/query notes | #23 | - | - | Clarified how `@Model`, `ModelContainer`, `@Query`, `@Bindable`, `FetchDescriptor`, and relationships connect storage changes to SwiftUI updates. |
 | 2026-03-17 | Phase 1 | Observation | CartFlow Views 구현 및 Apple Pay 결제 흐름 UI 정리 | #26 | - | - | Connected `@Observable` store reads to actual SwiftUI screens, and clarified where `@Environment`, `@Bindable`, and local `@State` each own or project state. |
 
+## Pending Link Updates
+
+- Observation: PR 생성 후 2026-03-17 행의 `PR` 열을 업데이트
+
 ## Weekly Reflection (Optional)
 
 - Wins:

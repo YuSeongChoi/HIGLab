@@ -215,13 +215,13 @@
 - Combine 의존이 이미 깊은 경우
 
 ## 이번 학습 체크리스트
-- [ ] `@Observable`이 무엇을 자동화하는지 설명할 수 있다
-- [ ] `@State`로 Observation 객체를 소유하는 이유를 말할 수 있다
-- [ ] `@Bindable`이 필요한 순간을 설명할 수 있다
-- [ ] 뷰가 "읽은 프로퍼티 기준으로 갱신된다"는 말을 설명할 수 있다
-- [ ] plain model과 observable store의 역할 차이를 말할 수 있다
-- [ ] async 작업과 상태 추적의 관계를 말할 수 있다
-- [ ] `Observation`과 `ObservableObject`의 차이를 비교할 수 있다
+- [x] `@Observable`이 무엇을 자동화하는지 설명할 수 있다
+- [x] `@State`로 Observation 객체를 소유하는 이유를 말할 수 있다
+- [x] `@Bindable`이 필요한 순간을 설명할 수 있다
+- [x] 뷰가 "읽은 프로퍼티 기준으로 갱신된다"는 말을 설명할 수 있다
+- [x] plain model과 observable store의 역할 차이를 말할 수 있다
+- [x] async 작업과 상태 추적의 관계를 말할 수 있다
+- [x] `Observation`과 `ObservableObject`의 차이를 비교할 수 있다
 
 ## 이번 학습에서 내가 남길 정리
 - Observation의 핵심은 "상태 객체를 만든다"가 아니라 "어떤 읽기가 어떤 갱신을 만들었는지"를 이해하는 데 있다.
@@ -266,3 +266,13 @@
 ### 다음에 PR/회고에 옮길 핵심 문장
 - 이번 작업은 `CartFlow`의 Views 레이어를 완성하면서 Observation의 상태 소유권, 읽기 추적, 화면 로컬 상태 분리를 실제 UI 흐름으로 연결한 단계다.
 - 특히 `@Environment(CartStore.self)`, `@Bindable`, `@State`가 각각 어디에서 필요한지 실제 결제 플로우 안에서 비교할 수 있게 됐다.
+
+## 수동 검증 메모
+- `ProductListView`에서 상품을 추가하면 장바구니 수량과 담김 상태가 즉시 반영되는 흐름을 기준으로 확인했다.
+- `CartView`에서 수량을 증감하면 합계와 무료 배송 진행률이 같은 store 읽기 위에서 함께 갱신되는 흐름을 기준으로 확인했다.
+- `CheckoutView`에서 결제 결과 sheet가 열리고 완료 액션 후 장바구니를 비우는 흐름을 최종 확인 포인트로 정리했다.
+
+## 학습 종료 회고
+- 공유 상태를 여러 화면에 전달하는 경우에는 `@Environment(CartStore.self)`가 가장 읽기 쉬웠고, 결제 직전처럼 store를 직접 넘겨 받아 다루는 구간에서는 `@Bindable`이 더 명확했다.
+- 이번 구현에서는 검색어, 토스트, sheet, 탭 선택처럼 화면 수명주기에 묶인 값은 `@State`로 두고, 장바구니/결제 관련 도메인 상태만 `CartStore`에 남기는 기준을 세웠다.
+- 같은 구조를 `ObservableObject`로 구현했다면 `@Published`, `@StateObject`, `@EnvironmentObject` 조합과 갱신 설명 비용이 더 늘어났을 것이고, 이번 학습에서는 그 차이를 실제 화면 흐름으로 체감할 수 있었다.
