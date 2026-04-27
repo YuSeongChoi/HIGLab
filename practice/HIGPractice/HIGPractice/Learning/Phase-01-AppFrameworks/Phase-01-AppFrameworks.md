@@ -47,6 +47,29 @@
 
 ---
 
+## Foundation Models Summary (AIChatbot)
+
+- Goal:
+  - `AIChatbot`을 기준으로 Foundation Models 세션, prompt/instruction, streaming 응답, tool calling, safety/context 흐름을 학습한다.
+- Learning Sources:
+  - Site: `site/foundationmodels/01-ai-chatbot.html`
+  - Tutorials: `tutorials/foundationmodels`
+  - Samples: `samples/AIChatbot`
+  - AI Reference: `ai-reference/foundationmodels.md`
+- Implementation Summary:
+  - 학습 예정: `AIChatbot` 샘플을 `FoundationModels/AIChatbot` 아래로 옮겨 읽기/수정 가능한 실습 구조를 만든다.
+- Blockers & Fixes:
+  - TBD
+- Issue / PR:
+  - Issue: `#31`
+  - PR: TBD
+- Velog:
+  - TBD
+- Retrospective (3 lines):
+  - TBD
+
+---
+
 ## Template (Copy Per Framework)
 
 ### {Framework}
